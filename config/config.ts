@@ -4,8 +4,7 @@ import routes from './routes';
 
 export default defineConfig({
   apollo: {
-    uri: 'http://localhost:8080/graphql',
-    // uri: 'https://api.asany.cn/graphql',
+    uri: 'https://api.asany.cn/graphql',
   },
   app: {
     id: '6068485332c5fc853a65',
