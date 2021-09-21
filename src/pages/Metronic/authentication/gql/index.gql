@@ -1,0 +1,7 @@
+mutation login($clientId: String!, $username: String, $password: String) {
+  login(clientId: $clientId, username: $username, password: $password) {
+    uid
+    token
+    authorities
+  }
+}

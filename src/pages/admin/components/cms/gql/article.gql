@@ -1,0 +1,14 @@
+query QUEERY_ARTICLE_ALL {
+  articles {
+    totalCount
+    totalPage
+    pageSize
+    edges {
+      node {
+        id
+        title
+        summary
+      }
+    }
+  }
+}

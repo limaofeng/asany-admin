@@ -1,0 +1,35 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    name: Build, lint, and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Use Node 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Install deps (with cache)
+        uses: bahmutov/npm-install@v1
+
+      - name: Build
+        run: yarn build
+        env:
+          CI: true
+          NODE_OPTIONS: --max_old_space_size=4096
+
+      # - name: Lint
+      #   run: yarn lint
+
+      # - name: Test
+      #   run: yarn test --ci --coverage --maxWorkers=2
+
+      # - name: Coveralls
+      #   uses: coverallsapp/github-action@master
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
