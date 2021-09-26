@@ -1,9 +1,9 @@
 import { useQuery } from '@apollo/client';
-import { ContentWrapper } from '@/pages/Metronic/components/Content';
-
 import { Pagination, Table } from 'react-bootstrap';
 
-import { QUEERY_ARTICLE_ALL } from '../gql/article.gql';
+import { QUEERY_ARTICLE_ALL } from './gql/article.gql';
+
+import { ContentWrapper } from '@/pages/Metronic/components/page/Content';
 
 function ArticleListContent() {
   const active = 2;

@@ -1,19 +1,17 @@
-import React, {
-  useCallback,
-  useState,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  useMemo,
-} from 'react';
+import React, { useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+
+import EventEmitter from 'events';
+
+import type { EventCallback, MenuEvent, OpenCallback, SelectEvent } from './typings';
 
 type MenuData = {
   key: string;
+  icon?: string;
   path: string;
+  title?: string;
 };
 
-export type SelectableType = 'MenuItem' | 'MenuItemOrSubMenu';
+export type SelectableType = 'MenuItem' | 'AllMenu';
 
 type MenuState = {
   accordion: boolean;
@@ -24,7 +22,7 @@ type MenuState = {
 };
 
 type MenuAction = {
-  type: 'select' | 'trigger' | 'binding' | 'reset';
+  type: 'select' | 'trigger' | 'openKeys' | 'selectedKeys';
   payload?: any;
 };
 
@@ -32,55 +30,19 @@ type UnsubscribeFunc = () => void;
 
 type SubscribeCallback = () => void;
 
-type SubscribeFunc = (callback: SubscribeCallback) => UnsubscribeFunc;
-
 export type DispatchWithoutAction = (action: MenuAction) => void;
 
-type MenuStoreContext = {
-  getState: () => MenuState;
-  subscribe: SubscribeFunc;
-  dispatch: DispatchWithoutAction;
-};
-
-const MenuContext = React.createContext<MenuStoreContext>({} as any);
-
-export interface MenuProviderProps {
-  children: React.ReactNode;
-  state: MenuState;
-}
-
-const reducer = (state: MenuState, action?: MenuAction) => {
-  if (action?.type === 'binding') {
-    const { key, children } = action?.payload;
-
-    const menus = state.menus!;
-
-    if (key && !menus.has(key)) {
-      menus.set(key, { key, path: `${key}/` });
-    }
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const ckey of children as string[]) {
-      if (!menus.has(ckey)) {
-        menus.set(ckey, { key: ckey, path: `${key}/${ckey}/` });
-      } else {
-        const menu = menus.get(ckey)!;
-        const submenus = Array.from(menus.values()).filter((item) =>
-          item.path.startsWith(`${menu.key}/`),
-        );
-        // eslint-disable-next-line no-restricted-syntax
-        for (const m of submenus) {
-          m.path = `${key}/${m.path}`;
-        }
-      }
-    }
-
-    return { ...state, menus };
-  }
-  if (action?.type === 'select') {
+const reducer = (state: MenuState, action: MenuAction) => {
+  if (action.type === 'select') {
     return { ...state, selectedKeys: [action.payload] };
   }
-  if (action?.type === 'trigger') {
+  if (action.type === 'openKeys') {
+    return { ...state, openKeys: action.payload };
+  }
+  if (action.type === 'selectedKeys') {
+    return { ...state, selectedKeys: action.payload };
+  }
+  if (action.type === 'trigger') {
     const { openKey, closeKeys = [] } = action.payload;
     const set = new Set(state.openKeys);
     closeKeys.forEach(set.delete.bind(set));
@@ -92,47 +54,101 @@ const reducer = (state: MenuState, action?: MenuAction) => {
   return state;
 };
 
-const initializer = (state: MenuState): MenuState => {
-  return { ...state, menus: new Map() };
+const MENU_EVENT_SELECT = 'select';
+
+const MENU_EVENT_OPEN_CHANGE = 'open-change';
+
+type MENU_EVENT_NAMES = typeof MENU_EVENT_SELECT | typeof MENU_EVENT_OPEN_CHANGE;
+
+class MenuStoreContext {
+  private _eventEmitter = new EventEmitter();
+  private _state: MenuState;
+  private _listeners: SubscribeCallback[] = [];
+  constructor(state: MenuState) {
+    this._state = state;
+  }
+  getState() {
+    return this._state;
+  }
+  subscribe(callback: SubscribeCallback): UnsubscribeFunc {
+    this._listeners.unshift(callback);
+    return this.unsubscribe(callback);
+  }
+  unsubscribe(callback: SubscribeCallback): UnsubscribeFunc {
+    return () => {
+      const index = this._listeners.indexOf(callback);
+      if (index > -1) {
+        this._listeners.splice(index, 1);
+      }
+    };
+  }
+  on<E extends MenuEvent>(eventName: MENU_EVENT_NAMES, callback: EventCallback<E> | OpenCallback) {
+    this._eventEmitter.on(eventName, callback);
+    return () => this.off(eventName, callback);
+  }
+  off<E extends MenuEvent>(eventName: MENU_EVENT_NAMES, callback: EventCallback<E> | OpenCallback) {
+    this._eventEmitter.off(eventName, callback);
+  }
+  dispatchSubscribe() {
+    this._listeners.forEach((listener) => listener());
+  }
+  openChange(openKey: string, closeKeys: string[]) {
+    this.dispatch({
+      type: 'trigger',
+      payload: {
+        openKey,
+        closeKeys,
+      },
+    });
+    this._eventEmitter.emit(MENU_EVENT_OPEN_CHANGE, this._state.openKeys);
+  }
+  select(key: string, e: React.MouseEvent) {
+    this.dispatch({
+      type: 'select',
+      payload: key,
+    });
+    const item = this._state.menus?.get(key);
+    if (!item) {
+      return;
+    }
+    const event: SelectEvent = {
+      key,
+      keyPath: item.path,
+      item,
+      selectedKeys: this._state.selectedKeys,
+      domEvent: e,
+    };
+    this._eventEmitter.emit(MENU_EVENT_SELECT, event);
+  }
+  dispatch = (action: MenuAction) => {
+    this._state = reducer(this._state, action);
+    this.dispatchSubscribe();
+  };
+  removeMenuData(key: string) {
+    this._state.menus!.delete(key);
+  }
+  addMenuData(key: string, data: MenuData) {
+    this._state.menus!.set(key, data);
+  }
+}
+
+const MenuContext = React.createContext<MenuStoreContext>({} as any);
+
+export interface MenuProviderProps {
+  children: React.ReactNode;
+  selectedKeys?: string[];
+  openKeys?: string[];
+  state: MenuState;
+  onSelect?: EventCallback<SelectEvent>;
+  onOpenChange?: OpenCallback;
+}
+
+const initializer = (state: MenuState): any => {
+  return new MenuStoreContext({ ...state, menus: new Map<string, MenuData>() });
 };
 
 function useStore(initState: MenuState): MenuStoreContext {
-  const [state, dispatch] = useReducer<React.ReducerWithoutAction<MenuState>, MenuState>(
-    reducer,
-    initState,
-    initializer,
-  );
-  const [listeners] = useState<SubscribeCallback[]>([]);
-  const handleUnsubscribe = (callback: SubscribeCallback) => () => {
-    const index = listeners.indexOf(callback);
-    if (index > -1) {
-      listeners.splice(index, 1);
-    }
-  };
-
-  const handleSubscribe = useCallback(
-    (callback: SubscribeCallback) => {
-      listeners.unshift(callback);
-      return handleUnsubscribe(callback);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [listeners],
-  );
-  const handleDispatchSubscribe = useCallback(() => {
-    listeners.forEach((listener) => listener());
-  }, [listeners]);
-
-  const initStore = {
-    getState: () => state,
-    dispatch,
-    subscribe: handleSubscribe,
-  };
-  const [store] = useState(initStore);
-  useEffect(() => {
-    store.getState = () => state;
-    handleDispatchSubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
+  const [store] = useState(initializer.bind(undefined, initState));
   return store;
 }
 
@@ -161,14 +177,42 @@ export function useSelector<Selected>(
   return selectedState;
 }
 
-export function useDispatch() {
-  const store = useContext<MenuStoreContext>(MenuContext)!;
-  return store.dispatch;
+export function useMenuContext() {
+  return useContext<MenuStoreContext>(MenuContext)!;
 }
 
 export function MenuProvider(props: MenuProviderProps) {
-  const { children, state } = props;
+  const { children, state, openKeys, selectedKeys, onSelect, onOpenChange } = props;
   const store = useStore(state);
+
+  useEffect(() => {
+    if (!openKeys) {
+      return;
+    }
+    store.dispatch({ type: 'openKeys', payload: openKeys });
+  }, [store, openKeys]);
+
+  useEffect(() => {
+    if (!selectedKeys) {
+      return;
+    }
+    store.dispatch({ type: 'selectedKeys', payload: selectedKeys });
+  }, [store, selectedKeys]);
+
+  useEffect(() => {
+    if (!onSelect) {
+      return;
+    }
+    return store.on('select', onSelect);
+  }, [store, onSelect]);
+
+  useEffect(() => {
+    if (!onOpenChange) {
+      return;
+    }
+    return store.on('open-change', onOpenChange);
+  }, [store, onOpenChange]);
+
   return useMemo(
     () => <MenuContext.Provider value={store}>{children}</MenuContext.Provider>,
     [children, store],

@@ -1,7 +1,9 @@
-import { library, component } from 'sunmao';
+import { component, library } from 'sunmao';
 
 import Layout from './components/Layout/Demo7';
 import SignIn from './authentication/SignIn';
+
+import './style/index.scss';
 
 @library({
   name: 'Metronic',

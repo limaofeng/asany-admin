@@ -1,9 +1,55 @@
+import React, { useMemo } from 'react';
+
 import classnames from 'classnames';
 
-interface ButtonProps {
+type Variant =
+  | 'white'
+  | 'primary'
+  | 'light'
+  | 'secondary'
+  | 'success'
+  | 'info'
+  | 'warning'
+  | 'danger'
+  | 'dark'
+  | 'link'
+  | 'default';
+
+type VariantStyle = 'light' | 'background' | 'dashed';
+
+type ActiveStyle = 'text' | 'light';
+
+type ActiveColor =
+  | 'white'
+  | 'primary'
+  | 'secondary'
+  | 'light'
+  | 'success'
+  | 'info'
+  | 'warning'
+  | 'danger'
+  | 'dark'
+  | 'muted'
+  | 'gray-100'
+  | 'gray-200'
+  | 'gray-300'
+  | 'gray-400'
+  | 'gray-500'
+  | 'gray-600'
+  | 'gray-700'
+  | 'gray-800'
+  | 'gray-900';
+
+export interface ButtonProps {
+  as?: 'button' | 'a';
   id?: string;
-  type?: 'primary';
-  size?: 'lg';
+  variant?: Variant;
+  variantStyle?: VariantStyle;
+  dashed?: boolean;
+  activeStyle?: ActiveStyle;
+  activeColor?: ActiveColor;
+  active?: boolean;
+  size?: 'lg' | 'sm';
   className?: string;
   htmlType?: 'submit' | 'button' | 'reset';
   children?: React.ReactNode;
@@ -12,36 +58,62 @@ interface ButtonProps {
 }
 
 function Button({
-  type = 'primary',
+  as = 'a',
   size,
   children,
   className,
   loading,
-  htmlType = 'button',
+  htmlType,
+  variantStyle,
+  variant = variantStyle == 'dashed' ? 'default' : 'primary',
+  active,
+  activeStyle,
+  activeColor,
   onClick,
   ...props
 }: ButtonProps) {
-  return (
-    <button
-      onClick={onClick}
-      type={htmlType}
-      disabled={loading}
-      data-kt-indicator={loading ? 'on' : 'off'}
-      className={classnames(
+  const buttonStyle = useMemo(() => {
+    if (variantStyle == 'dashed') {
+      return `btn-outline btn-outline-dashed btn-outline-${variant}`;
+    }
+    if (variantStyle == 'background') {
+      return `btn-bg-${variant}`;
+    }
+    if (variantStyle == 'light') {
+      return `btn-light-${variant}`;
+    }
+    return `btn-${variant}`;
+  }, [variantStyle, variant]);
+
+  return React.createElement(
+    htmlType ? 'button' : as,
+    {
+      ...props,
+      onClick,
+      type: htmlType,
+      disabled: loading,
+      ['data-kt-indicator']: loading ? 'on' : 'off',
+      className: classnames(
         'btn',
+        buttonStyle,
         {
-          'btn-lg': size === 'lg',
-          'btn-primary': type === 'primary',
+          active,
+          [`btn-${size}`]: !!size,
+          [`btn-active-${activeColor}`]: !!activeColor && !activeStyle,
+          [`btn-active-light-${activeColor}`]: !!activeColor && activeStyle == 'light',
+          [`btn-active-color-${activeColor}`]: !!activeColor && activeStyle == 'text',
         },
         className,
-      )}
-      {...props}
-    >
+      ),
+    },
+    loading != undefined ? (
       <span className={classnames({ 'indicator-label': !loading, 'indicator-progress': loading })}>
         {children}
         {loading && <span className="spinner-border spinner-border-sm align-middle ms-2" />}
       </span>
-    </button>
+    ) : (
+      children
+    ),
   );
 }
 

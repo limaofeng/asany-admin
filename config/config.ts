@@ -10,7 +10,7 @@ export default defineConfig({
     id: '6068485332c5fc853a65',
   },
   hash: true,
-  antd: {},
+  antd: false,
   dva: {
     hmr: true,
   },

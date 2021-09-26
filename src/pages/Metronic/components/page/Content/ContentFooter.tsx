@@ -23,20 +23,20 @@ function ContentFooter(props: ContentFooterProps) {
         {/* --begin::Menu--*/}
         <ul className="menu menu-gray-600 menu-hover-primary fw-bold order-1">
           <li className="menu-item">
-            <a href="https://keenthemes.com" target="_blank" className="menu-link px-2">
-              About
+            <a target="_blank" className="menu-link px-2">
+              关于
             </a>
           </li>
           <li className="menu-item">
-            <a href="https://keenthemes.com/support" target="_blank" className="menu-link px-2">
-              Support
+            <a target="_blank" className="menu-link px-2">
+              技术支持
             </a>
           </li>
-          <li className="menu-item">
-            <a href="https://1.envato.market/EA4JP" target="_blank" className="menu-link px-2">
-              Purchase
+          {/* <li className="menu-item">
+            <a target="_blank" className="menu-link px-2">
+              订阅
             </a>
-          </li>
+          </li> */}
         </ul>
         {/* --end::Menu--*/}
       </div>

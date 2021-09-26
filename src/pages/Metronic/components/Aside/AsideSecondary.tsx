@@ -1,12 +1,14 @@
-import { Tab } from 'react-bootstrap';
-import MenuPane from './Secondary/MenuPane';
-
 import { useRef } from 'react';
+
+import { Tab } from 'react-bootstrap';
 import Icon from '@asany/icons';
+import { useReactComponent } from 'sunmao';
 
 import { useScroll } from '../utils';
+
+import Navigation from './Secondary/Navigation';
+
 import type { MenuData, NuwaComponent } from '@/.umi/app/typings';
-import { useReactComponent } from 'sunmao';
 
 type AsideSecondaryProps = {
   menus: MenuData[];
@@ -31,7 +33,7 @@ function AsideSecondary(props: AsideSecondaryProps) {
             <Tab.Content>
               {/* --begin::Tab pane--*/}
               {menus.map((item) => (
-                <Tab.Pane transition={true} eventKey={item.id}>
+                <Tab.Pane key={item.id} transition={true} eventKey={item.id}>
                   <TabContent menu={item} />
                 </Tab.Pane>
               ))}
@@ -73,7 +75,7 @@ function TabContent({ menu }: TabContentProps) {
   if (menu.component) {
     return <CustomTabContent menu={menu} component={menu.component} />;
   }
-  return <MenuPane />;
+  return <Navigation menus={menu.children!} />;
 }
 
 export default AsideSecondary;

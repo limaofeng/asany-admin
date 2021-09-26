@@ -1,13 +1,14 @@
 import React, { useCallback, useRef } from 'react';
 
 import classnames from 'classnames';
-import AsideSecondary from './AsideSecondary';
-import Logo from './Logo';
-
-import { Nav, Button, Tab, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { useScroll } from '../utils';
+import { Button, Nav, OverlayTrigger, Tab, Tooltip } from 'react-bootstrap';
 import Icon from '@asany/icons';
+
+import { useScroll } from '../utils';
 import { useLayout, useLayoutSelector } from '../Layout/LayoutContext';
+
+import Logo from './Logo';
+import AsideSecondary from './AsideSecondary';
 
 export interface AsideProps {
   logo?: string;
@@ -40,6 +41,7 @@ export interface AsideProps {
 const Footer = React.forwardRef((_: any, ref: any) => {
   return (
     <div ref={ref} className="aside-footer d-flex flex-column align-items-center flex-column-auto">
+      {/**
       <div className="d-flex align-items-center mb-2">
         <div
           className="btn btn-icon btn-active-color-primary btn-color-gray-400 btn-active-light"
@@ -63,6 +65,7 @@ const Footer = React.forwardRef((_: any, ref: any) => {
           <Icon name="Duotune/gen032" className="svg-icon-2 svg-icon-lg-1" />
         </div>
       </div>
+      */}
       <div className="d-flex align-items-center mb-2">
         <div
           className="btn btn-icon btn-active-color-primary btn-color-gray-400 btn-active-light"
@@ -88,7 +91,7 @@ const Footer = React.forwardRef((_: any, ref: any) => {
           data-bs-dismiss="click"
           title="User profile"
         >
-          <img src="assets/media/avatars/150-26.jpg" alt="image" />
+          <img src="/assets/media/avatars/150-26.jpg" alt="image" />
         </div>
       </div>
     </div>

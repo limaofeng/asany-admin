@@ -1,8 +1,11 @@
-import { useApp } from 'umi';
 import React, { useMemo } from 'react';
+
+import { useApp } from 'umi';
+
 import Aside from '../Aside';
 
 import { LayoutProvider, useLayoutSelector } from './LayoutContext';
+
 import * as utils from '@/utils';
 
 // function CollapseDemo() {
@@ -58,6 +61,8 @@ function LayoutWrapper(props: LayoutProps) {
       ),
     [sourceMenus],
   );
+
+  console.log('LayoutWrapper children', children);
 
   return (
     <LayoutProvider state={{ aside: { menus, minimize: false } }}>

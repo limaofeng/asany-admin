@@ -1,13 +1,14 @@
-import type { MenuData } from '@/.umi/app/typings';
 import React, {
   useCallback,
-  useState,
   useContext,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
-  useMemo,
+  useState,
 } from 'react';
+
+import type { MenuData } from '@/.umi/app/typings';
 
 export type LayoutState = {
   aside: {

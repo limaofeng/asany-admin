@@ -1,7 +1,9 @@
+import { useCallback, useEffect } from 'react';
+
 import { Icon } from '@asany/icons';
-import { useCallback } from 'react';
 import classnames from 'classnames';
-import { useDispatch, useSelector } from './MenuContext';
+
+import { useMenuContext, useSelector } from './MenuContext';
 
 export type MenuItemProps = {
   icon?: string;
@@ -10,11 +12,13 @@ export type MenuItemProps = {
 };
 
 export function MenuSection(props: MenuItemProps) {
-  const { title } = props;
+  const { title, children } = props;
   return (
     <div className="menu-item">
       <div className="menu-content pb-2">
-        <span className="menu-section text-muted text-uppercase fs-8 ls-1">{title}</span>
+        <span className="menu-section text-muted text-uppercase fs-8 ls-1">
+          {title || children}
+        </span>
       </div>
     </div>
   );
@@ -22,18 +26,25 @@ export function MenuSection(props: MenuItemProps) {
 
 function MenuItem(props: MenuItemProps) {
   const { icon, children, title } = props;
-  const { menuKey } = props as any;
-  const dispatch = useDispatch();
+  const { menuKey, path } = props as any;
+
+  const context = useMenuContext();
 
   const selected = useSelector((state) => state.selectedKeys.includes(menuKey));
 
-  const handleClick = useCallback(() => {
-    dispatch({
-      type: 'select',
-      payload: menuKey,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => {
+    context.addMenuData(menuKey, { key: menuKey, icon, title, path });
+    return () => {
+      context.removeMenuData(menuKey);
+    };
+  }, [context, menuKey, icon, title, path]);
+
+  const handleClick = useCallback(
+    (e) => {
+      context.select(menuKey, e);
+    },
+    [context, menuKey],
+  );
 
   return (
     <div className="menu-item">

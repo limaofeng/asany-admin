@@ -1,9 +1,10 @@
-import { library, component } from 'sunmao';
-import Projects from '../Metronic/components/Aside/Secondary/Projects';
-import HomeBuilder from './components/builder/HomeBuilder';
+import { component, library } from 'sunmao';
 
-import ArticleList from './components/cms/ article/ArticleList';
-import ArticleView from './components/cms/ article/ArticleView';
+import HomeBuilder from './components/builder/HomeBuilder';
+import ArticleList from './pages/cms/article/ArticleList';
+import ArticleView from './pages/cms/article/ArticleView';
+import ArticleSidebar from './pages/cms/article/ArticleSidebar';
+import ArticleChannel from './pages/cms/article/ArticleChannel';
 
 @library({
   name: 'admin',
@@ -18,7 +19,9 @@ class Admin {
   @component({ name: 'Home' })
   HomeBuilder = HomeBuilder;
   @component({ name: 'cms.ArticleSidebar' })
-  Projects = Projects;
+  ArticleSidebar = ArticleSidebar;
+  @component({ name: 'cms.ArticleChannel' })
+  ArticleChannel = ArticleChannel;
 }
 
 export default new Admin();

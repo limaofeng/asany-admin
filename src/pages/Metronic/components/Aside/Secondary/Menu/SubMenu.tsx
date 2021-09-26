@@ -1,9 +1,12 @@
-import Icon from '@asany/icons';
-import classnames from 'classnames';
 import React, { useCallback, useEffect } from 'react';
 import { useRef } from 'react';
+
+import Icon from '@asany/icons';
+import classnames from 'classnames';
+
 import * as KTUtil from '../../../utils/KTUtil';
-import { useDispatch, useSelector } from './MenuContext';
+
+import { useMenuContext, useSelector } from './MenuContext';
 
 const defaultOptions = {
   dropdown: {
@@ -62,84 +65,83 @@ async function hide(item: HTMLElement, sub: HTMLElement) {
 }
 
 function SubMenu(props: SubMenuProps) {
-  const { menuKey } = props as any;
+  const { menuKey, path } = props as any;
   const { icon, title, children } = props;
   const itemRef = useRef<HTMLDivElement>(null);
   const subRef = useRef<HTMLDivElement>(null);
 
-  const dispatch = useDispatch();
+  const context = useMenuContext();
 
   const accordion = useSelector((state) => state.accordion);
-  const selectable = useSelector((state) => state.selectable === 'MenuItemOrSubMenu');
+  const selectable = useSelector((state) => state.selectable === 'AllMenu');
   const selected = useSelector((state) => {
-    if (state.selectable === 'MenuItemOrSubMenu') {
+    if (state.selectable === 'AllMenu') {
       return state.selectedKeys.includes(menuKey);
     }
     return false;
   });
   const subSelected = useSelector((state) => {
-    const my = state.menus!.get(menuKey);
     if (!state.selectedKeys.length) {
       return false;
     }
+    const my = state.menus!.get(menuKey);
     const sle = state.menus!.get(state.selectedKeys[0]);
     return sle?.path.startsWith(my!.path);
   });
   const opened = useSelector((state) => state.openKeys.includes(menuKey));
 
   useEffect(() => {
-    dispatch({
-      type: 'binding',
-      payload: {
-        key: menuKey,
-        children: React.Children.map(children, (item) => (item as any).key),
-      },
-    });
+    context.addMenuData(menuKey, { key: menuKey, icon, title, path });
     return () => {
-      dispatch({ type: 'reset' });
+      context.removeMenuData(menuKey);
     };
-  }, [children, dispatch, menuKey]);
+  }, [context, menuKey, icon, title, path]);
 
-  const handleClick = useCallback(async () => {
-    const item = itemRef.current!;
-    const sub = subRef.current!;
-    if (KTUtil.hasClass(item, 'show')) {
-      const key = await hide(item, sub);
-      dispatch({
-        type: 'trigger',
-        payload: {
-          openKey: undefined,
-          closeKeys: [key],
-        },
-      });
-      return;
-    }
-    const [closeKeys, openKey] = await Promise.all([
-      accordion ? hideAccordions(item.parentElement!, item) : Promise.resolve([]),
-      show(item, sub),
-    ]);
-    dispatch({
-      type: 'trigger',
-      payload: {
-        openKey,
-        closeKeys,
-      },
-    });
-  }, [dispatch, accordion]);
+  const handleSelect = useCallback(
+    (e) => {
+      context.select(menuKey, e);
+    },
+    [context, menuKey],
+  );
+
+  const handleClick = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const item = itemRef.current!;
+      const sub = subRef.current!;
+      if (KTUtil.hasClass(item, 'show')) {
+        const key = await hide(item, sub);
+        context.dispatch({
+          type: 'trigger',
+          payload: {
+            openKey: undefined,
+            closeKeys: [key],
+          },
+        });
+        return;
+      }
+      const [closeKeys, openKey] = await Promise.all([
+        accordion ? hideAccordions(item.parentElement!, item) : Promise.resolve([]),
+        show(item, sub),
+      ]);
+      context.openChange(openKey as string, closeKeys as string[]);
+    },
+    [context, accordion],
+  );
 
   return (
     <div
       ref={itemRef}
       data-menu-key={menuKey}
       className={classnames('menu-item menu-accordion', {
-        hover: opened,
-        showing: opened,
+        hover: !selectable && opened,
         show: opened,
         here: subSelected,
       })}
     >
       <span
-        onClick={handleClick}
+        onClick={selectable ? handleSelect : handleClick}
         className={classnames('menu-link', { active: selected && selectable })}
       >
         {icon ? (
@@ -152,7 +154,7 @@ function SubMenu(props: SubMenuProps) {
           </span>
         )}
         <span className="menu-title">{title}</span>
-        <span className="menu-arrow" />
+        <span onClick={selectable ? handleClick : undefined} className="menu-arrow" />
       </span>
       <div
         ref={subRef}
@@ -161,9 +163,10 @@ function SubMenu(props: SubMenuProps) {
           'menu-active-bg': subSelected,
         })}
       >
-        {React.Children.map(children, (item) =>
-          React.cloneElement(item as any, {
-            menuKey: (item as any).key,
+        {React.Children.map(children, (item: any) =>
+          React.cloneElement(item, {
+            menuKey: item.key,
+            path: path + item.key + '/',
           }),
         )}
       </div>

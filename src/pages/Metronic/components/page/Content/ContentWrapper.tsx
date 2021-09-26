@@ -11,7 +11,11 @@ type ContentWrapperProps = {
 };
 
 function ContentWrapper(props: ContentWrapperProps) {
-  const { header, footer, children } = props;
+  const {
+    header,
+    footer = { copyright: '版权所有 2021 林暮春 | 沪ICP备11003026号' },
+    children,
+  } = props;
   return (
     <div className="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
       {header && <ContentHeader {...header} />}

@@ -1,0 +1,43 @@
+query QUEERY_ARTICLE_ALL {
+  articles {
+    totalCount
+    totalPage
+    pageSize
+    edges {
+      node {
+        id
+        title
+        summary
+      }
+    }
+  }
+}
+query QUEERY_ARTICLE_CHANNEL_ALL {
+  channels: articleChannels {
+    id
+    icon
+    name
+    path
+    index
+    level
+    cover
+    parent {
+      id
+    }
+  }
+}
+
+query QUEERY_ARTICLE_CHANNEL($id: ID!) {
+  channel: articleChannel(id: $id){
+    id
+    icon
+    name
+    cover
+    path
+    index
+    level
+    parent {
+      id
+    }
+  }
+}

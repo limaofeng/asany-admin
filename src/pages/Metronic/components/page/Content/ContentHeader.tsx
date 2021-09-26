@@ -1,4 +1,4 @@
-import * as Icons from '../icon';
+import Icon from '@asany/icons';
 
 function Breadcrumb() {
   return (
@@ -26,7 +26,7 @@ function Toolbar() {
           data-bs-toggle="modal"
           data-bs-target="#kt_modal_invite_friends"
         >
-          <Icons.arr075 />
+          <Icon name="Duotune/arr075" />
           <span className="d-none d-md-inline">New Member</span>
         </a>
       </div>
@@ -39,7 +39,7 @@ function Toolbar() {
           data-bs-target="#kt_modal_create_app"
           id="kt_toolbar_primary_button"
         >
-          <Icons.gen005 />
+          <Icon name="Duotune/gen005" />
           <span className="d-none d-md-inline">New App</span>
         </a>
       </div>
@@ -48,7 +48,7 @@ function Toolbar() {
           className="btn btn-icon btn-primary w-40px h-40px pulse pulse-white"
           id="kt_drawer_chat_toggle"
         >
-          <Icons.com012 />
+          <Icon name="Duotune/com012" />
           <span className="pulse-ring" />
         </div>
       </div>
@@ -87,7 +87,7 @@ function ContentHeader(props: ContentHeaderProps) {
         <div className="d-flex d-lg-none align-items-center ms-n2 me-2">
           {/* --begin::Aside mobile toggle--*/}
           <div className="btn btn-icon btn-active-icon-primary" id="kt_aside_toggle">
-            <Icons.abs015 />
+            <Icon name="Duotune/abs015" />
           </div>
           {/* --end::Aside mobile toggle--*/}
           {/* --begin::Logo--*/}

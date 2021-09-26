@@ -1,6 +1,8 @@
-import PageLoading from '@/components/PageLoading';
 import { history, loadCurrentuser } from 'umi';
+
 import type { CurrentUser } from './.umi/app/typings';
+
+import PageLoading from '@/components/PageLoading';
 
 // const isDev = process.env.NODE_ENV === 'development';
 
