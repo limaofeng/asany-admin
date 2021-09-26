@@ -41,7 +41,7 @@ type ActiveColor =
   | 'gray-900';
 
 export interface ButtonProps {
-  as?: 'button' | 'a';
+  as?: 'button' | 'a' | React.ComponentType<any>;
   id?: string;
   variant?: Variant;
   variantStyle?: VariantStyle;
@@ -55,6 +55,7 @@ export interface ButtonProps {
   children?: React.ReactNode;
   loading?: boolean;
   onClick?: (e: React.MouseEvent) => void;
+  [key: string]: any;
 }
 
 function Button({

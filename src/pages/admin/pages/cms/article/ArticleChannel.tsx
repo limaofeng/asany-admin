@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import Icon from '@asany/icons';
 import { useQuery } from '@apollo/client';
 import type { RouteComponentProps } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import { QUEERY_ARTICLE_CHANNEL } from './gql/article.gql';
 
@@ -78,12 +79,14 @@ function ArticleChannel(props: ArticleChannelProps) {
         </Navbar.Cover>
         <Navbar.Toolbar>
           <Button
+            as={Link}
             className="me-3"
             size="sm"
             variantStyle="background"
             variant="light"
             activeStyle="text"
             activeColor="primary"
+            to="/cms/articles/new"
           >
             新建信息
           </Button>

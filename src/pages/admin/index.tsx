@@ -5,6 +5,7 @@ import ArticleList from './pages/cms/article/ArticleList';
 import ArticleView from './pages/cms/article/ArticleView';
 import ArticleSidebar from './pages/cms/article/ArticleSidebar';
 import ArticleChannel from './pages/cms/article/ArticleChannel';
+import ArticleNew from './pages/cms/article/ArticleNew';
 
 @library({
   name: 'admin',
@@ -22,6 +23,8 @@ class Admin {
   ArticleSidebar = ArticleSidebar;
   @component({ name: 'cms.ArticleChannel' })
   ArticleChannel = ArticleChannel;
+  @component({ name: 'cms.ArticleNew' })
+  ArticleNew = ArticleNew;
 }
 
 export default new Admin();

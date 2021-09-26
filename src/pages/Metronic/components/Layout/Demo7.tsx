@@ -1,29 +1,24 @@
 import React, { useMemo } from 'react';
 
 import { useApp } from 'umi';
+import { getMatchMenu, transformRoute } from '@umijs/route-utils';
+import type { RouteComponentProps } from 'react-router';
+import type { Route } from '@umijs/route-utils/dist/types';
 
 import Aside from '../Aside';
 
 import { LayoutProvider, useLayoutSelector } from './LayoutContext';
+import getLayoutRenderConfig from './utils';
 
 import * as utils from '@/utils';
 
-// function CollapseDemo() {
-//   // {/*className="btn btn-primary"*/}
-//   const [collapsed, setCollapsed] = useState(false);
-//   return (
-//     <div className="py-2">
-//       <Button onClick={() => setCollapsed(!collapsed)}>Toggle colla11pse</Button>
-//       <Collapse in={collapsed}>
-//         <div>This is the toggle-able content!</div>
-//       </Collapse>
-//     </div>
-//   );
-// }
-
-type LayoutProps = {
+interface LayoutProps extends RouteComponentProps {
   children: React.ReactNode;
-};
+  /**
+   * 路由信息
+   */
+  route: Route;
+}
 
 function InternalLayout(props: LayoutProps) {
   const { children } = props;
@@ -44,7 +39,7 @@ function InternalLayout(props: LayoutProps) {
 }
 
 function LayoutWrapper(props: LayoutProps) {
-  const { children } = props;
+  const { children, location } = props;
 
   const { menus: sourceMenus } = useApp();
 
@@ -62,11 +57,22 @@ function LayoutWrapper(props: LayoutProps) {
     [sourceMenus],
   );
 
-  console.log('LayoutWrapper children', children);
+  const currentPathConfig = useMemo(() => {
+    const { menuData } = transformRoute(props?.route?.routes || [], undefined, undefined, true);
+    // 动态路由匹配
+    return getMatchMenu(location.pathname, menuData).pop();
+  }, [location?.pathname, props?.route?.routes]);
+
+  const layoutRestProps = useMemo(() => {
+    if (!currentPathConfig) {
+      return {};
+    }
+    return getLayoutRenderConfig(currentPathConfig as any);
+  }, [currentPathConfig]);
 
   return (
     <LayoutProvider state={{ aside: { menus, minimize: false } }}>
-      <InternalLayout>{children}</InternalLayout>
+      {layoutRestProps.pure ? children : <InternalLayout {...props}>{children}</InternalLayout>}
     </LayoutProvider>
   );
 }
