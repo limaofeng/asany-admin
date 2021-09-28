@@ -15,7 +15,7 @@ type Variant =
   | 'link'
   | 'default';
 
-type VariantStyle = 'light' | 'background' | 'dashed';
+type VariantStyle = 'light' | 'background' | 'dashed' | 'link';
 
 type ActiveStyle = 'text' | 'light';
 
@@ -40,14 +40,18 @@ type ActiveColor =
   | 'gray-800'
   | 'gray-900';
 
+type ButtonColor = ActiveColor;
 export interface ButtonProps {
   as?: 'button' | 'a' | React.ComponentType<any>;
   id?: string;
   variant?: Variant;
   variantStyle?: VariantStyle;
   dashed?: boolean;
+  icon?: React.ReactNode;
+  color?: ButtonColor;
   activeStyle?: ActiveStyle;
   activeColor?: ActiveColor;
+  flushed?: boolean;
   active?: boolean;
   size?: 'lg' | 'sm';
   className?: string;
@@ -61,8 +65,11 @@ export interface ButtonProps {
 function Button({
   as = 'a',
   size,
+  icon,
+  color,
   children,
   className,
+  flushed,
   loading,
   htmlType,
   variantStyle,
@@ -74,6 +81,9 @@ function Button({
   ...props
 }: ButtonProps) {
   const buttonStyle = useMemo(() => {
+    if (variantStyle == 'link') {
+      return 'btn-link';
+    }
     if (variantStyle == 'dashed') {
       return `btn-outline btn-outline-dashed btn-outline-${variant}`;
     }
@@ -86,6 +96,10 @@ function Button({
     return `btn-${variant}`;
   }, [variantStyle, variant]);
 
+  if (loading != null) {
+    props['data-kt-indicator'] = loading ? 'on' : 'off';
+  }
+
   return React.createElement(
     htmlType ? 'button' : as,
     {
@@ -93,16 +107,20 @@ function Button({
       onClick,
       type: htmlType,
       disabled: loading,
-      ['data-kt-indicator']: loading ? 'on' : 'off',
       className: classnames(
         'btn',
         buttonStyle,
         {
           active,
+          'btn-flush': flushed,
           [`btn-${size}`]: !!size,
+          [`btn-color-${color}`]: !!color,
+          'btn-color-muted': variantStyle == 'link' && !color,
           [`btn-active-${activeColor}`]: !!activeColor && !activeStyle,
           [`btn-active-light-${activeColor}`]: !!activeColor && activeStyle == 'light',
           [`btn-active-color-${activeColor}`]: !!activeColor && activeStyle == 'text',
+          'btn-icon': !!icon && React.Children.count(children) == 0,
+          ['d-inline-flex align-items-center']: !!icon && React.Children.count(children) > 0,
         },
         className,
       ),
@@ -113,7 +131,10 @@ function Button({
         {loading && <span className="spinner-border spinner-border-sm align-middle ms-2" />}
       </span>
     ) : (
-      children
+      <>
+        {icon}
+        {children}
+      </>
     ),
   );
 }

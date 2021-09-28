@@ -1,3 +1,7 @@
+import { useEffect, useRef } from 'react';
+
+import { isEqual } from 'lodash';
+
 export interface TreeOptions<T> {
   idKey: string;
   pidKey: string;
@@ -83,4 +87,21 @@ export function tree<T>(
   } finally {
     console.log('list -> tree 耗时', new Date().getTime() - start, 'ms');
   }
+}
+
+function deepCompareEquals(a: any, b: any) {
+  return isEqual(a, b);
+}
+
+function useDeepCompareMemoize(value: any) {
+  const ref = useRef();
+  if (!deepCompareEquals(value, ref.current)) {
+    ref.current = value;
+  }
+
+  return ref.current;
+}
+
+export function useDeepCompareEffect(effect: React.EffectCallback, dependencies?: Object) {
+  useEffect(effect, useDeepCompareMemoize(dependencies));
 }

@@ -33,7 +33,7 @@ module.exports = {
             pattern: '{.,..}/**/*.+(css|sass|less|scss|pcss|styl)',
             unnamed: true,
             group: 'unknown',
-            position: 'before',
+            position: 'after',
           },
         ],
         pathGroupsExcludedImportTypes: ['react'],

@@ -144,10 +144,20 @@ function SignInForm() {
         {/* --end::Link--*/}
       </div>
       {/* --begin::Heading--*/}
-      <Form.Item name="username" className="mb-10" label="账号">
+      <Form.Item
+        name="username"
+        className="mb-10"
+        labelClassName="fs-6 fw-bolder text-dark"
+        label="账号"
+      >
         <Input size="lg" solid />
       </Form.Item>
-      <Form.Item name="password" className="mb-10" label="密码">
+      <Form.Item
+        name="password"
+        className="mb-10"
+        labelClassName="fs-6 fw-bolder text-dark"
+        label="密码"
+      >
         <Input.Password size="lg" solid />
       </Form.Item>
       {/* --begin::Actions--*/}

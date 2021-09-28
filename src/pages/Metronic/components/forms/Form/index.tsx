@@ -42,14 +42,15 @@ export type FormItemProps = {
   name: string;
   label?: string;
   className?: string;
+  labelClassName?: string;
   children: React.ReactNode;
 };
 
 Form.Item = (props: FormItemProps) => {
-  const { className, name, label, children } = props;
+  const { className, name, label, labelClassName, children } = props;
   return (
     <div className={classnames('fv-row', className)}>
-      <label className="form-label fs-6 fw-bolder text-dark">{label}</label>
+      <label className={classnames('form-label', labelClassName)}>{label}</label>
       <AntForm.Item name={name} noStyle={true}>
         {children}
       </AntForm.Item>

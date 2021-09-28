@@ -47,9 +47,11 @@
   ],
   "dependencies": {
     "@ant-design/icons": "^4.5.0",
-    "@asany/editor": "^0.2.7",
+    "@asany/editor": "^0.2.8",
     "@asany/icons": "^0.1.15",
     "@asany/sortable": "^0.1.22",
+    "@ckeditor/ckeditor5-build-balloon-block": "^29.2.0",
+    "@ckeditor/ckeditor5-react": "^3.0.2",
     "@umijs/route-utils": "^1.0.36",
     "antd": "^4.14.0",
     "bootstrap": "^5.1.1",
@@ -77,7 +79,7 @@
   },
   "devDependencies": {
     "@asany/umi-plugin-apollo": "^0.1.5",
-    "@asany/umi-plugin-app": "^0.1.18",
+    "@asany/umi-plugin-app": "^0.1.19",
     "@types/express": "^4.17.0",
     "@types/history": "^4.7.2",
     "@types/jest": "^26.0.0",
