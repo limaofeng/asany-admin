@@ -106,7 +106,7 @@ function SettingsMenu(props: SettingsMenuProps, ref: React.ForwardedRef<ISetting
               <Icon name="CloseOutlined" />
             </button>
           </div>
-          <div className="settings-menu-content">
+          <div className="settings-menu-content relative w-100 vh-100 overflow-x-hidden hover-scroll-overlay-y px-5 z-0">
             {content || children}
             {!!extras.length && (
               <ul className="nav-list-block">

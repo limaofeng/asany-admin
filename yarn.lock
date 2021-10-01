@@ -2304,6 +2304,11 @@
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
+"@types/autosize@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/@types/autosize/-/autosize-4.0.0.tgz#36a7659d99c7672957b2d1064c75f7c460efd074"
+  integrity sha512-FIEyxf173EjECl5xxib+pCLzmyxGJKyb971QJD8xftrEUdmb5U4K4Ym8H0V/TPT4ZEwtoQC1oC6o0enVvVelKQ==
+
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.16"
   resolved "https://registry.npmjs.org/@types/babel__core/-/babel__core-7.1.16.tgz#bc12c74b7d65e82d29876b5d0baf5c625ac58702"
@@ -2351,6 +2356,14 @@
   integrity sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==
   dependencies:
     "@types/node" "*"
+
+"@types/daterangepicker@^3.1.4":
+  version "3.1.4"
+  resolved "https://registry.npmjs.org/@types/daterangepicker/-/daterangepicker-3.1.4.tgz#e127254e685c3db52fe41cffd824daaa0594ce68"
+  integrity sha512-j6weaJGxXiNlN6aXmDjahFHKgZEaDBaVdqtYZb0fqmxw6fIuyXwqgnMK6nDp9yTHAOQIbBucUoNT/UWnehb5nA==
+  dependencies:
+    "@types/jquery" "*"
+    moment ">=2.14.0"
 
 "@types/eslint@^7.2.13":
   version "7.28.0"
@@ -2449,6 +2462,13 @@
     jest-diff "^26.0.0"
     pretty-format "^26.0.0"
 
+"@types/jquery@*", "@types/jquery@^3.5.6":
+  version "3.5.6"
+  resolved "https://registry.npmjs.org/@types/jquery/-/jquery-3.5.6.tgz#97ac8e36dccd8ad8ed3f3f3b48933614d9fd8cf0"
+  integrity sha512-SmgCQRzGPId4MZQKDj9Hqc6kSXFNWZFHpELkyK8AQhf8Zr6HKfCzFv9ZC1Fv3FyQttJZOlap3qYb12h61iZAIg==
+  dependencies:
+    "@types/sizzle" "*"
+
 "@types/js-cookie@^2.2.6":
   version "2.2.7"
   resolved "https://registry.npmjs.org/@types/js-cookie/-/js-cookie-2.2.7.tgz#226a9e31680835a6188e887f3988e60c04d3f6a3"
@@ -2492,6 +2512,13 @@
   version "1.2.2"
   resolved "https://registry.npmjs.org/@types/minimist/-/minimist-1.2.2.tgz#ee771e2ba4b3dc5b372935d549fd9617bf345b8c"
   integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
+
+"@types/moment@^2.13.0":
+  version "2.13.0"
+  resolved "https://registry.npmjs.org/@types/moment/-/moment-2.13.0.tgz#604ebd189bc3bc34a1548689404e61a2a4aac896"
+  integrity sha1-YE69GJvDvDShVIaJQE5hoqSqyJY=
+  dependencies:
+    moment "*"
 
 "@types/node@*":
   version "16.9.2"
@@ -2641,6 +2668,13 @@
   resolved "https://registry.npmjs.org/@types/scheduler/-/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
   integrity sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==
 
+"@types/select2@^4.0.54":
+  version "4.0.54"
+  resolved "https://registry.npmjs.org/@types/select2/-/select2-4.0.54.tgz#8305e519c16ee01a3e818894bec3eec88966a3c6"
+  integrity sha512-xq8c3zsKktym2b9XbDLUWBDyX0WyWjKzeFsDQHkM9p6NfxJza4g2Ud1bheTKNXpHNyVPUrfGwDEMN7JBe3gQbw==
+  dependencies:
+    "@types/jquery" "*"
+
 "@types/serve-static@*":
   version "1.13.10"
   resolved "https://registry.npmjs.org/@types/serve-static/-/serve-static-1.13.10.tgz#f5e0ce8797d2d7cc5ebeda48a52c96c4fa47a8d9"
@@ -2648,6 +2682,11 @@
   dependencies:
     "@types/mime" "^1"
     "@types/node" "*"
+
+"@types/sizzle@*":
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/@types/sizzle/-/sizzle-2.3.3.tgz#ff5e2f1902969d305225a047c8a0fd5c915cebef"
+  integrity sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -3721,6 +3760,11 @@ async-validator@^3.0.3:
   resolved "https://registry.npmjs.org/async-validator/-/async-validator-3.5.2.tgz#68e866a96824e8b2694ff7a831c1a25c44d5e500"
   integrity sha512-8eLCg00W9pIRZSB781UUX/H6Oskmm8xloZfr09lz5bikRpBVDlJ3hRVuxxP1SxcwsEYfJ4IU8Q19Y8/893r3rQ==
 
+async-validator@^4.0.2:
+  version "4.0.3"
+  resolved "https://registry.npmjs.org/async-validator/-/async-validator-4.0.3.tgz#c8ecd6b28fc8e18b14be4ec7c704641f999d377d"
+  integrity sha512-LVoIbJNHPKsO7FMLamo88uxdrvayGkF3vLTMTeiN3CqAbP3qSafLRc6yx3Sq9lHkiEOLNpoA2jwwnfGDdu1SMQ==
+
 async@^2.6.1:
   version "2.6.3"
   resolved "https://registry.npmjs.org/async/-/async-2.6.3.tgz#d72625e2344a3656e3a3ad4fa749fa83299d82ff"
@@ -3750,6 +3794,11 @@ autoprefixer@^9.6.1, autoprefixer@^9.8.6:
     num2fraction "^1.2.2"
     postcss "^7.0.32"
     postcss-value-parser "^4.1.0"
+
+autosize@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.npmjs.org/autosize/-/autosize-5.0.1.tgz#ed269b0fa9b7eb47627048a1bb3299e99e003a0f"
+  integrity sha512-UIWUlE4TOVPNNj2jjrU39wI4hEYbneUypEqcyRmRFIx5CC2gNdg3rQr+Zh7/3h6egbBvm33TDQjNQKtj9Tk1HA==
 
 aws-sign2@~0.7.0:
   version "0.7.0"
@@ -5244,6 +5293,14 @@ date-fns@2.x:
   version "2.24.0"
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.24.0.tgz#7d86dc0d93c87b76b63d213b4413337cfd1c105d"
   integrity sha512-6ujwvwgPID6zbI0o7UbURi2vlLDR9uP26+tW6Lg+Ji3w7dd0i3DOcjcClLjLPranT60SSEFBwdSyYwn/ZkPIuw==
+
+daterangepicker@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/daterangepicker/-/daterangepicker-3.1.0.tgz#718d606614331df3e774c9aba82ccd8838d45da1"
+  integrity sha512-DxWXvvPq4srWLCqFugqSV+6CBt/CvQ0dnpXhQ3gl0autcIDAruG1PuGG3gC7yPRNytAD1oU1AcUOzaYhOawhTw==
+  dependencies:
+    jquery ">=1.10"
+    moment "^2.9.0"
 
 dayjs@1.x:
   version "1.10.7"
@@ -8583,6 +8640,11 @@ joycon@^2.2.5:
   resolved "https://registry.npmjs.org/joycon/-/joycon-2.2.5.tgz#8d4cf4cbb2544d7b7583c216fcdfec19f6be1615"
   integrity sha512-YqvUxoOcVPnCp0VU1/56f+iKSdvIRJYPznH22BdXV3xMk75SFXhWeJkZ8C9XxUWt1b5x2X1SxuFygW1U0FmkEQ==
 
+jquery@>=1.10, jquery@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.npmjs.org/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
+  integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
+
 js-cookie@^2.2.1:
   version "2.2.1"
   resolved "https://registry.npmjs.org/js-cookie/-/js-cookie-2.2.1.tgz#69e106dc5d5806894562902aa5baec3744e9b2b8"
@@ -9457,7 +9519,7 @@ mockjs@^1.0.1-beta3:
   dependencies:
     commander "*"
 
-moment@^2.24.0, moment@^2.25.3, moment@^2.29.1:
+moment@*, moment@>=2.14.0, moment@^2.24.0, moment@^2.25.3, moment@^2.29.1, moment@^2.9.0:
   version "2.29.1"
   resolved "https://registry.npmjs.org/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
@@ -11198,6 +11260,15 @@ rc-dropdown@^3.2.0, rc-dropdown@~3.2.0:
     classnames "^2.2.6"
     rc-trigger "^5.0.4"
 
+rc-field-form@^1.21.2:
+  version "1.21.2"
+  resolved "https://registry.npmjs.org/rc-field-form/-/rc-field-form-1.21.2.tgz#85bda1ee006ae9f1d146e1000337c69b4bb6d101"
+  integrity sha512-LR/bURt/Tf5g39mb0wtMtQuWn42d/7kEzpzlC5fNC7yaRVmLTtlPP4sBBlaViETM9uZQKLoaB0Pt9Mubhm9gow==
+  dependencies:
+    "@babel/runtime" "^7.8.4"
+    async-validator "^4.0.2"
+    rc-util "^5.8.0"
+
 rc-field-form@~1.20.0:
   version "1.20.1"
   resolved "https://registry.npmjs.org/rc-field-form/-/rc-field-form-1.20.1.tgz#d1c51888107cf075b42704b7b575bef84c359291"
@@ -12700,6 +12771,11 @@ seamless-immutable@^7.1.3:
   version "7.1.4"
   resolved "https://registry.npmjs.org/seamless-immutable/-/seamless-immutable-7.1.4.tgz#6e9536def083ddc4dea0207d722e0e80d0f372f8"
   integrity sha512-XiUO1QP4ki4E2PHegiGAlu6r82o5A+6tRh7IkGGTVg/h+UoeX4nFBeCGPOhb4CYjvkqsfm/TUtvOMYC1xmV30A==
+
+select2@^4.1.0-rc.0:
+  version "4.1.0-rc.0"
+  resolved "https://registry.npmjs.org/select2/-/select2-4.1.0-rc.0.tgz#ba3cd3901dda0155e1c0219ab41b74ba51ea22d8"
+  integrity sha512-Hr9TdhyHCZUtwznEH2CBf7967mEM0idtJ5nMtjvk3Up5tPukOLXbHUNmh10oRfeNIhj+3GD3niu+g6sVK+gK0A==
 
 selecto@~1.13.0:
   version "1.13.0"

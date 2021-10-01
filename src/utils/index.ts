@@ -12,7 +12,7 @@ export interface TreeOptions<T> {
 }
 
 export const sleep = (time: number) =>
-  new Promise((resolve) => {
+  new Promise<number>((resolve) => {
     setTimeout(() => {
       resolve(0);
     }, time);
@@ -98,10 +98,10 @@ function useDeepCompareMemoize(value: any) {
   if (!deepCompareEquals(value, ref.current)) {
     ref.current = value;
   }
-
   return ref.current;
 }
 
-export function useDeepCompareEffect(effect: React.EffectCallback, dependencies?: Object) {
+export function useDeepCompareEffect(effect: React.EffectCallback, dependencies?: any) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(effect, useDeepCompareMemoize(dependencies));
 }

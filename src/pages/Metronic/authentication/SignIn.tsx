@@ -184,7 +184,10 @@ function SignInForm() {
 
 function SignIn() {
   return (
-    <div className="d-flex flex-column flex-lg-row flex-column-fluid">
+    <div
+      style={{ backgroundColor: '#fff' }}
+      className="d-flex flex-column flex-lg-row flex-column-fluid"
+    >
       <Aside />
       <div className="d-flex flex-column flex-lg-row-fluid py-10">
         {/* --begin::Content--*/}

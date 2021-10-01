@@ -49,6 +49,7 @@ export interface ButtonProps {
   dashed?: boolean;
   icon?: React.ReactNode;
   color?: ButtonColor;
+  textColor?: ButtonColor;
   activeStyle?: ActiveStyle;
   activeColor?: ActiveColor;
   flushed?: boolean;
@@ -73,6 +74,7 @@ function Button({
   loading,
   htmlType,
   variantStyle,
+  textColor,
   variant = variantStyle == 'dashed' ? 'default' : 'primary',
   active,
   activeStyle,
@@ -115,6 +117,7 @@ function Button({
           'btn-flush': flushed,
           [`btn-${size}`]: !!size,
           [`btn-color-${color}`]: !!color,
+          [`btn-color-text-${textColor}`]: !!textColor,
           'btn-color-muted': variantStyle == 'link' && !color,
           [`btn-active-${activeColor}`]: !!activeColor && !activeStyle,
           [`btn-active-light-${activeColor}`]: !!activeColor && activeStyle == 'light',

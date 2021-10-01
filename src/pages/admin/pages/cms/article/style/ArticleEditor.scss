@@ -19,8 +19,11 @@
 
     .settings-menu-header {
       position: fixed;
+      z-index: 1;
       display: flex;
+      width: 100%;
       padding: 36px 24px 24px;
+      background: #fff;
     }
   }
 }
@@ -88,8 +91,16 @@
 
     .ck.ck-content {
       color: #394047;
+      font-size: 1.24rem;
     }
-
-
+  }
+  &-wordcount-container {
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 3px;
   }
 }
