@@ -74,6 +74,7 @@
     "react-dnd-html5-backend": "^14.0.1",
     "react-dom": "^17.0.0",
     "react-helmet-async": "^1.0.4",
+    "react-use": "^17.3.1",
     "select2": "^4.1.0-rc.0",
     "sunmao": "^0.2.8",
     "sunmao-editor": "^0.1.2",

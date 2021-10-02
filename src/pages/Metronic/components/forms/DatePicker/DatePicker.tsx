@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import $ from 'jquery';
 import 'daterangepicker';
 import type { Moment } from 'moment';
+import moment from 'moment';
 
 import Input from '../Input';
 
@@ -10,7 +11,7 @@ interface DatePickerProps {
   size?: 'sm' | 'lg';
   placeholder?: string;
   solid?: boolean;
-  value?: string;
+  value?: string | Moment;
   autoComplete?: boolean;
   bordered?: boolean;
   autoApply?: boolean;
@@ -45,7 +46,7 @@ const LOCALE = {
 };
 
 function DatePicker(props: DatePickerProps) {
-  const { autoApply = true, format = 'YYYY-MM-DD', onChange, ...inputProps } = props;
+  const { value = '', autoApply = true, format = 'YYYY-MM-DD', onChange, ...inputProps } = props;
   const ref = useRef<HTMLInputElement>(null);
 
   const handleChange = useCallback(
@@ -53,7 +54,7 @@ function DatePicker(props: DatePickerProps) {
       onChange && onChange(date, date.format(format));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [format],
+    [],
   );
 
   useEffect(() => {
@@ -69,9 +70,45 @@ function DatePicker(props: DatePickerProps) {
     return () => {
       (picker.data('daterangepicker') as any)?.remove();
     };
-  }, [autoApply, format, handleChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  return <Input ref={ref} {...inputProps} />;
+  useEffect(() => {
+    $(ref.current!).val(toDateString(value, format));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      return;
+    }
+    const picker: any = $(ref.current!).data('daterangepicker');
+    if (!picker) {
+      return;
+    }
+    if (!picker.isShowing) {
+      picker.show();
+    }
+  }, []);
+
+  return (
+    <Input
+      ref={ref}
+      {...inputProps}
+      onKeyDown={handleKeyDown}
+      defaultValue={toDateString(value, format)}
+    />
+  );
+}
+
+function toDateString(value: string | Moment, format: string) {
+  if (typeof value === 'string') {
+    if (!!value) {
+      return moment(value).format(format);
+    }
+    return '';
+  }
+  return value.format(format);
 }
 
 export default DatePicker;

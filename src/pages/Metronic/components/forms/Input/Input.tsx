@@ -8,6 +8,7 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
   placeholder?: string;
   solid?: boolean;
   value?: string;
+  defaultValue?: string;
   type?: 'text' | 'password';
   autoComplete?: boolean;
   bordered?: boolean;
@@ -20,7 +21,8 @@ function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | nul
     bordered = true,
     autoComplete = false,
     size,
-    value = '',
+    defaultValue,
+    value = defaultValue == undefined ? '' : undefined,
     onChange,
     ...otherProps
   } = props;
@@ -34,6 +36,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | nul
         'form-control-borderless': !bordered,
       })}
       value={value}
+      defaultValue={defaultValue}
       onChange={onChange}
       type="text"
       autoComplete={autoComplete ? 'off' : 'on'}
