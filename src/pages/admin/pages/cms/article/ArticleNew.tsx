@@ -4,11 +4,12 @@ import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 import classnames from 'classnames';
 import { useHoverDirty } from 'react-use';
+import NavigationPrompt from 'react-router-navigation-prompt';
 
 import { delayUpdate } from './utils';
 import ArticleContentEditor from './components/ArticleContentEditor';
 
-import { Button, DatePicker, Form, Input, Select } from '@/pages/Metronic/components';
+import { Button, DatePicker, Form, Input, Modal, Select } from '@/pages/Metronic/components';
 import SettingsMenu from '@/components/SettingsMenu';
 
 import './style/ArticleEditor.scss';
@@ -98,6 +99,24 @@ function ArticleNew(props: ArticleNewProps) {
   const titleContainer = useRef<HTMLDivElement>(null);
 
   const [settingsMenuCollapsed, setSettingsMenuCollapsed] = useState(false);
+
+  // useEffect(() => {
+  //   history.listen((location) => {
+  //     alert(1);
+  //   });
+  //   const unblock = history.block((location, action) => {
+  //     if (true) {
+  //       return window.confirm('Navigate Back?');
+  //     }
+  //     return true;
+  //   });
+  //   return () => {
+  //     alert(2);
+  //     unblock();
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
   const handleBack = useCallback(() => {
     if (!!history.length) {
       return history.goBack();
@@ -156,6 +175,22 @@ function ArticleNew(props: ArticleNewProps) {
 
   return (
     <div className="flex flex-row modal-fullscreen art-main">
+      <NavigationPrompt when={true}>
+        {({ onConfirm, onCancel }) => (
+          <Modal
+            centered
+            visible={true}
+            onCancel={onCancel}
+            cancelText="留下"
+            onOk={onConfirm}
+            okText="离开"
+            title="您确定要离开此页面吗？"
+            dialogClassName="mw-650px"
+          >
+            嘿！看起来您正在编写某些内容，但尚未保存，是否在离开前先保存您的修改
+          </Modal>
+        )}
+      </NavigationPrompt>
       <div className="art-editor">
         <div className="art-editor-header">
           <div className="flex items-center pe-auto">
@@ -188,7 +223,7 @@ function ArticleNew(props: ArticleNewProps) {
         </div>
         <div
           ref={container}
-          className="art-editor-body relative w-100 vh-100 overflow-x-hidden hover-scroll-overlay-y px-5 z-0"
+          className="art-editor-body relative w-100 vh-100 overflow-x-hidden hover-scroll-overlay-y px-5"
         >
           <Form initialValues={{ url: '123' }} onValuesChange={handleChange} component={false}>
             <div ref={coverContainer} className="art-editor-feature-image-container">

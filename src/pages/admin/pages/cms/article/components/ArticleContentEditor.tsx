@@ -15,6 +15,9 @@ function ArticleContentEditor(props: ArticleContentEditorProps, editorRef: any) 
   const { container, value, onChange } = props;
 
   const handleReady = useCallback((editor: any) => {
+    if (!editor?.ui) {
+      return;
+    }
     // 解决 BalloonBlockEditor 浮标滚动 BUG
     const body = editor.ui.view.body._bodyCollectionContainer;
     editor.ui.view.element = container.current;

@@ -104,7 +104,7 @@ function SignInForm() {
           if (!history) return;
           const { query } = history.location as any;
           const { redirect } = query as { redirect: string };
-          history.push(redirect || '/');
+          history.replace(redirect || '/');
           return;
         }
       } catch (e) {
