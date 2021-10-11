@@ -42,19 +42,19 @@ type ModalFooterProps = {
 
 function ModalFooter(props: ModalFooterProps) {
   const {
-    cancelText = '取消',
+    cancelText = '取 消',
     cancelButtonProps,
     onCancel,
-    okText = '确定',
+    okText = '确 定',
     okButtonProps,
     onOk,
   } = props;
   return (
     <BsModal.Footer>
-      <Button type="light" {...cancelButtonProps} onClick={onCancel}>
+      <Button variant="light" {...cancelButtonProps} onClick={onCancel}>
         {cancelText}
       </Button>
-      <Button type="primary" {...okButtonProps} onClick={onOk}>
+      <Button variant="primary" {...okButtonProps} onClick={onOk}>
         {okText}
       </Button>
     </BsModal.Footer>
@@ -86,9 +86,7 @@ function Modal(props: ModalProps) {
           </div>
         )}
       </div>
-      <BsModal.Body className={classnames('scroll-y mx-5 mx-xl-18 pt-0 pb-15', bodyClassName)}>
-        {children}
-      </BsModal.Body>
+      <BsModal.Body className={classnames('scroll-y', bodyClassName)}>{children}</BsModal.Body>
       {footer && React.cloneElement(footer as React.ReactElement, { ...footerProps, onCancel })}
     </BsModal>
   );

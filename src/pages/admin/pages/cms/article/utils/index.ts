@@ -11,7 +11,7 @@ export const diff = (lvalue: any, rvalue: any) => {
   return zipObject(keys, values);
 };
 
-export type DelayUpdateCallback = (values: any, diffs: any) => void;
+export type DelayUpdateCallback = (values: any, diffs: any) => void | Promise<void>;
 
 type DelayUpdateOptions = {
   equal?: (l: any, r: any) => boolean;

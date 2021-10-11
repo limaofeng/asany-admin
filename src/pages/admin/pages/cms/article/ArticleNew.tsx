@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useReducer, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
@@ -8,28 +8,47 @@ import NavigationPrompt from 'react-router-navigation-prompt';
 
 import { delayUpdate } from './utils';
 import ArticleContentEditor from './components/ArticleContentEditor';
+import NavigationPromptModal from './components/NavigationPromptModal';
 
-import { Button, DatePicker, Form, Input, Modal, Select } from '@/pages/Metronic/components';
+import { Button, DatePicker, Form, Input, Select } from '@/pages/Metronic/components';
 import SettingsMenu from '@/components/SettingsMenu';
+import { delay } from '@/utils';
 
 import './style/ArticleEditor.scss';
 
 type ArticleNewProps = RouteComponentProps;
 
-function ArticleSettings() {
+type IArticleStatus = 'New' | 'Draft' | 'Published';
+type IArticleSavedStatus = 'Saving' | 'NotSaved' | 'Saved';
+
+type IArticle = {
+  slug?: string;
+  cover?: string;
+  title?: string;
+  summary?: string;
+  content?: string;
+  access?: string;
+  author?: string;
+  publishedAt?: string;
+};
+
+type ArticleSettingsProps = {
+  onChange: (values: IArticle) => void;
+};
+
+function ArticleSettings({ onChange }: ArticleSettingsProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSave = useCallback(
     delayUpdate(
       {},
-      (value: any, diff: any) => {
-        console.log(`执行更新`, value, diff);
+      (_: any, diff: any) => {
+        onChange(diff);
       },
       { delay: 1000, onlyDiff: true },
     ),
     [],
   );
   const handleChange = useCallback((_, values) => {
-    console.log(values);
     handleSave(values);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -78,6 +97,27 @@ function ArticleSettings() {
   );
 }
 
+function ArticleStatus({ value, saved }: { value: IArticleStatus; saved: IArticleSavedStatus }) {
+  let text = '草稿 - 已保存';
+  if (saved === 'Saving') {
+    text = '保存中...';
+  } else {
+    if (value === 'New') {
+      text = '新的';
+    }
+    if (value === 'Draft') {
+      text = '草稿' + (saved != 'NotSaved' ? ' - 已保存' : '');
+    }
+  }
+  return <span className="text-gray-600 ls-2">{text}</span>;
+}
+
+type ArticleState = {
+  status: IArticleStatus;
+  saved: IArticleSavedStatus;
+  data?: IArticle;
+};
+
 /**
  * 设置光标位置
  * @returns selection
@@ -98,24 +138,27 @@ function ArticleNew(props: ArticleNewProps) {
   const coverContainer = useRef<HTMLDivElement>(null);
   const titleContainer = useRef<HTMLDivElement>(null);
 
+  const [, forceRender] = useReducer((s) => s + 1, 0);
+  const stateRef = useRef<ArticleState>({ status: 'New', saved: 'Saved' });
   const [settingsMenuCollapsed, setSettingsMenuCollapsed] = useState(false);
 
-  // useEffect(() => {
-  //   history.listen((location) => {
-  //     alert(1);
-  //   });
-  //   const unblock = history.block((location, action) => {
-  //     if (true) {
-  //       return window.confirm('Navigate Back?');
-  //     }
-  //     return true;
-  //   });
-  //   return () => {
-  //     alert(2);
-  //     unblock();
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleSave = useCallback(
+    delayUpdate(
+      {},
+      async (_: any, values: any) => {
+        const state = stateRef.current;
+        state.saved = 'Saving';
+        forceRender();
+        await delay(Promise.resolve({ ...state.data, ...values }), 350);
+        state.saved = 'Saved';
+        state.status = 'Draft';
+        forceRender();
+      },
+      { delay: 1000, onlyDiff: true },
+    ),
+    [],
+  );
 
   const handleBack = useCallback(() => {
     if (!!history.length) {
@@ -123,6 +166,20 @@ function ArticleNew(props: ArticleNewProps) {
     }
     history.push('/cms/channels');
   }, [history]);
+
+  const handleSettingsData = useCallback(async (values) => {
+    const state = stateRef.current;
+    if (state.status == 'New') {
+      state.saved = 'Saving';
+      forceRender();
+      state.data = await delay(Promise.resolve({ ...state.data, ...values }), 350);
+      state.saved = 'NotSaved';
+      forceRender();
+    } else {
+      handleSave(values);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSettingsMenuToggle = useCallback(() => {
     setSettingsMenuCollapsed((collapsed) => !collapsed);
@@ -166,7 +223,11 @@ function ArticleNew(props: ArticleNewProps) {
   }, []);
 
   const handleChange = useCallback((_, values) => {
-    console.log('>>', values);
+    const state = stateRef.current;
+    state.saved = 'NotSaved';
+    forceRender();
+    handleSave(values);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isHoveringCover = useHoverDirty(coverContainer);
@@ -175,20 +236,9 @@ function ArticleNew(props: ArticleNewProps) {
 
   return (
     <div className="flex flex-row modal-fullscreen art-main">
-      <NavigationPrompt when={true}>
+      <NavigationPrompt disableNative when={stateRef.current.saved == 'NotSaved'}>
         {({ onConfirm, onCancel }) => (
-          <Modal
-            centered
-            visible={true}
-            onCancel={onCancel}
-            cancelText="留下"
-            onOk={onConfirm}
-            okText="离开"
-            title="您确定要离开此页面吗？"
-            dialogClassName="mw-650px"
-          >
-            嘿！看起来您正在编写某些内容，但尚未保存，是否在离开前先保存您的修改
-          </Modal>
+          <NavigationPromptModal onConfirm={onConfirm} onCancel={onCancel} />
         )}
       </NavigationPrompt>
       <div className="art-editor">
@@ -201,23 +251,27 @@ function ArticleNew(props: ArticleNewProps) {
             >
               文章
             </Button>
-            <div className="art-editor-status px-4">
-              <span className="text-gray-600 ls-2">草稿 - 已保存</span>
+            <div className="art-editor-status px-6">
+              <ArticleStatus value={stateRef.current.status} saved={stateRef.current.saved} />
             </div>
           </div>
           <div className="flex">
-            <Button
-              variant="white"
-              color="primary"
-              activeColor="primary"
-              activeStyle="text"
-              className="me-3"
-            >
-              预览
-            </Button>
-            <Button variant="white" className={classnames({ 'me-3': settingsMenuCollapsed })}>
-              发布
-            </Button>
+            {stateRef.current.status !== 'New' && (
+              <>
+                <Button
+                  variant="white"
+                  color="primary"
+                  activeColor="primary"
+                  activeStyle="text"
+                  className="me-3"
+                >
+                  预览
+                </Button>
+                <Button variant="white" className={classnames({ 'me-3': settingsMenuCollapsed })}>
+                  发布
+                </Button>
+              </>
+            )}
             {settingsMenuCollapsed && <div className="settings-menu-toggle-spacer" />}
           </div>
         </div>
@@ -265,7 +319,12 @@ function ArticleNew(props: ArticleNewProps) {
           <Icon name="Duotune/art008" className="svg-icon-4 px-2 py-2" />
         </div>
       </div>
-      {!settingsMenuCollapsed && <SettingsMenu title="文章设置" content={<ArticleSettings />} />}
+      {!settingsMenuCollapsed && (
+        <SettingsMenu
+          title="文章设置"
+          content={<ArticleSettings onChange={handleSettingsData} />}
+        />
+      )}
       <Button
         className="settings-menu-toggle"
         variant="white"

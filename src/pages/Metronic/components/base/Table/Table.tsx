@@ -1,3 +1,5 @@
+import { useCallback } from 'react';
+
 import classnames from 'classnames';
 import { Table as BsTable } from 'react-bootstrap';
 
@@ -29,6 +31,7 @@ type RowSelection = {
 };
 
 interface TableProps {
+  rowKey?: string | ((record: any) => string);
   rowSelection?: RowSelection;
   dataSource?: any[];
   columns: TableColumn[];
@@ -60,7 +63,16 @@ function buildRenderCol(data: any) {
 }
 
 function Table(props: TableProps) {
-  const { rowSelection, columns, dataSource, pagination } = props;
+  const { rowSelection, columns, dataSource, pagination, rowKey = 'key' } = props;
+
+  const renderRowKey = useCallback((record: any) => {
+    if (typeof rowKey == 'function') {
+      return rowKey(record);
+    }
+    return record[rowKey];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="dataTables_wrapper dt-bootstrap4 no-footer">
       <BsTable
@@ -91,12 +103,13 @@ function Table(props: TableProps) {
           </tr>
         </thead>
         <tbody className="fw-bold text-gray-600">
-          {(dataSource || []).map((data: any) => {
+          {(dataSource || []).map((data: any, index) => {
             const randerCol = buildRenderCol(data);
             return (
-              <tr>
+              // eslint-disable-next-line react/no-array-index-key
+              <tr key={`${renderRowKey(data)}-${index}`}>
                 {rowSelection && (
-                  <td>
+                  <td key="row-select">
                     <div className="form-check form-check-sm form-check-custom form-check-solid">
                       <input className="form-check-input" type="checkbox" value="1" />
                     </div>

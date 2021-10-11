@@ -270,6 +270,7 @@ function ArticleChannel(props: ArticleChannelProps) {
         visible={showNewUserModal}
         onCancel={handleCloseShowNewUserModal}
         dialogClassName="mw-650px"
+        bodyClassName="mx-5 mx-xl-18 pt-0 pb-15"
       >
         {/*--begin::Heading--*/}
         <div className="text-center mb-13">
