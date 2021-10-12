@@ -45,7 +45,6 @@ function ArticleSidebar() {
   const [openKeys, setOpenKeys] = useState<string[]>(channels.map((item) => item.id));
 
   const handleSelect = useCallback((event: SelectEvent) => {
-    console.log('handleSelect', event);
     if (/^[\d]+$/.test(event.key)) {
       history.push(`/cms/channels/${event.key}`);
     }

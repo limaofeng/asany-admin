@@ -67,7 +67,7 @@
     "overlayscrollbars-react": "^0.2.3",
     "rc-field-form": "^1.21.2",
     "react": "^17.0.0",
-    "react-bootstrap": "^2.0.0-beta.6",
+    "react-bootstrap": "2.0.0-rc.0",
     "react-countup": "^6.0.0",
     "react-dev-inspector": "^1.1.1",
     "react-dnd": "^14.0.3",

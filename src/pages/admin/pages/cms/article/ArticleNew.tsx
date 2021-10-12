@@ -3,12 +3,14 @@ import { useCallback, useReducer, useRef, useState } from 'react';
 import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 import classnames from 'classnames';
+import { useMutation } from '@apollo/client';
 import { useHoverDirty } from 'react-use';
 import NavigationPrompt from 'react-router-navigation-prompt';
 
 import { delayUpdate } from './utils';
 import ArticleContentEditor from './components/ArticleContentEditor';
 import NavigationPromptModal from './components/NavigationPromptModal';
+import { MUTATE_CREATE_ARTICLE } from './gql/article.gql';
 
 import { Button, DatePicker, Form, Input, Select } from '@/pages/Metronic/components';
 import SettingsMenu from '@/components/SettingsMenu';
@@ -33,10 +35,11 @@ type IArticle = {
 };
 
 type ArticleSettingsProps = {
+  isNew: boolean;
   onChange: (values: IArticle) => void;
 };
 
-function ArticleSettings({ onChange }: ArticleSettingsProps) {
+function ArticleSettings({ isNew, onChange }: ArticleSettingsProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSave = useCallback(
     delayUpdate(
@@ -84,15 +87,17 @@ function ArticleSettings({ onChange }: ArticleSettingsProps) {
           <Input size="sm" />
         </Form.Item>
       </Form>
-      <Button
-        icon={<Icon name="Duotune/arr015" className="svg-icon-2" />}
-        activeColor="danger"
-        variantStyle="light"
-        variant="danger"
-        className="mb-10"
-      >
-        删除文章
-      </Button>
+      {!isNew && (
+        <Button
+          icon={<Icon name="Duotune/arr015" className="svg-icon-2" />}
+          activeColor="danger"
+          variantStyle="light"
+          variant="danger"
+          className="mb-10"
+        >
+          删除文章
+        </Button>
+      )}
     </div>
   );
 }
@@ -142,6 +147,13 @@ function ArticleNew(props: ArticleNewProps) {
   const stateRef = useRef<ArticleState>({ status: 'New', saved: 'Saved' });
   const [settingsMenuCollapsed, setSettingsMenuCollapsed] = useState(false);
 
+  const [createArticle] = useMutation(MUTATE_CREATE_ARTICLE, {
+    variables: {
+      category: 'news',
+    },
+    fetchPolicy: 'no-cache',
+  });
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSave = useCallback(
     delayUpdate(
@@ -150,6 +162,7 @@ function ArticleNew(props: ArticleNewProps) {
         const state = stateRef.current;
         state.saved = 'Saving';
         forceRender();
+        console.log(createArticle);
         await delay(Promise.resolve({ ...state.data, ...values }), 350);
         state.saved = 'Saved';
         state.status = 'Draft';
@@ -322,7 +335,12 @@ function ArticleNew(props: ArticleNewProps) {
       {!settingsMenuCollapsed && (
         <SettingsMenu
           title="文章设置"
-          content={<ArticleSettings onChange={handleSettingsData} />}
+          content={
+            <ArticleSettings
+              isNew={stateRef.current.status === 'New'}
+              onChange={handleSettingsData}
+            />
+          }
         />
       )}
       <Button

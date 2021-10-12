@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 
 import { Tab } from 'react-bootstrap';
-import Icon from '@asany/icons';
 import { useReactComponent } from 'sunmao';
 
 import { useScroll } from '../utils';
@@ -17,11 +16,11 @@ type AsideSecondaryProps = {
 function AsideSecondary(props: AsideSecondaryProps) {
   const { menus } = props;
 
-  const footerRef = useRef<HTMLDivElement>(null);
+  // const footerRef = useRef<HTMLDivElement>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useScroll(scrollRef, workspaceRef, [footerRef]);
+  useScroll(scrollRef, workspaceRef, []);
 
   return (
     <div className="aside-secondary d-flex flex-row-fluid">
@@ -39,16 +38,16 @@ function AsideSecondary(props: AsideSecondaryProps) {
               ))}
             </Tab.Content>
           </div>
-          <div ref={footerRef} className="flex-column-auto pt-10 px-5">
+          {/* <div ref={footerRef} className="flex-column-auto pt-10 px-5">
             <a
-              href="../../demo7/dist/documentation/getting-started.html"
+              href="#"
               className="btn btn-bg-light btn-color-gray-600 btn-flex btn-active-color-primary flex-center w-100"
               title="200+ in-house components and 3rd-party plugins"
             >
-              <span className="btn-label">Docs &amp; Components</span>
+              <span className="btn-label"> 开 发 文 档 </span>
               <Icon name="Duotune/gen005" className="btn-icon svg-icon-4 ms-2" />
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
       {/* --end::Workspace--*/}

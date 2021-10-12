@@ -28,7 +28,7 @@ query QUEERY_ARTICLE_CHANNEL_ALL {
 }
 
 query QUEERY_ARTICLE_CHANNEL($id: ID!) {
-  channel: articleChannel(id: $id){
+  channel: articleChannel(id: $id) {
     id
     icon
     name
@@ -38,6 +38,22 @@ query QUEERY_ARTICLE_CHANNEL($id: ID!) {
     level
     parent {
       id
+    }
+  }
+}
+
+mutation MUTATE_CREATE_ARTICLE($input: ArticleCreateInput!) {
+  createArticle(input: $input) {
+    id
+    title
+    features {
+      id
+      code
+      name
+    }
+    content {
+      id
+      __typename
     }
   }
 }

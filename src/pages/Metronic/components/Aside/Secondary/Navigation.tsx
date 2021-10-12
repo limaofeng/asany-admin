@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Menu from './Menu';
 
 import type { MenuData } from '@/.umi/app/typings';
@@ -28,4 +30,4 @@ function Navigation({ menus }: MenuPaneProps) {
   return <Menu defaultSelectedKeys={['1']}>{menus.map(renderMenuItem)}</Menu>;
 }
 
-export default Navigation;
+export default React.memo(Navigation);
