@@ -88,7 +88,7 @@ function Aside(props: AsideProps) {
 
   const [activeKey, setActiveKey] = useState<string | undefined>(currentMenu?.id);
 
-  const handleSelect: SelectCallback = useCallback((eventKey: string | null) => {
+  const handleSelect = useCallback((eventKey: any) => {
     setActiveKey(eventKey);
   }, []);
 
