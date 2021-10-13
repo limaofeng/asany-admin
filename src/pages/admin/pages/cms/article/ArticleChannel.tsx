@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import classnames from 'classnames';
 import Icon from '@asany/icons';
@@ -7,8 +7,9 @@ import type { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 
 import { QUEERY_ARTICLE_CHANNEL } from './gql/article.gql';
+import ArticleList from './ArticleList';
 
-import { Button, Card, CountUp, Nav, Table } from '@/pages/Metronic/components/base';
+import { Button, CountUp, Nav } from '@/pages/Metronic/components/base';
 import { Modal, User } from '@/pages/Metronic/components';
 import { ContentWrapper, Navbar } from '@/pages/Metronic/components/page';
 
@@ -38,6 +39,7 @@ function ArticleChannel(props: ArticleChannelProps) {
   } = props;
 
   const [showNewUserModal, setShowNewUserModal] = useState(false);
+  const temp = useRef({});
   // const handleOpenNewUserModal = () => {
   //   setShowNewUserModal(true);
   // };
@@ -51,11 +53,11 @@ function ArticleChannel(props: ArticleChannelProps) {
     variables: { id },
   });
 
-  if (loading) {
-    return <></>;
-  }
+  const { channel } = data || { channel: temp.current };
 
-  const { channel } = data;
+  if (!loading) {
+    temp.current = channel;
+  }
 
   return (
     <ContentWrapper
@@ -824,86 +826,7 @@ function ArticleChannel(props: ArticleChannelProps) {
         </div>
         {/*--end::Notice--*/}
       </Modal>
-      <Card clssName="mt-6 mt-xl-9" headerClassName="mt-5">
-        <Card.Title className="flex-column">
-          <h3 className="fw-bolder mb-1">Project Spendings</h3>
-          <div className="fs-6 text-gray-400">Total $260,300 sepnt so far</div>
-        </Card.Title>
-        <Card.Toolbar>
-          {/*--begin::Select--*/}
-          <div className="me-6 my-1">
-            <select
-              id="kt_filter_year"
-              name="year"
-              data-control="select2"
-              data-hide-search="true"
-              className="w-125px form-select form-select-solid form-select-sm"
-            >
-              <option value="All" selected={true}>
-                All time
-              </option>
-              <option value="thisyear">This year</option>
-              <option value="thismonth">This month</option>
-              <option value="lastmonth">Last month</option>
-              <option value="last90days">Last 90 days</option>
-            </select>
-          </div>
-          {/*--end::Select--*/}
-          {/*--begin::Select--*/}
-          <div className="me-4 my-1">
-            <select
-              id="kt_filter_orders"
-              name="orders"
-              data-control="select2"
-              data-hide-search="true"
-              className="w-125px form-select form-select-solid form-select-sm"
-            >
-              <option value="All" selected={true}>
-                All Orders
-              </option>
-              <option value="Approved">Approved</option>
-              <option value="Declined">Declined</option>
-              <option value="In Progress">In Progress</option>
-              <option value="In Transit">In Transit</option>
-            </select>
-          </div>
-          {/*--end::Select--*/}
-          {/*--begin::Search--*/}
-          <div className="d-flex align-items-center position-relative my-1">
-            <Icon name="Duotune/gen021" className="svg-icon-3 position-absolute ms-3" />
-            <input
-              type="text"
-              id="kt_filter_search"
-              className="form-control form-control-solid form-select-sm w-150px ps-9"
-              placeholder="Search Order"
-            />
-          </div>
-          {/*--end::Search--*/}
-        </Card.Toolbar>
-        <Card.Body className="pt-0">
-          <Table
-            pagination={{ total: 80, current: 5 }}
-            dataSource={[{ name: 'x' }, { name: 'x3' }, { name: 'x2' }, { name: 'x1' }]}
-            columns={[
-              {
-                title: '姓名',
-                dataIndex: 'name',
-                key: 'name',
-              },
-              {
-                title: '年龄',
-                dataIndex: 'age',
-                key: 'age',
-              },
-              {
-                title: '住址',
-                dataIndex: 'address',
-                key: 'address',
-              },
-            ]}
-          />
-        </Card.Body>
-      </Card>
+      <ArticleList />
     </ContentWrapper>
   );
 }

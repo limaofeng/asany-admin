@@ -8,6 +8,11 @@ query QUEERY_ARTICLE_ALL {
         id
         title
         summary
+        author
+        createdBy
+        createdAt
+        publishedAt
+        status
       }
     }
   }
