@@ -43,17 +43,31 @@ query QUEERY_ARTICLE_CHANNEL($id: ID!) {
 }
 
 mutation MUTATE_CREATE_ARTICLE($input: ArticleCreateInput!) {
-  createArticle(input: $input) {
+  article: createArticle(input: $input) {
     id
     title
-    features {
-      id
-      code
-      name
-    }
+    status
     content {
       id
       __typename
+      ... on HtmlContent {
+        text
+      }
+    }
+  }
+}
+
+mutation MUTATE_UPDATE_ARTICLE($id: ID!, $input: ArticleUpdateInput!) {
+  article: updateArticle(id: $id, input: $input) {
+    id
+    title
+    status
+    content {
+      id
+      __typename
+      ... on HtmlContent {
+        text
+      }
     }
   }
 }

@@ -10,7 +10,7 @@ import NavigationPrompt from 'react-router-navigation-prompt';
 import { delayUpdate } from './utils';
 import ArticleContentEditor from './components/ArticleContentEditor';
 import NavigationPromptModal from './components/NavigationPromptModal';
-import { MUTATE_CREATE_ARTICLE } from './gql/article.gql';
+import { MUTATE_CREATE_ARTICLE, MUTATE_UPDATE_ARTICLE } from './gql/article.gql';
 
 import { Button, DatePicker, Form, Input, Select } from '@/pages/Metronic/components';
 import SettingsMenu from '@/components/SettingsMenu';
@@ -24,9 +24,11 @@ type IArticleStatus = 'New' | 'Draft' | 'Published';
 type IArticleSavedStatus = 'Saving' | 'NotSaved' | 'Saved';
 
 type IArticle = {
+  id?: string;
   slug?: string;
   cover?: string;
   title?: string;
+  status?: 'DRAFT' | 'PUBLISHED';
   summary?: string;
   content?: string;
   access?: string;
@@ -37,6 +39,11 @@ type IArticle = {
 type ArticleSettingsProps = {
   isNew: boolean;
   onChange: (values: IArticle) => void;
+};
+
+const STATUS_MAPPINGS = {
+  DRAFT: 'Draft',
+  PUBLISHED: 'Published',
 };
 
 function ArticleSettings({ isNew, onChange }: ArticleSettingsProps) {
@@ -59,14 +66,14 @@ function ArticleSettings({ isNew, onChange }: ArticleSettingsProps) {
   return (
     <div className="article-settings">
       <Form onValuesChange={handleChange} component={false}>
-        <Form.Item dependencies={['url']} className="mb-10" label="链接地址">
+        <Form.Item dependencies={['slug']} className="mb-10" label="链接地址">
           {(form) => {
             return (
               <>
-                <Form.Item name="url" noStyle={true}>
+                <Form.Item name="slug" noStyle={true}>
                   <Input size="sm" />
                 </Form.Item>
-                <p className="mt-1 text-gray-600">localhost:2368/{form.getFieldValue('url')}/</p>
+                <p className="mt-1 text-gray-600">localhost:2368/{form.getFieldValue('slug')}/</p>
               </>
             );
           }}
@@ -121,6 +128,7 @@ type ArticleState = {
   status: IArticleStatus;
   saved: IArticleSavedStatus;
   data?: IArticle;
+  temp?: IArticle;
 };
 
 /**
@@ -148,9 +156,10 @@ function ArticleNew(props: ArticleNewProps) {
   const [settingsMenuCollapsed, setSettingsMenuCollapsed] = useState(false);
 
   const [createArticle] = useMutation(MUTATE_CREATE_ARTICLE, {
-    variables: {
-      category: 'news',
-    },
+    fetchPolicy: 'no-cache',
+  });
+
+  const [updateArticle] = useMutation(MUTATE_UPDATE_ARTICLE, {
     fetchPolicy: 'no-cache',
   });
 
@@ -160,12 +169,38 @@ function ArticleNew(props: ArticleNewProps) {
       {},
       async (_: any, values: any) => {
         const state = stateRef.current;
+        const contentWrap = values.content ? { type: 'HTML', text: values.content } : undefined;
         state.saved = 'Saving';
         forceRender();
-        console.log(createArticle);
-        await delay(Promise.resolve({ ...state.data, ...values }), 350);
+        try {
+          if (state.status == 'New') {
+            const { data } = await delay(
+              createArticle({
+                variables: {
+                  input: { ...state.temp, ...values, category: 'news', content: contentWrap },
+                },
+              }),
+              350,
+            );
+            state.data = data.article;
+            state.temp = {};
+            state.status = STATUS_MAPPINGS[data.article.status];
+          } else {
+            await delay(
+              updateArticle({
+                variables: {
+                  id: state.data!.id,
+                  input: { ...state.temp, ...values, content: contentWrap },
+                },
+              }),
+              350,
+            );
+          }
+        } catch (e) {
+          state.temp = values;
+          console.error(e);
+        }
         state.saved = 'Saved';
-        state.status = 'Draft';
         forceRender();
       },
       { delay: 1000, onlyDiff: true },
@@ -185,7 +220,7 @@ function ArticleNew(props: ArticleNewProps) {
     if (state.status == 'New') {
       state.saved = 'Saving';
       forceRender();
-      state.data = await delay(Promise.resolve({ ...state.data, ...values }), 350);
+      state.temp = await delay(Promise.resolve({ ...state.temp, ...values }), 350);
       state.saved = 'NotSaved';
       forceRender();
     } else {
