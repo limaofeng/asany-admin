@@ -1,11 +1,15 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import classnames from 'classnames';
 import { Table as BsTable } from 'react-bootstrap';
 import { useMeasure } from 'react-use';
 
+import { Checkbox } from '../../forms/Checkbox';
+
 import type { PaginationProps } from './Pagination';
 import Pagination from './Pagination';
+
+import './Table.scss';
 
 type RenderResult = {
   children: React.ReactNode | string;
@@ -23,6 +27,9 @@ type TableColumn = {
   className?: string;
   align?: 'left' | 'right' | 'center';
   render?: (value: string, record: any, index: number) => React.ReactNode | string | RenderResult;
+  sorter?: (a: any, b: any) => boolean;
+  sortOrder?: 'ascend' | 'descend' | 'false';
+  sortDirections?: 'ascend' | 'descend';
 };
 
 type RowSelection = {
@@ -80,7 +87,8 @@ function Colgroup({ columns }: ColgroupProps) {
       if (!_cols.length && !columns[i].width) {
         continue;
       }
-      _cols.push(<col style={{ width: columns[i].width }} />);
+      const key = columns[i].key || columns[i].dataIndex;
+      _cols.push(<col key={`colgroup-cols-${key}`} style={{ width: columns[i].width }} />);
     }
     return _cols.reverse();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,10 +101,28 @@ function Colgroup({ columns }: ColgroupProps) {
   return <colgroup>{cols}</colgroup>;
 }
 
+function randerTableHeaderCol(col: TableColumn) {
+  const sortable = col.sorter || col.sortDirections || col.sortOrder;
+  const sortOrder = col.sortOrder;
+  const key = col.key || col.dataIndex;
+  return (
+    <th
+      key={`th-${key}`}
+      className={classnames(col.className, {
+        sorting: sortable,
+        sorting_desc: sortable && sortOrder == 'descend',
+      })}
+    >
+      {col.title}
+    </th>
+  );
+}
+//
+
 function Table(props: TableProps) {
   const { rowSelection, columns, dataSource, pagination, rowKey = 'key' } = props;
 
-  const renderRowKey = useCallback((record: any) => {
+  const getRowKey = useCallback((record: any) => {
     if (typeof rowKey == 'function') {
       return rowKey(record);
     }
@@ -104,43 +130,74 @@ function Table(props: TableProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
+
   const [tableRef, { width }] = useMeasure<HTMLTableElement>();
 
-  /*   useEffect(() => {
-    columns.map((col) => {
-      return col.width;
-    });
-    console.log('tableRef', width);
-  }, []); */
+  const handleChange = useCallback(
+    (e) => {
+      setSelectedKeys((_selectedKeys) => {
+        if (e.target.checked) {
+          (dataSource || []).forEach((data) => {
+            _selectedKeys.add(getRowKey(data));
+          });
+        } else {
+          (dataSource || []).forEach((data) => {
+            _selectedKeys.delete(getRowKey(data));
+          });
+        }
+        return new Set<string>(_selectedKeys);
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dataSource],
+  );
+
+  const handleSelect = useCallback(
+    (data: any) => () => {
+      setSelectedKeys((prevSelectedKeys) => {
+        const _rowKey = getRowKey(data);
+        console.log(prevSelectedKeys, _rowKey);
+        if (prevSelectedKeys.has(_rowKey)) {
+          prevSelectedKeys.delete(_rowKey);
+        } else {
+          prevSelectedKeys.add(_rowKey);
+        }
+        return new Set<string>(prevSelectedKeys);
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return (
     <div className="dataTables_wrapper dt-bootstrap4 no-footer">
       <BsTable
         ref={tableRef}
+        hover
         responsive
         className="table-row-bordered table-row-dashed gy-4 align-middle fw-bolder dataTable no-footer"
       >
-        <Colgroup columns={columns} width={width} />
+        <Colgroup
+          columns={rowSelection ? [{ title: '', key: 'row_selection' }, ...columns] : columns}
+          width={width}
+        />
         <thead>
           <tr className="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
             {rowSelection && (
               <th className="w-10px pe-2">
-                <div className="form-check form-check-sm form-check-custom form-check-solid me-3">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    data-kt-check="true"
-                    data-kt-check-target="#kt_customers_table .form-check-input"
-                    value="1"
-                  />
-                </div>
+                <Checkbox
+                  checked={
+                    !!selectedKeys.size &&
+                    (dataSource || []).every((data) => selectedKeys.has(getRowKey(data)))
+                  }
+                  onChange={handleChange}
+                  size="sm"
+                  className="me-3"
+                />
               </th>
             )}
-            {columns.map((col) => (
-              <th key={col.key} className={classnames(col.className, 'sorting sorting_desc')}>
-                {col.title}
-              </th>
-            ))}
+            {columns.map(randerTableHeaderCol)}
           </tr>
         </thead>
         <tbody className="fw-bold text-gray-600">
@@ -148,12 +205,14 @@ function Table(props: TableProps) {
             const randerCol = buildRenderCol(data);
             return (
               // eslint-disable-next-line react/no-array-index-key
-              <tr key={`${renderRowKey(data)}-${index}`}>
+              <tr onClick={rowSelection && handleSelect(data)} key={`${getRowKey(data)}-${index}`}>
                 {rowSelection && (
                   <td key="row-select">
-                    <div className="form-check form-check-sm form-check-custom form-check-solid">
-                      <input className="form-check-input" type="checkbox" value="1" />
-                    </div>
+                    <Checkbox
+                      checked={selectedKeys.has(getRowKey(data))}
+                      size="sm"
+                      value={getRowKey(data)}
+                    />
                   </td>
                 )}
                 {columns.map(randerCol)}

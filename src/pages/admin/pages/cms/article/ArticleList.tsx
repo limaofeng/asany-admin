@@ -83,6 +83,17 @@ function ArticleList() {
       </Card.Toolbar>
       <Card.Body className="pt-0">
         <Table
+          rowKey="id"
+          rowSelection={{
+            type: 'checkbox',
+            /*     onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+              console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+            },
+            getCheckboxProps: (record: DataType) => ({
+              disabled: record.name === 'Disabled User', // Column configuration not to be checked
+              name: record.name,
+            }), */
+          }}
           pagination={{ total: 80, current: 5 }}
           dataSource={articles}
           columns={[
