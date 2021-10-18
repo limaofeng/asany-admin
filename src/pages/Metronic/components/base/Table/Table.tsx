@@ -117,7 +117,6 @@ function randerTableHeaderCol(col: TableColumn) {
     </th>
   );
 }
-//
 
 function Table(props: TableProps) {
   const { rowSelection, columns, dataSource, pagination, rowKey = 'key' } = props;

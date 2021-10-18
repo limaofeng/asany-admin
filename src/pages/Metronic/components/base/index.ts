@@ -3,3 +3,5 @@ export { default as Table } from './Table';
 export { default as Card } from './Card';
 export { default as CountUp } from './CountUp';
 export * from './Navs';
+export * from './Tag';
+export * from './Badge';

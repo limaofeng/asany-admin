@@ -4,7 +4,7 @@ import Icon from '@asany/icons';
 
 import { QUEERY_ARTICLE_ALL } from './gql/article.gql';
 
-import { Card, Table } from '@/pages/Metronic/components';
+import { Badge, Card, Table } from '@/pages/Metronic/components';
 
 function ArticleList() {
   const active = 2;
@@ -82,6 +82,7 @@ function ArticleList() {
         {/*--end::Search--*/}
       </Card.Toolbar>
       <Card.Body className="pt-0">
+        <Badge>水电费水电费</Badge>
         <Table
           rowKey="id"
           rowSelection={{

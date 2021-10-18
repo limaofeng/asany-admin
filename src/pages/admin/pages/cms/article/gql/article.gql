@@ -8,7 +8,10 @@ query QUEERY_ARTICLE_ALL {
         id
         title
         summary
-        author
+        authors {
+          id
+          name
+        }
         createdBy
         createdAt
         publishedAt
