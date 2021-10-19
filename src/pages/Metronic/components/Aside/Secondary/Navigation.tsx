@@ -26,7 +26,6 @@ function renderMenuItem(item: MenuData) {
 }
 
 function Navigation({ menus }: MenuPaneProps) {
-  console.log('Navigation', menus);
   return (
     <Menu
       className="menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-5 px-6 my-5 my-lg-0"

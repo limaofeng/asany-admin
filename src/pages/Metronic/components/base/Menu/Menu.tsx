@@ -31,6 +31,7 @@ function InternalMenu(props: any) {
       path: item.key + '/',
     }),
   );
+
   return (
     <div
       ref={props.dropdown}
@@ -72,7 +73,7 @@ function Menu(props: MenuProps) {
       onSelect={onSelect}
       onOpenChange={onOpenChange}
     >
-      <InternalMenu className={classnames(className, { 'menu-tree': !accordion })} {...otherProps}>
+      <InternalMenu {...otherProps} className={classnames(className, { 'menu-tree': !accordion })}>
         {children}
       </InternalMenu>
     </MenuProvider>
