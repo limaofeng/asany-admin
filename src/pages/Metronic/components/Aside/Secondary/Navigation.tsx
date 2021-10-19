@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Menu from './Menu';
+import Menu from '../../base/Menu';
 
 import type { MenuData } from '@/.umi/app/typings';
 
@@ -13,11 +13,11 @@ function renderMenuItem(item: MenuData) {
     return <Menu.Section key={item.id} title={item.name} />;
   }
   if (item.type === 'URL') {
-    return <Menu.Item key={item.id} icon={item.icon} title={item.name} />;
+    return <Menu.Item bullet key={item.id} icon={item.icon} title={item.name} />;
   }
   if (item.type === 'MENU') {
     return (
-      <Menu.SubMenu key={item.id} icon={item.icon} title={item.name}>
+      <Menu.SubMenu bullet key={item.id} icon={item.icon} title={item.name}>
         {(item.children || []).map(renderMenuItem)}
       </Menu.SubMenu>
     );
@@ -27,7 +27,14 @@ function renderMenuItem(item: MenuData) {
 
 function Navigation({ menus }: MenuPaneProps) {
   console.log('Navigation', menus);
-  return <Menu defaultSelectedKeys={['1']}>{menus.map(renderMenuItem)}</Menu>;
+  return (
+    <Menu
+      className="menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-5 px-6 my-5 my-lg-0"
+      defaultSelectedKeys={['1']}
+    >
+      {menus.map(renderMenuItem)}
+    </Menu>
+  );
 }
 
 export default React.memo(Navigation);

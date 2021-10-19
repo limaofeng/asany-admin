@@ -15,6 +15,7 @@ export type MenuProps = {
   selectable?: SelectableType;
   triggerSubMenuAction?: 'hover' | 'click';
   openKeys?: string[];
+  mode?: 'horizontal' | 'vertical';
   selectedKeys?: string[];
   defaultSelectedKeys?: string[];
   defaultOpenKeys?: string[];
@@ -22,22 +23,23 @@ export type MenuProps = {
   onOpenChange?: OpenCallback;
 };
 
-function InternalMenu({ children, className }: any) {
+function InternalMenu(props: any) {
+  const { children, className, mode = 'vertical' } = props;
+  const _children = React.Children.map(children, (item: any) =>
+    React.cloneElement(item, {
+      menuKey: item.key,
+      path: item.key + '/',
+    }),
+  );
   return (
     <div
-      className={classnames(
-        'menu menu-column menu-fit menu-rounded menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-5 px-6 my-5 my-lg-0',
-        className,
-      )}
+      ref={props.dropdown}
+      className={classnames('menu', className, {
+        'menu-column': mode == 'vertical',
+        'menu-rounded': true,
+      })}
     >
-      <div className="menu-fit">
-        {React.Children.map(children, (item: any) =>
-          React.cloneElement(item, {
-            menuKey: item.key,
-            path: item.key + '/',
-          }),
-        )}
-      </div>
+      {props.dropdown ? _children : <div className="menu-fit">{_children}</div>}
     </div>
   );
 }
@@ -54,6 +56,7 @@ function Menu(props: MenuProps) {
     selectedKeys,
     defaultOpenKeys,
     defaultSelectedKeys,
+    ...otherProps
   } = props;
 
   return (
@@ -69,7 +72,7 @@ function Menu(props: MenuProps) {
       onSelect={onSelect}
       onOpenChange={onOpenChange}
     >
-      <InternalMenu className={classnames(className, { 'menu-tree': !accordion })}>
+      <InternalMenu className={classnames(className, { 'menu-tree': !accordion })} {...otherProps}>
         {children}
       </InternalMenu>
     </MenuProvider>

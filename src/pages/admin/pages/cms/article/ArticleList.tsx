@@ -1,10 +1,54 @@
+import { useState } from 'react';
+
 import { useQuery } from '@apollo/client';
 import { Pagination } from 'react-bootstrap';
 import Icon from '@asany/icons';
 
 import { QUEERY_ARTICLE_ALL } from './gql/article.gql';
 
-import { Badge, Card, Table } from '@/pages/Metronic/components';
+import { Badge, Button, Card, Dropdown, Menu, Table } from '@/pages/Metronic/components';
+
+{
+  /* <div className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4 show">
+          <div className="menu-item px-3">
+            <a href="#" className="menu-link px-3">
+              View
+            </a>
+          </div>
+          <div className="menu-item px-3">
+            <a href="#" className="menu-link px-3">
+              Edit
+            </a>
+          </div>
+          <div className="menu-item px-3">
+            <a href="#" data-kt-subscriptions-table-filter="delete_row" className="menu-link px-3">
+              Delete
+            </a>
+          </div>
+        </div> */
+}
+
+function ArticleActions() {
+  const [visible, setVisible] = useState(false);
+  return (
+    <Dropdown
+      overlay={
+        <Menu className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4">
+          <Menu.Item className="px-3">编辑</Menu.Item>
+          <Menu.Item className="px-3">删除</Menu.Item>
+        </Menu>
+      }
+      placement="bottomRight"
+      onVisibleChange={setVisible}
+      visible={visible}
+    >
+      <Button variant="light" activeStyle="light" activeColor="primary" size="sm">
+        操 作
+        <Icon className="ms-2 svg-icon-5 m-0" name="Duotune/arr072" />
+      </Button>
+    </Dropdown>
+  );
+}
 
 function ArticleList() {
   const active = 2;
@@ -132,6 +176,9 @@ function ArticleList() {
               title: '操作',
               key: 'action',
               width: 140,
+              render: () => {
+                return <ArticleActions />;
+              },
             },
           ]}
         />

@@ -41,6 +41,8 @@ type RowSelection = {
 };
 
 interface TableProps {
+  responsive?: boolean;
+  hover?: boolean;
   rowKey?: string | ((record: any) => string);
   rowSelection?: RowSelection;
   dataSource?: any[];
@@ -119,7 +121,15 @@ function randerTableHeaderCol(col: TableColumn) {
 }
 
 function Table(props: TableProps) {
-  const { rowSelection, columns, dataSource, pagination, rowKey = 'key' } = props;
+  const {
+    responsive = true,
+    hover,
+    rowSelection,
+    columns,
+    dataSource,
+    pagination,
+    rowKey = 'key',
+  } = props;
 
   const getRowKey = useCallback((record: any) => {
     if (typeof rowKey == 'function') {
@@ -173,8 +183,8 @@ function Table(props: TableProps) {
     <div className="dataTables_wrapper dt-bootstrap4 no-footer">
       <BsTable
         ref={tableRef}
-        hover
-        responsive
+        hover={hover}
+        responsive={responsive}
         className="table-row-bordered table-row-dashed gy-4 align-middle fw-bolder dataTable no-footer"
       >
         <Colgroup
@@ -204,13 +214,14 @@ function Table(props: TableProps) {
             const randerCol = buildRenderCol(data);
             return (
               // eslint-disable-next-line react/no-array-index-key
-              <tr onClick={rowSelection && handleSelect(data)} key={`${getRowKey(data)}-${index}`}>
+              <tr key={`${getRowKey(data)}-${index}`}>
                 {rowSelection && (
                   <td key="row-select">
                     <Checkbox
                       checked={selectedKeys.has(getRowKey(data))}
                       size="sm"
                       value={getRowKey(data)}
+                      onChange={handleSelect(data)}
                     />
                   </td>
                 )}

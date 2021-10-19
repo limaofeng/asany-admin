@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 
-import * as KTUtil from '../../../utils/KTUtil';
+import * as KTUtil from '../../utils/KTUtil';
 
 import { useMenuContext, useSelector } from './MenuContext';
 
@@ -23,6 +23,7 @@ const defaultOptions = {
 interface SubMenuProps {
   icon?: string;
   title: string;
+  bullet?: boolean;
   children?: React.ReactNode;
 }
 
@@ -65,7 +66,7 @@ async function hide(item: HTMLElement, sub: HTMLElement) {
 }
 
 function SubMenu(props: SubMenuProps) {
-  const { menuKey, path } = props as any;
+  const { menuKey, path, bullet } = props as any;
   const { icon, title, children } = props;
   const itemRef = useRef<HTMLDivElement>(null);
   const subRef = useRef<HTMLDivElement>(null);
@@ -149,9 +150,11 @@ function SubMenu(props: SubMenuProps) {
             <Icon className="svg-icon-2" name={icon} />
           </span>
         ) : (
-          <span className="menu-bullet">
-            <span className="bullet bullet-dot" />
-          </span>
+          bullet && (
+            <span className="menu-bullet">
+              <span className="bullet bullet-dot" />
+            </span>
+          )
         )}
         <span className="menu-title">{title}</span>
         <span onClick={selectable ? handleClick : undefined} className="menu-arrow" />

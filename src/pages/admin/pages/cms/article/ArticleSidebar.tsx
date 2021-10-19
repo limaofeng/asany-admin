@@ -5,8 +5,8 @@ import { history } from 'umi';
 
 import { QUEERY_ARTICLE_CHANNEL_ALL } from './gql/article.gql';
 
-import Menu from '@/pages/Metronic/components/Aside/Secondary/Menu';
-import type { SelectEvent } from '@/pages/Metronic/components/Aside/Secondary/Menu/typings';
+import { Menu } from '@/pages/Metronic/components';
+import type { SelectEvent } from '@/pages/Metronic/components/base/Menu/typings';
 import { tree } from '@/utils';
 
 function renderChannel(item: any) {

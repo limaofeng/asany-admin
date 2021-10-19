@@ -52,6 +52,7 @@
     "@asany/sortable": "^0.1.22",
     "@ckeditor/ckeditor5-build-balloon-block": "^29.2.0",
     "@ckeditor/ckeditor5-react": "^3.0.2",
+    "@popperjs/core": "^2.10.2",
     "@umijs/route-utils": "^1.0.36",
     "antd": "^4.14.0",
     "autosize": "^5.0.1",

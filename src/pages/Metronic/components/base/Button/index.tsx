@@ -63,25 +63,28 @@ export interface ButtonProps {
   [key: string]: any;
 }
 
-function Button({
-  as = 'a',
-  size,
-  icon,
-  color,
-  children,
-  className,
-  flushed,
-  loading,
-  htmlType,
-  variantStyle,
-  textColor,
-  variant = variantStyle == 'dashed' ? 'default' : 'primary',
-  active,
-  activeStyle,
-  activeColor,
-  onClick,
-  ...props
-}: ButtonProps) {
+function Button(
+  {
+    as = 'a',
+    size,
+    icon,
+    color,
+    children,
+    className,
+    flushed,
+    loading,
+    htmlType,
+    variantStyle,
+    textColor,
+    variant = variantStyle == 'dashed' ? 'default' : 'primary',
+    active,
+    activeStyle,
+    activeColor,
+    onClick,
+    ...props
+  }: ButtonProps,
+  ref: any,
+) {
   const buttonStyle = useMemo(() => {
     if (variantStyle == 'link') {
       return 'btn-link';
@@ -107,6 +110,7 @@ function Button({
     {
       ...props,
       onClick,
+      ref,
       type: htmlType,
       disabled: loading,
       className: classnames(
@@ -142,4 +146,4 @@ function Button({
   );
 }
 
-export default Button;
+export default React.forwardRef(Button);

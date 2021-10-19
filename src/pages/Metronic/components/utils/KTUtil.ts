@@ -396,7 +396,7 @@ export function slideDown(el: HTMLElement, speed: number, callback: () => void) 
  * http://andylangton.co.uk/articles/javascript/get-viewport-size-javascript/
  * @returns {object}
  */
-export function getViewPort(): { width: number; height: number } {
+export function getViewPort(): { width?: number; height?: number } {
   let e: any = window,
     a = 'inner';
   if (!('innerWidth' in window)) {
@@ -408,4 +408,105 @@ export function getViewPort(): { width: number; height: number } {
     width: e[a + 'Width'],
     height: e[a + 'Height'],
   };
+}
+
+export function parseJson(value: string) {
+  if (typeof value === 'string') {
+    value = value.replace(/'/g, '"');
+
+    const jsonStr = value.replace(/(\w+:)|(\w+ :)/g, function (matched) {
+      return '"' + matched.substring(0, matched.length - 1) + '":';
+    });
+
+    try {
+      value = JSON.parse(jsonStr);
+    } catch (e) {}
+  }
+
+  return value;
+}
+
+export function getCssVariableValue(variableName: string) {
+  let hex = getComputedStyle(document.documentElement).getPropertyValue(variableName);
+  if (hex && hex.length > 0) {
+    hex = hex.trim();
+  }
+  return hex;
+}
+
+export function getBreakpoint(breakpoint: any) {
+  let value: any = getCssVariableValue('--bs-' + breakpoint);
+
+  if (value) {
+    value = parseInt(value.trim());
+  }
+
+  return value;
+}
+
+export function getResponsiveValue(value: any) {
+  const width = getViewPort().width!;
+  let result;
+
+  value = parseJson(value);
+
+  if (typeof value === 'object') {
+    let resultKey;
+    let resultBreakpoint: any = -1;
+    let breakpoint;
+
+    for (const key in value) {
+      if (key === 'default') {
+        breakpoint = 0;
+      } else {
+        breakpoint = getBreakpoint(key) ? getBreakpoint(key) : parseInt(key);
+      }
+
+      if (breakpoint <= width && breakpoint > resultBreakpoint) {
+        resultKey = key;
+        resultBreakpoint = breakpoint;
+      }
+    }
+
+    if (resultKey) {
+      result = value[resultKey];
+    } else {
+      result = value;
+    }
+  } else {
+    result = value;
+  }
+
+  return result;
+}
+
+/**
+ * Gets highest z-index of the given element parents
+ * @param {object} el jQuery element object
+ * @returns {number}
+ */
+export function getHighestZindex(el: any) {
+  let position, value;
+
+  while (el && el !== document) {
+    // Ignore z-index if position is set to a value where z-index is ignored by the browser
+    // This makes behavior of this function consistent across browsers
+    // WebKit always returns auto if the element is positioned
+    position = css(el, 'position');
+
+    if (position === 'absolute' || position === 'relative' || position === 'fixed') {
+      // IE returns 0 when zIndex is not specified
+      // other browsers return a string
+      // we ignore the case of nested elements with an explicit value of 0
+      // <div style="z-index: -10;"><div style="z-index: 0;"></div></div>
+      value = parseInt(css(el, 'z-index')!);
+
+      if (!isNaN(value) && value !== 0) {
+        return value;
+      }
+    }
+
+    el = el.parentNode;
+  }
+  return 1;
 }

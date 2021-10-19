@@ -2,6 +2,8 @@ export { default as Button, ButtonProps } from './Button';
 export { default as Table } from './Table';
 export { default as Card } from './Card';
 export { default as CountUp } from './CountUp';
+export { default as Menu } from './Menu';
+export * from './Dropdown';
 export * from './Navs';
 export * from './Tag';
 export * from './Badge';
