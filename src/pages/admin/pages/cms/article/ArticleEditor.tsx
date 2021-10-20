@@ -158,7 +158,7 @@ function ArticleEditor(props: ArticleEditorProps) {
     state.status = STATUS_MAPPINGS[state.data!.status!] as IArticleStatus;
     forceRender();
 
-    const values = { ...state.data };
+    const values = { ...state.data, content: state.data.content?.text };
     for (const key in values) {
       if (values[key] == null) {
         values[key] = undefined;

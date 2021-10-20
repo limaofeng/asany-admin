@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import React from 'react';
 
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -13,6 +13,10 @@ interface ArticleContentEditorProps {
 
 function ArticleContentEditor(props: ArticleContentEditorProps, editorRef: any) {
   const { container, value, onChange } = props;
+
+  const temp = useRef(value);
+
+  temp.current = value;
 
   const handleReady = useCallback((editor: any) => {
     if (!editor?.ui) {
@@ -33,6 +37,9 @@ function ArticleContentEditor(props: ArticleContentEditorProps, editorRef: any) 
 
   const handleChange = useCallback((event: any, editor: any) => {
     const data = editor.getData();
+    if (data == temp.current) {
+      return;
+    }
     onChange && onChange(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
