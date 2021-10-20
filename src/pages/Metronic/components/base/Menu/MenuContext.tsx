@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useReducer, useRef, useState } f
 
 import EventEmitter from 'events';
 
-import type { EventCallback, MenuEvent, OpenCallback, SelectEvent } from './typings';
+import type { ClickEvent, EventCallback, MenuEvent, OpenCallback, SelectEvent } from './typings';
 
 type MenuData = {
   key: string;
@@ -54,11 +54,16 @@ const reducer = (state: MenuState, action: MenuAction) => {
   return state;
 };
 
+const MENU_EVENT_CLICK = 'click';
+
 const MENU_EVENT_SELECT = 'select';
 
 const MENU_EVENT_OPEN_CHANGE = 'open-change';
 
-type MENU_EVENT_NAMES = typeof MENU_EVENT_SELECT | typeof MENU_EVENT_OPEN_CHANGE;
+type MENU_EVENT_NAMES =
+  | typeof MENU_EVENT_SELECT
+  | typeof MENU_EVENT_OPEN_CHANGE
+  | typeof MENU_EVENT_CLICK;
 
 class MenuStoreContext {
   private _eventEmitter = new EventEmitter();
@@ -118,6 +123,7 @@ class MenuStoreContext {
       selectedKeys: this._state.selectedKeys,
       domEvent: e,
     };
+    this._eventEmitter.emit(MENU_EVENT_CLICK, event);
     this._eventEmitter.emit(MENU_EVENT_SELECT, event);
   }
   dispatch = (action: MenuAction) => {
@@ -139,6 +145,7 @@ export interface MenuProviderProps {
   selectedKeys?: string[];
   openKeys?: string[];
   state: MenuState;
+  onClick?: EventCallback<ClickEvent>;
   onSelect?: EventCallback<SelectEvent>;
   onOpenChange?: OpenCallback;
 }
@@ -182,7 +189,7 @@ export function useMenuContext() {
 }
 
 export function MenuProvider(props: MenuProviderProps) {
-  const { children, state, openKeys, selectedKeys, onSelect, onOpenChange } = props;
+  const { children, state, openKeys, selectedKeys, onClick, onSelect, onOpenChange } = props;
   const store = useStore(state);
 
   useEffect(() => {
@@ -198,6 +205,13 @@ export function MenuProvider(props: MenuProviderProps) {
     }
     store.dispatch({ type: 'selectedKeys', payload: selectedKeys });
   }, [store, selectedKeys]);
+
+  useEffect(() => {
+    if (!onClick) {
+      return;
+    }
+    return store.on('click', onClick);
+  }, [store, onClick]);
 
   useEffect(() => {
     if (!onSelect) {

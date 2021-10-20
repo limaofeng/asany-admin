@@ -1,40 +1,32 @@
-import { useCallback, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 import classnames from 'classnames';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { useHoverDirty } from 'react-use';
 import NavigationPrompt from 'react-router-navigation-prompt';
 
 import { delayUpdate } from './utils';
 import ArticleContentEditor from './components/ArticleContentEditor';
 import NavigationPromptModal from './components/NavigationPromptModal';
-import { MUTATE_CREATE_ARTICLE, MUTATE_UPDATE_ARTICLE } from './gql/article.gql';
+import { MUTATE_CREATE_ARTICLE, MUTATE_UPDATE_ARTICLE, QUERY_ARTICLE } from './gql/article.gql';
+import type { IArticle } from './typings';
 
+import { useForm } from '@/pages/Metronic/components/forms/Form/Form';
 import { Button, DatePicker, Form, Input, Select } from '@/pages/Metronic/components';
 import SettingsMenu from '@/components/SettingsMenu';
 import { delay } from '@/utils';
 
 import './style/ArticleEditor.scss';
 
-type ArticleNewProps = RouteComponentProps;
+type ArticleEditorProps =
+  | {
+      data?: IArticle;
+    } & RouteComponentProps;
 
 type IArticleStatus = 'New' | 'Draft' | 'Published';
 type IArticleSavedStatus = 'Saving' | 'NotSaved' | 'Saved';
-
-type IArticle = {
-  id?: string;
-  slug?: string;
-  cover?: string;
-  title?: string;
-  status?: 'DRAFT' | 'PUBLISHED';
-  summary?: string;
-  content?: string;
-  access?: string;
-  author?: string;
-  publishedAt?: string;
-};
 
 type ArticleSettingsProps = {
   isNew: boolean;
@@ -142,9 +134,10 @@ function focusFirstRange(editor: any, writer: any) {
   return selection;
 }
 
-function ArticleNew(props: ArticleNewProps) {
+function ArticleEditor(props: ArticleEditorProps) {
   const { history } = props;
 
+  const form = useForm();
   const editorRef = useRef<any>(null);
   const container = useRef<HTMLDivElement>(null);
 
@@ -154,6 +147,26 @@ function ArticleNew(props: ArticleNewProps) {
   const [, forceRender] = useReducer((s) => s + 1, 0);
   const stateRef = useRef<ArticleState>({ status: 'New', saved: 'Saved' });
   const [settingsMenuCollapsed, setSettingsMenuCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (!props.data) {
+      return;
+    }
+    const state = stateRef.current;
+    state.data = props.data;
+    state.temp = {};
+    state.status = STATUS_MAPPINGS[state.data!.status!] as IArticleStatus;
+    forceRender();
+
+    const values = { ...state.data };
+    for (const key in values) {
+      if (values[key] == null) {
+        values[key] = undefined;
+      }
+    }
+    form.setFieldsValue(values);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.data]);
 
   const [createArticle] = useMutation(MUTATE_CREATE_ARTICLE, {
     fetchPolicy: 'no-cache',
@@ -238,7 +251,6 @@ function ArticleNew(props: ArticleNewProps) {
     e.stopPropagation();
 
     const editor = editorRef.current;
-    console.log('editor', editor);
     if (!!editor) {
       // 创建空行
       editor.model.change((writer: any) => {
@@ -327,7 +339,12 @@ function ArticleNew(props: ArticleNewProps) {
           ref={container}
           className="art-editor-body relative w-100 vh-100 overflow-x-hidden hover-scroll-overlay-y px-5"
         >
-          <Form initialValues={{ url: '123' }} onValuesChange={handleChange} component={false}>
+          <Form
+            form={form}
+            initialValues={stateRef.current.data || {}}
+            onValuesChange={handleChange}
+            component={false}
+          >
             <div ref={coverContainer} className="art-editor-feature-image-container">
               <div
                 className={classnames('flex flex-row items-center', {
@@ -388,4 +405,25 @@ function ArticleNew(props: ArticleNewProps) {
   );
 }
 
-export default ArticleNew;
+export type ArticleNewProps = RouteComponentProps<any>;
+
+export type ArticleEditProps = RouteComponentProps<any>;
+
+export function ArticleNew(props: ArticleNewProps) {
+  return <ArticleEditor {...props} />;
+}
+
+export function ArticleEdit(props: ArticleEditProps) {
+  const { id } = props.match.params;
+
+  const { data, loading } = useQuery(QUERY_ARTICLE, {
+    variables: { id },
+    fetchPolicy: 'no-cache',
+  });
+
+  console.log('ArticleEdit', data, loading);
+
+  return <ArticleEditor {...props} data={data?.article} />;
+}
+
+export default ArticleEditor;

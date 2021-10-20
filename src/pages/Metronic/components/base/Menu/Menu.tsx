@@ -6,7 +6,7 @@ import type { SelectableType } from './MenuContext';
 import { MenuProvider } from './MenuContext';
 import MenuItem, { MenuSection } from './MenuItem';
 import SubMenu from './SubMenu';
-import type { EventCallback, OpenCallback, SelectEvent } from './typings';
+import type { ClickEvent, EventCallback, OpenCallback, SelectEvent } from './typings';
 
 export type MenuProps = {
   className?: string;
@@ -20,6 +20,7 @@ export type MenuProps = {
   defaultSelectedKeys?: string[];
   defaultOpenKeys?: string[];
   onSelect?: EventCallback<SelectEvent>;
+  onClick?: EventCallback<ClickEvent>;
   onOpenChange?: OpenCallback;
 };
 
@@ -47,6 +48,7 @@ function InternalMenu(props: any) {
 
 function Menu(props: MenuProps) {
   const {
+    onClick,
     onSelect,
     onOpenChange,
     className,
@@ -71,6 +73,7 @@ function Menu(props: MenuProps) {
       openKeys={openKeys}
       selectedKeys={selectedKeys}
       onSelect={onSelect}
+      onClick={onClick}
       onOpenChange={onOpenChange}
     >
       <InternalMenu {...otherProps} className={classnames(className, { 'menu-tree': !accordion })}>

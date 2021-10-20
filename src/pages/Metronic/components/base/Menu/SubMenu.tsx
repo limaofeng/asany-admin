@@ -100,7 +100,7 @@ function SubMenu(props: SubMenuProps) {
 
   const handleSelect = useCallback(
     (e) => {
-      context.select(menuKey, e);
+      menuKey && context.select(menuKey, e);
     },
     [context, menuKey],
   );

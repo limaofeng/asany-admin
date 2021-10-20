@@ -12,13 +12,13 @@ import { tree } from '@/utils';
 function renderChannel(item: any) {
   if (item.children && item.children.length) {
     return (
-      <Menu.SubMenu key={item.id} icon={item.icon} title={item.name}>
+      <Menu.SubMenu bullet key={item.id} icon={item.icon} title={item.name}>
         {(item.children || []).map(renderChannel)}
       </Menu.SubMenu>
     );
   }
   return (
-    <Menu.Item key={item.id} icon={item.icon}>
+    <Menu.Item bullet key={item.id} icon={item.icon}>
       {item.name}
     </Menu.Item>
   );
@@ -68,12 +68,29 @@ function ArticleSidebar() {
           accordion={false}
           selectable="AllMenu"
         >
+          <Menu.Section>我的</Menu.Section>
+          <Menu.Item icon="Duotune/art008" key="draft">
+            草稿箱
+          </Menu.Item>
+          <Menu.Item icon="Duotune/art006" key="published">
+            已发布
+          </Menu.Item>
           <Menu.Section>信息栏目</Menu.Section>
           {channels.map(renderChannel)}
           <Menu.Section>其他</Menu.Section>
-          <Menu.Item key="CMS_BANNER">大图管理</Menu.Item>
-          <Menu.Section>设置</Menu.Section>
-          <Menu.Item key="CHANNEL_SETTINGS">设置</Menu.Item>
+          <Menu.Item icon="Duotune/elc001" key="banner">
+            大图管理
+          </Menu.Item>
+          <Menu.Item icon="Duotune/cod002" key="authors">
+            作者
+          </Menu.Item>
+          <Menu.Item icon="Duotune/art002" key="tags">
+            标签
+          </Menu.Item>
+          <Menu.Section>全局设置</Menu.Section>
+          <Menu.Item icon="Duotune/abs008" key="settings">
+            设置
+          </Menu.Item>
         </Menu>
       )}
     </>

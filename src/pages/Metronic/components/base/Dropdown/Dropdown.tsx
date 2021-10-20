@@ -5,6 +5,8 @@ import { useClickAway } from 'react-use';
 import * as KTMenu from '../../utils/KTMenu';
 import * as KTUtil from '../../utils/KTUtil';
 
+import './Dropdown.scss';
+
 type DropdownProps = {
   trigger?: string;
   visible?: boolean;
@@ -99,6 +101,13 @@ function Dropdown(props: DropdownProps) {
     setVisible(false);
   });
 
+  const handleClick = useCallback((e) => {
+    const onClick = overlay.props.onClick;
+    setVisible(false);
+    onClick && onClick(e);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       {React.cloneElement(node as React.ReactElement, {
@@ -107,6 +116,8 @@ function Dropdown(props: DropdownProps) {
       })}
       {React.cloneElement(overlay, {
         dropdown: subRef,
+        selectedKeys: [],
+        onClick: handleClick,
       })}
     </>
   );

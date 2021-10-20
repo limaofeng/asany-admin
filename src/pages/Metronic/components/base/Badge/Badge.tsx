@@ -1,13 +1,37 @@
 import classnames from 'classnames';
 
 type BadgeProps = {
+  color?:
+    | 'white'
+    | 'primary'
+    | 'light'
+    | 'secondary'
+    | 'success'
+    | 'info'
+    | 'warning'
+    | 'danger'
+    | 'dark';
+  lightStyle?: 'primary' | 'success' | 'info' | 'warning' | 'danger' | 'dark';
+  shape?: 'square' | 'circle';
   className?: string;
   children: React.ReactNode;
 };
 
 function Badge(props: BadgeProps) {
-  const { className, children } = props;
-  return <span className={classnames('badge badge-light', className)}>{children}</span>;
+  const { className, children, shape, lightStyle } = props;
+  const color = !props.color && !lightStyle ? 'light' : props.color;
+  return (
+    <span
+      className={classnames('badge', className, {
+        'badge-square': shape == 'square',
+        'badge-circle': shape == 'circle',
+        [`badge-${color}`]: !!color,
+        [`badge-light-${lightStyle}`]: !!lightStyle,
+      })}
+    >
+      {children}
+    </span>
+  );
 }
 
 export default Badge;

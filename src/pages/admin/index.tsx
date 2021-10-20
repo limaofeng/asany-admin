@@ -5,7 +5,7 @@ import ArticleList from './pages/cms/article/ArticleList';
 import ArticleView from './pages/cms/article/ArticleView';
 import ArticleSidebar from './pages/cms/article/ArticleSidebar';
 import ArticleChannel from './pages/cms/article/ArticleChannel';
-import ArticleNew from './pages/cms/article/ArticleNew';
+import { ArticleEdit, ArticleNew } from './pages/cms/article/ArticleEditor';
 
 @library({
   name: 'admin',
@@ -15,7 +15,7 @@ import ArticleNew from './pages/cms/article/ArticleNew';
 class Admin {
   @component({ name: 'cms.ArticleList' })
   ArticleList = ArticleList;
-  @component({ name: 'cms.ArticleDetails' })
+  @component({ name: 'cms.ArticleView' })
   ArticleView = ArticleView;
   @component({ name: 'Home' })
   HomeBuilder = HomeBuilder;
@@ -25,6 +25,8 @@ class Admin {
   ArticleChannel = ArticleChannel;
   @component({ name: 'cms.ArticleNew' })
   ArticleNew = ArticleNew;
+  @component({ name: 'cms.ArticleEdit' })
+  ArticleEdit = ArticleEdit;
 }
 
 export default new Admin();

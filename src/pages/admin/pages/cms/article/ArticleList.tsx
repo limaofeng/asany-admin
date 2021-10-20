@@ -1,41 +1,45 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useQuery } from '@apollo/client';
 import { Pagination } from 'react-bootstrap';
 import Icon from '@asany/icons';
+import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router';
 
+import type { IArticle } from './typings';
 import { QUEERY_ARTICLE_ALL } from './gql/article.gql';
 
 import { Badge, Button, Card, Dropdown, Menu, Table } from '@/pages/Metronic/components';
 
-{
-  /* <div className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4 show">
-          <div className="menu-item px-3">
-            <a href="#" className="menu-link px-3">
-              View
-            </a>
-          </div>
-          <div className="menu-item px-3">
-            <a href="#" className="menu-link px-3">
-              Edit
-            </a>
-          </div>
-          <div className="menu-item px-3">
-            <a href="#" data-kt-subscriptions-table-filter="delete_row" className="menu-link px-3">
-              Delete
-            </a>
-          </div>
-        </div> */
-}
+type ArticleActionsProps = {
+  data: IArticle;
+};
 
-function ArticleActions() {
+function ArticleActions(props: ArticleActionsProps) {
+  const { data } = props;
+  const history = useHistory();
   const [visible, setVisible] = useState(false);
+
+  const handleClick = useCallback(({ key }) => {
+    if (key == 'edit') {
+      history.push(`/cms/articles/${data.id}/edit`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Dropdown
       overlay={
-        <Menu className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4">
-          <Menu.Item className="px-3">编辑</Menu.Item>
-          <Menu.Item className="px-3">删除</Menu.Item>
+        <Menu
+          onClick={handleClick}
+          className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"
+        >
+          <Menu.Item key="edit" className="px-3">
+            编辑
+          </Menu.Item>
+          <Menu.Item key="delete" className="px-3 actions-delete">
+            删除
+          </Menu.Item>
         </Menu>
       }
       placement="bottomRight"
@@ -70,7 +74,7 @@ function ArticleList() {
   console.log('articles', articles);
 
   return (
-    <Card clssName="mt-6 mt-xl-9" headerClassName="mt-5">
+    <Card flush clssName="mt-6 mt-xl-9" headerClassName="mt-5">
       <Card.Title className="flex-column">
         <h3 className="fw-bolder mb-1">文章</h3>
       </Card.Title>
@@ -126,7 +130,6 @@ function ArticleList() {
         {/*--end::Search--*/}
       </Card.Toolbar>
       <Card.Body className="pt-0">
-        <Badge>水电费水电费</Badge>
         <Table
           rowKey="id"
           rowSelection={{
@@ -149,7 +152,12 @@ function ArticleList() {
               render: (title, record) => {
                 return (
                   <div className="d-flex flex-column">
-                    <a className="text-gray-800 text-hover-primary mb-1">{title}</a>
+                    <Link
+                      to={`/cms/articles/${record.id}`}
+                      className="text-gray-800 text-hover-primary mb-1"
+                    >
+                      {title}
+                    </Link>
                     <span className="text-gray-500">
                       {record.status} . {record.createdAt}
                     </span>
@@ -157,27 +165,25 @@ function ArticleList() {
                 );
               },
             },
-            // {
-            //   title: '点击',
-            //   dataIndex: 'clicks',
-            //   width: 100,
-            // },
-            // {
-            //   title: '评论',
-            //   dataIndex: 'comments',
-            //   width: 100,
-            // },
             {
               title: '状态',
               dataIndex: 'status',
               width: 120,
+              render: (value) => {
+                const status = {
+                  DRAFT: { title: '草稿', lightStyle: 'danger' },
+                  PUBLISHED: { title: '已发布' },
+                  SCHEDULED: { title: '计划', lightStyle: 'primary' },
+                };
+                return <Badge lightStyle={status[value].lightStyle}>{status[value].title}</Badge>;
+              },
             },
             {
               title: '操作',
               key: 'action',
               width: 140,
-              render: () => {
-                return <ArticleActions />;
+              render: (_, record: any) => {
+                return <ArticleActions data={record} />;
               },
             },
           ]}

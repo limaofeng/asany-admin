@@ -9,6 +9,7 @@ export type MenuItemProps = {
   icon?: string;
   title?: string;
   className?: string;
+  linkClassName?: string;
   bullet?: boolean;
   children?: React.ReactNode;
 };
@@ -27,7 +28,7 @@ export function MenuSection(props: MenuItemProps) {
 }
 
 function MenuItem(props: MenuItemProps) {
-  const { icon, children, title, bullet, className } = props;
+  const { icon, children, title, bullet, className, linkClassName } = props;
   const { menuKey, path } = props as any;
 
   const context = useMenuContext();
@@ -43,14 +44,17 @@ function MenuItem(props: MenuItemProps) {
 
   const handleClick = useCallback(
     (e) => {
-      context.select(menuKey, e);
+      menuKey && context.select(menuKey, e);
     },
     [context, menuKey],
   );
 
   return (
     <div className={classnames('menu-item', className)}>
-      <a onClick={handleClick} className={classnames('menu-link', { active: selected })}>
+      <a
+        onClick={handleClick}
+        className={classnames('menu-link', linkClassName, { active: selected })}
+      >
         {icon ? (
           <span className="menu-icon">
             <Icon className="svg-icon-2" name={icon} />

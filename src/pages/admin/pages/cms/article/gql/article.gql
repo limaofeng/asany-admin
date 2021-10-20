@@ -79,3 +79,17 @@ mutation MUTATE_UPDATE_ARTICLE($id: ID!, $input: ArticleUpdateInput!) {
     }
   }
 }
+
+query QUERY_ARTICLE($id: ID!) {
+  article(id: $id) {
+    id
+    title
+    content {
+      id
+      __typename
+      ... on HtmlContent {
+        text
+      }
+    }
+  }
+}
