@@ -30,7 +30,6 @@ function Checkbox(props: CheckboxProps) {
         setChecked((_checked) => !_checked);
       }
       onChange && onChange(e);
-      console.log(e.target, `checked = ${e.target.checked}`);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [onChange],

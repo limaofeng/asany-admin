@@ -61,7 +61,7 @@ function AuthorsProfile() {
       <div className="text-center flex-shrink-0 me-7 me-lg-13">
         {/* --begin::Avatar--*/}
         <div className="symbol symbol-70px symbol-circle mb-2">
-          <img src="assets/media/avatars/150-3.jpg" className="" alt="" />
+          <img src="/assets/media/avatars/150-3.jpg" className="" alt="" />
         </div>
         {/* --end::Avatar--*/}
         {/* --begin::Info--*/}

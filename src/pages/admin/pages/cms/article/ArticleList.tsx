@@ -9,7 +9,16 @@ import { useHistory } from 'react-router';
 import type { IArticle } from './typings';
 import { QUEERY_ARTICLE_ALL } from './gql/article.gql';
 
-import { Badge, Button, Card, Dropdown, Menu, Table } from '@/pages/Metronic/components';
+import {
+  Badge,
+  Button,
+  Card,
+  Dropdown,
+  Input,
+  Menu,
+  Select,
+  Table,
+} from '@/pages/Metronic/components';
 
 type ArticleActionsProps = {
   data: IArticle;
@@ -73,74 +82,66 @@ function ArticleList() {
 
   console.log('articles', articles);
 
+  const handleSearch = useCallback((e) => {
+    console.log(e.target.value);
+  }, []);
+
   return (
     <Card flush clssName="mt-6 mt-xl-9" headerClassName="mt-5">
       <Card.Title className="flex-column">
         <h3 className="fw-bolder mb-1">文章</h3>
       </Card.Title>
       <Card.Toolbar>
-        {/*--begin::Select--*/}
-        <div className="me-6 my-1">
-          <select
-            id="kt_filter_year"
-            name="year"
-            data-control="select2"
-            data-hide-search="true"
-            className="w-125px form-select form-select-solid form-select-sm"
-          >
-            <option value="All" selected={true}>
-              All time
-            </option>
-            <option value="thisyear">This year</option>
-            <option value="thismonth">This month</option>
-            <option value="lastmonth">Last month</option>
-            <option value="last90days">Last 90 days</option>
-          </select>
-        </div>
-        {/*--end::Select--*/}
-        {/*--begin::Select--*/}
         <div className="me-4 my-1">
-          <select
-            id="kt_filter_orders"
-            name="orders"
-            data-control="select2"
-            data-hide-search="true"
-            className="w-125px form-select form-select-solid form-select-sm"
-          >
-            <option value="All" selected={true}>
-              All Orders
-            </option>
-            <option value="Approved">Approved</option>
-            <option value="Declined">Declined</option>
-            <option value="In Progress">In Progress</option>
-            <option value="In Transit">In Transit</option>
-          </select>
-        </div>
-        {/*--end::Select--*/}
-        {/*--begin::Search--*/}
-        <div className="d-flex align-items-center position-relative my-1">
-          <Icon name="Duotune/gen021" className="svg-icon-3 position-absolute ms-3" />
-          <input
-            type="text"
-            id="kt_filter_search"
-            className="form-control form-control-solid form-select-sm w-150px ps-9"
-            placeholder="Search Order"
+          <Select
+            solid
+            size="sm"
+            className="w-125px"
+            options={[
+              { label: '全部时间', value: 'all' },
+              { label: '今年', value: 'thisyear' },
+              { label: '这个月', value: 'thismonth' },
+              { label: '最近一个月', value: 'lastmonth' },
+              { label: '最近90天', value: 'last90days' },
+            ]}
           />
         </div>
-        {/*--end::Search--*/}
+        <div className="me-4 my-1">
+          <Select
+            solid
+            size="sm"
+            className="w-125px"
+            options={[
+              { label: '全部状态', value: 'all' },
+              { label: '草稿', value: 'DRAFT' },
+              { label: '已发布', value: 'PUBLISHED' },
+              { label: '等待发布', value: 'SCHEDULED' },
+            ]}
+          />
+        </div>
+        <Input
+          solid
+          size="sm"
+          prefix={<Icon name="Duotune/gen021" className="svg-icon-3 position-absolute ms-3" />}
+          className="w-150px ps-9"
+          boxClassName="my-1"
+          placeholder="搜索文章"
+          onPressEnter={handleSearch}
+        />
       </Card.Toolbar>
       <Card.Body className="pt-0">
         <Table
           rowKey="id"
           rowSelection={{
             type: 'checkbox',
-            /*     onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+            onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
               console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
             },
-            getCheckboxProps: (record: DataType) => ({
-              disabled: record.name === 'Disabled User', // Column configuration not to be checked
-              name: record.name,
-            }), */
+            toolbar: () => (
+              <Button size="sm" className="px-4 py-2" variant="danger">
+                删除选择
+              </Button>
+            ),
           }}
           pagination={{ total: 80, current: 5 }}
           dataSource={articles}

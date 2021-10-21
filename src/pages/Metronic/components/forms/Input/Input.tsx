@@ -1,5 +1,5 @@
 import type { DOMAttributes } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import classnames from 'classnames';
 
@@ -12,37 +12,83 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
   type?: 'text' | 'password';
   autoComplete?: boolean;
   bordered?: boolean;
+  prefix?: React.ReactNode;
+  onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  className?: string;
+  boxClassName?: string;
 }
 
 function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | null>) {
   const {
     solid,
+    prefix,
     bordered = true,
     autoComplete = false,
+    onPressEnter,
     size,
-    defaultValue,
-    value = defaultValue == undefined ? '' : undefined,
     onChange,
+    className,
+    boxClassName,
     ...otherProps
   } = props;
 
-  return (
+  const [value, setValue] = useState(props.value || props.defaultValue);
+
+  const handleChange = useCallback((e) => {
+    if (props.value) {
+      onChange && onChange(e);
+    } else {
+      setValue(e.target.value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (props.value == value) {
+      return;
+    }
+    setValue(props.value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.value]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key !== 'Enter') {
+        return;
+      }
+      onPressEnter && onPressEnter(e);
+    },
+    [onPressEnter],
+  );
+
+  const input = (
     <input
+      {...otherProps}
       ref={ref}
-      className={classnames('form-control', {
+      onKeyDown={handleKeyDown}
+      className={classnames('form-control', className, {
         [`form-control-${size}`]: !!size,
         'form-control-solid': solid,
         'form-control-borderless': !bordered,
       })}
       value={value}
-      defaultValue={defaultValue}
-      onChange={onChange}
+      onChange={handleChange}
       type="text"
       autoComplete={autoComplete ? 'off' : 'on'}
-      {...otherProps}
     />
   );
+
+  if (!!prefix) {
+    return (
+      <div className={classnames('d-flex align-items-center position-relative', boxClassName)}>
+        {prefix}
+        {input}
+      </div>
+    );
+  }
+
+  return input;
 }
 
 export default React.forwardRef(Input) as any;

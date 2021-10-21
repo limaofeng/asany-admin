@@ -18,6 +18,8 @@ type OptionData = {
 type SelectProps = {
   className?: string;
   placeholder?: string;
+  width?: number | string;
+  solid?: boolean;
   size?: 'sm' | 'lg';
   options?: OptionData[];
   onChange?: (value: string | number, option: OptionData | OptionData[]) => void;
@@ -25,7 +27,17 @@ type SelectProps = {
 };
 
 function Select(props: SelectProps) {
-  const { size, placeholder, className, onChange, onSelect, options, ...selectProps } = props;
+  const {
+    width,
+    solid,
+    size,
+    placeholder,
+    className,
+    onChange,
+    onSelect,
+    options,
+    ...selectProps
+  } = props;
   const ref = useRef<HTMLSelectElement>(null);
 
   const handleSelect = useCallback((e) => {
@@ -36,7 +48,9 @@ function Select(props: SelectProps) {
   }, []);
 
   useEffect(() => {
-    const instance = $(ref.current!).select2({ placeholder }).on('select2:select', handleSelect);
+    const instance = $(ref.current!)
+      .select2({ placeholder, minimumResultsForSearch: Infinity, width })
+      .on('select2:select', handleSelect);
     const select2 = instance.data('select2') as any;
     return () => {
       select2.destroy();
@@ -54,6 +68,7 @@ function Select(props: SelectProps) {
       ref={ref}
       className={classnames('form-select', className, {
         [`form-select-${size}`]: !!size,
+        'form-select-solid': solid,
       })}
       onChange={handleChange}
     >

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 import { Table as BsTable } from 'react-bootstrap';
@@ -37,6 +37,10 @@ type RowSelection = {
   columnTitle?: React.ReactNode;
   columnWidth?: string | number;
   selectedRowKeys?: string[];
+  toolbar?: (selectedRowKeys: string[], selectedRows: any[]) => React.ReactNode;
+  onChange?: (selectedRowKeys: string[], selectedRows: any[]) => void;
+  onSelect?: (record: any, selected: boolean, selectedRows: any[], nativeEvent: any) => void;
+  onSelectAll?: (selected: boolean, selectedRows: any[]) => void;
   getCheckboxProps?: (record: any) => any;
 };
 
@@ -131,6 +135,8 @@ function Table(props: TableProps) {
     rowKey = 'key',
   } = props;
 
+  const { toolbar, onChange, onSelect, onSelectAll, getCheckboxProps } = rowSelection || {};
+
   const getRowKey = useCallback((record: any) => {
     if (typeof rowKey == 'function') {
       return rowKey(record);
@@ -139,22 +145,27 @@ function Table(props: TableProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const temp = useRef(new Map<string, any>());
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
 
   const [tableRef, { width }] = useMeasure<HTMLTableElement>();
 
   const handleChange = useCallback(
     (e) => {
-      setSelectedKeys((_selectedKeys) => {
+      setSelectedKeys((prevSelectedKeys) => {
         if (e.target.checked) {
           (dataSource || []).forEach((data) => {
-            _selectedKeys.add(getRowKey(data));
+            prevSelectedKeys.add(getRowKey(data));
           });
         } else {
           (dataSource || []).forEach((data) => {
-            _selectedKeys.delete(getRowKey(data));
+            prevSelectedKeys.delete(getRowKey(data));
           });
         }
+        const _selectedKeys = [...prevSelectedKeys];
+        const selectedRows = _selectedKeys.map((key) => temp.current.get(key));
+        onChange && onChange(_selectedKeys, selectedRows);
+        onSelectAll && onSelectAll(e.target.checked, selectedRows);
         return new Set<string>(_selectedKeys);
       });
     },
@@ -163,20 +174,44 @@ function Table(props: TableProps) {
   );
 
   const handleSelect = useCallback(
-    (data: any) => () => {
+    (data: any) => (e: React.ChangeEvent<any>) => {
       setSelectedKeys((prevSelectedKeys) => {
         const _rowKey = getRowKey(data);
-        console.log(prevSelectedKeys, _rowKey);
         if (prevSelectedKeys.has(_rowKey)) {
           prevSelectedKeys.delete(_rowKey);
         } else {
           prevSelectedKeys.add(_rowKey);
         }
+        const _selectedKeys = [...prevSelectedKeys];
+        const selectedRows = _selectedKeys.map((key) => temp.current.get(key));
+        onChange && onChange(_selectedKeys, selectedRows);
+        onSelect &&
+          onSelect(temp.current.get(_rowKey), prevSelectedKeys.has(_rowKey), selectedRows, e);
         return new Set<string>(prevSelectedKeys);
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
+  );
+
+  useEffect(() => {
+    if (!dataSource) {
+      return;
+    }
+    for (const item of dataSource) {
+      temp.current.set(getRowKey(item), item);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataSource]);
+
+  const handleCheckboxProps = useCallback(
+    (data: any) => {
+      if (!getCheckboxProps) {
+        return {};
+      }
+      return getCheckboxProps(data);
+    },
+    [getCheckboxProps],
   );
 
   return (
@@ -206,7 +241,26 @@ function Table(props: TableProps) {
                 />
               </th>
             )}
-            {columns.map(randerTableHeaderCol)}
+            {toolbar && !!selectedKeys.size ? (
+              <th
+                className="px-0 py-0"
+                style={{ verticalAlign: 'middle' }}
+                colSpan={columns.length}
+              >
+                <div className="d-flex justify-content-start align-items-center">
+                  <div className="fw-bolder me-5 text-gray-800">
+                    <span className="me-2">{selectedKeys.size + 1}</span>
+                    已选择
+                  </div>
+                  {toolbar(
+                    [...selectedKeys],
+                    [...selectedKeys].map((key) => temp.current.get(key)),
+                  )}
+                </div>
+              </th>
+            ) : (
+              columns.map(randerTableHeaderCol)
+            )}
           </tr>
         </thead>
         <tbody className="fw-bold text-gray-600">
@@ -218,6 +272,7 @@ function Table(props: TableProps) {
                 {rowSelection && (
                   <td key="row-select">
                     <Checkbox
+                      {...handleCheckboxProps(data)}
                       checked={selectedKeys.has(getRowKey(data))}
                       size="sm"
                       value={getRowKey(data)}
