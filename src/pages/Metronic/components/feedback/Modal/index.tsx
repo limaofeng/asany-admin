@@ -1,14 +1,16 @@
 import React from 'react';
 
-import type { SweetAlertIcon } from 'sweetalert2';
+import type { SweetAlertIcon, SweetAlertOptions } from 'sweetalert2';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { Modal as BsModal } from 'react-bootstrap';
 import classnames from 'classnames';
-import Icon from '@asany/icons';
+import Icon, { store } from '@asany/icons';
 
 import type { ButtonProps } from '../../base';
 import { Button } from '../../base';
+
+import './Modal.scss';
 
 const MySwal = withReactContent(Swal);
 
@@ -95,27 +97,69 @@ function Modal(props: ModalProps) {
 export type ModalOptions = {
   title?: string;
   content?: string;
+  width?: number | string;
   okText?: string;
+  cancelText?: string;
   icon?: SweetAlertIcon;
   onOk?: () => void;
+  okClassName?: string;
+  cancelClassName?: string;
 };
 
-const message = async (options: ModalOptions) => {
-  const { title, content, icon, okText = '知道了', onOk } = options;
+export type MessageOptions = ModalOptions & SweetAlertOptions;
+
+const message = async (options: MessageOptions) => {
+  const {
+    title,
+    content,
+    icon,
+    onOk,
+    confirmButtonText = '知道了',
+    customClass = {},
+    ...alertOptions
+  } = options;
   const result = await MySwal.fire({
+    ...alertOptions,
     icon,
     title,
     html: content,
+    confirmButtonText,
     buttonsStyling: false,
-    confirmButtonText: okText,
     customClass: {
-      confirmButton: 'btn btn-primary',
+      ...customClass,
+      confirmButton: customClass.confirmButton || 'btn btn-primary',
+      cancelButton: customClass.cancelButton || 'btn btn-secondary',
     },
   });
   if (onOk && result.isConfirmed) {
     onOk();
   }
   return result;
+};
+
+Modal.confirm = async (options: ModalOptions) => {
+  const { okText, cancelText, okClassName, cancelClassName } = options;
+
+  const icon = await store.get('Duotune/arr061');
+
+  return message({
+    ...options,
+    confirmButtonText: okText || '确 认',
+    cancelButtonText: cancelText || '取 消',
+    reverseButtons: true,
+    showCancelButton: true,
+    showCloseButton: true,
+    closeButtonHtml: `<span class="svg-icon svg-icon-2x">${icon?.content}</span>`,
+    customClass: {
+      container: 'modal-confirm',
+      closeButton: 'btn btn-icon btn-sm btn-active-light-primary ms-2',
+      title: 'text-left',
+      htmlContainer: 'text-left',
+      actions: 'justify-content-end',
+      confirmButton: okClassName,
+      cancelButton: cancelClassName,
+    },
+  });
 };
 
 Modal.question = (options: ModalOptions) => {

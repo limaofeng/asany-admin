@@ -201,6 +201,10 @@ function Table(props: TableProps) {
     for (const item of dataSource) {
       temp.current.set(getRowKey(item), item);
     }
+    setSelectedKeys((keys) => {
+      keys.clear();
+      return new Set(keys);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSource]);
 
@@ -249,7 +253,7 @@ function Table(props: TableProps) {
               >
                 <div className="d-flex justify-content-start align-items-center">
                   <div className="fw-bolder me-5 text-gray-800">
-                    <span className="me-2">{selectedKeys.size + 1}</span>
+                    <span className="me-2">{selectedKeys.size}</span>
                     已选择
                   </div>
                   {toolbar(

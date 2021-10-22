@@ -1,13 +1,18 @@
 import { useCallback, useState } from 'react';
 
-import { useQuery } from '@apollo/client';
+import jquery from 'jquery';
+import { useMutation, useQuery } from '@apollo/client';
 import { Pagination } from 'react-bootstrap';
 import Icon from '@asany/icons';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 
 import type { IArticle } from './typings';
-import { QUEERY_ARTICLE_ALL } from './gql/article.gql';
+import {
+  MUTATE_DELETE_ARTICLE,
+  MUTATE_DELETE_MANY_ARTICLES,
+  QUEERY_ARTICLE_ALL,
+} from './gql/article.gql';
 
 import {
   Badge,
@@ -16,22 +21,116 @@ import {
   Dropdown,
   Input,
   Menu,
+  Modal,
   Select,
   Table,
 } from '@/pages/Metronic/components';
 
 type ArticleActionsProps = {
   data: IArticle;
+  refetch: () => void;
 };
 
+type DeleteOptions = {
+  title: string;
+  content: string;
+  width?: string;
+};
+
+function useDelete(options: DeleteOptions, execute: () => Promise<void>) {
+  const onDelete = useCallback(async () => {
+    const { width = 550 } = options;
+    const data = await Modal.confirm({
+      ...options,
+      width,
+      okText: '删 除',
+      cancelClassName: 'btn btn-secondary btn-sm',
+      okClassName: 'btn btn-danger btn-sm',
+    });
+    if (data.isConfirmed) {
+      await execute();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.title, options.content]);
+
+  return [onDelete];
+}
+
+type DeleteManyProps = {
+  selectedRows: IArticle[];
+  refetch: () => void;
+};
+
+(window as any)._MoreshowOrhide = function (dom: any) {
+  jquery(dom).parent().siblings().show();
+  jquery(dom).parent().remove();
+  return false;
+};
+
+function DeleteMany(props: DeleteManyProps) {
+  const { selectedRows, refetch } = props;
+
+  const [deleteManyArticles] = useMutation(MUTATE_DELETE_MANY_ARTICLES);
+
+  const [onDelete] = useDelete(
+    {
+      title: `你确定要删除这${
+        selectedRows.length > 1 ? `“<strong>${selectedRows.length}</strong>“` : ''
+      }篇文章吗？`,
+      content:
+        selectedRows.length > 1
+          ? `您即将删除以下文章:<ul class="py-2">${selectedRows
+              .map(
+                (item, index) =>
+                  `<li ${
+                    index >= 4 ? 'style="display: none !important;"' : ''
+                  } class="d-flex align-items-center text-gray-800 mb-1 fs-6"><span class="bullet bullet-dot me-2"></span><strong>${
+                    item.title
+                  }</strong></li>`,
+              )
+              .join('')}
+              <li ${
+                selectedRows.length <= 4 ? 'style="display: none !important;"' : ''
+              } class="d-flex align-items-center text-gray-800 fs-6"><a href="javascript:void(0)" onClick="_MoreshowOrhide(this)">更多</a></li></ul> `
+          : `您即将删除“<strong>${selectedRows[0].title}</strong>”。` +
+            '删除操作不可逆转，请谨慎操作，您确定删除吗？',
+    },
+    async () => {
+      await deleteManyArticles({ variables: { ids: selectedRows.map((item) => item.id!) } });
+      await refetch();
+    },
+  );
+
+  return (
+    <Button onClick={onDelete} size="sm" className="px-4 py-2" variant="danger">
+      删除选择
+    </Button>
+  );
+}
+
 function ArticleActions(props: ArticleActionsProps) {
-  const { data } = props;
+  const { data, refetch } = props;
   const history = useHistory();
   const [visible, setVisible] = useState(false);
+
+  const [deleteArticle] = useMutation(MUTATE_DELETE_ARTICLE);
+
+  const [onDelete] = useDelete(
+    {
+      title: '你确定要删除这篇文章吗？',
+      content: `您即将删除“<strong>${data.title}</strong>”。删除操作不可逆转，请谨慎操作，您确定删除吗？`,
+    },
+    async () => {
+      await deleteArticle({ variables: { id: data.id! } });
+      await refetch();
+    },
+  );
 
   const handleClick = useCallback(({ key }) => {
     if (key == 'edit') {
       history.push(`/cms/articles/${data.id}/edit`);
+    } else if (key == 'delete') {
+      onDelete();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -74,7 +173,7 @@ function ArticleList() {
     );
   }
 
-  const { data } = useQuery(QUEERY_ARTICLE_ALL);
+  const { data, refetch } = useQuery(QUEERY_ARTICLE_ALL);
 
   const pagination = (data || {}).articles || { edges: [] };
 
@@ -137,10 +236,8 @@ function ArticleList() {
             onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
               console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
             },
-            toolbar: () => (
-              <Button size="sm" className="px-4 py-2" variant="danger">
-                删除选择
-              </Button>
+            toolbar: (_, selectedRows) => (
+              <DeleteMany selectedRows={selectedRows} refetch={refetch} />
             ),
           }}
           pagination={{ total: 80, current: 5 }}
@@ -184,7 +281,7 @@ function ArticleList() {
               key: 'action',
               width: 140,
               render: (_, record: any) => {
-                return <ArticleActions data={record} />;
+                return <ArticleActions data={record} refetch={refetch} />;
               },
             },
           ]}

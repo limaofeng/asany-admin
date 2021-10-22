@@ -80,6 +80,14 @@ mutation MUTATE_UPDATE_ARTICLE($id: ID!, $input: ArticleUpdateInput!) {
   }
 }
 
+mutation MUTATE_DELETE_ARTICLE($id: ID!) {
+  deleteArticle(id: $id)
+}
+
+mutation MUTATE_DELETE_MANY_ARTICLES($ids: [ID]!) {
+  deleteManyArticles(ids: $ids)
+}
+
 query QUERY_ARTICLE($id: ID!) {
   article(id: $id) {
     id

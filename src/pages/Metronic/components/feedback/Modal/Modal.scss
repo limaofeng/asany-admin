@@ -1,0 +1,19 @@
+.modal-confirm {
+  .swal2-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    margin-top: 0;
+  }
+  .swal2-title {
+    padding-top: 0;
+    padding-left: 0;
+  }
+  .swal2-html-container {
+    margin-top: 1rem;
+    padding-left: 0;
+  }
+  .swal2-actions {
+    margin-bottom: 0;
+  }
+}
