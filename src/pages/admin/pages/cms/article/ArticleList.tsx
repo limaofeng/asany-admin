@@ -179,11 +179,11 @@ function ArticleList() {
 
   const articles = pagination.edges.map((item: any) => item.node);
 
-  console.log('articles', articles);
-
   const handleSearch = useCallback((e) => {
     console.log(e.target.value);
   }, []);
+
+  console.log('pagination', pagination);
 
   return (
     <Card flush clssName="mt-6 mt-xl-9" headerClassName="mt-5">
@@ -240,7 +240,7 @@ function ArticleList() {
               <DeleteMany selectedRows={selectedRows} refetch={refetch} />
             ),
           }}
-          pagination={{ total: 80, current: 5 }}
+          pagination={pagination}
           dataSource={articles}
           columns={[
             {

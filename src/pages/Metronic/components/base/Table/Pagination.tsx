@@ -99,7 +99,8 @@ function Pagination(props: PaginationProps) {
     if (end != totalPage) {
       pageNumbers.push(totalPage);
     }
-    return pageNumbers.map((page) => {
+    const _pageNumbers = new Set(pageNumbers);
+    return [..._pageNumbers].map((page) => {
       if (page === 0 && 1 / page < 0) {
         return (
           <Ellipsis

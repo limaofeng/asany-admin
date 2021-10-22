@@ -1,6 +1,7 @@
 query QUEERY_ARTICLE_ALL {
   articles {
-    totalCount
+    total: totalCount
+    current: currentPage
     totalPage
     pageSize
     edges {
@@ -20,6 +21,7 @@ query QUEERY_ARTICLE_ALL {
     }
   }
 }
+
 query QUEERY_ARTICLE_CHANNEL_ALL {
   channels: articleChannels {
     id
