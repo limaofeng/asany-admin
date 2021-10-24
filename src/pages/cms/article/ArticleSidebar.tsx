@@ -2,12 +2,15 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { useQuery } from '@apollo/client';
 import { history } from 'umi';
+import Icon from '@asany/icons';
 
 import { QUEERY_ARTICLE_CHANNEL_ALL } from './gql/article.gql';
 
-import { Menu } from '@/pages/Metronic/components';
+import { Button, Menu, Modal } from '@/pages/Metronic/components';
 import type { SelectEvent } from '@/pages/Metronic/components/base/Menu/typings';
 import { tree } from '@/utils';
+
+import './style/ArticleSidebar.scss';
 
 function renderChannel(item: any) {
   if (item.children && item.children.length) {
@@ -47,11 +50,27 @@ function ArticleSidebar() {
   const handleSelect = useCallback((event: SelectEvent) => {
     if (/^[\d]+$/.test(event.key)) {
       history.push(`/cms/channels/${event.key}`);
+    } else if ('draft' === event.key) {
+      history.push(`/cms/my/drafts`);
+    } else if ('draft' === event.key) {
+      history.push(`/cms/my/publisheds`);
+    } else if ('authors' === event.key) {
+      history.push('/cms/authors');
     }
   }, []);
 
   const handleOpenChange = useCallback((keys) => {
     setOpenKeys(keys);
+  }, []);
+
+  const [visible, setVisible] = useState(false);
+
+  const handleNewChannel = useCallback(() => {
+    setVisible(true);
+  }, []);
+
+  const handleCloseNewChannel = useCallback(() => {
+    setVisible(false);
   }, []);
 
   return (
@@ -61,7 +80,7 @@ function ArticleSidebar() {
       </div>
       {!loading && (
         <Menu
-          className="menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-5 px-6 my-5 my-lg-0"
+          className="cms-menu-sider menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 px-3 my-5 my-lg-0"
           onSelect={handleSelect}
           openKeys={openKeys}
           onOpenChange={handleOpenChange}
@@ -75,7 +94,20 @@ function ArticleSidebar() {
           <Menu.Item icon="Duotune/art006" key="published">
             已发布
           </Menu.Item>
-          <Menu.Section>信息栏目</Menu.Section>
+          <Menu.Section className="d-flex align-items-center">
+            <span className="menu-section text-muted text-uppercase fs-8 ls-1 flex-row-fluid">
+              信息栏目
+            </span>
+            <Button
+              icon={<Icon style={{ marginRight: '.1rem' }} name="Duotune/arr087" className="" />}
+              size="sm"
+              variant="white"
+              className="py-1 px-3"
+              onClick={handleNewChannel}
+            >
+              新增
+            </Button>
+          </Menu.Section>
           {channels.map(renderChannel)}
           <Menu.Section>其他</Menu.Section>
           <Menu.Item icon="Duotune/elc001" key="banner">
@@ -93,6 +125,15 @@ function ArticleSidebar() {
           </Menu.Item>
         </Menu>
       )}
+      <Modal
+        centered
+        visible={visible}
+        onCancel={handleCloseNewChannel}
+        dialogClassName="mw-650px"
+        title="创建模型"
+      >
+        sdfsdf
+      </Modal>
     </>
   );
 }

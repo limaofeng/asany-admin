@@ -60,7 +60,7 @@ export interface ButtonProps {
   children?: React.ReactNode;
   loading?: boolean;
   onClick?: (e: React.MouseEvent) => void;
-  [key: string]: any;
+  to?: string;
 }
 
 function Button(

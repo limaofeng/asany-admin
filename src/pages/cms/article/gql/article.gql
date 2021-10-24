@@ -1,5 +1,5 @@
-query QUEERY_ARTICLE_ALL {
-  articles {
+query QUEERY_ARTICLE_ALL($filter: ArticleFilter, $page: Int, $pageSize: Int) {
+  articles(filter: $filter, page: $page, pageSize: $pageSize) {
     total: totalCount
     current: currentPage
     totalPage

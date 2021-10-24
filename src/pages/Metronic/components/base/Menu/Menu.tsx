@@ -8,6 +8,8 @@ import MenuItem, { MenuSection } from './MenuItem';
 import SubMenu from './SubMenu';
 import type { ClickEvent, EventCallback, OpenCallback, SelectEvent } from './typings';
 
+import './Menu.scss';
+
 export type MenuProps = {
   className?: string;
   children: React.ReactNode;

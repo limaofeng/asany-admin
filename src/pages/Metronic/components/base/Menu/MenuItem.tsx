@@ -15,13 +15,16 @@ export type MenuItemProps = {
 };
 
 export function MenuSection(props: MenuItemProps) {
-  const { title, children } = props;
+  const { title, children, className } = props;
+  const content = title || children;
   return (
     <div className="menu-item">
-      <div className="menu-content pb-2">
-        <span className="menu-section text-muted text-uppercase fs-8 ls-1">
-          {title || children}
-        </span>
+      <div className={classnames('menu-content pb-2', className)}>
+        {typeof content === 'string' ? (
+          <span className="menu-section text-muted text-uppercase fs-8 ls-1">{content}</span>
+        ) : (
+          content
+        )}
       </div>
     </div>
   );

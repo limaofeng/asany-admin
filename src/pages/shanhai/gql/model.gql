@@ -1,0 +1,6 @@
+query QUEERY_MODELS {
+  models(filter: { type: OBJECT }, offset: 100) {
+    id
+    name
+  }
+}

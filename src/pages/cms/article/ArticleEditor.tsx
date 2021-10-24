@@ -146,7 +146,7 @@ function ArticleEditor(props: ArticleEditorProps) {
 
   const [, forceRender] = useReducer((s) => s + 1, 0);
   const stateRef = useRef<ArticleState>({ status: 'New', saved: 'Saved' });
-  const [settingsMenuCollapsed, setSettingsMenuCollapsed] = useState(false);
+  const [settingsMenuCollapsed, setSettingsMenuCollapsed] = useState(true);
 
   useEffect(() => {
     if (!props.data) {

@@ -53,10 +53,10 @@ function ModalFooter(props: ModalFooterProps) {
   } = props;
   return (
     <BsModal.Footer>
-      <Button variant="light" {...cancelButtonProps} onClick={onCancel}>
+      <Button variant="light" size="sm" {...cancelButtonProps} onClick={onCancel}>
         {cancelText}
       </Button>
-      <Button variant="primary" {...okButtonProps} onClick={onOk}>
+      <Button variant="primary" size="sm" {...okButtonProps} onClick={onOk}>
         {okText}
       </Button>
     </BsModal.Footer>

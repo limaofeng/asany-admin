@@ -40,6 +40,9 @@ function ArticleContentEditor(props: ArticleContentEditorProps, editorRef: any) 
     if (data == temp.current) {
       return;
     }
+    if (!temp.current && !data) {
+      return;
+    }
     onChange && onChange(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
