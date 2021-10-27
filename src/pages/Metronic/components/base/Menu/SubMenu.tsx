@@ -5,6 +5,8 @@ import Icon from '@asany/icons';
 import classnames from 'classnames';
 
 import * as KTUtil from '../../utils/KTUtil';
+import type { BulletProps } from '../Bullet';
+import { Bullet } from '../Bullet';
 
 import { useMenuContext, useSelector } from './MenuContext';
 
@@ -23,7 +25,7 @@ const defaultOptions = {
 interface SubMenuProps {
   icon?: string;
   title: string;
-  bullet?: boolean;
+  bullet?: boolean | BulletProps;
   children?: React.ReactNode;
 }
 
@@ -152,7 +154,7 @@ function SubMenu(props: SubMenuProps) {
         ) : (
           bullet && (
             <span className="menu-bullet">
-              <span className="bullet bullet-dot" />
+              <Bullet {...(typeof bullet !== 'boolean' ? bullet : {})} />
             </span>
           )
         )}

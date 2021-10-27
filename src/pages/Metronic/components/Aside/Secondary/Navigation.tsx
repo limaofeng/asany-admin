@@ -13,11 +13,11 @@ function renderMenuItem(item: MenuData) {
     return <Menu.Section key={item.id} title={item.name} />;
   }
   if (item.type === 'URL') {
-    return <Menu.Item bullet key={item.id} icon={item.icon} title={item.name} />;
+    return <Menu.Item bullet={{ style: 'dot' }} key={item.id} icon={item.icon} title={item.name} />;
   }
   if (item.type === 'MENU') {
     return (
-      <Menu.SubMenu bullet key={item.id} icon={item.icon} title={item.name}>
+      <Menu.SubMenu bullet={{ style: 'dot' }} key={item.id} icon={item.icon} title={item.name}>
         {(item.children || []).map(renderMenuItem)}
       </Menu.SubMenu>
     );
