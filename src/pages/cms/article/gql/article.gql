@@ -27,6 +27,7 @@ query QUEERY_ARTICLE_CHANNEL_ALL {
     id
     icon
     name
+    fullName
     path
     index
     level
@@ -101,5 +102,11 @@ query QUERY_ARTICLE($id: ID!) {
         text
       }
     }
+  }
+}
+
+mutation MUTATE_CREATE_ARTICLE_CHANNEL($input: ArticleChannelCreateInput!) {
+  createArticleChannel(input: $input) {
+    id
   }
 }

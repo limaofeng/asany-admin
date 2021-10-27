@@ -3,6 +3,9 @@ import { useCallback, useEffect } from 'react';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 
+import type { BulletProps } from '../Bullet';
+import { Bullet } from '../Bullet';
+
 import { useMenuContext, useSelector } from './MenuContext';
 
 export type MenuItemProps = {
@@ -10,7 +13,7 @@ export type MenuItemProps = {
   title?: string;
   className?: string;
   linkClassName?: string;
-  bullet?: boolean;
+  bullet?: boolean | BulletProps;
   children?: React.ReactNode;
 };
 
@@ -65,7 +68,7 @@ function MenuItem(props: MenuItemProps) {
         ) : (
           bullet && (
             <span className="menu-bullet">
-              <span className="bullet bullet-dot" />
+              <Bullet {...(typeof bullet !== 'boolean' ? bullet : {})} />
             </span>
           )
         )}

@@ -1,27 +1,15 @@
 import React from 'react';
 
 import classNames from 'classnames';
+import classnames from 'classnames';
 
-// import type { TooltipProps } from '../tooltip';
-// import Tooltip from '../tooltip';
+import type { TooltipProps } from '../../feedback/Tooltip/Tooltip';
+import Tooltip from '../../feedback/Tooltip/Tooltip';
 
 import type { FormLabelAlign } from './typings';
 import type { FormContextProps } from './context';
 import { FormContext } from './context';
 import type { RequiredMark } from './Form';
-
-type TooltipProps = {
-  title: React.ReactNode;
-};
-
-function Tooltip(_: TooltipProps) {
-  console.log(_);
-  return <></>;
-}
-
-function QuestionCircleOutlined() {
-  return <></>;
-}
 
 export type WrapperTooltipProps = TooltipProps & {
   icon?: React.ReactElement;
@@ -53,6 +41,20 @@ export interface FormItemLabelProps {
   className?: string;
 }
 
+type TooltipIconProps = {
+  className?: string;
+};
+
+const TooltipIcon = React.forwardRef(({ className, ...props }: TooltipIconProps, ref: any) => {
+  return (
+    <i
+      ref={ref}
+      className={classnames('fas fa-exclamation-circle ms-2 fs-7', className)}
+      {...props}
+    />
+  );
+});
+
 const FormItemLabel: React.FC<FormItemLabelProps & { required?: boolean; prefixCls: string }> = ({
   prefixCls,
   label,
@@ -80,7 +82,7 @@ const FormItemLabel: React.FC<FormItemLabelProps & { required?: boolean; prefixC
         // Tooltip
         const tooltipProps = toTooltipProps(tooltip);
         if (tooltipProps) {
-          const { icon = <QuestionCircleOutlined />, ...restTooltipProps } = tooltipProps;
+          const { icon = <TooltipIcon />, ...restTooltipProps } = tooltipProps;
           const tooltipNode = (
             <Tooltip {...restTooltipProps}>
               {React.cloneElement(icon, { className: `${prefixCls}-item-tooltip`, title: '' })}
@@ -89,7 +91,7 @@ const FormItemLabel: React.FC<FormItemLabelProps & { required?: boolean; prefixC
 
           labelChildren = (
             <>
-              {labelChildren}
+              {required ? <span className="required">{labelChildren}</span> : labelChildren}
               {tooltipNode}
             </>
           );

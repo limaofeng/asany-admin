@@ -1,5 +1,5 @@
 import type { DOMAttributes } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
 
 import classnames from 'classnames';
@@ -19,17 +19,10 @@ interface TextAreaProps extends DOMAttributes<HTMLTextAreaElement> {
   onPressEnter?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 function TextArea(props: TextAreaProps) {
-  const {
-    autoSize,
-    solid,
-    bordered = true,
-    value = '',
-    onPressEnter,
-    onChange,
-    ...textareaProps
-  } = props;
+  const { autoSize, solid, bordered = true, onPressEnter, onChange, ...textareaProps } = props;
 
   const ref = useRef<HTMLTextAreaElement>(null);
+  const [value, setValue] = useState(props.value || '');
 
   useEffect(() => {
     if (!autoSize) {
@@ -49,6 +42,13 @@ function TextArea(props: TextAreaProps) {
     return typeof autoSize == 'boolean' ? 1 : autoSize?.minRows || 1;
   }, [autoSize]);
 
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      onChange ? onChange(e) : setValue(e.target.value);
+    },
+    [onChange],
+  );
+
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key == 'Enter') {
@@ -63,8 +63,8 @@ function TextArea(props: TextAreaProps) {
       {...textareaProps}
       ref={ref}
       rows={minRows}
-      value={value}
-      onChange={onChange}
+      value={onChange ? props.value || '' : value}
+      onChange={handleChange}
       onKeyPress={handleKeyPress}
       className={classnames('form-control', {
         'form-control-solid': solid,

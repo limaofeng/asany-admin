@@ -5,8 +5,9 @@ import { history } from 'umi';
 import Icon from '@asany/icons';
 
 import { QUEERY_ARTICLE_CHANNEL_ALL } from './gql/article.gql';
+import { NewArticleChannelModal } from './ArticleChannelNew';
 
-import { Button, Menu, Modal } from '@/pages/Metronic/components';
+import { Button, Menu } from '@/pages/Metronic/components';
 import type { SelectEvent } from '@/pages/Metronic/components/base/Menu/typings';
 import { tree } from '@/utils';
 
@@ -28,7 +29,13 @@ function renderChannel(item: any) {
 }
 
 function ArticleSidebar() {
-  const { data = { channels: [] }, loading } = useQuery(QUEERY_ARTICLE_CHANNEL_ALL);
+  const {
+    data = { channels: [] },
+    refetch,
+    loading,
+  } = useQuery(QUEERY_ARTICLE_CHANNEL_ALL, {
+    fetchPolicy: 'no-cache',
+  });
 
   const channels = useMemo(() => {
     if (!data.channels || !data.channels.length) {
@@ -99,7 +106,7 @@ function ArticleSidebar() {
               信息栏目
             </span>
             <Button
-              icon={<Icon style={{ marginRight: '.1rem' }} name="Duotune/arr087" className="" />}
+              icon={<Icon style={{ marginRight: '.2rem' }} name="Duotune/arr087" className="" />}
               size="sm"
               variant="white"
               className="py-1 px-3"
@@ -125,15 +132,11 @@ function ArticleSidebar() {
           </Menu.Item>
         </Menu>
       )}
-      <Modal
-        centered
+      <NewArticleChannelModal
+        onSuccess={refetch}
         visible={visible}
         onCancel={handleCloseNewChannel}
-        dialogClassName="mw-650px"
-        title="创建模型"
-      >
-        sdfsdf
-      </Modal>
+      />
     </>
   );
 }

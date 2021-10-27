@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 import Icon from '@asany/icons';
@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 
 import { QUEERY_ARTICLE_CHANNEL } from './gql/article.gql';
 import ArticleList from './ArticleList';
+import { NewArticleChannelModal } from './ArticleChannelNew';
 
 import { Button, CountUp, Nav } from '@/pages/Metronic/components/base';
 import { User } from '@/pages/Metronic/components';
@@ -40,9 +41,19 @@ function ArticleChannel(props: ArticleChannelProps) {
 
   const temp = useRef({});
 
+  const [visible, setVisible] = useState(false);
+
   const { data, loading } = useQuery(QUEERY_ARTICLE_CHANNEL, {
     variables: { id },
   });
+
+  const handleNewChannel = useCallback(() => {
+    setVisible(true);
+  }, []);
+
+  const handleCloseNewChannel = useCallback(() => {
+    setVisible(false);
+  }, []);
 
   const { channel } = data || { channel: temp.current };
 
@@ -83,9 +94,15 @@ function ArticleChannel(props: ArticleChannelProps) {
           >
             新建信息
           </Button>
-          <Button className="me-3" size="sm">
+          <Button onClick={handleNewChannel} className="me-3" size="sm">
             添加子栏目
           </Button>
+          <NewArticleChannelModal
+            // onSuccess={refetch}
+            data={{ parent: channel?.id }}
+            visible={visible}
+            onCancel={handleCloseNewChannel}
+          />
           <a
             href="#"
             className="btn btn-sm btn-primary me-3"

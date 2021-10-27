@@ -1,6 +1,6 @@
 import React from 'react';
 
-import classNames from 'classnames';
+import classnames from 'classnames';
 import CSSMotion, { CSSMotionList } from 'rc-motion';
 
 import collapseMotion from './motion';
@@ -67,7 +67,6 @@ export default function ErrorList({
       motionEnter={false}
       visible={!!fullKeyList.length}
       onLeaveStart={(node) => {
-        // Force disable css override style in index.less configured
         node.style.height = 'auto';
         return { height: node.offsetHeight };
       }}
@@ -77,11 +76,16 @@ export default function ErrorList({
 
         return (
           <div
-            className={classNames(baseClassName, holderClassName, rootClassName)}
+            className={classnames(
+              'fv-plugins-message-container invalid-feedback',
+              baseClassName,
+              holderClassName,
+              rootClassName,
+            )}
             style={holderStyle}
           >
             <CSSMotionList
-              keys={fullKeyList}
+              keys={fullKeyList.map((item) => item.key)}
               {...collapseMotion}
               motionName={`${rootPrefixCls}-show-help-item`}
               component={false}
@@ -99,7 +103,7 @@ export default function ErrorList({
                   <div
                     key={key}
                     role="alert"
-                    className={classNames(itemClassName, {
+                    className={classnames(itemClassName, {
                       [`${baseClassName}-${errorStatus}`]: errorStatus,
                     })}
                     style={itemStyle}

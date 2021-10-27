@@ -1,5 +1,5 @@
 import type { DOMAttributes } from 'react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import classnames from 'classnames';
 
@@ -23,6 +23,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | nul
   const {
     solid,
     prefix,
+    type = 'text',
     bordered = true,
     autoComplete = false,
     onPressEnter,
@@ -33,24 +34,23 @@ function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | nul
     ...otherProps
   } = props;
 
-  const [value, setValue] = useState(props.value || props.defaultValue);
+  const [value, setValue] = useState(props.value || props.defaultValue || '');
 
-  const handleChange = useCallback((e) => {
-    if (props.value) {
-      onChange && onChange(e);
-    } else {
-      setValue(e.target.value);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleChange = useCallback(
+    (e) => {
+      onChange ? onChange(e) : setValue(e.target.value);
+    },
+    [onChange],
+  );
 
-  useEffect(() => {
+  /*  useEffect(() => {
     if (props.value == value) {
       return;
     }
-    setValue(props.value);
+    console.log('=========', props.value);
+    setValue(props.value || '');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.value]);
+  }, [props.value]); */
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -72,9 +72,9 @@ function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | nul
         'form-control-solid': solid,
         'form-control-borderless': !bordered,
       })}
-      value={value}
+      value={onChange ? props.value || '' : value}
       onChange={handleChange}
-      type="text"
+      type={type}
       autoComplete={autoComplete ? 'off' : 'on'}
     />
   );

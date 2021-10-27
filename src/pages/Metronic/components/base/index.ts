@@ -7,3 +7,4 @@ export * from './Dropdown';
 export * from './Navs';
 export * from './Tag';
 export * from './Badge';
+export * from './Bullet';

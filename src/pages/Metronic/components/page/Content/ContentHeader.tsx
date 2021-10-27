@@ -92,7 +92,7 @@ function ContentHeader(props: ContentHeaderProps) {
           {/* --end::Aside mobile toggle--*/}
           {/* --begin::Logo--*/}
           <a href="../../demo7/dist/index.html" className="d-flex align-items-center">
-            <img alt="Logo" src="assets/media/logos/logo-demo7.svg" className="h-30px" />
+            <img alt="Logo" src="/assets/media/logos/logo-demo7.svg" className="h-30px" />
           </a>
           {/* --end::Logo--*/}
         </div>

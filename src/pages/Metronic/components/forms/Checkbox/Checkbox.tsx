@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 
@@ -35,13 +35,6 @@ function Checkbox(props: CheckboxProps) {
     [onChange],
   );
 
-  useEffect(() => {
-    if (props.checked == null || props.checked == checked) {
-      return;
-    }
-    setChecked(props.checked);
-  }, [checked, props.checked]);
-
   return (
     <div
       className={classnames('form-check form-check-custom form-check-solid', className, {
@@ -55,7 +48,7 @@ function Checkbox(props: CheckboxProps) {
         disabled={disabled}
         className="form-check-input"
         type="checkbox"
-        checked={checked}
+        checked={onChange ? props.checked : checked}
         value={value}
         onChange={handleClick}
       />

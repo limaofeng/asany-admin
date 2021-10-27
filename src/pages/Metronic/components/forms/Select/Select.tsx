@@ -49,7 +49,7 @@ function Select(props: SelectProps) {
 
   useEffect(() => {
     const instance = $(ref.current!)
-      .select2({ placeholder, minimumResultsForSearch: Infinity, width })
+      .select2({ placeholder, minimumResultsForSearch: Infinity, width: width as any })
       .on('select2:select', handleSelect);
     const select2 = instance.data('select2') as any;
     return () => {

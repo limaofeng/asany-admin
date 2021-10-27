@@ -31,13 +31,6 @@ export interface FormItemInputProps {
   help?: React.ReactNode;
 }
 
-// const iconMap: Record<string, any> = {
-//   success: <div>success</div>,
-//   warning: <div>warning</div>,
-//   error: <div>error</div>,
-//   validating: <div>validating</div>,
-// };
-
 const FormItemInput: React.FC<FormItemInputProps & FormItemInputMiscProps> = (props) => {
   const {
     prefixCls,
@@ -53,26 +46,8 @@ const FormItemInput: React.FC<FormItemInputProps & FormItemInputMiscProps> = (pr
 
   const formContext = React.useContext(FormContext);
 
-  // const className = classNames(`${baseClassName}-control`);
-
-  // Should provides additional icon if `hasFeedback`
-  // const IconNode = validateStatus && iconMap[validateStatus];
-  // const icon =
-  //   hasFeedback && IconNode ? (
-  //     <span className={`${baseClassName}-children-icon`}>
-  //       <IconNode />
-  //     </span>
-  //   ) : null;
-
   // Pass to sub FormItem should not with col info
   const subFormContext = { ...formContext };
-
-  // const inputDom = (
-  //   <div className={`${baseClassName}-control-input`}>
-  //     <div className={`${baseClassName}-control-input-content`}>{children}</div>
-  //     {icon}
-  //   </div>
-  // );
 
   const inputDom = <>{children}</>;
 

@@ -16,6 +16,8 @@ export type FormLayout = 'horizontal' | 'inline' | 'vertical';
 
 export type SizeType = 'sm' | 'lg';
 
+import './style/Form.scss';
+
 export interface FormProps<Values = any> extends Omit<RcFormProps<Values>, 'form'> {
   prefixCls?: string;
   colon?: boolean;
