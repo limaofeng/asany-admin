@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useQuery } from '@apollo/client';
 import { history } from 'umi';
@@ -80,58 +80,60 @@ function ArticleSidebar() {
     setVisible(false);
   }, []);
 
+  useEffect(() => {
+    setOpenKeys(channels.map((item) => item.id));
+  }, [channels]);
+
   return (
     <>
       <div className="m-0">
         <h1 className="text-gray-800 fw-bold mb-6 mx-5">内容管理</h1>
       </div>
-      {!loading && (
-        <Menu
-          className="cms-menu-sider menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 px-3 my-5 my-lg-0"
-          onSelect={handleSelect}
-          openKeys={openKeys}
-          onOpenChange={handleOpenChange}
-          accordion={false}
-          selectable="AllMenu"
-        >
-          <Menu.Section>我的</Menu.Section>
-          <Menu.Item icon="Duotune/art008" key="draft">
-            草稿箱
-          </Menu.Item>
-          <Menu.Item icon="Duotune/art006" key="published">
-            已发布
-          </Menu.Item>
-          <Menu.Section className="d-flex align-items-center">
-            <span className="menu-section text-muted text-uppercase fs-8 ls-1 flex-row-fluid">
-              信息栏目
-            </span>
-            <Button
-              icon={<Icon style={{ marginRight: '.2rem' }} name="Duotune/arr087" className="" />}
-              size="sm"
-              variant="white"
-              className="py-1 px-3"
-              onClick={handleNewChannel}
-            >
-              新增
-            </Button>
-          </Menu.Section>
-          {channels.map(renderChannel)}
-          <Menu.Section>其他</Menu.Section>
-          <Menu.Item icon="Duotune/elc001" key="banner">
-            大图管理
-          </Menu.Item>
-          <Menu.Item icon="Duotune/cod002" key="authors">
-            作者
-          </Menu.Item>
-          <Menu.Item icon="Duotune/art002" key="tags">
-            标签
-          </Menu.Item>
-          <Menu.Section>全局设置</Menu.Section>
-          <Menu.Item icon="Duotune/abs008" key="settings">
-            设置
-          </Menu.Item>
-        </Menu>
-      )}
+      <Menu
+        className="cms-menu-sider menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 px-3 my-5 my-lg-0"
+        onSelect={handleSelect}
+        openKeys={openKeys}
+        onOpenChange={handleOpenChange}
+        accordion={false}
+        selectable="AllMenu"
+      >
+        <Menu.Section>我的</Menu.Section>
+        <Menu.Item icon="Duotune/art008" key="draft">
+          草稿箱
+        </Menu.Item>
+        <Menu.Item icon="Duotune/art006" key="published">
+          已发布
+        </Menu.Item>
+        <Menu.Section className="d-flex align-items-center">
+          <span className="menu-section text-muted text-uppercase fs-8 ls-1 flex-row-fluid">
+            信息栏目 {loading && ' - loading...'}
+          </span>
+          <Button
+            icon={<Icon style={{ marginRight: '.2rem' }} name="Duotune/arr087" className="" />}
+            size="sm"
+            variant="white"
+            className="py-1 px-3"
+            onClick={handleNewChannel}
+          >
+            新增
+          </Button>
+        </Menu.Section>
+        {channels.map(renderChannel)}
+        <Menu.Section>其他</Menu.Section>
+        <Menu.Item icon="Duotune/elc001" key="banner">
+          大图管理
+        </Menu.Item>
+        <Menu.Item icon="Duotune/cod002" key="authors">
+          作者
+        </Menu.Item>
+        <Menu.Item icon="Duotune/art002" key="tags">
+          标签
+        </Menu.Item>
+        <Menu.Section>全局设置</Menu.Section>
+        <Menu.Item icon="Duotune/abs008" key="settings">
+          设置
+        </Menu.Item>
+      </Menu>
       <NewArticleChannelModal
         onSuccess={refetch}
         visible={visible}
