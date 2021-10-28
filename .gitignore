@@ -36,5 +36,9 @@ screenshot
 .firebase
 .eslintcache
 
+# tmp
+graphql/index.schema.json
+src/services/api.ts
+
 build
 tests

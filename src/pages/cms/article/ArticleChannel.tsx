@@ -267,8 +267,8 @@ function ArticleChannel(props: ArticleChannelProps) {
             ]}
           />
         </Navbar.Body>
-        <Navbar.Footer className="h-55px">
-          <Nav selectedKey="settings">
+        <Navbar.Footer className="h-45px">
+          <Nav selectedKey="settings" className="fs-5 fw-bolder">
             <Nav.Item key="article">文章</Nav.Item>
             <Nav.Item key="settings">设置</Nav.Item>
           </Nav>

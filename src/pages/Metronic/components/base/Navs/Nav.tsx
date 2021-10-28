@@ -61,7 +61,7 @@ function Nav(props: NavProps) {
   return (
     <BsNav
       className={classnames(
-        'nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap',
+        'nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent flex-nowrap',
         className,
       )}
       activeKey={selectedKey}

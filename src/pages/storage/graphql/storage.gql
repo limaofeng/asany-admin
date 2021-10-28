@@ -1,0 +1,10 @@
+query STORAGE {
+  storage(id: "Global") {
+    id
+    name
+    totalFiles
+    usage(format: true)
+    quota(format: true)
+    createdAt(format: "YYYY-MM-dd")
+  }
+}

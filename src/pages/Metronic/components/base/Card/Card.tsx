@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import type { CSSProperties } from 'react';
 
 import classnames from 'classnames';
 import { Card as BsCard } from 'react-bootstrap';
@@ -6,10 +7,11 @@ import { Card as BsCard } from 'react-bootstrap';
 interface CardProps {
   title?: string;
   flush?: boolean;
-  clssName?: string;
+  className?: string;
   titleClassName?: string;
   bodyClassName?: string;
   headerClassName?: string;
+  style?: CSSProperties;
   children: React.ReactNode;
 }
 
@@ -70,6 +72,11 @@ function CardHeader(props: CardHeaderProps) {
     );
   }, [props.children, props.title, props.titleClassName]);
 
+  console.log('className', className);
+  if (!title && !toolbar) {
+    return <BsCard.Header className={className}>{props.children}</BsCard.Header>;
+  }
+
   return (
     <BsCard.Header className={className}>
       {title}
@@ -85,19 +92,14 @@ function randerHeader(
   title?: string | React.ReactNode,
   titleClassName?: string,
 ) {
+  const props: CardHeaderProps = {};
+  className && (props.className = className);
+  toolbar && (props.toolbar = toolbar);
+  titleClassName && (props.titleClassName = titleClassName);
   if (!!header) {
-    return React.cloneElement(header, { className, toolbar });
+    return React.cloneElement(header, props);
   }
-  return (
-    title && (
-      <CardHeader
-        title={title}
-        className={className}
-        titleClassName={titleClassName}
-        toolbar={toolbar}
-      />
-    )
-  );
+  return title && <CardHeader {...props} />;
 }
 
 type CardBodyProps = {
@@ -111,7 +113,7 @@ function CardBody(props: CardBodyProps) {
 }
 
 function Card(props: CardProps) {
-  const { clssName, flush, titleClassName, headerClassName } = props;
+  const { className, flush, titleClassName, headerClassName, style } = props;
 
   const { header, toolbar, body, footer, title } = useMemo(() => {
     const childs = React.Children.toArray(props.children);
@@ -139,7 +141,7 @@ function Card(props: CardProps) {
   }, [props.children, props.title, props.titleClassName, props.bodyClassName]);
 
   return (
-    <BsCard className={classnames({ 'card-flush': flush }, clssName)}>
+    <BsCard style={style} className={classnames(className, { 'card-flush': flush })}>
       {randerHeader(
         header as React.ReactElement,
         headerClassName,

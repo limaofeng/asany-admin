@@ -1,9 +1,13 @@
-import { Rule, RuleObject, RuleRender } from 'rc-field-form/lib/interface';
+import type { Rule, RuleObject, RuleRender } from 'rc-field-form/lib/interface';
 
-import InternalForm, { FormInstance, FormProps, useForm } from './Form';
-import Item, { FormItemProps } from './FormItem';
-import ErrorList, { ErrorListProps } from './ErrorList';
-import List, { FormListProps } from './FormList';
+import type { FormInstance, FormProps } from './Form';
+import InternalForm, { useForm } from './Form';
+import type { FormItemProps } from './FormItem';
+import Item from './FormItem';
+import type { ErrorListProps } from './ErrorList';
+import ErrorList from './ErrorList';
+import type { FormListProps } from './FormList';
+import List from './FormList';
 import { FormProvider } from './context';
 
 type InternalFormType = typeof InternalForm;
@@ -27,7 +31,7 @@ Form.ErrorList = ErrorList;
 Form.useForm = useForm;
 Form.Provider = FormProvider;
 
-export {
+export type {
   FormInstance,
   FormProps,
   FormItemProps,
