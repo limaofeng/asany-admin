@@ -92,21 +92,20 @@ function SignInForm() {
       setLoading(true);
       try {
         const user = await loginWithUsername(values.username, values.password);
-        const result = await Modal.success({
+        await Modal.success({
           content: '登录成功!',
           okText: '知道了',
+          timer: 1600,
+          timerProgressBar: true,
         });
-        if (result.isConfirmed) {
-          await setInitialState((s) => ({
-            ...s,
-            currentUser: user,
-          }));
-          if (!history) return;
-          const { query } = history.location as any;
-          const { redirect } = query as { redirect: string };
-          history.replace(redirect || '/');
-          return;
-        }
+        await setInitialState((s) => ({
+          ...s,
+          currentUser: user,
+        }));
+        if (!history) return;
+        const { query } = history.location as any;
+        const { redirect } = query as { redirect: string };
+        history.replace(redirect || '/');
       } catch (e) {
         await Modal.error({
           content: '出错了, 请检查错误后，请重试.',

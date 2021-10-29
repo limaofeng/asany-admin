@@ -43,15 +43,6 @@ function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | nul
     [onChange],
   );
 
-  /*  useEffect(() => {
-    if (props.value == value) {
-      return;
-    }
-    console.log('=========', props.value);
-    setValue(props.value || '');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.value]); */
-
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key !== 'Enter') {
@@ -91,4 +82,8 @@ function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | nul
   return input;
 }
 
-export default React.forwardRef(Input) as any;
+const inputForword = React.forwardRef(Input);
+
+export const internalInput = inputForword as any;
+
+export default inputForword;

@@ -4,8 +4,6 @@ import classnames from 'classnames';
 
 import type { SelectableType } from './MenuContext';
 import { MenuProvider } from './MenuContext';
-import MenuItem, { MenuSection } from './MenuItem';
-import SubMenu from './SubMenu';
 import type { ClickEvent, EventCallback, OpenCallback, SelectEvent } from './typings';
 
 import './Menu.scss';
@@ -48,7 +46,7 @@ function InternalMenu(props: any) {
   );
 }
 
-function Menu(props: MenuProps) {
+function Menu(props: MenuProps, ref: React.ForwardedRef<HTMLDivElement | null>) {
   const {
     onClick,
     onSelect,
@@ -59,8 +57,8 @@ function Menu(props: MenuProps) {
     children,
     openKeys,
     selectedKeys,
-    defaultOpenKeys,
-    defaultSelectedKeys,
+    defaultOpenKeys = [],
+    defaultSelectedKeys = [],
     ...otherProps
   } = props;
 
@@ -78,20 +76,19 @@ function Menu(props: MenuProps) {
       onClick={onClick}
       onOpenChange={onOpenChange}
     >
-      <InternalMenu {...otherProps} className={classnames(className, { 'menu-tree': !accordion })}>
+      <InternalMenu
+        dropdown={ref}
+        {...otherProps}
+        className={classnames(className, { 'menu-tree': !accordion })}
+      >
         {children}
       </InternalMenu>
     </MenuProvider>
   );
 }
 
-Menu.defaultProps = {
-  defaultSelectedKeys: [],
-  defaultOpenKeys: [],
-};
+const menuForword = React.forwardRef(Menu);
 
-Menu.Section = MenuSection;
-Menu.SubMenu = SubMenu;
-Menu.Item = MenuItem;
+export const internalMenu = menuForword as any;
 
-export default Menu;
+export default menuForword;

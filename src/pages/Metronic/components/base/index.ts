@@ -8,3 +8,4 @@ export * from './Navs';
 export * from './Tag';
 export * from './Badge';
 export * from './Bullet';
+export * from './Spin';

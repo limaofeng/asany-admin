@@ -2,6 +2,8 @@ import React, { useMemo } from 'react';
 
 import classnames from 'classnames';
 
+import { Spin } from '../Spin';
+
 type Variant =
   | 'white'
   | 'primary'
@@ -132,15 +134,14 @@ function Button(
         className,
       ),
     },
-    loading != undefined ? (
-      <span className={classnames({ 'indicator-label': !loading, 'indicator-progress': loading })}>
-        {children}
-        {loading && <span className="spinner-border spinner-border-sm align-middle ms-2" />}
-      </span>
-    ) : (
+    !loading ? (
       <>
         {icon}
         {children}
+      </>
+    ) : (
+      <>
+        <Spin tip={children} />
       </>
     ),
   );

@@ -101,24 +101,17 @@ function Dropdown(props: DropdownProps) {
     setVisible(false);
   });
 
-  const handleClick = useCallback((e) => {
-    const onClick = overlay.props.onClick;
-    setVisible(false);
-    onClick && onClick(e);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <>
       {React.cloneElement(node as React.ReactElement, {
         onClick: handleVisible,
         ref: itemRef,
       })}
-      {React.cloneElement(overlay, {
-        dropdown: subRef,
-        selectedKeys: [],
-        onClick: handleClick,
-      })}
+      {visible &&
+        React.cloneElement(overlay, {
+          ref: subRef,
+          selectedKeys: [],
+        })}
     </>
   );
 }

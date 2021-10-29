@@ -54,35 +54,44 @@ type CardHeaderProps = {
   className?: string;
   titleClassName?: string;
   toolbar?: React.ReactNode;
-  children?: React.ReactElement<CardTitleProps> | string;
+  children?: React.ReactNode;
 };
 
 function CardHeader(props: CardHeaderProps) {
-  const { className, toolbar } = props;
+  const { className } = props;
 
-  const title = useMemo(() => {
+  const children = useMemo(() => {
     const childs = React.Children.toArray(props.children);
+    const _children = [];
     const titleNode = childs.find((item) => React.isValidElement(item) && item.type == CardTitle);
-    return titleNode || typeof props.title === 'string' ? (
-      <CardTitle as="h3" className={props.titleClassName}>
-        {props.title}
-      </CardTitle>
-    ) : (
-      props.title
+    const toolbarNode = childs.find(
+      (item) => React.isValidElement(item) && item.type == CardToolbar,
     );
-  }, [props.children, props.title, props.titleClassName]);
+    const newChildren = childs.filter((item) => ![toolbarNode, titleNode].includes(item));
+    if (titleNode) {
+      _children.push(titleNode);
+    } else if (props.title) {
+      _children.push(
+        typeof props.title === 'string' ? (
+          <CardTitle as="h3" className={props.titleClassName}>
+            {props.title}
+          </CardTitle>
+        ) : (
+          props.title
+        ),
+      );
+    }
+    if (toolbarNode) {
+      _children.push(toolbarNode);
+    } else if (props.toolbar) {
+      _children.push(props.toolbar);
+    }
+    _children.push(newChildren);
+    return _children;
+  }, [props.children, props.title, props.titleClassName, props.toolbar]);
 
   console.log('className', className);
-  if (!title && !toolbar) {
-    return <BsCard.Header className={className}>{props.children}</BsCard.Header>;
-  }
-
-  return (
-    <BsCard.Header className={className}>
-      {title}
-      {toolbar}
-    </BsCard.Header>
-  );
+  return <BsCard.Header className={className}>{children}</BsCard.Header>;
 }
 
 function randerHeader(
@@ -124,7 +133,9 @@ function Card(props: CardProps) {
     const headerNode = childs.find((item) => React.isValidElement(item) && item.type == CardHeader);
     const titleNode = childs.find((item) => React.isValidElement(item) && item.type == CardTitle);
     const bodyNode = childs.find((item) => React.isValidElement(item) && item.type == CardBody);
-    const newChildren = childs.filter((item) => ![toolbar, footer, header, title].includes(item));
+    const newChildren = childs.filter(
+      (item) => ![toolbarNode, footerNode, headerNode, titleNode].includes(item),
+    );
     return {
       header: headerNode,
       toolbar: toolbarNode,

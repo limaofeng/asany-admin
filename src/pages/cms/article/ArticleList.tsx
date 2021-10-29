@@ -130,6 +130,7 @@ function ArticleActions(props: ArticleActionsProps) {
     if (key == 'edit') {
       history.push(`/cms/articles/${data.id}/edit`);
     } else if (key == 'delete') {
+      setVisible(false);
       onDelete();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -179,14 +180,14 @@ function ArticleList() {
 
   const articles = pagination.edges.map((item: any) => item.node);
 
-  const handleSearch = useCallback((e) => {
-    console.log(e.target.value);
+  const handleSearch = useCallback((value) => {
+    console.log(value);
   }, []);
 
   console.log('pagination', pagination);
 
   return (
-    <Card flush clssName="mt-6 mt-xl-9" headerClassName="mt-5">
+    <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
       <Card.Title className="flex-column">
         <h3 className="fw-bolder mb-1">文章</h3>
       </Card.Title>
@@ -218,14 +219,12 @@ function ArticleList() {
             ]}
           />
         </div>
-        <Input
+        <Input.Search
           solid
           size="sm"
-          prefix={<Icon name="Duotune/gen021" className="svg-icon-3 position-absolute ms-3" />}
-          className="w-150px ps-9"
-          boxClassName="my-1"
+          className="w-150px"
           placeholder="搜索文章"
-          onPressEnter={handleSearch}
+          onSearch={handleSearch}
         />
       </Card.Toolbar>
       <Card.Body className="pt-0">
