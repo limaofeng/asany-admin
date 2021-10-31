@@ -26,12 +26,15 @@ export type MenuProps = {
 
 function InternalMenu(props: any) {
   const { children, className, mode = 'vertical' } = props;
-  const _children = React.Children.map(children, (item: any) =>
-    React.cloneElement(item, {
-      menuKey: item.key,
-      path: item.key + '/',
-    }),
-  );
+  const _children = React.Children.map(
+    children,
+    (item: any) =>
+      item &&
+      React.cloneElement(item, {
+        menuKey: item.key,
+        path: item.key + '/',
+      }),
+  ).filter((item: any) => !!item);
 
   return (
     <div

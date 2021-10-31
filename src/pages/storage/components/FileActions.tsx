@@ -39,7 +39,7 @@ function ShareGen() {
             <Input size="sm" value="https://path/to/file/or/folder/" />
             <div className="text-muted fw-normal mt-2 fs-8 px-3">
               只读的.
-              <a href="@" className="ms-2">
+              <a href="#" className="ms-2">
                 更改权限
               </a>
             </div>
@@ -91,18 +91,20 @@ function FileActions(props: FileActionsProps) {
   );
   return (
     <div className="d-flex justify-content-end">
-      <div className="ms-2" data-kt-filemanger-table="copy_link">
-        <ShareLink>
-          <Button
-            as="button"
-            size="sm"
-            variant="light"
-            activeStyle="light"
-            activeColor="primary"
-            icon={<Icon className="svg-icon-5 m-0" name="Duotune/cod007" />}
-          />
-        </ShareLink>
-      </div>
+      {!data.isDirectory && (
+        <div className="ms-2" data-kt-filemanger-table="copy_link">
+          <ShareLink>
+            <Button
+              as="button"
+              size="sm"
+              variant="light"
+              activeStyle="light"
+              activeColor="primary"
+              icon={<Icon className="svg-icon-5 m-0" name="Duotune/cod007" />}
+            />
+          </ShareLink>
+        </div>
+      )}
       {/*--begin::More--*/}
       <div className="ms-2">
         <Dropdown
@@ -111,9 +113,11 @@ function FileActions(props: FileActionsProps) {
               onClick={handleClick}
               className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"
             >
-              <Menu.Item key="download" className="px-3">
-                下载文件
-              </Menu.Item>
+              {!data.isDirectory && (
+                <Menu.Item key="download" className="px-3">
+                  下载文件
+                </Menu.Item>
+              )}
               <Menu.Item key="rename" className="px-3">
                 重命名
               </Menu.Item>
