@@ -49,6 +49,7 @@ export interface ButtonProps {
   variant?: Variant;
   variantStyle?: VariantStyle;
   dashed?: boolean;
+  disabled?: boolean;
   icon?: React.ReactNode;
   color?: ButtonColor;
   textColor?: ButtonColor;
@@ -82,6 +83,7 @@ function Button(
     active,
     activeStyle,
     activeColor,
+    disabled,
     onClick,
     ...props
   }: ButtonProps,
@@ -114,7 +116,7 @@ function Button(
       onClick,
       ref,
       type: htmlType,
-      disabled: loading,
+      disabled: disabled || loading,
       className: classnames(
         'btn',
         buttonStyle,

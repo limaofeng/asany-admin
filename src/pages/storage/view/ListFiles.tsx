@@ -119,6 +119,7 @@ function ListFiles(props: ListFilesProps) {
   });
 
   const [renameFile, setRenameFile] = useState<FileObject>();
+  const [selectedRows, setSelectedRows] = useState<FileObject[]>([]);
 
   const currentFile = data?.currentFile;
   const files = data?.files || [];
@@ -131,6 +132,13 @@ function ListFiles(props: ListFilesProps) {
     },
     [refetch],
   ); */
+
+  const handleSelectedRows = useCallback(
+    (_, _selectedRows) => {
+      setSelectedRows(_selectedRows);
+    },
+    [setSelectedRows],
+  );
 
   const handleRename = useCallback((item) => {
     setRenameFile(item);
@@ -162,6 +170,23 @@ function ListFiles(props: ListFilesProps) {
         </Card.Title>
         <Card.Toolbar>
           <div className="d-flex justify-content-end">
+            {!!selectedRows.length && (
+              <Button variant="danger" className="me-3">
+                删除
+              </Button>
+            )}
+            {!!selectedRows.length && (
+              <Button
+                as="button"
+                variantStyle="light"
+                variant="primary"
+                className="me-3"
+                disabled={selectedRows.length != 1}
+                onClick={() => handleRename(selectedRows[0])}
+              >
+                重命名
+              </Button>
+            )}
             <Button
               variantStyle="light"
               variant="primary"
@@ -203,7 +228,12 @@ function ListFiles(props: ListFilesProps) {
           rowKey="id"
           rowSelection={{
             type: 'checkbox',
-            toolbar: () => <></>,
+            renderTitle: (size) => (
+              <>
+                已选中<span className="mx-2">{size}</span>个文件/文件夹
+              </>
+            ),
+            onChange: handleSelectedRows,
           }}
           columns={[
             {

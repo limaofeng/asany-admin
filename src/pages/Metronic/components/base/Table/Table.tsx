@@ -34,10 +34,11 @@ type TableColumn<T> = {
 
 type RowSelection = {
   type?: 'checkbox' | 'radio';
+  renderTitle?: (size: number) => React.ReactNode;
   columnTitle?: React.ReactNode;
   columnWidth?: string | number;
   selectedRowKeys?: string[];
-  toolbar?: (selectedRowKeys: string[], selectedRows: any[]) => React.ReactNode;
+  toolbar?: (selectedRowKeys: string[], selectedRows: any[]) => React.ReactNode | boolean;
   onChange?: (selectedRowKeys: string[], selectedRows: any[]) => void;
   onSelect?: (record: any, selected: boolean, selectedRows: any[], nativeEvent: any) => void;
   onSelectAll?: (selected: boolean, selectedRows: any[]) => void;
@@ -124,6 +125,15 @@ function randerTableHeaderCol<T>(col: TableColumn<T>) {
   );
 }
 
+function defaultSelectRenderTitle(size: number) {
+  return (
+    <>
+      <span className="me-2">{size}</span>
+      已选择
+    </>
+  );
+}
+
 function Table<T>(props: TableProps<T>) {
   const {
     responsive = true,
@@ -135,7 +145,14 @@ function Table<T>(props: TableProps<T>) {
     rowKey = 'key',
   } = props;
 
-  const { toolbar, onChange, onSelect, onSelectAll, getCheckboxProps } = rowSelection || {};
+  const {
+    toolbar = true,
+    renderTitle = defaultSelectRenderTitle,
+    onChange,
+    onSelect,
+    onSelectAll,
+    getCheckboxProps,
+  } = rowSelection || {};
 
   const getRowKey = useCallback((record: any) => {
     if (typeof rowKey == 'function') {
@@ -253,13 +270,13 @@ function Table<T>(props: TableProps<T>) {
               >
                 <div className="d-flex justify-content-start align-items-center">
                   <div className="fw-bolder me-5 text-gray-800">
-                    <span className="me-2">{selectedKeys.size}</span>
-                    已选择
+                    {renderTitle(selectedKeys.size)}
                   </div>
-                  {toolbar(
-                    [...selectedKeys],
-                    [...selectedKeys].map((key) => temp.current.get(key)),
-                  )}
+                  {typeof toolbar == 'function' &&
+                    toolbar(
+                      [...selectedKeys],
+                      [...selectedKeys].map((key) => temp.current.get(key)),
+                    )}
                 </div>
               </th>
             ) : (
