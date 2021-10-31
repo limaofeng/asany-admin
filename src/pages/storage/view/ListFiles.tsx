@@ -25,15 +25,6 @@ function FileName(props: FileNameProps) {
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState(data.name);
 
-  // const handleClick = useCallback(
-  //   (e: React.MouseEvent) => {
-  //     e.preventDefault();
-  //     e.stopPropagation();
-  //     onClick(data);
-  //   },
-  //   [data, onClick],
-  // );
-
   const handleChange = useCallback((e) => {
     setName(e.target.value);
   }, []);
