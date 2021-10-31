@@ -1,5 +1,6 @@
 import { component, library } from 'sunmao';
 
+import ListFiles from './view/ListFiles';
 import FileManager from './view/FileManager';
 
 @library({
@@ -10,6 +11,8 @@ import FileManager from './view/FileManager';
 class Storage {
   @component({ name: 'FileManager' })
   FileManager = FileManager;
+  @component({ name: 'ListFiles' })
+  ListFiles = ListFiles;
 }
 
 export default new Storage();

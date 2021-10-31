@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Icon from '@asany/icons';
 
 import { Button, Card, Dropdown, Input, Menu, Spin } from '@/pages/Metronic/components';
+import type { FileObject } from '@/services/api';
 
 type ShareLinkProps = {
   children: React.ReactElement;
@@ -70,13 +71,24 @@ function ShareLink(props: ShareLinkProps) {
   );
 }
 
-function FileActions() {
+type FileActionsProps = {
+  data: FileObject;
+  onRename: (data: FileObject) => void;
+};
+
+function FileActions(props: FileActionsProps) {
+  const { data, onRename } = props;
   const [visible, setVisible] = useState(false);
 
-  const handleClick = useCallback(({ key }) => {
-    console.log(key);
-    setVisible(false);
-  }, []);
+  const handleClick = useCallback(
+    ({ key }) => {
+      if (key === 'rename') {
+        onRename && onRename(data);
+      }
+      setVisible(false);
+    },
+    [data, onRename],
+  );
   return (
     <div className="d-flex justify-content-end">
       <div className="ms-2" data-kt-filemanger-table="copy_link">

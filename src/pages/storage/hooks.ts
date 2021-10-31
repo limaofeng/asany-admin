@@ -1,1 +1,1 @@
-export { useStorageQuery } from '@/services/api';
+export { useStorageQuery, useListFilesQuery } from '@/services/api';

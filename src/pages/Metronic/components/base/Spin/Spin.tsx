@@ -10,7 +10,9 @@ function Spin(props: SpinProps) {
   return (
     <span className={classnames({ 'indicator-progress': !spinning })}>
       {tip}
-      <span className="spinner-border spinner-border-sm align-middle ms-2" />
+      <span
+        className={classnames({ 'ms-2': !!tip }, 'spinner-border spinner-border-sm align-middle')}
+      />
     </span>
   );
 }

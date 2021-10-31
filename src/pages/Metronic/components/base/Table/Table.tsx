@@ -19,15 +19,15 @@ type RenderResult = {
   };
 };
 
-type TableColumn = {
+type TableColumn<T> = {
   title: string;
   dataIndex?: string;
   key?: string;
   width?: string | number;
   className?: string;
   align?: 'left' | 'right' | 'center';
-  render?: (value: string, record: any, index: number) => React.ReactNode | string | RenderResult;
-  sorter?: (a: any, b: any) => boolean;
+  render?: (value: string, record: T, index: number) => React.ReactNode | string | RenderResult;
+  sorter?: (a: T, b: T) => boolean;
   sortOrder?: 'ascend' | 'descend' | 'false';
   sortDirections?: 'ascend' | 'descend';
 };
@@ -44,18 +44,18 @@ type RowSelection = {
   getCheckboxProps?: (record: any) => any;
 };
 
-interface TableProps {
+interface TableProps<T> {
   responsive?: boolean;
   hover?: boolean;
-  rowKey?: string | ((record: any) => string);
+  rowKey?: string | ((record: T) => string);
   rowSelection?: RowSelection;
-  dataSource?: any[];
-  columns: TableColumn[];
+  dataSource?: T[];
+  columns: TableColumn<T>[];
   pagination?: PaginationProps;
 }
 
-function buildRenderCol(data: any) {
-  return function (col: TableColumn, index: number) {
+function buildRenderCol<T>(data: T) {
+  return function (col: TableColumn<T>, index: number) {
     const { align } = col;
     const value = data[(col.dataIndex || col.key) as any];
     const renderResult = col.render ? col.render(value, data, index) : value;
@@ -81,12 +81,12 @@ function buildRenderCol(data: any) {
   };
 }
 
-type ColgroupProps = {
-  columns: TableColumn[];
+type ColgroupProps<T> = {
+  columns: TableColumn<T>[];
   width: number;
 };
 
-function Colgroup({ columns }: ColgroupProps) {
+function Colgroup<T>({ columns }: ColgroupProps<T>) {
   const cols = useMemo(() => {
     const _cols = [];
     for (let i = columns.length - 1; i >= 0; i--) {
@@ -107,7 +107,7 @@ function Colgroup({ columns }: ColgroupProps) {
   return <colgroup>{cols}</colgroup>;
 }
 
-function randerTableHeaderCol(col: TableColumn) {
+function randerTableHeaderCol<T>(col: TableColumn<T>) {
   const sortable = col.sorter || col.sortDirections || col.sortOrder;
   const sortOrder = col.sortOrder;
   const key = col.key || col.dataIndex;
@@ -124,7 +124,7 @@ function randerTableHeaderCol(col: TableColumn) {
   );
 }
 
-function Table(props: TableProps) {
+function Table<T>(props: TableProps<T>) {
   const {
     responsive = true,
     hover,
@@ -226,7 +226,7 @@ function Table(props: TableProps) {
         responsive={responsive}
         className="table-row-bordered table-row-dashed gy-4 align-middle fw-bolder dataTable no-footer"
       >
-        <Colgroup
+        <Colgroup<T>
           columns={rowSelection ? [{ title: '', key: 'row_selection' }, ...columns] : columns}
           width={width}
         />
