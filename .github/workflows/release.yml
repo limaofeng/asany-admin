@@ -43,8 +43,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            limaofeng/asany-web:latest
-            limaofeng/asany-web:${{ env.RELEASE_VERSION }}
+            limaofeng/asany-admin:latest
+            limaofeng/asany-admin:${{ env.RELEASE_VERSION }}
 
   github-release:
     needs: push_to_registry
