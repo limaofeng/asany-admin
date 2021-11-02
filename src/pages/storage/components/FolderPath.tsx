@@ -4,7 +4,7 @@ import Icon from '@asany/icons';
 import classnames from 'classnames';
 import { Link } from 'react-router-dom';
 
-import type { FileObject, Storage } from '@/services/api';
+import type { FileObject, Storage } from '@/types';
 
 type FolderPathProps = {
   storage: Storage;

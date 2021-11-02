@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Icon from '@asany/icons';
 
 import { Button, Card, Dropdown, Input, Menu, Spin } from '@/pages/Metronic/components';
-import type { FileObject } from '@/services/api';
+import type { FileObject } from '@/types';
 
 type ShareLinkProps = {
   children: React.ReactElement;

@@ -6,6 +6,7 @@ public
 dist
 .umi
 mock
-src/services/api.ts
+src/pages/**/*/hooks.ts
+src/types.ts
 apollo.config.js
 graphql/index.schema.json

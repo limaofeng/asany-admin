@@ -1,10 +1,21 @@
 overwrite: true
-schema: "http://localhost:8080/graphql"
+schema: "https://api.asany.cn/graphql"
 generates:
-  src/services/api.ts:
-    documents: ["src/pages/**/*.gql", "src/pages/**/*.graphql"]
+  src/types.ts:
     plugins:
       - "typescript"
+    config:
+      withHooks: true
+  src/pages/cms/hooks.ts:
+    documents: ["src/pages/cms/**/*.gql"]
+    plugins:
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+  src/pages/storage/hooks.ts:
+    documents: ["src/pages/storage/**/*.gql"]
+    plugins:
       - "typescript-operations"
       - "typescript-react-apollo"
     config:

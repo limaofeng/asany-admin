@@ -1,18 +1,18 @@
 import { useCallback, useState } from 'react';
 
 import jquery from 'jquery';
-import { useMutation, useQuery } from '@apollo/client';
 import { Pagination } from 'react-bootstrap';
 import Icon from '@asany/icons';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 
-import type { IArticle } from './typings';
 import {
-  MUTATE_DELETE_ARTICLE,
-  MUTATE_DELETE_MANY_ARTICLES,
-  QUEERY_ARTICLE_ALL,
-} from './gql/article.gql';
+  useArticlesQuery,
+  useDeleteArticleMutation,
+  useDeleteManyArticlesMutation,
+} from '../hooks';
+
+import type { IArticle } from './typings';
 
 import {
   Badge,
@@ -70,7 +70,7 @@ type DeleteManyProps = {
 function DeleteMany(props: DeleteManyProps) {
   const { selectedRows, refetch } = props;
 
-  const [deleteManyArticles] = useMutation(MUTATE_DELETE_MANY_ARTICLES);
+  const [deleteManyArticles] = useDeleteManyArticlesMutation();
 
   const [onDelete] = useDelete(
     {
@@ -113,7 +113,7 @@ function ArticleActions(props: ArticleActionsProps) {
   const history = useHistory();
   const [visible, setVisible] = useState(false);
 
-  const [deleteArticle] = useMutation(MUTATE_DELETE_ARTICLE);
+  const [deleteArticle] = useDeleteArticleMutation();
 
   const [onDelete] = useDelete(
     {
@@ -174,11 +174,11 @@ function ArticleList() {
     );
   }
 
-  const { data, refetch } = useQuery(QUEERY_ARTICLE_ALL);
+  const { data, refetch } = useArticlesQuery();
 
-  const pagination = (data || {}).articles || { edges: [] };
+  const pagination = (data || {}).articles || { edges: [], current: 0, total: 0 };
 
-  const articles = pagination.edges.map((item: any) => item.node);
+  const articles = pagination.edges.map((item) => item.node);
 
   const handleSearch = useCallback((value) => {
     console.log(value);

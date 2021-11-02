@@ -4,12 +4,12 @@ import type { RouteComponentProps } from 'react-router';
 import Icon from '@asany/icons';
 import { Link } from 'react-router-dom';
 
-import { useListFilesQuery } from '../hooks';
 import FileActions from '../components/FileActions';
 import FolderPath from '../components/FolderPath';
+import { useListFilesQuery } from '../hooks';
 
 import { Badge, Button, Card, Input, Table } from '@/pages/Metronic/components';
-import type { FileObject, Storage } from '@/services/api';
+import type { FileObject, Storage } from '@/types';
 import { sleep } from '@/utils';
 
 type FileNameProps = {

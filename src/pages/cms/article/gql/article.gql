@@ -1,4 +1,4 @@
-query QUEERY_ARTICLE_ALL($filter: ArticleFilter, $page: Int, $pageSize: Int) {
+query articles($filter: ArticleFilter, $page: Int, $pageSize: Int) {
   articles(filter: $filter, page: $page, pageSize: $pageSize) {
     total: totalCount
     current: currentPage
@@ -83,11 +83,11 @@ mutation MUTATE_UPDATE_ARTICLE($id: ID!, $input: ArticleUpdateInput!) {
   }
 }
 
-mutation MUTATE_DELETE_ARTICLE($id: ID!) {
+mutation deleteArticle($id: ID!) {
   deleteArticle(id: $id)
 }
 
-mutation MUTATE_DELETE_MANY_ARTICLES($ids: [ID]!) {
+mutation deleteManyArticles($ids: [ID]!) {
   deleteManyArticles(ids: $ids)
 }
 
