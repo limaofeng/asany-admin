@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import classnames from 'classnames';
 import { Button, Nav, OverlayTrigger, Tab, Tooltip } from 'react-bootstrap';
 import Icon from '@asany/icons';
-import { useLocation } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 
 import { useScroll } from '../utils';
 import { useLayout, useLayoutSelector } from '../Layout/LayoutContext';
@@ -13,6 +13,7 @@ import AsideSecondary from './AsideSecondary';
 
 export interface AsideProps {
   logo?: string;
+  menuRender?: boolean;
 }
 
 const Footer = React.forwardRef((_: any, ref: any) => {
@@ -61,7 +62,9 @@ const Footer = React.forwardRef((_: any, ref: any) => {
 });
 
 function Aside(props: AsideProps) {
-  const { logo } = props;
+  const { logo, menuRender } = props;
+
+  const history = useHistory();
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
@@ -88,9 +91,16 @@ function Aside(props: AsideProps) {
 
   const [activeKey, setActiveKey] = useState<string | undefined>(currentMenu?.id);
 
-  const handleSelect = useCallback((eventKey: any) => {
-    setActiveKey(eventKey);
-  }, []);
+  const handleSelect = useCallback(
+    (eventKey: any) => {
+      setActiveKey(eventKey);
+      const menu = menus.find((item) => item.id == eventKey);
+      if (menu && menu.path) {
+        history.push(menu.path);
+      }
+    },
+    [history, menus],
+  );
 
   return (
     <div className="aside aside-extended">
@@ -124,19 +134,21 @@ function Aside(props: AsideProps) {
           </div>
           <Footer ref={footerRef} />
         </div>
-        <AsideSecondary menus={menus} />
+        {menuRender != false && <AsideSecondary menus={menus} />}
       </Tab.Container>
-      <Button
-        style={{ marginBottom: '1.35rem' }}
-        size="sm"
-        onClick={handleToggle}
-        className={classnames(
-          'btn-icon bg-body btn-color-gray-700 btn-active-primary position-absolute translate-middle start-100 end-0 bottom-0 shadow-sm d-none d-lg-flex',
-          { active: minimize },
-        )}
-      >
-        <Icon name="Duotune/arr063" className="svg-icon-2 rotate-180" />
-      </Button>
+      {menuRender != false && (
+        <Button
+          style={{ marginBottom: '1.35rem' }}
+          size="sm"
+          onClick={handleToggle}
+          className={classnames(
+            'btn-icon bg-body btn-color-gray-700 btn-active-primary position-absolute translate-middle start-100 end-0 bottom-0 shadow-sm d-none d-lg-flex',
+            { active: minimize },
+          )}
+        >
+          <Icon name="Duotune/arr063" className="svg-icon-2 rotate-180" />
+        </Button>
+      )}
     </div>
   );
 }

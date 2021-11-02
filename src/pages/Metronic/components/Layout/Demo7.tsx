@@ -13,24 +13,32 @@ import getLayoutRenderConfig from './utils';
 import * as utils from '@/utils';
 
 interface LayoutProps extends RouteComponentProps {
-  children: React.ReactNode;
   /**
    * 路由信息
    */
   route: Route;
+  /**
+   *内容
+   */
+  children: React.ReactNode;
+  /**
+   * 展示二级栏目
+   */
+  menuRender: boolean;
 }
 
 function InternalLayout(props: LayoutProps) {
-  const { children } = props;
+  const { children, menuRender } = props;
   const minimize = useLayoutSelector((state) => state.aside.minimize);
+
   return (
     <div
-      data-kt-aside-minimize={minimize ? 'on' : 'off'}
+      data-kt-aside-minimize={minimize || menuRender == false ? 'on' : 'off'}
       className="theme-metronic header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled"
     >
       <div className="d-flex flex-column flex-root">
         <div className="page d-flex flex-row flex-column-fluid">
-          <Aside />
+          <Aside menuRender={menuRender} />
           {children}
         </div>
       </div>
@@ -72,7 +80,13 @@ function LayoutWrapper(props: LayoutProps) {
 
   return (
     <LayoutProvider state={{ aside: { menus, minimize: false } }}>
-      {layoutRestProps.pure ? children : <InternalLayout {...props}>{children}</InternalLayout>}
+      {layoutRestProps.pure ? (
+        children
+      ) : (
+        <InternalLayout {...props} menuRender={layoutRestProps.menuRender}>
+          {children}
+        </InternalLayout>
+      )}
     </LayoutProvider>
   );
 }

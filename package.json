@@ -90,7 +90,7 @@
   },
   "devDependencies": {
     "@asany/umi-plugin-apollo": "^0.1.6",
-    "@asany/umi-plugin-app": "^0.1.19",
+    "@asany/umi-plugin-app": "^0.1.21",
     "@graphql-codegen/cli": "^2.2.1",
     "@graphql-codegen/introspection": "^2.1.0",
     "@graphql-codegen/typescript": "^2.2.4",
