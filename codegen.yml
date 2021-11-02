@@ -1,11 +1,15 @@
 overwrite: true
-schema: "https://api.asany.cn/graphql"
+schema: "http://localhost:8080/graphql"
 generates:
   src/types.ts:
     plugins:
       - "typescript"
     config:
       withHooks: true
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+        - eslint --fix
   src/pages/cms/hooks.ts:
     documents: ["src/pages/cms/**/*.gql"]
     plugins:
@@ -13,6 +17,10 @@ generates:
       - "typescript-react-apollo"
     config:
       withHooks: true
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+        - eslint --fix
   src/pages/storage/hooks.ts:
     documents: ["src/pages/storage/**/*.gql"]
     plugins:
@@ -20,6 +28,10 @@ generates:
       - "typescript-react-apollo"
     config:
       withHooks: true
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+        - eslint --fix
   graphql/index.schema.json:
     plugins:
       - "introspection"
