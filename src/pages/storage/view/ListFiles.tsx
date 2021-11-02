@@ -143,7 +143,7 @@ function ListFiles(props: ListFilesProps) {
     if (currentFile == null || storage == null) {
       return [];
     }
-    const [, ...objects] = currentFile!.parents!;
+    const [...objects] = currentFile!.parents!;
     const _paths = [{ id: '', name: storage.id, path: '/' }, ...objects];
     if (currentFile.path !== '/') {
       _paths.push(currentFile);

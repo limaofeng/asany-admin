@@ -101,6 +101,16 @@
     fonteditor-core "^2.1.7"
     lodash "^4.17.21"
 
+"@asany/icons@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.npmjs.org/@asany/icons/-/icons-0.2.2.tgz#9fec8086de5dd60601b796db8e4eeea49cb938d1"
+  integrity sha512-+WJNOuYKB8FACrlIKYMoYkVkJTTFEpf1MYPoIiWKNrJUKxGVowYQRCiDw8Iu/um/Nh32IAGgiCVQIe/FocnkJw==
+  dependencies:
+    classnames "^2.3.1"
+    dexie "^3.0.3"
+    fonteditor-core "^2.1.7"
+    lodash "^4.17.21"
+
 "@asany/sortable@^0.1.22":
   version "0.1.22"
   resolved "https://registry.npmjs.org/@asany/sortable/-/sortable-0.1.22.tgz#199065b0eda4485fa9825168615a41e844aec361"
