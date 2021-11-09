@@ -19,7 +19,7 @@ type RenderResult = {
   };
 };
 
-type TableColumn<T> = {
+export type TableColumn<T> = {
   title: string;
   dataIndex?: string;
   key?: string;
@@ -32,7 +32,7 @@ type TableColumn<T> = {
   sortDirections?: 'ascend' | 'descend';
 };
 
-type RowSelection = {
+export type RowSelection = {
   type?: 'checkbox' | 'radio';
   renderTitle?: (size: number) => React.ReactNode;
   columnTitle?: React.ReactNode;
@@ -45,7 +45,7 @@ type RowSelection = {
   getCheckboxProps?: (record: any) => any;
 };
 
-interface TableProps<T> {
+export interface TableProps<T> {
   responsive?: boolean;
   hover?: boolean;
   rowKey?: string | ((record: T) => string);

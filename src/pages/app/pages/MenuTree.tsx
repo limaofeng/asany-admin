@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 
 import { Icon } from '@asany/icons';
-import Tree from '@asany/tree';
 import type { RouteComponentProps } from 'react-router';
 
 import { useLoadMenusQuery } from '../hooks';
 
 import { Card } from '@/pages/Metronic/components';
 import { tree } from '@/utils';
+import { TreeList } from '@/pages/Metronic/components/base/TreeList';
 
 import './style/TreeList.scss';
 
@@ -31,7 +31,7 @@ function MenuTree(props: MenuTreeProps) {
         {
           pidKey: 'parent.id',
           sort: (l, r) => l.index - r.index,
-          converter: (item) => ({ ...item, key: item.id, title: item.name }),
+          converter: (item) => ({ ...item, key: item.id, title: item.name! }),
         },
       ),
     [routes],
@@ -39,8 +39,35 @@ function MenuTree(props: MenuTreeProps) {
 
   return (
     <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
-      xxx
-      <Tree className="tree-list" treeData={treeData} />
+      <TreeList
+        columns={[
+          {
+            key: 'title',
+            title: '名称',
+          },
+          {
+            key: 'path',
+            title: '路径',
+          },
+          {
+            key: 'authorized',
+            title: '登录访问',
+          },
+          {
+            key: 'authorized',
+            title: '登录访问',
+          },
+          {
+            key: 'enabled',
+            title: '启用状态',
+          },
+          {
+            key: 'component',
+            title: '子面板渲染组件',
+          },
+        ]}
+        dataSource={treeData}
+      />
       <ul>
         <li>
           <a>
