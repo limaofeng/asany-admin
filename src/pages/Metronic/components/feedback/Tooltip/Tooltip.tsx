@@ -5,14 +5,18 @@ import type { Placement } from '@restart/ui/usePopper';
 import type { OverlayTriggerType } from 'react-bootstrap/esm/OverlayTrigger';
 
 export type TooltipProps = {
-  title: React.ReactNode;
+  title?: React.ReactNode;
   trigger?: OverlayTriggerType;
   placement?: Placement;
-  children?: React.ReactElement;
+  children: React.ReactElement;
 };
 
 function Tooltip(props: TooltipProps) {
   const { children, title, trigger, placement } = props;
+
+  if (!title) {
+    return children;
+  }
 
   return (
     <BsOverlayTrigger

@@ -2,12 +2,12 @@ import { useEffect, useRef } from 'react';
 
 import { isEqual } from 'lodash';
 
-export interface TreeOptions<T> {
-  idKey: string;
-  pidKey: string;
+export interface TreeOptions<T, R = T> {
+  idKey?: string;
+  pidKey?: string;
   childrenKey?: string;
   getParentKey?: (data: T) => string;
-  converter?: (data: T) => T;
+  converter?: (data: T) => R;
   sort?: (l: T, r: T) => number;
 }
 
@@ -39,7 +39,7 @@ export function getFieldValue(root: any, path: string) {
   return value;
 }
 
-export function tree<T>(
+export function tree<T, R>(
   list: T[],
   {
     idKey = 'id',
@@ -48,8 +48,8 @@ export function tree<T>(
     getParentKey = (data: any) => getFieldValue(data, pidKey),
     converter = undefined,
     sort = undefined,
-  }: TreeOptions<T>,
-) {
+  }: TreeOptions<T, R>,
+): R[] {
   const start = new Date().getTime();
   try {
     let roots = list.filter((item: any) => {

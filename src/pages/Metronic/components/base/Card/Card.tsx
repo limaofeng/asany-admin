@@ -3,10 +3,14 @@ import type { CSSProperties } from 'react';
 
 import classnames from 'classnames';
 import { Card as BsCard } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 interface CardProps {
+  as?: React.ElementType;
   title?: string;
+  shadow?: false | 'sm' | 'lg';
   flush?: boolean;
+  hoverable?: boolean;
   className?: string;
   titleClassName?: string;
   bodyClassName?: string;
@@ -50,6 +54,7 @@ function CardTitle(props: CardTitleProps) {
 }
 
 type CardHeaderProps = {
+  border?: false;
   title?: string | React.ReactNode;
   className?: string;
   titleClassName?: string;
@@ -58,7 +63,7 @@ type CardHeaderProps = {
 };
 
 function CardHeader(props: CardHeaderProps) {
-  const { className } = props;
+  const { className, border } = props;
 
   const children = useMemo(() => {
     const childs = React.Children.toArray(props.children);
@@ -90,8 +95,11 @@ function CardHeader(props: CardHeaderProps) {
     return _children;
   }, [props.children, props.title, props.titleClassName, props.toolbar]);
 
-  console.log('className', className);
-  return <BsCard.Header className={className}>{children}</BsCard.Header>;
+  return (
+    <BsCard.Header className={classnames(className, { ['border-0']: border == false })}>
+      {children}
+    </BsCard.Header>
+  );
 }
 
 function randerHeader(
@@ -121,8 +129,8 @@ function CardBody(props: CardBodyProps) {
   return <BsCard.Body className={className}>{children}</BsCard.Body>;
 }
 
-function Card(props: CardProps) {
-  const { className, flush, titleClassName, headerClassName, style } = props;
+function Card(props: CardProps & { to?: string }) {
+  const { as, shadow, className, flush, titleClassName, headerClassName, style } = props;
 
   const { header, toolbar, body, footer, title } = useMemo(() => {
     const childs = React.Children.toArray(props.children);
@@ -152,7 +160,15 @@ function Card(props: CardProps) {
   }, [props.children, props.title, props.titleClassName, props.bodyClassName]);
 
   return (
-    <BsCard style={style} className={classnames(className, { 'card-flush': flush })}>
+    <BsCard
+      as={as == 'a' ? Link : as}
+      to={props.to}
+      style={style}
+      className={classnames(className, {
+        [`shadow-${shadow}`]: shadow,
+        'card-flush': flush,
+      })}
+    >
       {randerHeader(
         header as React.ReactElement,
         headerClassName,

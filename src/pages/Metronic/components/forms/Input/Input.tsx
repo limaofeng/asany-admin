@@ -1,4 +1,5 @@
 import type { DOMAttributes } from 'react';
+import { useImperativeHandle, useRef } from 'react';
 import React, { useCallback, useState } from 'react';
 
 import classnames from 'classnames';
@@ -19,7 +20,14 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
   boxClassName?: string;
 }
 
-function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | null>) {
+export type InputRef = {
+  value: string | undefined;
+  input: React.MutableRefObject<HTMLInputElement | null>;
+  blur: () => void;
+  focus: () => void;
+};
+
+function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   const {
     solid,
     prefix,
@@ -33,6 +41,25 @@ function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | nul
     boxClassName,
     ...otherProps
   } = props;
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      blur: () => {
+        inputRef.current?.blur();
+      },
+      get value() {
+        return inputRef.current?.value;
+      },
+      input: inputRef,
+      focus: () => {
+        inputRef.current?.focus();
+      },
+    }),
+    [],
+  );
 
   const [value, setValue] = useState(props.value || props.defaultValue || '');
 
@@ -56,15 +83,16 @@ function Input(props: InputProps, ref: React.ForwardedRef<HTMLInputElement | nul
   const input = (
     <input
       {...otherProps}
-      ref={ref}
+      ref={inputRef}
       onKeyDown={handleKeyDown}
       className={classnames('form-control', className, {
         [`form-control-${size}`]: !!size,
         'form-control-solid': solid,
         'form-control-borderless': !bordered,
       })}
-      value={onChange ? props.value || '' : value}
-      onChange={handleChange}
+      defaultValue={props.defaultValue}
+      value={onChange ? value || '' : undefined}
+      onChange={onChange ? handleChange : undefined}
       type={type}
       autoComplete={autoComplete ? 'off' : 'on'}
     />

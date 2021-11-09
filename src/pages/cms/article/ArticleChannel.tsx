@@ -1,6 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
 
-import classnames from 'classnames';
 import Icon from '@asany/icons';
 import { useQuery } from '@apollo/client';
 import type { RouteComponentProps } from 'react-router';
@@ -10,27 +9,11 @@ import { QUEERY_ARTICLE_CHANNEL } from './gql/article.gql';
 import ArticleList from './ArticleList';
 import { NewArticleChannelModal } from './ArticleChannelNew';
 
-import { Button, CountUp, Nav } from '@/pages/Metronic/components/base';
+import { Button, CountUp, Nav, Stat } from '@/pages/Metronic/components/base';
 import { User } from '@/pages/Metronic/components';
 import { ContentWrapper, Navbar } from '@/pages/Metronic/components/page';
 
 type ArticleChannelProps = RouteComponentProps<{ id: string }>;
-
-type StatProps = {
-  label: string;
-  className: string;
-  children: React.ReactNode;
-};
-
-function Stat(props: StatProps) {
-  const { label, children, className } = props;
-  return (
-    <div className={classnames('border border-gray-300 border-dashed rounded', className)}>
-      <div className="d-flex align-items-center">{children}</div>
-      <div className="fw-bold fs-6 text-gray-400">{label}</div>
-    </div>
-  );
-}
 
 function ArticleChannel(props: ArticleChannelProps) {
   const {

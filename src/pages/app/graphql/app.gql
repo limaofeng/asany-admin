@@ -1,0 +1,78 @@
+query myApps {
+  apps: applications {
+    id
+    name
+    description
+  }
+}
+
+query app($id: ID!) {
+  app: application(id: $id) {
+    id
+    name
+    description
+  }
+}
+
+query loadRoutes($id: ID!) {
+  app: application(id: $id) {
+    id
+    routes {
+      ...RouteParts
+    }
+  }
+}
+
+query loadMenus($id: ID!) {
+  app: application(id: $id) {
+    id
+    menus {
+      ...MenuParts
+    }
+  }
+}
+
+fragment MenuParts on Menu {
+  id
+  icon
+  name
+  path
+  type
+  index
+  authorized
+  hideInBreadcrumb
+  enabled
+  component {
+    id
+    template
+  }
+  parent {
+    id
+    path
+  }
+}
+
+fragment RouteParts on Route {
+  id
+  name
+  path
+  type
+  access
+  authorized
+  hideInBreadcrumb
+  redirect
+  component {
+    id
+    template
+  }
+  icon
+  index
+  layout {
+    pure
+  }
+  enabled
+  parent {
+    id
+    path
+  }
+}

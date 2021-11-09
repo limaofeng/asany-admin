@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
+import { useHistory } from 'react-router';
 
 import type { BulletProps } from '../Bullet';
 import { Bullet } from '../Bullet';
@@ -9,6 +10,7 @@ import { Bullet } from '../Bullet';
 import { useMenuContext, useSelector } from './MenuContext';
 
 export type MenuItemProps = {
+  url?: string;
   icon?: string;
   title?: string;
   className?: string;
@@ -34,10 +36,11 @@ export function MenuSection(props: MenuItemProps) {
 }
 
 function MenuItem(props: MenuItemProps) {
-  const { icon, children, title, bullet, className, linkClassName } = props;
+  const { url, icon, children, title, bullet, className, linkClassName } = props;
   const { menuKey, path } = props as any;
 
   const context = useMenuContext();
+  const history = useHistory();
 
   const selected = useSelector((state) => state.selectedKeys.includes(menuKey));
 
@@ -51,8 +54,9 @@ function MenuItem(props: MenuItemProps) {
   const handleClick = useCallback(
     (e) => {
       menuKey && context.select(menuKey, e);
+      url && history.push(url);
     },
-    [context, menuKey],
+    [context, menuKey, url, history],
   );
 
   return (

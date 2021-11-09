@@ -74,7 +74,7 @@ function TabContent({ menu }: TabContentProps) {
   if (menu.component) {
     return <CustomTabContent menu={menu} component={menu.component} />;
   }
-  return <Navigation menus={menu.children!} />;
+  return <Navigation title={menu.name} menus={menu.children!} />;
 }
 
 export default AsideSecondary;

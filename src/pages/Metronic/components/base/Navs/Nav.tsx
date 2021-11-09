@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Nav as BsNav } from 'react-bootstrap';
 import classnames from 'classnames';
+import { useHistory } from 'react-router';
 
 type NavItemProps = {
   key: string;
@@ -14,12 +15,24 @@ type NavItemProps = {
 function NavItem(props: NavItemProps) {
   const { children, href, className, linkClassName } = props;
   const { eventKey } = props as any;
+
+  const history = useHistory();
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      href && history.push(href);
+    },
+    [history, href],
+  );
+
   return (
     <BsNav.Item as="li" className={className}>
       <BsNav.Link
         eventKey={eventKey}
         className={classnames('text-active-primary me-6 px-3 ls-4', linkClassName)}
         href={href}
+        onClick={handleClick}
       >
         {children}
       </BsNav.Link>

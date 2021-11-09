@@ -1,17 +1,27 @@
-import { Button, Result } from 'antd';
-import { history } from 'umi';
+import Icon from '@asany/icons';
+
+import { Card } from './Metronic/components';
 
 const NoFoundPage: React.FC = () => (
-  <Result
-    status="404"
-    title="404"
-    subTitle="Sorry, the page you visited does not exist."
-    extra={
-      <Button type="primary" onClick={() => history.push('/')}>
-        Back Home
-      </Button>
-    }
-  />
+  <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
+    <ul className="jstree-container-ul jstree-children">
+      <li className="jstree-node jstree-open">
+        <i className="jstree-icon jstree-ocl" />
+        <a className="jstree-anchor">
+          <Icon name="Duotune/fil013" className="svg-icon-2x svg-icon-primary me-4" />
+          首页
+        </a>
+      </li>
+      <ul>
+        <li>
+          <a>
+            <Icon name="Duotune/fil013" className="svg-icon-2x svg-icon-primary me-4" />
+            首页
+          </a>
+        </li>
+      </ul>
+    </ul>
+  </Card>
 );
 
 export default NoFoundPage;

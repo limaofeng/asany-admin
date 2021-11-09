@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useClickAway } from 'react-use';
 
+import Menu from '../Menu';
 import * as KTMenu from '../../utils/KTMenu';
 import * as KTUtil from '../../utils/KTUtil';
 
@@ -36,8 +37,17 @@ function Dropdown(props: DropdownProps) {
       onVisibleChange && onVisibleChange(!_visible);
       return !_visible;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onVisibleChange]);
+
+  const handleClick = useCallback(
+    (onClick: (e: any) => void) => (e: any) => {
+      onClick && onClick(e);
+      if (React.Children.only(overlay).type === Menu) {
+        setVisible(false);
+      }
+    },
+    [overlay],
+  );
 
   useEffect(() => {
     if (props.visible != visible) {
@@ -110,6 +120,7 @@ function Dropdown(props: DropdownProps) {
       {visible &&
         React.cloneElement(overlay, {
           ref: subRef,
+          onClick: handleClick(overlay.props.onClick),
           selectedKeys: [],
         })}
     </>

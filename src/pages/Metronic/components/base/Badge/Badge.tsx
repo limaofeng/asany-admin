@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 
-type BadgeProps = {
+export type BadgeProps = {
   color?:
     | 'white'
     | 'primary'

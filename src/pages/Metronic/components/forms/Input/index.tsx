@@ -1,4 +1,4 @@
-import type { InputProps } from './Input';
+import type { InputProps, InputRef } from './Input';
 import { internalInput as Input } from './Input';
 import TextArea from './TextArea';
 import Password from './Password';
@@ -8,12 +8,13 @@ Input.Password = Password;
 Input.TextArea = TextArea;
 Input.Search = Search;
 interface InputWrapper
-  extends React.ForwardRefExoticComponent<
-    InputProps & React.RefAttributes<HTMLInputElement | null>
-  > {
+  extends InputRef,
+    React.ForwardRefExoticComponent<InputProps & React.RefAttributes<InputRef | null>> {
   TextArea: typeof TextArea;
   Password: typeof Password;
   Search: typeof Search;
 }
+
+export { InputRef } from './Input';
 
 export default Input as InputWrapper;

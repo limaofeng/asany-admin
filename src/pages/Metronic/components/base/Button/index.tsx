@@ -143,7 +143,7 @@ function Button(
       </>
     ) : (
       <>
-        <Spin tip={children} />
+        <Spin size="small" tip={children} />
       </>
     ),
   );
