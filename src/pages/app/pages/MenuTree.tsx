@@ -65,6 +65,11 @@ function MenuTree(props: MenuTreeProps) {
             key: 'component',
             title: '子面板渲染组件',
           },
+          {
+            key: 'actions',
+            title: '操作',
+            className: 'min-w-125px',
+          },
         ]}
         dataSource={treeData}
       />

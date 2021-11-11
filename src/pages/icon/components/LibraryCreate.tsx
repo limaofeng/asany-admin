@@ -53,6 +53,8 @@ function LibraryCreate(props: LibraryCreateProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
 
+  console.log('name', name);
+
   return (
     <Card className="library-container library-create">
       <div className={classnames('library-create-form', { active })}>
