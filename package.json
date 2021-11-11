@@ -51,7 +51,7 @@
     "@asany/editor": "^0.2.9",
     "@asany/icons": "^0.2.2",
     "@asany/sortable": "^0.1.26",
-    "@asany/tree": "^0.1.8",
+    "@asany/tree": "^0.1.9",
     "@ckeditor/ckeditor5-build-balloon-block": "^30.0.0",
     "@ckeditor/ckeditor5-react": "^3.0.3",
     "@popperjs/core": "^2.10.2",

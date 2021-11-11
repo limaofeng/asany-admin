@@ -110,10 +110,10 @@
     lodash-es "^4.17.21"
     react-flip-toolkit "^7.0.13"
 
-"@asany/tree@^0.1.8":
-  version "0.1.8"
-  resolved "https://registry.npmjs.org/@asany/tree/-/tree-0.1.8.tgz#fbd23dae80ae710cea82dce7c58a4e5f3f030211"
-  integrity sha512-r/VcIFobS4Nau3/6Is2kOtHDtW0tdaUizB0rAXb1E6yr2ldqYglWST1CARWhZ+i6zHnJYLaf6/mMXR3VwYR0oQ==
+"@asany/tree@^0.1.9":
+  version "0.1.9"
+  resolved "https://registry.npmjs.org/@asany/tree/-/tree-0.1.9.tgz#72f97466cbce27c1db8ba49a799abb9cfa9c36c1"
+  integrity sha512-kCkOkyEX6qMFOCQfCvL7MqxGMnqaNBknI7V/3YzjII1fu4eM1p8gkae4t3ufcnYcYnwj6ZcLwpW/D65gElPiXw==
   dependencies:
     "@asany/sortable" "^0.1.26"
     classnames "^2.3.1"
