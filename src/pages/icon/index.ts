@@ -4,7 +4,7 @@ import Libraries from './pages/Libraries';
 import LibraryDetails from './pages/LibraryDetails';
 
 @library({
-  name: 'cms',
+  name: 'icon',
   description: '',
   namespace: 'cn.asany.ui.admin.icon',
 })

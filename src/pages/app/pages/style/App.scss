@@ -1,0 +1,24 @@
+.app-treelist.tree-list {
+  .tree-list-body {
+    .asany-treeview-node {
+      min-height: 40px;
+      &.selected {
+        .title {
+          font-weight: bold;
+        }
+      }
+      .tree-list-col {
+        line-height: var(--bs-body-line-height);
+        .col-stacked {
+          align-items: center;
+          .badge {
+            padding: 0.5em 0.95em;
+          }
+          .span {
+            line-height: 0.95rem;
+          }
+        }
+      }
+    }
+  }
+}

@@ -28,7 +28,7 @@ function toTooltipProps(tooltip: LabelTooltipType): WrapperTooltipProps | null {
 
   return {
     title: tooltip,
-  };
+  } as any;
 }
 
 export interface FormItemLabelProps {
@@ -118,7 +118,7 @@ const FormItemLabel: React.FC<FormItemLabelProps & { required?: boolean; prefixC
         return (
           <label
             htmlFor={htmlFor}
-            className={labelClassName}
+            className={classnames(labelClassName, { required })}
             title={typeof label === 'string' ? label : ''}
           >
             {labelChildren}

@@ -6,8 +6,10 @@ import Overview from './pages/Overview';
 import MenuTree from './pages/MenuTree';
 import RouteTree from './pages/RouteTree';
 
+import './pages/style/App.scss';
+
 @library({
-  name: 'cms',
+  name: 'app',
   description: '',
   namespace: 'cn.asany.ui.admin.app',
 })

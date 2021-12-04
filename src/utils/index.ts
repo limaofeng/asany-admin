@@ -2,12 +2,16 @@ import { useEffect, useRef } from 'react';
 
 import { isEqual } from 'lodash';
 
+export type ConvolverOptions = {
+  parent?: any;
+};
+
 export interface TreeOptions<T, R = T> {
   idKey?: string;
   pidKey?: string;
   childrenKey?: string;
   getParentKey?: (data: T) => string;
-  converter?: (data: T) => R;
+  converter?: (data: T, options: ConvolverOptions) => R;
   sort?: (l: T, r: T) => number;
 }
 
@@ -76,17 +80,31 @@ export function tree<T, R>(
       return true;
     });
 
-    const converterFunc = (item: any) => {
-      if (item[childrenKey]) {
-        item[childrenKey] = item[childrenKey].map(converterFunc);
+    const converterFunc = (item: any, parent?: any) => {
+      const convItem = converter ? converter(item, { parent }) : item;
+      if (convItem[childrenKey]) {
+        convItem[childrenKey] = convItem[childrenKey].map((_item: any) =>
+          converterFunc(_item, convItem),
+        );
       }
-      return converter ? converter(item) : item;
+      return convItem;
     };
     roots = sort ? roots.sort(sort) : roots;
-    return converter ? roots.map(converterFunc) : roots;
+    return converter ? roots.map((item: any) => converterFunc(item)) : roots;
   } finally {
     console.log('list -> tree 耗时', new Date().getTime() - start, 'ms');
   }
+}
+
+export function flat<T>(treeData: T[], childrenKey: string = 'children'): T[] {
+  const narray = [];
+  for (const item of treeData) {
+    narray.push(item);
+    if (item[childrenKey]) {
+      narray.push(...flat(item[childrenKey] as any, childrenKey));
+    }
+  }
+  return narray as any;
 }
 
 function deepCompareEquals(a: any, b: any) {

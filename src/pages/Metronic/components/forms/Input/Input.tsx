@@ -62,7 +62,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     [],
   );
 
-  const [value, setValue] = useState(props.value || props.defaultValue || '');
+  const [value, setValue] = useState(props.value != null ? props.value : props.defaultValue || '');
 
   const handleChange = useCallback(
     (e) => {
@@ -97,6 +97,8 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     return props.value;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.value]);
+
+  console.log('12313123', newValue);
 
   const input = (
     <input

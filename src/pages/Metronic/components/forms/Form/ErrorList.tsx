@@ -1,9 +1,7 @@
 import React from 'react';
 
 import classnames from 'classnames';
-import CSSMotion, { CSSMotionList } from 'rc-motion';
 
-import collapseMotion from './motion';
 import { FormItemPrefixContext } from './context';
 import type { ValidateStatus } from './FormItem';
 
@@ -46,7 +44,6 @@ export default function ErrorList({
   const { prefixCls } = React.useContext(FormItemPrefixContext);
 
   const baseClassName = `${prefixCls}-item-explain`;
-  const rootPrefixCls = 'xx';
 
   const fullKeyList = React.useMemo(() => {
     if (help !== undefined && help !== null) {
@@ -59,63 +56,32 @@ export default function ErrorList({
     ];
   }, [help, helpStatus, errors, warnings]);
 
-  return (
-    <CSSMotion
-      {...collapseMotion}
-      motionName={`${rootPrefixCls}-show-help`}
-      motionAppear={false}
-      motionEnter={false}
-      visible={!!fullKeyList.length}
-      onLeaveStart={(node) => {
-        node.style.height = 'auto';
-        return { height: node.offsetHeight };
-      }}
-    >
-      {(holderProps) => {
-        const { className: holderClassName, style: holderStyle } = holderProps;
+  if (!fullKeyList.length) {
+    return <></>;
+  }
 
+  return (
+    <div
+      className={classnames(
+        'fv-plugins-message-container invalid-feedback',
+        baseClassName,
+        rootClassName,
+      )}
+    >
+      {fullKeyList.map((itemProps) => {
+        const { key, error, errorStatus } = itemProps;
         return (
           <div
-            className={classnames(
-              'fv-plugins-message-container invalid-feedback',
-              baseClassName,
-              holderClassName,
-              rootClassName,
-            )}
-            style={holderStyle}
+            key={key}
+            role="alert"
+            className={classnames({
+              [`${baseClassName}-${errorStatus}`]: errorStatus,
+            })}
           >
-            <CSSMotionList
-              keys={fullKeyList.map((item) => item.key)}
-              {...collapseMotion}
-              motionName={`${rootPrefixCls}-show-help-item`}
-              component={false}
-            >
-              {(itemProps) => {
-                const {
-                  key,
-                  error,
-                  errorStatus,
-                  className: itemClassName,
-                  style: itemStyle,
-                } = itemProps;
-
-                return (
-                  <div
-                    key={key}
-                    role="alert"
-                    className={classnames(itemClassName, {
-                      [`${baseClassName}-${errorStatus}`]: errorStatus,
-                    })}
-                    style={itemStyle}
-                  >
-                    {error}
-                  </div>
-                );
-              }}
-            </CSSMotionList>
+            {error}
           </div>
         );
-      }}
-    </CSSMotion>
+      })}
+    </div>
   );
 }

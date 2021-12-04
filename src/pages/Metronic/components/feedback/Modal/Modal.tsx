@@ -108,7 +108,9 @@ function Modal(props: ModalProps) {
           </div>
         )}
       </div>
-      <BsModal.Body className={classnames('scroll-y', bodyClassName)}>{children}</BsModal.Body>
+      <BsModal.Body className={classnames('scroll-y', bodyClassName)}>
+        {React.cloneElement(children as any, { visible: show })}
+      </BsModal.Body>
       {footer && React.cloneElement(footer as React.ReactElement, { ...footerProps, onCancel })}
     </BsModal>
   );

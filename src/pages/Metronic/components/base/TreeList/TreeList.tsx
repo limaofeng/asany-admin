@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import EventEmitter from 'events';
 
 import Icon from '@asany/icons';
 import Tree from '@asany/tree';
@@ -8,12 +10,15 @@ import { useMeasure } from 'react-use';
 
 import type { RowSelection, TableColumn } from '../Table';
 
+import { getFieldValue } from '@/utils';
+
 import './style/TreeList.scss';
 
 type TreeListProps<T> = {
+  className?: string;
   rowKey?: string | ((record: T & TreeNode) => string);
   rowSelection?: RowSelection;
-  dataSource?: T & TreeNode[];
+  dataSource?: (T & TreeNode)[];
   columns: TableColumn<T & TreeNode>[];
 };
 
@@ -32,27 +37,68 @@ function hasWidth<T>(col: TableColumn<T>) {
 
 type TreeListRowProps<T> = {
   data: T & TreeNode;
-  widths: Map<string, number>;
+  state: TreeListState;
   columns: TableColumn<T & TreeNode>[];
   rowIndex: number;
 };
 
+type TreeListRowColProps<T> = {
+  col: TableColumn<T>;
+  data: T & TreeNode;
+  value: any;
+  rowIndex: number;
+  colIndex: number;
+  state: TreeListState;
+};
+
+function TreeListRowCol<T>(props: TreeListRowColProps<T>) {
+  const { data, col, rowIndex, state, value } = props;
+
+  const [width, setWidth] = useState(state.widths.get(col.key!));
+
+  const handleChangeWidth = useCallback((_width) => {
+    setWidth(_width);
+  }, []);
+
+  useEffect(() => {
+    state.emitter.on(`${col.key}_width`, handleChangeWidth);
+    return () => {
+      state.emitter.off(`${col.key}_width`, handleChangeWidth);
+    };
+  }, [state, handleChangeWidth, col.key]);
+
+  return (
+    <div
+      key={col.key}
+      style={{ width }}
+      className={classnames(
+        'tree-list-col fs-7 text-muted d-flex align-items-center',
+        col.className,
+      )}
+    >
+      {col.render ? col.render(value, data, rowIndex) : value}
+    </div>
+  );
+}
+
 function TreeListRow<T>(props: TreeListRowProps<T>) {
-  const { data, columns, widths, rowIndex } = props;
+  const { data, columns, rowIndex, state } = props;
+
   return (
     <div className="tree-list-body-row">
-      {columns.map((col) => {
+      {columns.map((col, index) => {
         const dataIndex = col.dataIndex || col.key;
-        const value = data[dataIndex!];
+        const value = getFieldValue(data, dataIndex!);
         return (
-          <div
+          <TreeListRowCol
             key={col.key}
-            style={{ width: widths.get(col.key!) }}
-            className={classnames('tree-list-col fs-7 text-muted', col.className)}
-          >
-            {col.render ? col.render(value, data, rowIndex) : value}
-            {data.title}
-          </div>
+            state={state}
+            data={data}
+            col={col}
+            value={value}
+            rowIndex={rowIndex}
+            colIndex={index}
+          />
         );
       })}
     </div>
@@ -82,11 +128,26 @@ function TreeHeaderColumn(props: TreeHeaderColumnProps) {
   );
 }
 
-function TreeList<T>(props: TreeListProps<T>) {
-  const { columns, dataSource } = props;
+type TreeListState = {
+  widths: Map<string, number>;
+  emitter: EventEmitter;
+};
 
-  const state = useRef<{ widths: Map<string, number> }>({ widths: new Map() });
-  const [, forceRender] = useReducer((s) => s + 1, 0);
+function TreeList<T>(props: TreeListProps<T>) {
+  const { columns, className, dataSource, rowKey = 'key' } = props;
+
+  const state = useRef<TreeListState>({
+    widths: new Map(),
+    emitter: new EventEmitter(),
+  });
+
+  const getRowKey = useCallback((record: any) => {
+    if (typeof rowKey == 'function') {
+      return rowKey(record);
+    }
+    return getFieldValue(record, rowKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleIconRender = useCallback((node: any, { isDirectory }: any) => {
     if (!node.icon) {
@@ -99,23 +160,26 @@ function TreeList<T>(props: TreeListProps<T>) {
     (node: any, { rowIndex }: any) => {
       return (
         <TreeListRow
+          key={getRowKey(node)}
           data={node}
           columns={columns}
-          widths={state.current.widths}
+          state={state.current}
           rowIndex={rowIndex}
         />
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [columns],
   );
 
   const handleWidthResize = useCallback((key: string, width: number) => {
     state.current.widths.set(key, width);
-    forceRender();
+    console.log('handleWidthResize', `${key}_width`, width);
+    state.current.emitter.emit(`${key}_width`, width);
   }, []);
 
   return (
-    <div className="tree-list">
+    <div className={classnames('tree-list', className)}>
       <div className="tree-list-header">
         {columns.map((col, index) => (
           <TreeHeaderColumn

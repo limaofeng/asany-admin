@@ -1,15 +1,12 @@
 import { useMemo } from 'react';
 
-import { Icon } from '@asany/icons';
-import Tree from '@asany/tree';
 import type { RouteComponentProps } from 'react-router';
+import Icon from '@asany/icons';
 
 import { useLoadRoutesQuery } from '../hooks';
 
-import { Card } from '@/pages/Metronic/components';
+import { Badge, Button, Card, TreeList } from '@/pages/Metronic/components';
 import { tree } from '@/utils';
-
-import './style/TreeList.scss';
 
 type RouteTreeProps = RouteComponentProps<{ id: string }>;
 
@@ -37,48 +34,68 @@ function RouteTree(props: RouteTreeProps) {
     [routes],
   );
 
-  console.log('treeData', treeData);
-  // const data = [
-  //   {
-  //     key: '1',
-  //     title: '荣耀',
-  //     type: 'directory',
-  //     children: [
-  //       { key: '11', title: '鲁班7号', type: 'file' },
-  //       { key: '12', title: '廉颇', type: 'file' },
-  //       { key: '13', title: '凯', type: 'file' },
-  //       {
-  //         key: '14',
-  //         title: '长城守卫军',
-  //         type: 'directory',
-  //         children: [{ key: '15', title: '苏烈', type: 'file' }],
-  //       },
-  //       { key: '121', title: '所得', type: 'file' },
-  //     ],
-  //   },
-  //   { key: '2', title: '老王', type: 'file' },
-  //   { key: '3', title: '老五', type: 'file' },
-  //   { key: '4', title: '张三', type: 'file' },
-  //   { key: '5', title: '赵六', type: 'file' },
+  console.log(treeData, 'treeData');
 
-  //   {
-  //     key: '7',
-  //     title: '王者营地',
-  //     type: 'directory',
-  //     children: [],
-  //   },
-  // ];
   return (
     <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
-      xxx
-      <Tree className="tree-list" treeData={treeData} />
-      <ul>
-        <li>
-          <a>
-            <Icon name="Duotune/fil013" className="svg-icon-2x svg-icon-primary me-4" />
-          </a>
-        </li>
-      </ul>
+      <Card.Header className="pt-8">
+        <Card.Title />
+        <Card.Toolbar>
+          <div className="d-flex justify-content-end">
+            <Button size="sm" variant="danger" className="me-3">
+              删除
+            </Button>
+            <Button size="sm" variant="primary">
+              新建路由
+            </Button>
+          </div>
+        </Card.Toolbar>
+      </Card.Header>
+      <Card.Body className="pt-0">
+        <TreeList
+          className="app-treelist"
+          rowKey="id"
+          columns={[
+            {
+              key: 'title',
+              title: '名称',
+              render: (_, record) => {
+                return (
+                  <div className="d-flex flex-column py-5">
+                    <span className="title text-gray-800 text-hover-primary mb-1 fs-6">
+                      {record.title}
+                    </span>
+                    <div className="d-flex flex-row col-stacked">
+                      <span className="me-2">{record.path}</span>
+                      {record.authorized && <Badge color="primary">需要登录</Badge>}
+                    </div>
+                  </div>
+                );
+              },
+            },
+            {
+              key: 'actions',
+              title: '操作',
+              className: 'min-w-125px',
+              render: () => {
+                return (
+                  <div className="d-flex items-center h-100">
+                    <Button
+                      as="button"
+                      size="sm"
+                      variant="light"
+                      activeStyle="light"
+                      activeColor="primary"
+                      icon={<Icon className="svg-icon-5 m-0" name="Duotune/art006" />}
+                    />
+                  </div>
+                );
+              },
+            },
+          ]}
+          dataSource={treeData}
+        />
+      </Card.Body>
     </Card>
   );
 }

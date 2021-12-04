@@ -126,10 +126,10 @@ class MenuStoreContext {
     this._eventEmitter.emit(MENU_EVENT_CLICK, event);
     this._eventEmitter.emit(MENU_EVENT_SELECT, event);
   }
-  dispatch = (action: MenuAction) => {
+  dispatch(action: MenuAction) {
     this._state = reducer(this._state, action);
     this.dispatchSubscribe();
-  };
+  }
   removeMenuData(key: string) {
     this._state.menus!.delete(key);
   }
