@@ -127,7 +127,7 @@ function MenuTree(props: MenuTreeProps) {
   }, []);
 
   const handleCloseMenuModal = useCallback(() => {
-    setModal({ visible: true });
+    setModal({ visible: false });
   }, []);
 
   const handleEdit = useCallback((_data) => {
