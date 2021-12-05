@@ -156,6 +156,7 @@ function MenuTree(props: MenuTreeProps) {
           <TreeList
             className="app-treelist"
             rowKey="id"
+            draggable={false}
             columns={[
               {
                 key: 'title',

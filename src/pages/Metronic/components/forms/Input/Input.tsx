@@ -94,7 +94,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
       return value;
     }
     setValue(props.value!);
-    return props.value;
+    return props.value != null ? props.value : '';
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.value]);
 
@@ -111,7 +111,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
         'form-control-borderless': !bordered,
       })}
       defaultValue={props.defaultValue}
-      value={onChange ? newValue || '' : undefined}
+      value={onChange ? newValue : undefined}
       onChange={onChange ? handleChange : undefined}
       type={type}
       autoComplete={autoComplete ? 'off' : 'on'}

@@ -19,6 +19,7 @@ type TreeListProps<T> = {
   rowKey?: string | ((record: T & TreeNode) => string);
   rowSelection?: RowSelection;
   dataSource?: (T & TreeNode)[];
+  draggable?: boolean;
   columns: TableColumn<T & TreeNode>[];
 };
 
@@ -134,7 +135,7 @@ type TreeListState = {
 };
 
 function TreeList<T>(props: TreeListProps<T>) {
-  const { columns, className, dataSource, rowKey = 'key' } = props;
+  const { draggable, columns, className, dataSource, rowKey = 'key' } = props;
 
   const state = useRef<TreeListState>({
     widths: new Map(),
@@ -178,6 +179,10 @@ function TreeList<T>(props: TreeListProps<T>) {
     state.current.emitter.emit(`${key}_width`, width);
   }, []);
 
+  const handleDrop = useCallback((e) => {
+    console.log('handleDrop', e);
+  }, []);
+
   return (
     <div className={classnames('tree-list', className)}>
       <div className="tree-list-header">
@@ -195,9 +200,11 @@ function TreeList<T>(props: TreeListProps<T>) {
       </div>
       <Tree
         className="tree-list-body"
+        draggable={draggable}
         iconRender={handleIconRender}
         contentRender={handleContentRender}
         treeData={dataSource!}
+        onDrop={handleDrop}
       />
     </div>
   );

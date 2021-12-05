@@ -16,6 +16,7 @@ type OptionData = {
 };
 
 type SelectProps = {
+  value?: string;
   className?: string;
   placeholder?: string;
   width?: number | string;
@@ -29,6 +30,7 @@ type SelectProps = {
 function Select(props: SelectProps) {
   const {
     width,
+    value,
     solid,
     size,
     placeholder,
@@ -62,10 +64,15 @@ function Select(props: SelectProps) {
     console.log('props', e);
   };
 
+  useEffect(() => {
+    $(ref.current!).val(value!).trigger('change');
+  }, [value]);
+
   return (
     <select
       {...selectProps}
       ref={ref}
+      value={value}
       className={classnames('form-select', className, {
         [`form-select-${size}`]: !!size,
         'form-select-solid': solid,

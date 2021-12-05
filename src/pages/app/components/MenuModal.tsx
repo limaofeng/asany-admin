@@ -41,7 +41,7 @@ function MenuForm(props: MenuFormProps) {
 
   return (
     <Form form={form}>
-      <Form.Item name="parent" className="d-flex flex-column mb-7" label="所属栏目">
+      <Form.Item name="parentMenu" className="d-flex flex-column mb-7" label="所属栏目">
         <Select
           solid
           options={[
@@ -125,7 +125,7 @@ export function EditMenuModal(props: EditMenuModalProps) {
     setConfirmLoading(true);
     try {
       const input = await form.validateFields();
-      await delay(updateMenu({ variables: { input: { ...input, application: appId } } }), 350);
+      await delay(updateMenu({ variables: { id: data.id, input: { ...input } } }), 350);
       setConfirmLoading(false);
       onCancel && onCancel(new Event('look', { bubbles: true, cancelable: false }) as any);
       Modal.success({
@@ -138,14 +138,15 @@ export function EditMenuModal(props: EditMenuModalProps) {
     } catch (e) {
       setConfirmLoading(false);
     }
-  }, [updateMenu, onSuccess, onCancel, form, appId]);
+  }, [form, updateMenu, data.id, onCancel, onSuccess]);
 
   useEffect(() => {
     if (!data) {
       form.setFieldsValue({ type: 'URL', index: 0 });
       return;
     }
-    form.setFieldsValue(data);
+    console.log('xxxx', data);
+    form.setFieldsValue({ ...data, parentMenu: data.parentKey, type: data.menuType });
   }, [data, form]);
   return (
     <Modal
@@ -156,7 +157,7 @@ export function EditMenuModal(props: EditMenuModalProps) {
       onOk={handleSubmit}
       confirmLoading={confirmLoading}
       dialogClassName="mw-650px"
-      title="创建菜单"
+      title="编辑菜单"
     >
       <MenuForm appId={appId} form={form} />
     </Modal>
