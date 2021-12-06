@@ -1,17 +1,18 @@
 import { useCallback, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
-import { useQuery } from '@apollo/client';
 import type { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import { QUEERY_ARTICLE_CHANNEL } from './gql/article.gql';
-import ArticleList from './ArticleList';
+import ArticleList from '../components/ArticleList';
+import { useArticleChannelQuery } from '../hooks';
+
 import { NewArticleChannelModal } from './ArticleChannelNew';
 
 import { Button, CountUp, Nav, Stat } from '@/pages/Metronic/components/base';
 import { User } from '@/pages/Metronic/components';
 import { ContentWrapper, Navbar } from '@/pages/Metronic/components/page';
+import type { ArticleChannel as IArticleChannel } from '@/types';
 
 type ArticleChannelProps = RouteComponentProps<{ id: string }>;
 
@@ -22,11 +23,11 @@ function ArticleChannel(props: ArticleChannelProps) {
     },
   } = props;
 
-  const temp = useRef({});
+  const temp = useRef<IArticleChannel>({} as any);
 
   const [visible, setVisible] = useState(false);
 
-  const { data, loading } = useQuery(QUEERY_ARTICLE_CHANNEL, {
+  const { data, loading } = useArticleChannelQuery({
     variables: { id },
   });
 
@@ -41,7 +42,7 @@ function ArticleChannel(props: ArticleChannelProps) {
   const { channel } = data || { channel: temp.current };
 
   if (!loading) {
-    temp.current = channel;
+    temp.current = channel as any;
   }
 
   return (
@@ -53,10 +54,10 @@ function ArticleChannel(props: ArticleChannelProps) {
       <Navbar>
         <Navbar.Title>
           <span className="text-gray-800 text-hover-primary fs-2 fw-bolder me-3">
-            {channel.name}
+            {channel?.name}
           </span>
         </Navbar.Title>
-        <Navbar.Description>{channel.description}</Navbar.Description>
+        <Navbar.Description>{channel?.description}</Navbar.Description>
         <Navbar.Cover>
           <img
             className="mw-50px mw-lg-75px"
@@ -257,7 +258,7 @@ function ArticleChannel(props: ArticleChannelProps) {
           </Nav>
         </Navbar.Footer>
       </Navbar>
-      <ArticleList />
+      <ArticleList query={{ filter: { channel: id } }} style="small" />
     </ContentWrapper>
   );
 }

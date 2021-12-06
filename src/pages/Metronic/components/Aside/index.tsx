@@ -153,4 +153,4 @@ function Aside(props: AsideProps) {
   );
 }
 
-export default React.forwardRef(Aside);
+export default Aside;

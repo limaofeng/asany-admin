@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useQuery } from '@apollo/client';
-import { history } from 'umi';
 import Icon from '@asany/icons';
 
-import { QUEERY_ARTICLE_CHANNEL_ALL } from './gql/article.gql';
+import { useArticleChannelAllQuery } from '../hooks';
+
 import { NewArticleChannelModal } from './ArticleChannelNew';
 
 import { Button, Menu } from '@/pages/Metronic/components';
-import type { SelectEvent } from '@/pages/Metronic/components/base/Menu/typings';
 import { tree } from '@/utils';
+import type { ArticleChannel } from '@/types';
 
 import './style/ArticleSidebar.scss';
 
@@ -22,7 +21,7 @@ function renderChannel(item: any) {
     );
   }
   return (
-    <Menu.Item bullet key={item.id} icon={item.icon}>
+    <Menu.Item url={`/cms/channels/${item.id}`} bullet key={item.id} icon={item.icon}>
       {item.name}
     </Menu.Item>
   );
@@ -33,11 +32,13 @@ function ArticleSidebar() {
     data = { channels: [] },
     refetch,
     loading,
-  } = useQuery(QUEERY_ARTICLE_CHANNEL_ALL, {
+  } = useArticleChannelAllQuery({
     fetchPolicy: 'no-cache',
   });
 
-  const channels = useMemo(() => {
+  const [selectedKey, setSelectedKey] = useState<string>('draft');
+
+  const channels: ArticleChannel[] = useMemo(() => {
     if (!data.channels || !data.channels.length) {
       return [];
     }
@@ -54,16 +55,8 @@ function ArticleSidebar() {
 
   const [openKeys, setOpenKeys] = useState<string[]>(channels.map((item) => item.id));
 
-  const handleSelect = useCallback((event: SelectEvent) => {
-    if (/^[\d]+$/.test(event.key)) {
-      history.push(`/cms/channels/${event.key}`);
-    } else if ('draft' === event.key) {
-      history.push(`/cms/my/drafts`);
-    } else if ('draft' === event.key) {
-      history.push(`/cms/my/publisheds`);
-    } else if ('authors' === event.key) {
-      history.push('/cms/authors');
-    }
+  const handleSelect = useCallback((e) => {
+    setSelectedKey(e.key);
   }, []);
 
   const handleOpenChange = useCallback((keys) => {
@@ -82,7 +75,8 @@ function ArticleSidebar() {
 
   useEffect(() => {
     setOpenKeys(channels.map((item) => item.id));
-  }, [channels]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channels.map((item) => item.id).join(',')]);
 
   return (
     <>
@@ -93,15 +87,16 @@ function ArticleSidebar() {
         className="cms-menu-sider menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 px-3 my-5 my-lg-0"
         onSelect={handleSelect}
         openKeys={openKeys}
+        selectedKeys={selectedKey ? [selectedKey] : []}
         onOpenChange={handleOpenChange}
         accordion={false}
         selectable="AllMenu"
       >
         <Menu.Section>我的</Menu.Section>
-        <Menu.Item icon="Duotune/art008" key="draft">
+        <Menu.Item url="/cms/my/drafts" icon="Duotune/art008" key="draft">
           草稿箱
         </Menu.Item>
-        <Menu.Item icon="Duotune/art006" key="published">
+        <Menu.Item url="/cms/my/published" icon="Duotune/art006" key="published">
           已发布
         </Menu.Item>
         <Menu.Section className="d-flex align-items-center">
@@ -123,7 +118,7 @@ function ArticleSidebar() {
         <Menu.Item icon="Duotune/elc001" key="banner">
           大图管理
         </Menu.Item>
-        <Menu.Item icon="Duotune/cod002" key="authors">
+        <Menu.Item url="/cms/authors" icon="Duotune/cod002" key="authors">
           作者
         </Menu.Item>
         <Menu.Item icon="Duotune/art002" key="tags">

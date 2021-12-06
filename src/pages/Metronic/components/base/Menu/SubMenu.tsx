@@ -89,7 +89,7 @@ function SubMenu(props: SubMenuProps) {
     }
     const my = state.menus!.get(menuKey);
     const sle = state.menus!.get(state.selectedKeys[0]);
-    return sle?.path.startsWith(my!.path);
+    return my?.path && sle?.path.startsWith(my?.path);
   });
   const opened = useSelector((state) => state.openKeys.includes(menuKey));
 

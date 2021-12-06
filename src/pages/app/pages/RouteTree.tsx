@@ -34,8 +34,6 @@ function RouteTree(props: RouteTreeProps) {
     [routes],
   );
 
-  console.log(treeData, 'treeData');
-
   return (
     <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
       <Card.Header className="pt-8">

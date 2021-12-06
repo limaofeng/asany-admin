@@ -1,5 +1,5 @@
 import type { DOMAttributes } from 'react';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useImperativeHandle, useRef } from 'react';
 import React, { useCallback, useState } from 'react';
 
@@ -81,24 +81,14 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     [onPressEnter],
   );
 
-  useEffect(() => {
-    if (props.value == value) {
-      return;
-    }
-    setValue(props.value!);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.value]);
-
   const newValue = useMemo(() => {
     if (props.value == value) {
-      return value;
+      return value != null ? value : '';
     }
     setValue(props.value!);
     return props.value != null ? props.value : '';
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.value]);
-
-  console.log('12313123', newValue);
 
   const input = (
     <input

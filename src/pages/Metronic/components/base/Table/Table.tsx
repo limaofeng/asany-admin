@@ -169,57 +169,59 @@ function Table<T>(props: TableProps<T>) {
 
   const handleChange = useCallback(
     (e) => {
-      setSelectedKeys((prevSelectedKeys) => {
-        if (e.target.checked) {
-          (dataSource || []).forEach((data) => {
-            prevSelectedKeys.add(getRowKey(data));
-          });
-        } else {
-          (dataSource || []).forEach((data) => {
-            prevSelectedKeys.delete(getRowKey(data));
-          });
-        }
-        const _selectedKeys = [...prevSelectedKeys];
-        const selectedRows = _selectedKeys.map((key) => temp.current.get(key));
-        onChange && onChange(_selectedKeys, selectedRows);
-        onSelectAll && onSelectAll(e.target.checked, selectedRows);
-        return new Set<string>(_selectedKeys);
-      });
+      if (e.target.checked) {
+        (dataSource || []).forEach((data) => {
+          selectedKeys.add(getRowKey(data));
+        });
+      } else {
+        (dataSource || []).forEach((data) => {
+          selectedKeys.delete(getRowKey(data));
+        });
+      }
+      const _selectedKeys = [...selectedKeys];
+      const selectedRows = _selectedKeys.map((key) => temp.current.get(key));
+
+      setSelectedKeys(new Set<string>(_selectedKeys));
+      onChange && onChange(_selectedKeys, selectedRows);
+      onSelectAll && onSelectAll(e.target.checked, selectedRows);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dataSource],
+    [dataSource, selectedKeys],
   );
 
   const handleSelect = useCallback(
     (data: any) => (e: React.ChangeEvent<any>) => {
-      setSelectedKeys((prevSelectedKeys) => {
-        const _rowKey = getRowKey(data);
-        if (prevSelectedKeys.has(_rowKey)) {
-          prevSelectedKeys.delete(_rowKey);
-        } else {
-          prevSelectedKeys.add(_rowKey);
-        }
-        const _selectedKeys = [...prevSelectedKeys];
-        const selectedRows = _selectedKeys.map((key) => temp.current.get(key));
-        onChange && onChange(_selectedKeys, selectedRows);
-        onSelect &&
-          onSelect(temp.current.get(_rowKey), prevSelectedKeys.has(_rowKey), selectedRows, e);
-        return new Set<string>(prevSelectedKeys);
-      });
+      const _rowKey = getRowKey(data);
+      if (selectedKeys.has(_rowKey)) {
+        selectedKeys.delete(_rowKey);
+      } else {
+        selectedKeys.add(_rowKey);
+      }
+      const _selectedKeys = [...selectedKeys];
+      const selectedRows = _selectedKeys.map((key) => temp.current.get(key));
+      onChange && onChange(_selectedKeys, selectedRows);
+      onSelect && onSelect(temp.current.get(_rowKey), selectedKeys.has(_rowKey), selectedRows, e);
+
+      setSelectedKeys(new Set<string>(selectedKeys));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [selectedKeys],
   );
 
   useEffect(() => {
     if (!dataSource) {
       return;
     }
+    temp.current.clear();
     for (const item of dataSource) {
       temp.current.set(getRowKey(item), item);
     }
     setSelectedKeys((keys) => {
-      keys.clear();
+      Array.from(keys.keys()).forEach((key) => {
+        if (!temp.current.has(key)) {
+          keys.delete(key);
+        }
+      });
       return new Set(keys);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

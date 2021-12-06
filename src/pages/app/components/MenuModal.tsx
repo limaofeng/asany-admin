@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useCreateMenuMutation, useLoadMenusQuery, useUpdateMenuMutation } from '../hooks';
 
@@ -10,6 +10,7 @@ type MenuFormProps = {
   appId: string;
   visible?: boolean;
   form: FormInstance;
+  data: any;
 };
 
 function MenuForm(props: MenuFormProps) {
@@ -40,7 +41,7 @@ function MenuForm(props: MenuFormProps) {
   );
 
   return (
-    <Form form={form}>
+    <Form form={form} initialValues={props.data}>
       <Form.Item name="parentMenu" className="d-flex flex-column mb-7" label="所属栏目">
         <Select
           solid
@@ -140,14 +141,15 @@ export function EditMenuModal(props: EditMenuModalProps) {
     }
   }, [form, updateMenu, data.id, onCancel, onSuccess]);
 
-  useEffect(() => {
+  const defaultData = useMemo(() => {
     if (!data) {
-      form.setFieldsValue({ type: 'URL', index: 0 });
-      return;
+      return { type: 'URL', index: 0 };
     }
-    console.log('xxxx', data);
-    form.setFieldsValue({ ...data, parentMenu: data.parentKey, type: data.menuType });
-  }, [data, form]);
+    return { ...data, parentMenu: data.parentKey, type: data.menuType };
+  }, [data]);
+
+  console.log('MenuForm', defaultData, data);
+
   return (
     <Modal
       centered
@@ -159,7 +161,7 @@ export function EditMenuModal(props: EditMenuModalProps) {
       dialogClassName="mw-650px"
       title="编辑菜单"
     >
-      <MenuForm appId={appId} form={form} />
+      <MenuForm appId={appId} data={defaultData} form={form} />
     </Modal>
   );
 }
@@ -201,13 +203,13 @@ export function NewMenuModal(props: NewMenuModalProps) {
     }
   }, [createMenu, onSuccess, onCancel, form, appId]);
 
-  useEffect(() => {
+  const defaultData = useMemo(() => {
     if (!data) {
-      form.setFieldsValue({ type: 'URL', index: 0 });
-      return;
+      return { type: 'URL', index: 0 };
     }
-    form.setFieldsValue(data);
-  }, [data, form]);
+    return { ...data, parentMenu: data.parentKey, type: data.menuType };
+  }, [data]);
+
   return (
     <Modal
       centered
@@ -219,7 +221,7 @@ export function NewMenuModal(props: NewMenuModalProps) {
       dialogClassName="mw-650px"
       title="创建菜单"
     >
-      <MenuForm appId={appId} form={form} />
+      <MenuForm data={defaultData} appId={appId} form={form} />
     </Modal>
   );
 }

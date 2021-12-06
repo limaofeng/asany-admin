@@ -137,11 +137,16 @@ type TreeListState = {
 function TreeList<T>(props: TreeListProps<T>) {
   const { draggable, columns, className, dataSource, rowKey = 'key' } = props;
 
-  const state = useRef<TreeListState>({
-    widths: new Map(),
-    emitter: new EventEmitter(),
-  });
-
+  const state = useRef<TreeListState>(
+    (() => {
+      const emitter = new EventEmitter();
+      emitter.setMaxListeners(10000);
+      return {
+        widths: new Map(),
+        emitter,
+      };
+    })(),
+  );
   const getRowKey = useCallback((record: any) => {
     if (typeof rowKey == 'function') {
       return rowKey(record);
@@ -175,7 +180,6 @@ function TreeList<T>(props: TreeListProps<T>) {
 
   const handleWidthResize = useCallback((key: string, width: number) => {
     state.current.widths.set(key, width);
-    console.log('handleWidthResize', `${key}_width`, width);
     state.current.emitter.emit(`${key}_width`, width);
   }, []);
 

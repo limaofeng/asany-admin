@@ -1,10 +1,12 @@
 import { component, library } from 'sunmao';
 
-import ArticleList from './article/ArticleList';
+import MyDrafts from './pages/MyDrafts';
+import ArticleList from './components/ArticleList';
 import ArticleView from './article/ArticleView';
 import ArticleSidebar from './article/ArticleSidebar';
 import ArticleChannel from './article/ArticleChannel';
 import { ArticleEdit, ArticleNew } from './article/ArticleEditor';
+import MyPublished from './pages/MyPublished';
 
 @library({
   name: 'cms',
@@ -24,6 +26,10 @@ class Cms {
   ArticleNew = ArticleNew;
   @component({ name: 'ArticleEdit' })
   ArticleEdit = ArticleEdit;
+  @component({})
+  MyDrafts = MyDrafts;
+  @component({})
+  MyPublished = MyPublished;
 }
 
 export default new Cms();

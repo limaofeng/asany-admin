@@ -134,8 +134,6 @@ function MenuTree(props: MenuTreeProps) {
     setModal({ visible: true, data: _data });
   }, []);
 
-  console.log('treeData', treeData);
-
   return (
     <>
       <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
@@ -227,6 +225,7 @@ function MenuTree(props: MenuTreeProps) {
         <NewMenuModal
           onSuccess={refetch}
           appId={id}
+          data={modal.data}
           visible={modal.visible}
           onCancel={handleCloseMenuModal}
         />

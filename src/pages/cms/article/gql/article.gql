@@ -22,7 +22,7 @@ query articles($filter: ArticleFilter, $page: Int, $pageSize: Int) {
   }
 }
 
-query QUEERY_ARTICLE_CHANNEL_ALL {
+query articleChannelAll {
   channels: articleChannels {
     id
     icon
@@ -38,11 +38,12 @@ query QUEERY_ARTICLE_CHANNEL_ALL {
   }
 }
 
-query QUEERY_ARTICLE_CHANNEL($id: ID!) {
+query articleChannel($id: ID!) {
   channel: articleChannel(id: $id) {
     id
     icon
     name
+    description
     cover
     path
     index
