@@ -9,7 +9,7 @@ import { useArticleChannelQuery } from '../hooks';
 
 import { NewArticleChannelModal } from './ArticleChannelNew';
 
-import { Button, CountUp, Nav, Stat } from '@/pages/Metronic/components/base';
+import { Button, CountUp, Dropdown, Menu, Nav, Stat } from '@/pages/Metronic/components/base';
 import { User } from '@/pages/Metronic/components';
 import { ContentWrapper, Navbar } from '@/pages/Metronic/components/page';
 import type { ArticleChannel as IArticleChannel } from '@/types';
@@ -26,6 +26,7 @@ function ArticleChannel(props: ArticleChannelProps) {
   const temp = useRef<IArticleChannel>({} as any);
 
   const [visible, setVisible] = useState(false);
+  const [visibleMoreActions, setVisibleMoreActions] = useState(false);
 
   const { data, loading } = useArticleChannelQuery({
     variables: { id },
@@ -87,23 +88,29 @@ function ArticleChannel(props: ArticleChannelProps) {
             visible={visible}
             onCancel={handleCloseNewChannel}
           />
-          <a
-            href="#"
-            className="btn btn-sm btn-primary me-3"
-            data-bs-toggle="modal"
-            data-bs-target="#kt_modal_new_target"
-          >
-            Add Target
-          </a>
           {/*--begin::Menu--*/}
           <div className="me-0">
-            <button
-              className="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
-              data-kt-menu-trigger="click"
-              data-kt-menu-placement="bottom-end"
+            <Dropdown
+              overlay={
+                <Menu className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4">
+                  <Menu.Item key="delete" className="px-3 actions-delete">
+                    删除
+                  </Menu.Item>
+                </Menu>
+              }
+              placement="bottomRight"
+              onVisibleChange={setVisibleMoreActions}
+              visible={visibleMoreActions}
             >
-              <i className="bi bi-three-dots fs-3" />
-            </button>
+              <Button
+                size="sm"
+                variantStyle="background"
+                variant="light"
+                activeStyle="text"
+                activeColor="primary"
+                icon={<i className="bi bi-three-dots fs-3" />}
+              />
+            </Dropdown>
             {/*--begin::Menu 3--*/}
             <div
               className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-bold w-200px py-3"
@@ -258,7 +265,7 @@ function ArticleChannel(props: ArticleChannelProps) {
           </Nav>
         </Navbar.Footer>
       </Navbar>
-      <ArticleList query={{ filter: { channel: id } }} style="small" />
+      <ArticleList query={{ filter: { channel_startsWith: id } }} style="small" />
     </ContentWrapper>
   );
 }

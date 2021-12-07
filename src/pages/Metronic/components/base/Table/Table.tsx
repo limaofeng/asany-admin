@@ -38,7 +38,7 @@ export type RowSelection = {
   columnTitle?: React.ReactNode;
   columnWidth?: string | number;
   selectedRowKeys?: string[];
-  toolbar?: (selectedRowKeys: string[], selectedRows: any[]) => React.ReactNode | boolean;
+  toolbar?: ((selectedRowKeys: string[], selectedRows: any[]) => React.ReactNode) | boolean;
   onChange?: (selectedRowKeys: string[], selectedRows: any[]) => void;
   onSelect?: (record: any, selected: boolean, selectedRows: any[], nativeEvent: any) => void;
   onSelectAll?: (selected: boolean, selectedRows: any[]) => void;

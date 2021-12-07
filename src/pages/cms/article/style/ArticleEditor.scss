@@ -80,6 +80,31 @@
       font-size: 2.4rem;
     }
   }
+  &-channel {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 0 var(--ck-spacing-standard);
+    background: transparent;
+    border: none;
+
+    .select2-container--bootstrap5 .select2-selection.select2-selection--multiple.form-select-sm {
+      padding-left: 0;
+      line-height: 1.8;
+      border-width: 0;
+      min-width: 184px;
+      .select2-selection__choice {
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-right: 16px;
+        padding-left: 8px;
+        background-color: #f5f8fa;
+        > span {
+          margin-left: 16px;
+          color: #7e8299;
+        }
+      }
+    }
+  }
   &-content {
     --ck-color-focus-border: transparent;
     max-width: 740px;

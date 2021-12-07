@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import classnames from 'classnames';
 import $ from 'jquery';
@@ -22,9 +22,10 @@ type SelectProps = {
   width?: number | string;
   solid?: boolean;
   size?: 'sm' | 'lg';
+  multiple?: boolean;
   options?: OptionData[];
-  onChange?: (value: string | number, option: OptionData | OptionData[]) => void;
-  onSelect?: (value: string | number, option: OptionData) => void;
+  onChange?: (value: string[] | string | number, option: OptionData | OptionData[]) => void;
+  onSelect?: (value: string[] | string | number, option: OptionData) => void;
 };
 
 function Select(props: SelectProps) {
@@ -33,6 +34,7 @@ function Select(props: SelectProps) {
     value,
     solid,
     size,
+    multiple = false,
     placeholder,
     className,
     onChange,
@@ -43,16 +45,33 @@ function Select(props: SelectProps) {
   const ref = useRef<HTMLSelectElement>(null);
 
   const handleSelect = useCallback((e) => {
-    const data = e.params.data;
-    onSelect && onSelect(data.id, data as any);
-    onChange && onChange(data.id, data as any);
+    const params = e.params;
+    if (!params._type) {
+      return;
+    }
+    const ids = $(e.target)
+      .select2('data')
+      .map((item) => item.id);
+    if (multiple) {
+      onSelect && onSelect(ids, params);
+      onChange && onChange(ids, params);
+    } else {
+      onSelect && onSelect(ids[0], params);
+      onChange && onChange(ids[0], params);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const instance = $(ref.current!)
-      .select2({ placeholder, minimumResultsForSearch: Infinity, width: width as any })
-      .on('select2:select', handleSelect);
+      .select2({
+        multiple,
+        placeholder,
+        minimumResultsForSearch: Infinity,
+        width: width as any,
+      })
+      .on('select2:select', handleSelect)
+      .on('select2:unselect', handleSelect);
     const select2 = instance.data('select2') as any;
     return () => {
       select2.destroy();
@@ -60,24 +79,27 @@ function Select(props: SelectProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleChange = (e: any) => {
-    console.log('props', e);
-  };
-
   useEffect(() => {
-    $(ref.current!).val(value!).trigger('change');
-  }, [value]);
+    if (multiple) {
+      $(ref.current!).val(value!).trigger('change');
+      const select2 = $(ref.current!).select2 as any;
+      select2.apply($(ref.current!), ['val', value || []]);
+    } else {
+      $(ref.current!).val(value!).trigger('change');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, options]);
+
+  console.log(selectProps, value);
 
   return (
     <select
       {...selectProps}
       ref={ref}
-      value={value}
       className={classnames('form-select', className, {
         [`form-select-${size}`]: !!size,
         'form-select-solid': solid,
       })}
-      onChange={handleChange}
     >
       {options?.map((item) => (
         <option key={item.value} value={item.value}>
@@ -88,4 +110,4 @@ function Select(props: SelectProps) {
   );
 }
 
-export default Select;
+export default React.memo(Select);

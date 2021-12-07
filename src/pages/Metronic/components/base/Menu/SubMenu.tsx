@@ -3,6 +3,7 @@ import { useRef } from 'react';
 
 import Icon from '@asany/icons';
 import classnames from 'classnames';
+import { useHistory } from 'react-router-dom';
 
 import * as KTUtil from '../../utils/KTUtil';
 import type { BulletProps } from '../Bullet';
@@ -23,6 +24,7 @@ const defaultOptions = {
 };
 
 interface SubMenuProps {
+  url?: string;
   icon?: string;
   title: string;
   bullet?: boolean | BulletProps;
@@ -68,11 +70,12 @@ async function hide(item: HTMLElement, sub: HTMLElement) {
 }
 
 function SubMenu(props: SubMenuProps) {
-  const { menuKey, path, bullet } = props as any;
+  const { url, menuKey, path, bullet } = props as any;
   const { icon, title, children } = props;
   const itemRef = useRef<HTMLDivElement>(null);
   const subRef = useRef<HTMLDivElement>(null);
 
+  const history = useHistory();
   const context = useMenuContext();
 
   const accordion = useSelector((state) => state.accordion);
@@ -103,8 +106,9 @@ function SubMenu(props: SubMenuProps) {
   const handleSelect = useCallback(
     (e) => {
       menuKey && context.select(menuKey, e);
+      url && history.push(url);
     },
-    [context, menuKey],
+    [context, history, menuKey, url],
   );
 
   const handleClick = useCallback(

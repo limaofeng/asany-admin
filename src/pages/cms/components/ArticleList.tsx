@@ -19,6 +19,7 @@ import {
   Button,
   Card,
   Dropdown,
+  Empty,
   Input,
   Menu,
   Modal,
@@ -176,6 +177,7 @@ function ArticleList(props: ArticleListProps) {
   const { query, style = 'normal' } = props;
   const { data, refetch } = useArticlesQuery({
     variables: { ...query },
+    fetchPolicy: 'cache-and-network',
   });
 
   const pagination = (data || {}).articles || { edges: [], current: 0, total: 0 };
@@ -356,67 +358,82 @@ function ArticleList(props: ArticleListProps) {
           </Card.Header>
         )}
         <Card.Body className="pt-0">
-          <Table
-            rowKey="id"
-            rowSelection={{
-              type: 'checkbox',
-              onChange: handleSelectedRows,
-              selectedRowKeys: (selectedRows || []).map((item) => item.id),
-              renderTitle: (size) => (
-                <>
-                  已选中<span className="mx-2">{size}</span>篇文章
-                </>
-              ),
-              toolbar: (_, _selectedRows) => (
-                <DeleteMany selectedRows={_selectedRows} refetch={refetch} />
-              ),
-            }}
-            pagination={pagination}
-            dataSource={articles}
-            columns={[
-              {
-                title: '标题',
-                dataIndex: 'title',
-                key: 'title',
-                render: (title, record) => {
-                  return (
-                    <div className="d-flex flex-column">
-                      <Link
-                        to={`/cms/articles/${record.id}`}
-                        className="text-gray-800 text-hover-primary mb-1"
-                      >
-                        {title}
-                      </Link>
-                      <span className="text-gray-500">
-                        {record.status} . {record.createdAt}
-                      </span>
-                    </div>
-                  );
+          {!pagination.total ? (
+            <Empty
+              title="新增文章"
+              description="该栏目还是空的，没有任何以发布的文章"
+              image="/assets/media/illustrations/sigma-1/4.png"
+            >
+              <Button as={Link} variant="primary" to="/cms/articles/new">
+                新建文章
+              </Button>
+            </Empty>
+          ) : (
+            <Table
+              rowKey="id"
+              rowSelection={{
+                type: 'checkbox',
+                onChange: handleSelectedRows,
+                selectedRowKeys: (selectedRows || []).map((item) => item.id),
+                renderTitle: (size) => (
+                  <>
+                    已选中<span className="mx-2">{size}</span>篇文章
+                  </>
+                ),
+                toolbar:
+                  style == 'small' &&
+                  ((_, _selectedRows) =>
+                    (<DeleteMany selectedRows={_selectedRows} refetch={refetch} />) as any),
+              }}
+              pagination={pagination}
+              dataSource={articles}
+              columns={[
+                {
+                  title: '标题',
+                  dataIndex: 'title',
+                  key: 'title',
+                  render: (title, record) => {
+                    return (
+                      <div className="d-flex flex-column">
+                        <Link
+                          to={`/cms/articles/${record.id}/edit`}
+                          className="text-gray-800 text-hover-primary mb-1"
+                        >
+                          {title}
+                        </Link>
+                        <span className="text-gray-500">
+                          {record.status} . {record.createdAt}
+                        </span>
+                      </div>
+                    );
+                  },
                 },
-              },
-              {
-                title: '状态',
-                dataIndex: 'status',
-                width: 120,
-                render: (value) => {
-                  const status = {
-                    DRAFT: { title: '草稿', lightStyle: 'danger' },
-                    PUBLISHED: { title: '已发布' },
-                    SCHEDULED: { title: '计划', lightStyle: 'primary' },
-                  };
-                  return <Badge lightStyle={status[value].lightStyle}>{status[value].title}</Badge>;
+                {
+                  title: '状态',
+                  dataIndex: 'status',
+                  width: 120,
+                  render: (value) => {
+                    const status = {
+                      DRAFT: { title: '草稿', lightStyle: 'danger' },
+                      PUBLISHED: { title: '已发布' },
+                      SCHEDULED: { title: '计划', lightStyle: 'primary' },
+                    };
+                    return (
+                      <Badge lightStyle={status[value].lightStyle}>{status[value].title}</Badge>
+                    );
+                  },
                 },
-              },
-              {
-                title: '操作',
-                key: 'action',
-                width: 140,
-                render: (_, record: any) => {
-                  return <ArticleActions data={record} refetch={refetch} />;
+                {
+                  title: '操作',
+                  key: 'action',
+                  width: 140,
+                  render: (_, record: any) => {
+                    return <ArticleActions data={record} refetch={refetch} />;
+                  },
                 },
-              },
-            ]}
-          />
+              ]}
+            />
+          )}
         </Card.Body>
       </Card>
     </div>

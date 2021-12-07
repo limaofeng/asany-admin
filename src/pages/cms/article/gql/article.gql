@@ -54,11 +54,14 @@ query articleChannel($id: ID!) {
   }
 }
 
-mutation MUTATE_CREATE_ARTICLE($input: ArticleCreateInput!) {
+mutation createArticle($input: ArticleCreateInput!) {
   article: createArticle(input: $input) {
     id
     title
     status
+    channels {
+      id
+    }
     content {
       id
       __typename
@@ -69,11 +72,14 @@ mutation MUTATE_CREATE_ARTICLE($input: ArticleCreateInput!) {
   }
 }
 
-mutation MUTATE_UPDATE_ARTICLE($id: ID!, $input: ArticleUpdateInput!) {
+mutation updateArticle($id: ID!, $input: ArticleUpdateInput!) {
   article: updateArticle(id: $id, input: $input) {
     id
     title
     status
+    channels {
+      id
+    }
     content {
       id
       __typename
@@ -92,10 +98,13 @@ mutation deleteManyArticles($ids: [ID]!) {
   deleteManyArticles(ids: $ids)
 }
 
-query QUERY_ARTICLE($id: ID!) {
+query article($id: ID!) {
   article(id: $id) {
     id
     title
+    channels {
+      id
+    }
     content {
       id
       __typename
@@ -106,7 +115,7 @@ query QUERY_ARTICLE($id: ID!) {
   }
 }
 
-mutation MUTATE_CREATE_ARTICLE_CHANNEL($input: ArticleChannelCreateInput!) {
+mutation createArticleChannel($input: ArticleChannelCreateInput!) {
   createArticleChannel(input: $input) {
     id
   }

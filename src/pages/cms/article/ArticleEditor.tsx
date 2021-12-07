@@ -1,28 +1,33 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 import classnames from 'classnames';
-import { useMutation, useQuery } from '@apollo/client';
 import { useHoverDirty } from 'react-use';
 import NavigationPrompt from 'react-router-navigation-prompt';
+
+import {
+  useArticleChannelAllQuery,
+  useArticleQuery,
+  useCreateArticleMutation,
+  useUpdateArticleMutation,
+} from '../hooks';
 
 import { delayUpdate } from './utils';
 import ArticleContentEditor from './components/ArticleContentEditor';
 import NavigationPromptModal from './components/NavigationPromptModal';
-import { MUTATE_CREATE_ARTICLE, MUTATE_UPDATE_ARTICLE, QUERY_ARTICLE } from './gql/article.gql';
-import type { IArticle } from './typings';
 
 import { useForm } from '@/pages/Metronic/components/forms/Form/Form';
 import { Button, DatePicker, Form, Input, Select } from '@/pages/Metronic/components';
 import SettingsMenu from '@/components/SettingsMenu';
 import { delay } from '@/utils';
+import type { Article } from '@/types';
 
 import './style/ArticleEditor.scss';
 
 type ArticleEditorProps =
   | {
-      data?: IArticle;
+      data?: Article;
     } & RouteComponentProps;
 
 type IArticleStatus = 'New' | 'Draft' | 'Published';
@@ -30,7 +35,7 @@ type IArticleSavedStatus = 'Saving' | 'NotSaved' | 'Saved';
 
 type ArticleSettingsProps = {
   isNew: boolean;
-  onChange: (values: IArticle) => void;
+  onChange: (values: Article) => void;
 };
 
 const STATUS_MAPPINGS = {
@@ -119,8 +124,8 @@ function ArticleStatus({ value, saved }: { value: IArticleStatus; saved: IArticl
 type ArticleState = {
   status: IArticleStatus;
   saved: IArticleSavedStatus;
-  data?: IArticle;
-  temp?: IArticle;
+  data?: Article;
+  temp?: Article;
 };
 
 /**
@@ -148,17 +153,24 @@ function ArticleEditor(props: ArticleEditorProps) {
   const stateRef = useRef<ArticleState>({ status: 'New', saved: 'Saved' });
   const [settingsMenuCollapsed, setSettingsMenuCollapsed] = useState(true);
 
+  const { data: { channels: _channels } = {} } = useArticleChannelAllQuery();
+
+  const channels = useMemo(
+    () => (_channels || []).map((item) => ({ label: item.fullName, value: item.id })),
+    [_channels],
+  );
+
   useEffect(() => {
     if (!props.data) {
       return;
     }
     const state = stateRef.current;
-    state.data = props.data;
-    state.temp = {};
+    state.data = { ...props.data, channels: props.data.channels.map((item: any) => item.id) };
+    state.temp = {} as any;
     state.status = STATUS_MAPPINGS[state.data!.status!] as IArticleStatus;
     forceRender();
 
-    const values = { ...state.data, content: state.data.content?.text };
+    const values = { ...state.data, content: (state.data.content as any)?.text };
     for (const key in values) {
       if (values[key] == null) {
         values[key] = undefined;
@@ -168,11 +180,11 @@ function ArticleEditor(props: ArticleEditorProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.data]);
 
-  const [createArticle] = useMutation(MUTATE_CREATE_ARTICLE, {
+  const [createArticle] = useCreateArticleMutation({
     fetchPolicy: 'no-cache',
   });
 
-  const [updateArticle] = useMutation(MUTATE_UPDATE_ARTICLE, {
+  const [updateArticle] = useUpdateArticleMutation({
     fetchPolicy: 'no-cache',
   });
 
@@ -195,11 +207,14 @@ function ArticleEditor(props: ArticleEditorProps) {
               }),
               350,
             );
-            state.data = data.article;
-            state.temp = {};
+            state.data = {
+              ...data.article,
+              channels: data.article.channels.map((item: any) => item.id),
+            };
+            state.temp = {} as any;
             state.status = STATUS_MAPPINGS[data.article.status];
           } else {
-            await delay(
+            const { data } = await delay(
               updateArticle({
                 variables: {
                   id: state.data!.id,
@@ -208,6 +223,10 @@ function ArticleEditor(props: ArticleEditorProps) {
               }),
               350,
             );
+            state.data = {
+              ...data.article,
+              channels: data.article.channels.map((item: any) => item.id),
+            };
           }
         } catch (e) {
           state.temp = values;
@@ -295,7 +314,7 @@ function ArticleEditor(props: ArticleEditorProps) {
   const isHoveringCoverOrTitle = isHoveringCover || isHoveringTitle;
 
   return (
-    <div className="flex flex-row modal-fullscreen art-main">
+    <div className="tw-flex tw-flex-row modal-fullscreen art-main">
       <NavigationPrompt disableNative when={stateRef.current.saved == 'NotSaved'}>
         {({ onConfirm, onCancel }) => (
           <NavigationPromptModal onConfirm={onConfirm} onCancel={onCancel} />
@@ -303,7 +322,7 @@ function ArticleEditor(props: ArticleEditorProps) {
       </NavigationPrompt>
       <div className="art-editor">
         <div className="art-editor-header">
-          <div className="flex items-center pe-auto">
+          <div className="tw-flex tw-items-center pe-auto">
             <Button
               icon={<Icon name="Duotune/arr074" className="svg-icon-2" />}
               variant="white"
@@ -315,7 +334,7 @@ function ArticleEditor(props: ArticleEditorProps) {
               <ArticleStatus value={stateRef.current.status} saved={stateRef.current.saved} />
             </div>
           </div>
-          <div className="flex">
+          <div className="tw-flex">
             {stateRef.current.status !== 'New' && (
               <>
                 <Button
@@ -347,7 +366,7 @@ function ArticleEditor(props: ArticleEditorProps) {
           >
             <div ref={coverContainer} className="art-editor-feature-image-container">
               <div
-                className={classnames('flex flex-row items-center', {
+                className={classnames('tw-flex flex-row tw-items-center', {
                   invisible: !isHoveringCoverOrTitle,
                 })}
               >
@@ -370,6 +389,11 @@ function ArticleEditor(props: ArticleEditorProps) {
                   onPressEnter={handlePressEnterOfTitle}
                   placeholder="文章标题"
                 />
+              </Form.Item>
+            </div>
+            <div className="art-editor-channel">
+              <Form.Item name="channels" noStyle={true}>
+                <Select size="sm" multiple placeholder="选择栏目" width="auto" options={channels} />
               </Form.Item>
             </div>
             <div className="art-editor-content">
@@ -416,14 +440,14 @@ export function ArticleNew(props: ArticleNewProps) {
 export function ArticleEdit(props: ArticleEditProps) {
   const { id } = props.match.params;
 
-  const { data, loading } = useQuery(QUERY_ARTICLE, {
+  const { data, loading } = useArticleQuery({
     variables: { id },
     fetchPolicy: 'no-cache',
   });
 
   console.log('ArticleEdit', data, loading);
 
-  return <ArticleEditor {...props} data={data?.article} />;
+  return <ArticleEditor {...props} data={data?.article as any} />;
 }
 
 export default ArticleEditor;

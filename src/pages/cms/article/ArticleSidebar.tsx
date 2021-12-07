@@ -15,7 +15,13 @@ import './style/ArticleSidebar.scss';
 function renderChannel(item: any) {
   if (item.children && item.children.length) {
     return (
-      <Menu.SubMenu bullet key={item.id} icon={item.icon} title={item.name}>
+      <Menu.SubMenu
+        url={`/cms/channels/${item.id}`}
+        bullet
+        key={item.id}
+        icon={item.icon}
+        title={item.name}
+      >
         {(item.children || []).map(renderChannel)}
       </Menu.SubMenu>
     );

@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { useMutation, useQuery } from '@apollo/client';
-
-import { MUTATE_CREATE_ARTICLE_CHANNEL, QUEERY_ARTICLE_CHANNEL_ALL } from './gql/article.gql';
+import { useArticleChannelAllQuery, useCreateArticleChannelMutation } from '../hooks';
 
 import type { ClickCallback, FormInstance } from '@/pages/Metronic/components';
 import { Form, Input, Modal, Select, Upload } from '@/pages/Metronic/components';
@@ -15,9 +13,7 @@ type ArticleChannelNewProps = {
 };
 
 function ArticleChannelNew({ form }: ArticleChannelNewProps) {
-  const { data = { channels: [] }, loading } = useQuery<{ channels: any[] }>(
-    QUEERY_ARTICLE_CHANNEL_ALL,
-  );
+  const { data = { channels: [] }, loading } = useArticleChannelAllQuery();
 
   const { channels } = data;
 
@@ -77,7 +73,7 @@ export const NewArticleChannelModal = (props: NewArticleChannelModalProps) => {
   const form = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const [createArticleChannel] = useMutation(MUTATE_CREATE_ARTICLE_CHANNEL, {
+  const [createArticleChannel] = useCreateArticleChannelMutation({
     fetchPolicy: 'no-cache',
   });
 
