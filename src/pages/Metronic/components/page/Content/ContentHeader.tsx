@@ -19,19 +19,18 @@ function Toolbar() {
   return (
     <div className="d-flex flex-shrink-0">
       <div className="d-flex ms-3">
-        <a
+        {/* <a
           href="#"
           className="btn btn-flex flex-center bg-body btn-color-gray-700 btn-active-color-primary w-40px w-md-auto h-40px px-0 px-md-6"
-          // tooltip="New Member"
           data-bs-toggle="modal"
           data-bs-target="#kt_modal_invite_friends"
         >
           <Icon name="Duotune/arr075" />
           <span className="d-none d-md-inline">New Member</span>
-        </a>
+        </a> */}
       </div>
       <div className="d-flex ms-3">
-        <a
+        {/* <a
           href="#"
           className="btn btn-flex flex-center bg-body btn-color-gray-700 btn-active-color-primary w-40px w-md-auto h-40px px-0 px-md-6"
           // tooltip="New App"
@@ -41,7 +40,7 @@ function Toolbar() {
         >
           <Icon name="Duotune/gen005" />
           <span className="d-none d-md-inline">New App</span>
-        </a>
+        </a> */}
       </div>
       <div className="d-flex align-items-center ms-3">
         <div

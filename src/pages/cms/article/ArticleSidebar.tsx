@@ -39,7 +39,7 @@ function ArticleSidebar() {
     refetch,
     loading,
   } = useArticleChannelAllQuery({
-    fetchPolicy: 'no-cache',
+    fetchPolicy: 'cache-and-network',
   });
 
   const [selectedKey, setSelectedKey] = useState<string>('draft');

@@ -5,6 +5,10 @@ import Icon from '@asany/icons';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import classnames from 'classnames';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+
+moment.locale('zh-cn');
 
 import type { ArticlesQueryVariables } from '../hooks';
 import {
@@ -361,7 +365,7 @@ function ArticleList(props: ArticleListProps) {
           {!pagination.total ? (
             <Empty
               title="新增文章"
-              description="该栏目还是空的，没有任何以发布的文章"
+              description="该栏目还是空的，没有任何文章"
               image="/assets/media/illustrations/sigma-1/4.png"
             >
               <Button as={Link} variant="primary" to="/cms/articles/new">
@@ -402,7 +406,12 @@ function ArticleList(props: ArticleListProps) {
                           {title}
                         </Link>
                         <span className="text-gray-500">
-                          {record.status} . {record.createdAt}
+                          {record.channels.map((item) => (
+                            <Badge className="me-2" key={item.id}>
+                              {item.fullName}
+                            </Badge>
+                          ))}
+                          {moment(record.createdAt).fromNow()}
                         </span>
                       </div>
                     );

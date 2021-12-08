@@ -199,6 +199,11 @@ function ArticleEditor(props: ArticleEditorProps) {
         forceRender();
         try {
           if (state.status == 'New') {
+            if (!values.title) {
+              state.saved = 'NotSaved';
+              forceRender();
+              return;
+            }
             const { data } = await delay(
               createArticle({
                 variables: {

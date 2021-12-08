@@ -13,6 +13,10 @@ query articles($filter: ArticleFilter, $page: Int, $pageSize: Int) {
           id
           name
         }
+        channels {
+          id
+          fullName
+        }
         createdBy
         createdAt
         publishedAt
