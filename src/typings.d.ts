@@ -19,10 +19,8 @@ declare module 'react-fittext';
 declare module 'bizcharts-plugin-slider';
 declare module 'react-owl-carousel3';
 declare module 'react-tabs';
+
 declare module '@ckeditor/ckeditor5-react';
-declare module '@ckeditor/ckeditor5-build-balloon-block' {
-  const BalloonBlockEditorBuild: any;
-  export = BalloonBlockEditorBuild;
-}
+declare module '@asany/ckeditor5';
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;

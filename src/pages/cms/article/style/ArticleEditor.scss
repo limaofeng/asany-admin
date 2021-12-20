@@ -88,10 +88,10 @@
     border: none;
 
     .select2-container--bootstrap5 .select2-selection.select2-selection--multiple.form-select-sm {
+      min-width: 184px;
       padding-left: 0;
       line-height: 1.8;
       border-width: 0;
-      min-width: 184px;
       .select2-selection__choice {
         margin-top: 0;
         margin-bottom: 0;
@@ -117,6 +117,28 @@
     .ck.ck-content {
       color: #394047;
       font-size: 1.24rem;
+    }
+
+    .ck.ck-toolbar {
+      background: transparent;
+    }
+
+    .ck.ck-editor__top .ck-sticky-panel .ck-toolbar {
+      border-width: 0;
+    }
+
+    .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+      border-color: transparent;
+    }
+  }
+  &-switch-editor {
+    position: absolute;
+    right: 124px;
+    bottom: 30px;
+    display: flex;
+    align-items: center;
+    & > a {
+      margin-right: 16px;
     }
   }
   &-wordcount-container {

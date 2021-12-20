@@ -39,7 +39,8 @@ screenshot
 # tmp
 src/types.ts
 graphql/index.schema.json
-src/pages/**/hooks.ts
+src/pages/**/*/hooks.ts
+src/pages/*/hooks.ts
 
 build
 tests

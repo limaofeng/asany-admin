@@ -97,7 +97,6 @@ function Modal(props: ModalProps) {
       show={show}
       dialogClassName={dialogClassName}
       onHide={onCancel}
-      // dialogAs={({ children }: any) => <>{children}</>}
     >
       {/*--begin::Modal header--*/}
       <div className={classnames('modal-header', { 'pb-0 border-0 justify-content-end': !title })}>
@@ -109,7 +108,9 @@ function Modal(props: ModalProps) {
         )}
       </div>
       <BsModal.Body className={classnames('scroll-y', bodyClassName)}>
-        {React.cloneElement(children as any, { visible: show })}
+        {React.Children.count(children) == 1
+          ? React.cloneElement(children as any, { visible: show })
+          : children}
       </BsModal.Body>
       {footer && React.cloneElement(footer as React.ReactElement, { ...footerProps, onCancel })}
     </BsModal>

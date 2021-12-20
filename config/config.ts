@@ -50,8 +50,6 @@ export default defineConfig({
     (config as any).experiments = (config as any).experiments || {};
     (config as any).experiments.syncWebAssembly = true;
 
-    // console.log(config.module.rules);
-
     createCSSRule({
       lang: 'sass',
       type: 'csr',

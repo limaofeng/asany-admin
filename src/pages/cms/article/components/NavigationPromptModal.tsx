@@ -30,7 +30,7 @@ function NavigationPromptModal({ onConfirm, onCancel }: NavigationPromptModalPro
       <div className="d-flex justify-content-between">
         <div className="fw-bold" />
         <div>
-          <Button variant="light" className="mr-5" onClick={onCancel}>
+          <Button variant="light" className="me-3" onClick={onCancel}>
             留在当前页面
           </Button>
           <Button variant="danger" onClick={onConfirm}>

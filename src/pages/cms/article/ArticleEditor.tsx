@@ -14,6 +14,7 @@ import {
 } from '../hooks';
 
 import { delayUpdate } from './utils';
+import type { EditorStyle } from './components/ArticleContentEditor';
 import ArticleContentEditor from './components/ArticleContentEditor';
 import NavigationPromptModal from './components/NavigationPromptModal';
 
@@ -152,8 +153,14 @@ function ArticleEditor(props: ArticleEditorProps) {
   const [, forceRender] = useReducer((s) => s + 1, 0);
   const stateRef = useRef<ArticleState>({ status: 'New', saved: 'Saved' });
   const [settingsMenuCollapsed, setSettingsMenuCollapsed] = useState(true);
+  const [editor, setEditor] = useState<EditorStyle>('BalloonBlockEditor');
+  const [wordCount, setWordCount] = useState<number>(0);
 
   const { data: { channels: _channels } = {} } = useArticleChannelAllQuery();
+
+  const handleWordCount = useCallback((wc) => {
+    setWordCount(wc.characters);
+  }, []);
 
   const channels = useMemo(
     () => (_channels || []).map((item) => ({ label: item.fullName, value: item.id })),
@@ -274,18 +281,18 @@ function ArticleEditor(props: ArticleEditorProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    const editor = editorRef.current;
-    if (!!editor) {
+    const _editor = editorRef.current;
+    if (!!_editor) {
       // 创建空行
-      editor.model.change((writer: any) => {
-        editor.focus();
+      _editor.model.change((writer: any) => {
+        _editor.focus();
 
         // 如果存在空行
-        if (editor.getData().startsWith('<p>&nbsp;</p>')) {
-          return focusFirstRange(editor, writer);
+        if (_editor.getData().startsWith('<p>&nbsp;</p>')) {
+          return focusFirstRange(_editor, writer);
         }
 
-        const selection = focusFirstRange(editor, writer);
+        const selection = focusFirstRange(_editor, writer);
 
         // 插入空行
         const p1 = writer.createElement('paragraph');
@@ -297,12 +304,12 @@ function ArticleEditor(props: ArticleEditorProps) {
         writer.append(p2, blockQuote);
 
         // 插入模型片段
-        editor.model.insertContent(docFrag, selection);
+        _editor.model.insertContent(docFrag, selection);
 
-        focusFirstRange(editor, writer);
+        focusFirstRange(_editor, writer);
       });
       // 获取焦点
-      // editor.focus();
+      // _editor.focus();
     }
   }, []);
 
@@ -403,13 +410,24 @@ function ArticleEditor(props: ArticleEditorProps) {
             </div>
             <div className="art-editor-content">
               <Form.Item name="content" noStyle={true}>
-                <ArticleContentEditor container={container} ref={editorRef} />
+                <ArticleContentEditor
+                  onWordCount={handleWordCount}
+                  editor={editor}
+                  container={container}
+                  ref={editorRef}
+                />
               </Form.Item>
             </div>
           </Form>
         </div>
+        <div className="art-editor-switch-editor text-gray-500">
+          <a onClick={() => setEditor('ClassicEditor')}>经典</a>
+          <a onClick={() => setEditor('BalloonBlockEditor')}>简洁</a>
+        </div>
         <div className="art-editor-wordcount-container">
-          <div className="art-editor-wordcount text-gray-500">437 个字符</div>
+          <div id="word-count" className="art-editor-wordcount text-gray-500">
+            {wordCount} 个字符
+          </div>
           <Icon name="Duotune/art008" className="svg-icon-4 px-2 py-2" />
         </div>
       </div>

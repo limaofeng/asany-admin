@@ -90,8 +90,6 @@ function Select(props: SelectProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, options]);
 
-  console.log(selectProps, value);
-
   return (
     <select
       {...selectProps}
