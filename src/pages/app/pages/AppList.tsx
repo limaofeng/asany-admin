@@ -16,7 +16,7 @@ function AppList() {
     >
       <Row gutter={6} xl={9}>
         {apps.map((item) => (
-          <Col md={6} xl={4}>
+          <Col key={item.id} md={6} xl={4}>
             {/*----begin::Card--*/}
             <Card as="a" to={`/apps/${item.id}`} className="border-hover-primary">
               <Card.Header border={false} className="pt-9">

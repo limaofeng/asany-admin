@@ -1771,14 +1771,6 @@
     "@ckeditor/ckeditor5-utils" "^31.1.0"
     lodash-es "^4.17.15"
 
-"@ckeditor/ckeditor5-word-count@^31.1.0":
-  version "31.1.0"
-  resolved "https://registry.npmjs.org/@ckeditor/ckeditor5-word-count/-/ckeditor5-word-count-31.1.0.tgz#cd0cd4a6ecfd72488ad4af5bf5ce87092bc8fa2c"
-  integrity sha512-m1KwGsSGV77yPAjJCvDv51kIOZEpLTzW0XozL8OiPTZLWXHnwVrOffNdh/uTkUF82GxMcz/vJk2tt14vZZjlPg==
-  dependencies:
-    ckeditor5 "^31.1.0"
-    lodash-es "^4.17.15"
-
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.npmjs.org/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -1927,6 +1919,47 @@
   version "2.3.0"
   resolved "https://registry.npmjs.org/@formatjs/intl-utils/-/intl-utils-2.3.0.tgz#2dc8c57044de0340eb53a7ba602e59abf80dc799"
   integrity sha512-KWk80UPIzPmUg+P0rKh6TqspRw0G6eux1PuJr+zz47ftMaZ9QDwbGzHZbtzWkl5hgayM/qrKRutllRC7D/vVXQ==
+
+"@fullcalendar/common@~5.10.1":
+  version "5.10.1"
+  resolved "https://registry.npmjs.org/@fullcalendar/common/-/common-5.10.1.tgz#a019951743852277a4095e536fd7716f6f85b9aa"
+  integrity sha512-EumKIJcQTvQdTs75/9dmeREFgjcRVWzqHJS1Xvlz5mNsmB+w9EINCHETRjChtAQg1WD/lTQyVj4sHsKO7vCMSw==
+  dependencies:
+    tslib "^2.1.0"
+
+"@fullcalendar/core@^5.10.1":
+  version "5.10.1"
+  resolved "https://registry.npmjs.org/@fullcalendar/core/-/core-5.10.1.tgz#05c7653e5004149a63bcb03e9dc8b049186ca50b"
+  integrity sha512-8sVuC6ywXV+cxqsqTZaR1hgUqeyjVed20NyZ7lGW9AY0kma1GIEwLgqPS5Q6uVhHyin68lmgecKfJCwhxENE8w==
+  dependencies:
+    "@fullcalendar/common" "~5.10.1"
+    preact "^10.0.5"
+    tslib "^2.1.0"
+
+"@fullcalendar/daygrid@^5.10.1", "@fullcalendar/daygrid@~5.10.1":
+  version "5.10.1"
+  resolved "https://registry.npmjs.org/@fullcalendar/daygrid/-/daygrid-5.10.1.tgz#bdee4f58364fdab631b2abf8b56094ab5776f203"
+  integrity sha512-sfUMP+rew0krsBffgNcWWKhBCiyytGfRKZJoc64E8ohX7VWjPcPZuB1xgO5U4wPLmNkT0rZiHoGeQGTXw1+ZKg==
+  dependencies:
+    "@fullcalendar/common" "~5.10.1"
+    tslib "^2.1.0"
+
+"@fullcalendar/react@^5.10.1":
+  version "5.10.1"
+  resolved "https://registry.npmjs.org/@fullcalendar/react/-/react-5.10.1.tgz#bb1652357f98b7dc01894a41e7204f1391999791"
+  integrity sha512-+kV5+o9qGjkoO5j0r3oawhig+hP3inE68bHKBl6dtGQ8mi3GkEGsTL12MY2n5N0hXon6+2psIQLnAjMyRYZbmg==
+  dependencies:
+    "@fullcalendar/common" "~5.10.1"
+    tslib "^2.1.0"
+
+"@fullcalendar/timegrid@^5.10.1":
+  version "5.10.1"
+  resolved "https://registry.npmjs.org/@fullcalendar/timegrid/-/timegrid-5.10.1.tgz#fa7feb909bf599eac1466b9e70c0d56ce0d1aefc"
+  integrity sha512-0O0m+JzFBlg8gxYr/rIjZViRlbndCtjZlDjjIylQHFBeWC32e3cpHEavKGbTIBLN8SDilUYAJnE21abSqC2G/w==
+  dependencies:
+    "@fullcalendar/common" "~5.10.1"
+    "@fullcalendar/daygrid" "~5.10.1"
+    tslib "^2.1.0"
 
 "@graphql-codegen/cli@^2.3.0":
   version "2.3.0"
@@ -9461,6 +9494,11 @@ iterall@^1.2.1:
   resolved "https://registry.npmjs.org/iterall/-/iterall-1.3.0.tgz#afcb08492e2915cbd8a0884eb93a8c94d0d72fea"
   integrity sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg==
 
+jalaali-js@^1.1.0:
+  version "1.2.3"
+  resolved "https://registry.npmjs.org/jalaali-js/-/jalaali-js-1.2.3.tgz#365775826d2eece5e6552b96aff384c8773bb406"
+  integrity sha512-irl0pXL59Xl0Oz6jyOiJed/NxrVeS6fSx6a8atQOH/LsPWPZwBCxwe5XVEIqjnwt69FRxvnCCwQn5dTMxwbazQ==
+
 javascript-stringify@^2.0.1:
   version "2.1.0"
   resolved "https://registry.npmjs.org/javascript-stringify/-/javascript-stringify-2.1.0.tgz#27c76539be14d8bd128219a2d731b09337904e79"
@@ -12449,6 +12487,11 @@ postcss@^8.1.2, postcss@^8.3.11, postcss@^8.3.6:
     picocolors "^1.0.0"
     source-map-js "^1.0.1"
 
+preact@^10.0.5:
+  version "10.6.4"
+  resolved "https://registry.npmjs.org/preact/-/preact-10.6.4.tgz#ad12c409ff1b4316158486e0a7b8d43636f7ced8"
+  integrity sha512-WyosM7pxGcndU8hY0OQlLd54tOU+qmG45QXj2dAYrL11HoyU/EzOSTlpJsirbBr1QW7lICxSsVJJmcmUglovHQ==
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
@@ -13453,6 +13496,13 @@ react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+
+react-modern-calendar-datepicker@^3.1.6:
+  version "3.1.6"
+  resolved "https://registry.npmjs.org/react-modern-calendar-datepicker/-/react-modern-calendar-datepicker-3.1.6.tgz#46b1533eb387a4d93ae8217eb30c26a4174a138f"
+  integrity sha512-lnMqEMj9Wn32/sm119tjCl5lOkq4u9vJE7wggi7hdXV4s8rPdKlH56FVVehlBi0dfYeWQVZ9npY384Zprjn4WA==
+  dependencies:
+    jalaali-js "^1.1.0"
 
 react-moveable@^0.30.3:
   version "0.30.3"

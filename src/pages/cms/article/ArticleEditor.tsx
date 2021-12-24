@@ -19,7 +19,7 @@ import ArticleContentEditor from './components/ArticleContentEditor';
 import NavigationPromptModal from './components/NavigationPromptModal';
 
 import { useForm } from '@/pages/Metronic/components/forms/Form/Form';
-import { Button, DatePicker, Form, Input, Select } from '@/pages/Metronic/components';
+import { Button, DatePicker, Form, Input, Select, Spin } from '@/pages/Metronic/components';
 import SettingsMenu from '@/components/SettingsMenu';
 import { delay } from '@/utils';
 import type { Article } from '@/types';
@@ -29,6 +29,7 @@ import './style/ArticleEditor.scss';
 type ArticleEditorProps =
   | {
       data?: Article;
+      loading?: boolean;
     } & RouteComponentProps;
 
 type IArticleStatus = 'New' | 'Draft' | 'Published';
@@ -141,7 +142,7 @@ function focusFirstRange(editor: any, writer: any) {
 }
 
 function ArticleEditor(props: ArticleEditorProps) {
-  const { history } = props;
+  const { history, loading = false } = props;
 
   const form = useForm();
   const editorRef = useRef<any>(null);
@@ -188,11 +189,11 @@ function ArticleEditor(props: ArticleEditorProps) {
   }, [props.data]);
 
   const [createArticle] = useCreateArticleMutation({
-    fetchPolicy: 'no-cache',
+    fetchPolicy: 'network-only',
   });
 
   const [updateArticle] = useUpdateArticleMutation({
-    fetchPolicy: 'no-cache',
+    fetchPolicy: 'network-only',
   });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -326,129 +327,137 @@ function ArticleEditor(props: ArticleEditorProps) {
   const isHoveringCoverOrTitle = isHoveringCover || isHoveringTitle;
 
   return (
-    <div className="tw-flex tw-flex-row modal-fullscreen art-main">
-      <NavigationPrompt disableNative when={stateRef.current.saved == 'NotSaved'}>
-        {({ onConfirm, onCancel }) => (
-          <NavigationPromptModal onConfirm={onConfirm} onCancel={onCancel} />
-        )}
-      </NavigationPrompt>
-      <div className="art-editor">
-        <div className="art-editor-header">
-          <div className="tw-flex tw-items-center pe-auto">
-            <Button
-              icon={<Icon name="Duotune/arr074" className="svg-icon-2" />}
-              variant="white"
-              onClick={handleBack}
-            >
-              文章
-            </Button>
-            <div className="art-editor-status px-6">
-              <ArticleStatus value={stateRef.current.status} saved={stateRef.current.saved} />
-            </div>
-          </div>
-          <div className="tw-flex">
-            {stateRef.current.status !== 'New' && (
-              <>
-                <Button
-                  variant="white"
-                  color="primary"
-                  activeColor="primary"
-                  activeStyle="text"
-                  className="me-3"
-                >
-                  预览
-                </Button>
-                <Button variant="white" className={classnames({ 'me-3': settingsMenuCollapsed })}>
-                  发布
-                </Button>
-              </>
-            )}
-            {settingsMenuCollapsed && <div className="settings-menu-toggle-spacer" />}
-          </div>
-        </div>
-        <div
-          ref={container}
-          className="art-editor-body relative w-100 vh-100 overflow-x-hidden hover-scroll-overlay-y px-5"
-        >
-          <Form
-            form={form}
-            initialValues={stateRef.current.data || {}}
-            onValuesChange={handleChange}
-            component={false}
-          >
-            <div ref={coverContainer} className="art-editor-feature-image-container">
-              <div
-                className={classnames('tw-flex flex-row tw-items-center', {
-                  invisible: !isHoveringCoverOrTitle,
-                })}
+    <Spin spinning={loading}>
+      <div className="tw-flex tw-flex-row modal-fullscreen art-main">
+        <NavigationPrompt disableNative when={stateRef.current.saved == 'NotSaved'}>
+          {({ onConfirm, onCancel }) => (
+            <NavigationPromptModal onConfirm={onConfirm} onCancel={onCancel} />
+          )}
+        </NavigationPrompt>
+        <div className="art-editor">
+          <div className="art-editor-header">
+            <div className="tw-flex tw-items-center pe-auto">
+              <Button
+                icon={<Icon name="Duotune/arr074" className="svg-icon-2" />}
+                variant="white"
+                onClick={handleBack}
               >
-                <Button
-                  icon={<Icon name="Duotune/arr087" className="svg-icon-2" />}
-                  variantStyle="link"
-                  activeStyle="text"
-                  activeColor="gray-700"
-                  flushed={true}
-                >
-                  添加封面图
-                </Button>
+                文章
+              </Button>
+              <div className="art-editor-status px-6">
+                <ArticleStatus value={stateRef.current.status} saved={stateRef.current.saved} />
               </div>
             </div>
-            <div className="art-editor-title" ref={titleContainer}>
-              <Form.Item name="title" noStyle={true}>
-                <Input.TextArea
-                  autoSize={true}
-                  bordered={false}
-                  onPressEnter={handlePressEnterOfTitle}
-                  placeholder="文章标题"
-                />
-              </Form.Item>
+            <div className="tw-flex">
+              {stateRef.current.status !== 'New' && (
+                <>
+                  <Button
+                    variant="white"
+                    color="primary"
+                    activeColor="primary"
+                    activeStyle="text"
+                    className="me-3"
+                  >
+                    预览
+                  </Button>
+                  <Button variant="white" className={classnames({ 'me-3': settingsMenuCollapsed })}>
+                    发布
+                  </Button>
+                </>
+              )}
+              {settingsMenuCollapsed && <div className="settings-menu-toggle-spacer" />}
             </div>
-            <div className="art-editor-channel">
-              <Form.Item name="channels" noStyle={true}>
-                <Select size="sm" multiple placeholder="选择栏目" width="auto" options={channels} />
-              </Form.Item>
-            </div>
-            <div className="art-editor-content">
-              <Form.Item name="content" noStyle={true}>
-                <ArticleContentEditor
-                  onWordCount={handleWordCount}
-                  editor={editor}
-                  container={container}
-                  ref={editorRef}
-                />
-              </Form.Item>
-            </div>
-          </Form>
-        </div>
-        <div className="art-editor-switch-editor text-gray-500">
-          <a onClick={() => setEditor('ClassicEditor')}>经典</a>
-          <a onClick={() => setEditor('BalloonBlockEditor')}>简洁</a>
-        </div>
-        <div className="art-editor-wordcount-container">
-          <div id="word-count" className="art-editor-wordcount text-gray-500">
-            {wordCount} 个字符
           </div>
-          <Icon name="Duotune/art008" className="svg-icon-4 px-2 py-2" />
+          <div
+            ref={container}
+            className="art-editor-body relative w-100 vh-100 overflow-x-hidden hover-scroll-overlay-y px-5"
+          >
+            <Form
+              form={form}
+              initialValues={stateRef.current.data || {}}
+              onValuesChange={handleChange}
+              component={false}
+            >
+              <div ref={coverContainer} className="art-editor-feature-image-container">
+                <div
+                  className={classnames('tw-flex flex-row tw-items-center', {
+                    invisible: !isHoveringCoverOrTitle,
+                  })}
+                >
+                  <Button
+                    icon={<Icon name="Duotune/arr087" className="svg-icon-2" />}
+                    variantStyle="link"
+                    activeStyle="text"
+                    activeColor="gray-700"
+                    flushed={true}
+                  >
+                    添加封面图
+                  </Button>
+                </div>
+              </div>
+              <div className="art-editor-title" ref={titleContainer}>
+                <Form.Item name="title" noStyle={true}>
+                  <Input.TextArea
+                    autoSize={true}
+                    bordered={false}
+                    onPressEnter={handlePressEnterOfTitle}
+                    placeholder="文章标题"
+                  />
+                </Form.Item>
+              </div>
+              <div className="art-editor-channel">
+                <Form.Item name="channels" noStyle={true}>
+                  <Select
+                    size="sm"
+                    multiple
+                    placeholder="选择栏目"
+                    width="auto"
+                    options={channels}
+                  />
+                </Form.Item>
+              </div>
+              <div className="art-editor-content">
+                <Form.Item name="content" noStyle={true}>
+                  <ArticleContentEditor
+                    onWordCount={handleWordCount}
+                    editor={editor}
+                    container={container}
+                    ref={editorRef}
+                  />
+                </Form.Item>
+              </div>
+            </Form>
+          </div>
+          <div className="art-editor-switch-editor text-gray-500">
+            <a onClick={() => setEditor('ClassicEditor')}>经典</a>
+            <a onClick={() => setEditor('BalloonBlockEditor')}>简洁</a>
+          </div>
+          <div className="art-editor-wordcount-container">
+            <div id="word-count" className="art-editor-wordcount text-gray-500">
+              {wordCount} 个字符
+            </div>
+            <Icon name="Duotune/art008" className="svg-icon-4 px-2 py-2" />
+          </div>
         </div>
-      </div>
-      {!settingsMenuCollapsed && (
-        <SettingsMenu
-          title="文章设置"
-          content={
-            <ArticleSettings
-              isNew={stateRef.current.status === 'New'}
-              onChange={handleSettingsData}
-            />
-          }
+        {!settingsMenuCollapsed && (
+          <SettingsMenu
+            title="文章设置"
+            content={
+              <ArticleSettings
+                isNew={stateRef.current.status === 'New'}
+                onChange={handleSettingsData}
+              />
+            }
+          />
+        )}
+        <Button
+          className="settings-menu-toggle"
+          variant="white"
+          icon={<Icon name="Duotune/lay004" className="svg-icon-2" />}
+          onClick={handleSettingsMenuToggle}
         />
-      )}
-      <Button
-        className="settings-menu-toggle"
-        variant="white"
-        icon={<Icon name="Duotune/lay004" className="svg-icon-2" />}
-        onClick={handleSettingsMenuToggle}
-      />
-    </div>
+      </div>
+    </Spin>
   );
 }
 
@@ -465,12 +474,10 @@ export function ArticleEdit(props: ArticleEditProps) {
 
   const { data, loading } = useArticleQuery({
     variables: { id },
-    fetchPolicy: 'no-cache',
+    fetchPolicy: 'cache-and-network',
   });
 
-  console.log('ArticleEdit', data, loading);
-
-  return <ArticleEditor {...props} data={data?.article as any} />;
+  return <ArticleEditor {...props} loading={loading} data={data?.article as any} />;
 }
 
 export default ArticleEditor;

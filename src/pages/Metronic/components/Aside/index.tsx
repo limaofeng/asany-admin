@@ -83,6 +83,9 @@ function Aside(props: AsideProps) {
     layout.aside.minimize(!minimize);
   }, [layout, minimize]);
 
+  console.log('.....', Date.now());
+  console.log('location', location.pathname);
+
   const currentMenu = useMemo(() => {
     return menus.find(({ path }) => {
       return path && (path || '').split(',').some((rule) => location.pathname.startsWith(rule));
@@ -96,6 +99,7 @@ function Aside(props: AsideProps) {
       setActiveKey(eventKey);
       const menu = menus.find((item) => item.id == eventKey);
       if (menu && menu.path) {
+        debugger;
         history.push(menu.path);
       }
     },
@@ -138,7 +142,7 @@ function Aside(props: AsideProps) {
       </Tab.Container>
       {menuRender != false && (
         <Button
-          style={{ marginBottom: '1.35rem' }}
+          style={{ marginBottom: '1.35rem', zIndex: 10 }}
           size="sm"
           onClick={handleToggle}
           className={classnames(

@@ -1,0 +1,82 @@
+.aside-secondary {
+  .hover-scroll-y {
+    overflow-x: hidden;
+  }
+}
+.calendar-sidebar {
+  margin-right: -1.25rem !important;
+  margin-left: -1.25rem !important;
+  .Calendar {
+    --cl-color-error: #969595;
+    width: 100%;
+    box-shadow: none;
+
+    .Calendar__monthYear {
+      left: 49%;
+      flex-direction: row-reverse;
+      width: 136px;
+
+      &.-shown {
+        transform: translateX(-50%);
+      }
+
+      .Calendar__monthText {
+        margin-left: 0;
+        &:hover {
+          transform: translateX(0.2em) scale(0.95);
+        }
+        &.-activeBackground {
+          transform: scale(1) translateX(-36px) !important;
+        }
+      }
+
+      .Calendar__yearText {
+        &:hover {
+          transform: translateX(-0.2em) scale(0.95);
+        }
+        &.-activeBackground {
+          transform: scale(1) translateX(28px) !important;
+        }
+        &::after {
+          margin-left: 0.3em;
+          content: '年';
+        }
+      }
+    }
+
+    .Calendar__weekDays {
+      padding: 0 32px 0 27px;
+
+      abbr {
+        text-decoration: none;
+        cursor: inherit;
+      }
+    }
+
+    .Calendar__section {
+      padding: 0 32px 0 27px;
+    }
+  }
+  .calendar-day-list {
+    ul {
+      li {
+        h6 {
+          span {
+            font-weight: normal;
+          }
+        }
+        & > div {
+          min-height: 2rem;
+          line-height: 2rem;
+        }
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+}
+.main-calendar {
+  #kt_content {
+    padding: 30px;
+    background-color: #fff;
+  }
+}

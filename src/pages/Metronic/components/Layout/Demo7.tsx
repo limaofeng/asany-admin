@@ -2,7 +2,8 @@ import React, { useMemo } from 'react';
 
 import { useApp } from 'umi';
 import { getMatchMenu, transformRoute } from '@umijs/route-utils';
-import type { RouteComponentProps } from 'react-router';
+import type { RouteComponentProps} from 'react-router';
+import { useLocation } from 'react-router';
 import type { Route } from '@umijs/route-utils/dist/types';
 
 import Aside from '../Aside';
@@ -11,6 +12,7 @@ import { LayoutProvider, useLayoutSelector } from './LayoutContext';
 import getLayoutRenderConfig from './utils';
 
 import * as utils from '@/utils';
+import type { MenuData } from '@/.umi/app/typings';
 
 interface LayoutProps extends RouteComponentProps {
   /**
@@ -51,7 +53,7 @@ function LayoutWrapper(props: LayoutProps) {
 
   const { menus: sourceMenus } = useApp();
 
-  const menus = useMemo(
+  const menus: MenuData[] = useMemo(
     () =>
       utils.tree(
         sourceMenus.map((item) => ({ ...item, children: [] })),
@@ -77,6 +79,11 @@ function LayoutWrapper(props: LayoutProps) {
     }
     return getLayoutRenderConfig(currentPathConfig as any);
   }, [currentPathConfig]);
+
+  const _location = useLocation();
+
+  console.log('location', _location.pathname);
+  console.log('....', children, props.location.pathname);
 
   return (
     <LayoutProvider state={{ aside: { menus, minimize: false } }}>
