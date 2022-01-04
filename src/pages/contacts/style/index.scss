@@ -1,0 +1,22 @@
+.contacts-sidebar {
+  .nav-tabs {
+    padding-right: 1.25rem;
+    padding-left: 1.25rem;
+  }
+  &-groups {
+    .asany-treeview-node {
+      .monaco-icon-label {
+        .svg-icon svg {
+          width: 1.75rem;
+          height: 1.75rem;
+        }
+      }
+    }
+  }
+}
+.main-contacts {
+  .aside-workspace {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+}

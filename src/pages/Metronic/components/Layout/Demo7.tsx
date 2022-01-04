@@ -1,15 +1,15 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import { useApp } from 'umi';
 import { getMatchMenu, transformRoute } from '@umijs/route-utils';
-import type { RouteComponentProps} from 'react-router';
-import { useLocation } from 'react-router';
+import type { RouteComponentProps } from 'react-router';
 import type { Route } from '@umijs/route-utils/dist/types';
 
 import Aside from '../Aside';
 
 import { LayoutProvider, useLayoutSelector } from './LayoutContext';
 import getLayoutRenderConfig from './utils';
+import buildMenuRender from './components';
 
 import * as utils from '@/utils';
 import type { MenuData } from '@/.umi/app/typings';
@@ -24,13 +24,21 @@ interface LayoutProps extends RouteComponentProps {
    */
   children: React.ReactNode;
   /**
+   * 激活的菜单Key
+   */
+  activeKey?: string;
+  /**
+   * 菜单选择
+   */
+  onSelect: (key: string) => void;
+  /**
    * 展示二级栏目
    */
-  menuRender: boolean;
+  menuRender: boolean | React.ReactElement;
 }
 
 function InternalLayout(props: LayoutProps) {
-  const { children, menuRender } = props;
+  const { children, menuRender, activeKey, onSelect } = props;
   const minimize = useLayoutSelector((state) => state.aside.minimize);
 
   return (
@@ -40,7 +48,7 @@ function InternalLayout(props: LayoutProps) {
     >
       <div className="d-flex flex-column flex-root">
         <div className="page d-flex flex-row flex-column-fluid">
-          <Aside menuRender={menuRender} />
+          <Aside menuRender={menuRender} onSelect={onSelect} activeKey={activeKey} />
           {children}
         </div>
       </div>
@@ -49,9 +57,12 @@ function InternalLayout(props: LayoutProps) {
 }
 
 function LayoutWrapper(props: LayoutProps) {
-  const { children, location } = props;
+  const { children, location, history } = props;
 
   const { menus: sourceMenus } = useApp();
+
+  const state = useRef<{ activeMenuKey?: string }>({});
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const menus: MenuData[] = useMemo(
     () =>
@@ -80,17 +91,59 @@ function LayoutWrapper(props: LayoutProps) {
     return getLayoutRenderConfig(currentPathConfig as any);
   }, [currentPathConfig]);
 
-  const _location = useLocation();
+  const handleSelect = useCallback(
+    (key: string) => {
+      state.current.activeMenuKey = key;
+      const menu = menus.find((item) => item.id == key)!;
+      if (menu.path) {
+        history.push(menu.path);
+      } else {
+        forceRender();
+      }
+    },
+    [history, menus],
+  );
 
-  console.log('location', _location.pathname);
-  console.log('....', children, props.location.pathname);
+  const currentMenu = useMemo(() => {
+    return menus.find(({ path }) => {
+      return path && (path || '').split(',').some((rule) => location.pathname.startsWith(rule));
+    });
+  }, [location.pathname, menus]);
+
+  useEffect(() => {
+    if (currentMenu == null || state.current.activeMenuKey == currentMenu.id) {
+      return;
+    }
+    state.current.activeMenuKey = currentMenu.id;
+    forceRender();
+  }, [currentMenu]);
+
+  const activeMenuKey = state.current.activeMenuKey;
+  const menuRender = useMemo(() => {
+    if (layoutRestProps.menuRender == false) {
+      return false;
+    }
+    const menu = menus.find(({ id }) => id === activeMenuKey);
+    if (!menu) {
+      return false;
+    }
+    if (!menu.component && !(menu.children || []).length) {
+      return false;
+    }
+    return buildMenuRender(menu);
+  }, [menus, layoutRestProps.menuRender, activeMenuKey]);
 
   return (
     <LayoutProvider state={{ aside: { menus, minimize: false } }}>
       {layoutRestProps.pure ? (
         children
       ) : (
-        <InternalLayout {...props} menuRender={layoutRestProps.menuRender}>
+        <InternalLayout
+          {...props}
+          activeKey={state.current.activeMenuKey}
+          onSelect={handleSelect}
+          menuRender={menuRender}
+        >
           {children}
         </InternalLayout>
       )}

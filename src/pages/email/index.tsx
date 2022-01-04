@@ -1,20 +1,20 @@
 import { component, library } from 'sunmao';
 
 import Sidebar from './components/Sidebar';
-import MainContacts from './pages/MainContacts';
+import Mailbox from './pages/Mailbox';
 
 import './style/index.scss';
 
 @library({
-  name: 'contacts',
-  description: '通讯录',
-  namespace: 'cn.asany.ui.admin.contacts',
+  name: 'email',
+  description: '邮箱',
+  namespace: 'cn.asany.ui.admin.email',
 })
 class Contacts {
   @component()
   Sidebar = Sidebar;
   @component()
-  MainContacts = MainContacts;
+  Mailbox = Mailbox;
 }
 
 export default new Contacts();

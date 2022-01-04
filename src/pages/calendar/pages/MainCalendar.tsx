@@ -3,29 +3,28 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import locale from '@fullcalendar/core/locales/zh-cn';
 
-import { ContentWrapper } from '@/pages/Metronic/components';
+import { Card, ContentWrapper } from '@/pages/Metronic/components';
 
 function MainCalendar() {
   return (
     <ContentWrapper header={false} footer={false} className="main-calendar">
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin]}
-        locale={locale}
-        initialView="dayGridMonth"
-        headerToolbar={{
-          left: 'prev,today,next',
-          center: 'title',
-          right: 'timeGridDay,timeGridWeek,dayGridMonth',
-        }}
-        navLinks={true}
-        selectable={true}
-        selectMirror={true}
-        // views={{
-        //   dayGridMonth: { buttonText: 'month' },
-        //   timeGridWeek: { buttonText: 'week' },
-        //   timeGridDay: { buttonText: 'day' },
-        // }}
-      />
+      <Card>
+        <div>
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin]}
+            locale={locale}
+            initialView="dayGridMonth"
+            headerToolbar={{
+              left: 'prev,today,next',
+              center: 'title',
+              right: 'timeGridDay,timeGridWeek,dayGridMonth',
+            }}
+            navLinks={true}
+            selectable={true}
+            selectMirror={true}
+          />
+        </div>
+      </Card>
     </ContentWrapper>
   );
 }

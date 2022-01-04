@@ -1,20 +1,14 @@
 import { useRef } from 'react';
-
-import { Tab } from 'react-bootstrap';
-import { useReactComponent } from 'sunmao';
+import React from 'react';
 
 import { useScroll } from '../utils';
 
-import Navigation from './Secondary/Navigation';
-
-import type { MenuData, NuwaComponent } from '@/.umi/app/typings';
-
 type AsideSecondaryProps = {
-  menus: MenuData[];
+  children: React.ReactNode;
 };
 
 function AsideSecondary(props: AsideSecondaryProps) {
-  const { menus } = props;
+  const { children } = props;
 
   // const footerRef = useRef<HTMLDivElement>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
@@ -29,14 +23,17 @@ function AsideSecondary(props: AsideSecondaryProps) {
         <div className="d-flex h-100 flex-column">
           {/* --begin::Wrapper--*/}
           <div ref={scrollRef} className="flex-column-fluid hover-scroll-y">
-            <Tab.Content>
-              {/* --begin::Tab pane--*/}
-              {menus.map((item) => (
+            {/* {currentMenu && <TabContent menu={currentMenu} />} */}
+            <div className="tab-content">
+              <div className="tab-pane fade tab-pane fade active show">{children}</div>
+            </div>
+            {/* <Tab.Content> */}
+            {/*menus.map((item) => (
                 <Tab.Pane key={item.id} transition={true} eventKey={item.id}>
                   <TabContent menu={item} />
                 </Tab.Pane>
-              ))}
-            </Tab.Content>
+              ))*/}
+            {/* </Tab.Content> */}
           </div>
           {/* <div ref={footerRef} className="flex-column-auto pt-10 px-5">
             <a
@@ -55,26 +52,4 @@ function AsideSecondary(props: AsideSecondaryProps) {
   );
 }
 
-type TabContentProps = {
-  menu: MenuData;
-};
-
-type CustomTabContentProps = {
-  menu: MenuData;
-  component: NuwaComponent;
-};
-
-function CustomTabContent(props: CustomTabContentProps) {
-  const { component } = props;
-  const ReactComponent = useReactComponent(component.template, component.blocks);
-  return <ReactComponent />;
-}
-
-function TabContent({ menu }: TabContentProps) {
-  if (menu.component) {
-    return <CustomTabContent menu={menu} component={menu.component} />;
-  }
-  return <Navigation title={menu.name} menus={menu.children!} />;
-}
-
-export default AsideSecondary;
+export default React.memo(AsideSecondary);

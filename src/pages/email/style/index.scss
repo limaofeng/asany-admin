@@ -1,0 +1,15 @@
+.email-compose {
+  width: 86%;
+  letter-spacing: 32px;
+  text-align: center;
+  text-indent: 32px;
+}
+.apps-email-mailbox {
+  #kt_content_container {
+    padding-left: 0;
+
+    .mailbox-card {
+      border-radius: 0;
+    }
+  }
+}

@@ -14,7 +14,7 @@ class Contacts {
   @component()
   Sidebar = Sidebar;
 
-  @component()
+  @component({ name: 'MainCalendar' })
   MainCalendar = MainCalendar;
 }
 

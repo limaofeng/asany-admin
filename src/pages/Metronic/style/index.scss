@@ -1,3 +1,11 @@
+.page-full-content {
+  width: 100%;
+  padding-left: 425px !important;
+  .aside {
+    left: 100px;
+    width: auto;
+  }
+}
 .menu-item .menu-link .menu-title {
   a {
     color: inherit;
