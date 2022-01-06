@@ -21,6 +21,17 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
+  src/pages/calendar/hooks.ts:
+    documents: ["src/pages/calendar/**/*.gql"]
+    plugins:
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+        - eslint --fix
   src/pages/storage/hooks.ts:
     documents: ["src/pages/storage/**/*.gql"]
     plugins:

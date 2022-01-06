@@ -1,0 +1,13 @@
+query calendarEvents($starts: Date!, $ends: Date!) {
+  events: calendarEvents(starts: $starts, ends: $ends) {
+    id
+    title
+    color
+    notes
+    datetime {
+      allDay
+      start: starts
+      end: ends
+    }
+  }
+}
