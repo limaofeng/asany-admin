@@ -20,6 +20,8 @@ declare module 'bizcharts-plugin-slider';
 declare module 'react-owl-carousel3';
 declare module 'react-tabs';
 
+declare module 'lunar-javascript';
+
 declare module '@ckeditor/ckeditor5-react';
 declare module '@asany/ckeditor5';
 

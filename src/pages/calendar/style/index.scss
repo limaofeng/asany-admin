@@ -77,9 +77,116 @@
 .main-calendar {
   #kt_content {
     padding: 30px;
-
-    #kt_content_container  {
+    #kt_content_container {
       padding: 0;
+    }
+  }
+  .fc-theme-standard {
+    .fc-dayGridMonth-view {
+      .fc-daygrid-day-number {
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
+        .fc-daygrid-day-lunar,
+        .fc-daygrid-day-solar {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .fc-daygrid-day-solar {
+          width: 24px;
+          height: 24px;
+          font-weight: 500;
+          font-size: 14px;
+          border-radius: 12px;
+        }
+      }
+      a[data-navlink] {
+        cursor: none;
+        .fc-daygrid-day-solar {
+          cursor: pointer;
+        }
+      }
+      .fc-day-other {
+        &.fc-day-nextmonth {
+          border-top: 2px solid #d6d6d6;
+          &.fc-day-month-divider {
+            border-left: 2px solid #d6d6d6;
+          }
+        }
+        &.fc-day-prevmonth {
+          border-bottom: 2px solid #d6d6d6;
+          &.fc-day-month-divider {
+            border-right: 2px solid #d6d6d6;
+          }
+        }
+      }
+      .fc-day-today {
+        background-color: #f0f6fb;
+        .fc-daygrid-day-solar {
+          color: #fff;
+          background-color: #0095ff;
+        }
+      }
+      .fc-day-sat,
+      .fc-day-sun {
+        background-color: #f7f7f7;
+        &.fc-day-today {
+          background-color: #f0f6fb;
+        }
+        .fc-col-header-cell-cushion,
+        .fc-daygrid-day-number {
+          color: #7e7f80;
+        }
+      }
+    }
+    .fc-dayGridYear-view {
+      padding-top: 1rem;
+      & > .row {
+        padding-bottom: 1rem;
+        .col {
+          --bs-gutter-x: 2.5rem;
+          h3 {
+            margin-bottom: 0.5rem;
+          }
+          &:first-child {
+            padding-left: 1rem;
+          }
+          &:last-child {
+            padding-bottom: 1rem;
+          }
+        }
+      }
+      table {
+        width: 100%;
+        border: none;
+        th {
+          color: #9b9b9b;
+          font-weight: 500;
+          font-size: 0.8rem;
+        }
+        td {
+          position: relative;
+          .day-of-month {
+            padding: 0.5rem 0;
+            &.active {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              width: 120%;
+              padding: 0.5rem 0;
+              font-weight: 700;
+              font-size: 1.25rem;
+              transform: translate(-50%, -50%);
+            }
+          }
+        }
+        td,
+        th {
+          text-align: center;
+          border: none;
+        }
+      }
     }
   }
 }
