@@ -1944,6 +1944,14 @@
     "@fullcalendar/common" "~5.10.1"
     tslib "^2.1.0"
 
+"@fullcalendar/interaction@^5.10.1":
+  version "5.10.1"
+  resolved "https://registry.npmjs.org/@fullcalendar/interaction/-/interaction-5.10.1.tgz#dfa74b5c50bbd5608eb50aeab6e579c8d20cb367"
+  integrity sha512-H1g1QeXg7yXtUcKmVtfg7uzm5R5ElFTvYniiXU+8kJda69IDg7Lee+Y7UDv5dvLb5/HxO86RhPVxRtcOQ8XdXw==
+  dependencies:
+    "@fullcalendar/common" "~5.10.1"
+    tslib "^2.1.0"
+
 "@fullcalendar/react@^5.10.1":
   version "5.10.1"
   resolved "https://registry.npmjs.org/@fullcalendar/react/-/react-5.10.1.tgz#bb1652357f98b7dc01894a41e7204f1391999791"
@@ -10675,6 +10683,11 @@ lru-cache@^6.0.0:
   integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
   dependencies:
     yallist "^4.0.0"
+
+lunar-javascript@^1.2.22:
+  version "1.2.22"
+  resolved "https://registry.npmjs.org/lunar-javascript/-/lunar-javascript-1.2.22.tgz#e1b2250320f49dc297df8524bf656b83ec1ce34d"
+  integrity sha512-453vmAHOSkeaSvn82E62W1F86GqrukikzDlYJV0AIPiJ+mhK55qUdvVDyhlOXCB+UieWDCjsVE56huwLMvzk3A==
 
 make-dir@^1.0.0:
   version "1.3.0"
