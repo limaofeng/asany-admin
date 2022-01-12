@@ -56,7 +56,7 @@ function MainCalendar() {
 
   const handleSelectedDay = useCallback(
     (value: Date) => {
-      setSelectedDay(value);
+      setSelectedDay((state.current.selectedDay = value));
     },
     [setSelectedDay],
   );
@@ -100,7 +100,7 @@ function MainCalendar() {
           mSelectedDay.isBefore(dates.view.currentEnd)
         )
       ) {
-        setSelectedDay(dates.view.currentStart);
+        setSelectedDay((state.current.selectedDay = dates.view.currentStart));
       }
     });
   }, [setSelectedDay]);
@@ -113,7 +113,7 @@ function MainCalendar() {
             ref={fullCalendar}
             plugins={[dayGridPlugin, timeGridPlugin, yearGridPlugin, interactionPlugin]}
             locale={locale}
-            initialView="dayGridMonth"
+            initialView="dayGridYear"
             headerToolbar={{
               left: 'prev,today,next',
               center: 'title',
@@ -180,6 +180,14 @@ function MainCalendar() {
                   const _classnames = [];
                   if (!item.isOther && moment(item.date).isSame(moment(selectedDay), 'date')) {
                     _classnames.push('fc-day-selected');
+                  }
+                  if (_classnames.length) {
+                    console.log(
+                      'classnames',
+                      moment(selectedDay).format(),
+                      moment(item.date).format(),
+                      _classnames,
+                    );
                   }
                   return _classnames;
                 },
