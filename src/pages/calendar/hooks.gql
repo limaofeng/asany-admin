@@ -1,5 +1,17 @@
-query calendarEvents($starts: Date!, $ends: Date!) {
-  events: calendarEvents(starts: $starts, ends: $ends) {
+query calendarSets {
+  calendarSets {
+    id
+    name
+  }
+}
+
+query calendarEvents($starts: Date!, $ends: Date!, $calendar: ID, $calendarSet: ID) {
+  events: calendarEvents(
+    starts: $starts
+    ends: $ends
+    calendar: $calendar
+    calendarSet: $calendarSet
+  ) {
     id
     title
     color
@@ -9,5 +21,17 @@ query calendarEvents($starts: Date!, $ends: Date!) {
       start: starts
       end: ends
     }
+  }
+}
+
+query calendarEventDates($starts: Date!, $ends: Date!, $calendar: ID, $calendarSet: ID) {
+  dates: calendarEventDates(
+    starts: $starts
+    ends: $ends
+    calendar: $calendar
+    calendarSet: $calendarSet
+  ) {
+    date
+    number
   }
 }

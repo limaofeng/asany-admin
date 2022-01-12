@@ -5,6 +5,7 @@ import routes from './routes';
 export default defineConfig({
   apollo: {
     uri: 'https://api.asany.cn/graphql',
+    logging: process.env.NODE_ENV === 'development',
   },
   app: {
     id: '6068485332c5fc853a65',
@@ -21,6 +22,7 @@ export default defineConfig({
   targets: {
     ie: 11,
   },
+  access: {},
   // umi routes: https://umijs.org/docs/routing
   routes,
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn

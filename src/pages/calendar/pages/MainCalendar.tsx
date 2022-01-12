@@ -7,9 +7,12 @@ import interactionPlugin from '@fullcalendar/interaction';
 import locale from '@fullcalendar/core/locales/zh-cn';
 import { Lunar } from 'lunar-javascript';
 import moment from 'moment';
+import { useModel } from 'umi';
+import { useApolloClient } from '@apollo/client';
 
 import yearGridPlugin from '../plugins/yearGridPlugin';
-import { useCalendarEventsLazyQuery } from '../hooks';
+import type { CalendarEventsQuery, CalendarEventsQueryVariables } from '../hooks';
+import { CalendarEventsDocument } from '../hooks';
 import { isDoubleClick } from '../utils';
 
 import { Card, ContentWrapper } from '@/pages/Metronic/components';
@@ -17,56 +20,97 @@ import { Card, ContentWrapper } from '@/pages/Metronic/components';
 type SuccessCallback = (events: any[]) => void;
 
 function MainCalendar() {
-  const [loadCalendarEvents, { data }] = useCalendarEventsLazyQuery();
-  const state = useRef<{ callback?: SuccessCallback; events: Map<string, any> }>({
+  const fullCalendar = useRef<FullCalendar>(null);
+
+  const client = useApolloClient();
+
+  const loadCalendarEvents = useCallback(
+    async ({ variables }: { variables: CalendarEventsQueryVariables }) => {
+      const { data } = await client.query<CalendarEventsQuery, CalendarEventsQueryVariables>({
+        query: CalendarEventsDocument,
+        variables,
+        fetchPolicy: 'network-only',
+      });
+      return (data?.events || []).map((item) => ({
+        ...item,
+        ...item.datetime,
+        backgroundColor: item.color,
+      }));
+    },
+    [client],
+  );
+
+  const state = useRef<{
+    callback?: SuccessCallback;
+    events: Map<string, any>;
+    selectedDay?: Date;
+  }>({
     events: new Map(),
   });
 
-  const setEvents = useCallback((events: any[]) => {
-    if (!state.current.callback) {
-      return;
-    }
-    const apendEvents = events.map((item) => ({
-      ...item,
-      ...item.datetime,
-      backgroundColor: item.color,
-    }));
-    for (const event of apendEvents) {
-      state.current.events.set(event.id, event);
-    }
-    state.current.callback(Array.from(state.current.events.values()));
-  }, []);
+  const selectedDay = useModel('calendar', (model) => model.state.selectedDay);
+  const calendarSet = useModel('calendar', (model) => model.state.calendarSet);
+  const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
+
+  state.current.selectedDay = selectedDay;
+
+  const handleSelectedDay = useCallback(
+    (value: Date) => {
+      setSelectedDay(value);
+    },
+    [setSelectedDay],
+  );
 
   const handleEventSource = useCallback(
-    (
+    async (
       arg: { start: Date; end: Date; startStr: string; endStr: string; timeZone: string },
       callback: SuccessCallback,
     ) => {
       state.current.callback = callback;
-      loadCalendarEvents({
+      const events = await loadCalendarEvents({
         variables: {
+          calendarSet: calendarSet == 'all' ? undefined : calendarSet,
           starts: arg.startStr,
           ends: arg.endStr,
         },
-      }).then((_d) => {
-        setEvents(_d.data?.events || []);
       });
+      return events;
     },
-    [loadCalendarEvents, setEvents],
+    [calendarSet, loadCalendarEvents],
   );
 
   useEffect(() => {
-    if (!data?.events) {
+    const calendarApi = fullCalendar.current?.getApi();
+    if (!calendarApi) {
       return;
     }
-    setEvents(data.events || []);
-  }, [data?.events, setEvents]);
+    calendarApi.gotoDate(selectedDay);
+  }, [selectedDay]);
+
+  useEffect(() => {
+    const calendarApi = fullCalendar.current?.getApi();
+    if (!calendarApi) {
+      return;
+    }
+    calendarApi.on('datesSet', (dates) => {
+      const mSelectedDay = moment(state.current.selectedDay);
+      if (
+        !(
+          mSelectedDay.isAfter(moment(dates.view.currentStart)) &&
+          mSelectedDay.isBefore(dates.view.currentEnd)
+        )
+      ) {
+        setSelectedDay(dates.view.currentStart);
+      }
+    });
+  }, [setSelectedDay]);
 
   return (
     <ContentWrapper header={false} footer={false} className="main-calendar">
       <Card>
         <div>
           <FullCalendar
+            ref={fullCalendar}
             plugins={[dayGridPlugin, timeGridPlugin, yearGridPlugin, interactionPlugin]}
             locale={locale}
             initialView="dayGridMonth"
@@ -98,6 +142,9 @@ function MainCalendar() {
                       }
                     }
                   }
+                  if (moment(item.date).isSame(moment(selectedDay), 'day')) {
+                    _classnames.push('fc-day-selected');
+                  }
                   return _classnames;
                 },
                 dayCellContent(item) {
@@ -115,8 +162,29 @@ function MainCalendar() {
                   if (isDoubleClick(event.dayEl)) {
                     console.log('双击事件', event);
                   } else {
-                    console.log('单击事件', event);
+                    handleSelectedDay(event.date);
                   }
+                },
+              },
+              timeGridWeek: {
+                dayCellClassNames(item) {
+                  const _classnames = [];
+                  if (moment(item.date).isSame(moment(selectedDay), 'day')) {
+                    _classnames.push('fc-day-selected');
+                  }
+                  return _classnames;
+                },
+              },
+              dayGridYear: {
+                dayCellClassNames(item) {
+                  const _classnames = [];
+                  if (!item.isOther && moment(item.date).isSame(moment(selectedDay), 'date')) {
+                    _classnames.push('fc-day-selected');
+                  }
+                  return _classnames;
+                },
+                dateClick(event) {
+                  handleSelectedDay(event.date);
                 },
               },
             }}

@@ -82,7 +82,9 @@
     }
   }
   .fc-theme-standard {
+    --fc-border-color: #e0e0e0;
     .fc-dayGridMonth-view {
+      --fc-highlight-color: rgba(240, 250, 250, 0);
       .fc-daygrid-day-number {
         display: flex;
         flex: 1;
@@ -94,15 +96,15 @@
           justify-content: center;
         }
         .fc-daygrid-day-solar {
-          width: 24px;
-          height: 24px;
+          width: 30px;
+          height: 30px;
           font-weight: 500;
           font-size: 14px;
-          border-radius: 12px;
+          border-radius: 15px;
         }
       }
       a[data-navlink] {
-        cursor: none;
+        cursor: inherit;
         .fc-daygrid-day-solar {
           cursor: pointer;
         }
@@ -121,15 +123,26 @@
           }
         }
       }
+      .fc-daygrid-day.fc-day-today {
+        background-color: transparent;
+      }
       .fc-day-today {
-        background-color: #f0f6fb;
+        &.fc-day-selected {
+          background-color: #f3f9fe;
+        }
         .fc-daygrid-day-solar {
           color: #fff;
           background-color: #0095ff;
         }
       }
+      .fc-day-selected {
+        background-color: #f0f0f0;
+      }
       .fc-day-sat,
       .fc-day-sun {
+        &.fc-day-selected {
+          background-color: #ededed;
+        }
         background-color: #f7f7f7;
         &.fc-day-today {
           background-color: #f0f6fb;
@@ -137,6 +150,27 @@
         .fc-col-header-cell-cushion,
         .fc-daygrid-day-number {
           color: #7e7f80;
+        }
+      }
+    }
+    .fc-timeGridWeek-view {
+      .fc-day-selected {
+        background-color: #f0f0f0;
+      }
+      .fc-day-today {
+        background-color: transparent;
+        &.fc-day-selected {
+          background-color: #f3f9fe;
+        }
+      }
+      .fc-day-sat,
+      .fc-day-sun {
+        &.fc-day-selected {
+          background-color: #ededed;
+        }
+        background-color: #f7f7f7;
+        &.fc-day-today {
+          background-color: #f0f6fb;
         }
       }
     }
@@ -161,30 +195,52 @@
         width: 100%;
         border: none;
         th {
+          height: 28px;
           color: #9b9b9b;
           font-weight: 500;
           font-size: 0.8rem;
+          line-height: 28px;
+          text-align: center;
+          border: none;
         }
         td {
           position: relative;
+          text-align: center;
+          border: 1px solid transparent;
           .day-of-month {
             padding: 0.5rem 0;
-            &.active {
+            &.is-other {
+              color: #cccccc;
+            }
+            &.events-least-one {
+              color: #936d00;
+              background-color: #fff3a0;
+            }
+            &.events-more-than-one {
+              color: #936d00;
+              background-color: #ffdc92;
+            }
+            &.is-today {
+              color: #fff;
+              background-color: #0095ff;
+            }
+            &.fc-day-selected {
               position: absolute;
               top: 50%;
               left: 50%;
+              z-index: 1;
               width: 120%;
               padding: 0.5rem 0;
               font-weight: 700;
               font-size: 1.25rem;
               transform: translate(-50%, -50%);
+              &.is-today,
+              &.events-least-one,
+              &.events-more-than-one {
+                box-shadow: 0px 1px 3px #7e7c7c;
+              }
             }
           }
-        }
-        td,
-        th {
-          text-align: center;
-          border: none;
         }
       }
     }

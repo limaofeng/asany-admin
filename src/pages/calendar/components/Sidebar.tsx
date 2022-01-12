@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 
 import 'react-modern-calendar-datepicker/lib/DatePicker.css';
+import type { DayValue } from 'react-modern-calendar-datepicker';
 import { Calendar } from 'react-modern-calendar-datepicker';
+import { useModel } from 'umi';
 
 const zh_CN = {
   // months list by order
@@ -94,17 +96,42 @@ const zh_CN = {
 };
 
 function Sidebar() {
-  const [selectedDay, setSelectedDay] = useState<any>(null);
+  // const [selectedDay, setSelectedDay] = useState<any>(null);
+  const selectedDay = useModel('calendar', ({ state }) => {
+    if (!state.selectedDay) {
+      return;
+    }
+    return {
+      year: state.selectedDay.getFullYear(),
+      month: state.selectedDay.getMonth() + 1,
+      day: state.selectedDay.getDate(),
+    };
+  });
+  const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
+
+  const handleChange = useCallback(
+    (value: DayValue) => {
+      console.log(value);
+      value && setSelectedDay(new Date(value.year, value.month - 1, value.day));
+    },
+    [setSelectedDay],
+  );
+
+  console.log('user-xxx', selectedDay);
+
   return (
     <div className="calendar-sidebar">
       <Calendar
         locale={zh_CN as any}
         value={selectedDay}
-        onChange={setSelectedDay}
+        onChange={handleChange}
         shouldHighlightWeekends
         colorPrimary="#04c8c8"
       />
       <div className="calendar-day-list px-8">
+        <div className="event-list-header">
+          <span>今天 2022/01/10 </span>
+        </div>
         <ul>
           <li>
             <h6>

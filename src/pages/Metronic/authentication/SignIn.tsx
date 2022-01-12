@@ -59,6 +59,7 @@ function Footer() {
           href="https://keenthemes.com"
           className="text-muted text-hover-primary px-2"
           target="_blank"
+          rel="noreferrer"
         >
           About
         </a>
@@ -66,6 +67,7 @@ function Footer() {
           href="https://keenthemes.com/support"
           className="text-muted text-hover-primary px-2"
           target="_blank"
+          rel="noreferrer"
         >
           Support
         </a>
@@ -73,6 +75,7 @@ function Footer() {
           href="https://1.envato.market/EA4JP"
           className="text-muted text-hover-primary px-2"
           target="_blank"
+          rel="noreferrer"
         >
           Purchase
         </a>

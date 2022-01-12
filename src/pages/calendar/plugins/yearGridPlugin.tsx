@@ -1,9 +1,70 @@
-import { createPlugin } from '@fullcalendar/react';
+import { useCallback, useMemo } from 'react';
 
-function DayGridMonth() {
+import type { EventRenderRange } from '@fullcalendar/react';
+import { createPlugin, sliceEvents } from '@fullcalendar/react';
+import type {
+  CalendarApi,
+  ClassNamesGenerator,
+  DateMarker,
+  DateRange,
+  DayCellContentArg,
+  Identity,
+  ViewOptionsRefined,
+  ViewProps,
+} from '@fullcalendar/common';
+import { DateComponent } from '@fullcalendar/common';
+import { NowTimer } from '@fullcalendar/common';
+import type { Moment } from 'moment';
+import moment from 'moment';
+import classnames from 'classnames';
+import type { DateClickArg } from '@fullcalendar/interaction';
+
+type DayData = {
+  key: string;
+  dayNumberText: string;
+  isOther: boolean;
+  isPast: boolean;
+  isFuture: boolean;
+  date: Moment;
+};
+
+type MonthData = {
+  key: string;
+  title: string;
+  date: Moment;
+  days: DayData[];
+};
+
+type DayGridMonthProps = {
+  api: CalendarApi;
+  month: MonthData;
+  events: EventRenderRange[];
+  dateClick: Identity<(arg: DateClickArg) => void>;
+  dayCellClassNames: Identity<ClassNamesGenerator<DayCellContentArg>>;
+};
+
+function DayGridMonth(props: DayGridMonthProps) {
+  const { month, events, dateClick, dayCellClassNames, api } = props;
+  const days = month.days;
+
+  const getEventNumber = useCallback(
+    (day: Moment) => {
+      const eventNumber = events.filter((item) => {
+        return day.isSameOrAfter(moment(item.range.start)) && day.isBefore(moment(item.range.end));
+      }).length;
+      return eventNumber;
+    },
+    [events],
+  );
+
+  const handleClick = (item: DayData) => () => {
+    dateClick({ ...item, date: item.date.toDate() } as any);
+    api.gotoDate(item.date.toDate());
+  };
+
   return (
     <div className="day-grid-month">
-      <h3>一月</h3>
+      <h3>{month.title}</h3>
       <table>
         <thead>
           <tr>
@@ -17,29 +78,33 @@ function DayGridMonth() {
           </tr>
         </thead>
         <tbody>
-          {[1, 2, 3, 4, 5, 6].map((item) => (
-            <tr key={item}>
-              <td>
-                <div className="day-of-month active">0</div>
-              </td>
-              <td>
-                <div className="day-of-month">1</div>
-              </td>
-              <td>
-                <div className="day-of-month">2</div>
-              </td>
-              <td>
-                <div className="day-of-month">3</div>
-              </td>
-              <td>
-                <div className="day-of-month">4</div>
-              </td>
-              <td>
-                <div className="day-of-month">5</div>
-              </td>
-              <td>
-                <div className="day-of-month">6</div>
-              </td>
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <tr key={i}>
+              {days.slice((i - 1) * 7, i * 7).map((item) => {
+                const eventNumber = getEventNumber(item.date);
+                return (
+                  <td key={item.key}>
+                    <div
+                      onClick={handleClick(item)}
+                      className={classnames(
+                        'day-of-month',
+                        {
+                          'is-other': item.isOther,
+                          'events-least-one': !item.isOther && eventNumber == 1,
+                          'events-more-than-one': !item.isOther && eventNumber > 1,
+                          'is-today': !item.isOther && moment().isSame(item.date, 'date'),
+                        },
+                        dayCellClassNames({
+                          ...item,
+                          date: item.date.toDate(),
+                        } as any),
+                      )}
+                    >
+                      {item.dayNumberText}
+                    </div>
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
@@ -48,63 +113,86 @@ function DayGridMonth() {
   );
 }
 
-function DayGridYearView(props: any) {
-  // const segs = sliceEvents(props, true); // allDay=true
+type DayGridYearProps = ViewProps & {
+  api: CalendarApi;
+  options: ViewOptionsRefined;
+};
 
-  /*  const str = formatDate(new Date(), {
-    month: 'long',
-    year: 'numeric',
-    day: 'numeric',
-  });*/
+function DayGridYear(props: DayGridYearProps) {
+  const {
+    api,
+    options: { dayCellClassNames, dateClick },
+    dateProfile: {
+      currentRange: { start, end },
+    },
+  } = props;
 
-  console.log(props);
+  const months: MonthData[] = useMemo(() => {
+    const _months = [];
+    const ms = moment(end).diff(moment(start), 'months');
+    for (let i = 0; i < ms; i++) {
+      const m = moment(start).clone().month(i);
+      const _month: MonthData = {
+        key: m.format('YYYYMM'),
+        title: m.format('MMMM'),
+        date: m,
+        days: [],
+      };
+      _months.push(_month);
+      const mstart = m.clone().date(1);
+      const cstart = mstart.clone().day(0);
+      for (let j = 0; j < 42; j++) {
+        const day = cstart.clone().add(j, 'days');
+        const _dif = day.clone().date(1).diff(mstart, 'months');
+        _month.days.push({
+          key: day.format('YYYYMMDD'),
+          date: day,
+          isPast: _dif < 0,
+          isFuture: _dif > 0,
+          isOther: _dif != 0,
+          dayNumberText: day.date() + '',
+        });
+      }
+    }
+    return _months;
+  }, [start, end]);
+
+  const events = sliceEvents(props as any, true);
 
   return (
     <div className="fc-daygrid fc-dayGridYear-view fc-view">
-      <div className="row">
-        <div className="col">
-          <DayGridMonth />
-        </div>
-        <div className="col">
-          <DayGridMonth />
-        </div>
-        <div className="col">
-          <DayGridMonth />
-        </div>
-        <div className="col">
-          <DayGridMonth />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col">
-          <DayGridMonth />
-        </div>
-        <div className="col">
-          <DayGridMonth />
-        </div>
-        <div className="col">
-          <DayGridMonth />
-        </div>
-        <div className="col">
-          <DayGridMonth />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col">
-          <DayGridMonth />
-        </div>
-        <div className="col">
-          <DayGridMonth />
-        </div>
-        <div className="col">
-          <DayGridMonth />
-        </div>
-        <div className="col">
-          <DayGridMonth />
-        </div>
-      </div>
+      <NowTimer unit="day">
+        {(nowDate: DateMarker, todayRange: DateRange) => {
+          console.log('day', nowDate, todayRange);
+          return <div />;
+        }}
+      </NowTimer>
+      {[1, 2, 3].map((i) => {
+        return (
+          <div key={`${(i - 1) * 4}-${i * 4}`} className="row">
+            {months.slice((i - 1) * 4, i * 4).map((item) => (
+              <div className="col" key={item.key}>
+                <DayGridMonth
+                  api={api}
+                  dateClick={dateClick as any}
+                  dayCellClassNames={dayCellClassNames as any}
+                  month={item}
+                  events={events}
+                />
+              </div>
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
+}
+
+class YearView extends DateComponent<ViewProps> {
+  render() {
+    const { calendarApi, options } = this.context;
+    return <DayGridYear {...this.props} api={calendarApi} options={options} />;
+  }
 }
 
 export default createPlugin({
@@ -115,7 +203,7 @@ export default createPlugin({
       titleFormat: (arg: any) => {
         return arg.date.year + '年';
       },
-      component: DayGridYearView,
+      component: YearView,
     },
   },
 });
