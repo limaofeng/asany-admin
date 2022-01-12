@@ -114,8 +114,16 @@ function MainCalendar() {
             plugins={[dayGridPlugin, timeGridPlugin, yearGridPlugin, interactionPlugin]}
             locale={locale}
             initialView="dayGridYear"
+            customButtons={{
+              customToDay: {
+                text: '今天',
+                click: function () {
+                  setSelectedDay(new Date());
+                },
+              },
+            }}
             headerToolbar={{
-              left: 'prev,today,next',
+              left: 'prev,customToDay,next',
               center: 'title',
               right: 'timeGridDay,timeGridWeek,dayGridMonth,dayGridYear',
             }}
