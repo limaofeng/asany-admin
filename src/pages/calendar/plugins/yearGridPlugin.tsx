@@ -186,7 +186,7 @@ function DayGridYear(props: DayGridYearProps) {
           dates.set(key, { number: 1, events: [event] });
         }
         mstart.add(1, 'days');
-      } while (--days);
+      } while (--days > 0);
     }
     return { dates, max };
   }, [events]);
