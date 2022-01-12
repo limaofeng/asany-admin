@@ -39,22 +39,33 @@ type DayGridMonthProps = {
   api: CalendarApi;
   month: MonthData;
   events: EventRenderRange[];
+  stat: {
+    dates: Map<
+      string,
+      {
+        number: number;
+        events: EventRenderRange[];
+      }
+    >;
+    max: number;
+  };
   dateClick: Identity<(arg: DateClickArg) => void>;
   dayCellClassNames: Identity<ClassNamesGenerator<DayCellContentArg>>;
 };
 
 function DayGridMonth(props: DayGridMonthProps) {
-  const { month, events, dateClick, dayCellClassNames, api } = props;
+  const { month, stat, dateClick, dayCellClassNames, api } = props;
   const days = month.days;
 
   const getEventNumber = useCallback(
     (day: Moment) => {
-      const eventNumber = events.filter((item) => {
-        return day.isSameOrAfter(moment(item.range.start)) && day.isBefore(moment(item.range.end));
-      }).length;
-      return eventNumber;
+      const key = day.format('YYYYMMDD');
+      if (!stat.dates.has(key)) {
+        return 0;
+      }
+      return stat.dates.get(key)?.number || 0;
     },
-    [events],
+    [stat],
   );
 
   const handleClick = (item: DayData) => () => {
@@ -90,8 +101,8 @@ function DayGridMonth(props: DayGridMonthProps) {
                         'day-of-month',
                         {
                           'is-other': item.isOther,
-                          'events-least-one': !item.isOther && eventNumber == 1,
-                          'events-more-than-one': !item.isOther && eventNumber > 1,
+                          [`event-color-level-${stat.max == 1 ? 2 : eventNumber}`]:
+                            !item.isOther && eventNumber > 0,
                           'is-today': !item.isOther && moment().isSame(item.date, 'date'),
                         },
                         dayCellClassNames({
@@ -159,6 +170,27 @@ function DayGridYear(props: DayGridYearProps) {
 
   const events = sliceEvents(props as any, true);
 
+  const stat = useMemo(() => {
+    let max = 1;
+    const dates = new Map<string, { number: number; events: EventRenderRange[] }>();
+    for (const event of events) {
+      const mstart = moment(event.range.end);
+      let days = mstart.diff(moment(event.range.start), 'days');
+      do {
+        const key = mstart.format('YYYYMMDD');
+        if (dates.has(key)) {
+          const number = dates.get(key)!.number! + 1;
+          max = Math.max(max, number);
+          dates.set(key, { number, events: [...dates.get(key)!.events, event] });
+        } else {
+          dates.set(key, { number: 1, events: [event] });
+        }
+        mstart.add(1, 'days');
+      } while (--days);
+    }
+    return { dates, max };
+  }, [events]);
+
   return (
     <div className="fc-daygrid fc-dayGridYear-view fc-view">
       <NowTimer unit="day">
@@ -174,6 +206,7 @@ function DayGridYear(props: DayGridYearProps) {
               <div className="col" key={item.key}>
                 <DayGridMonth
                   api={api}
+                  stat={stat}
                   dateClick={dateClick as any}
                   dayCellClassNames={dayCellClassNames as any}
                   month={item}

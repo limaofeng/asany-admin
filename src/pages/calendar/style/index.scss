@@ -212,13 +212,21 @@
             &.is-other {
               color: #cccccc;
             }
-            &.events-least-one {
+            &.event-color-level-1 {
+              color: #936d00;
+              background-color: #fff9ce;
+            }
+            &.event-color-level-2 {
               color: #936d00;
               background-color: #fff3a0;
             }
-            &.events-more-than-one {
+            &.event-color-level-3 {
               color: #936d00;
               background-color: #ffdc92;
+            }
+            &.event-color-level-4 {
+              color: #936d00;
+              background-color: #ffc284;
             }
             &.is-today {
               color: #fff;
@@ -235,8 +243,10 @@
               font-size: 1.25rem;
               transform: translate(-50%, -50%);
               &.is-today,
-              &.events-least-one,
-              &.events-more-than-one {
+              &.event-color-level-1,
+              &.event-color-level-2,
+              &.event-color-level-3,
+              &.event-color-level-4 {
                 box-shadow: 0px 1px 3px #7e7c7c;
               }
             }
