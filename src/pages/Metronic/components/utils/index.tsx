@@ -60,3 +60,14 @@ export function uuid() {
   s[8] = s[13] = s[18] = s[23] = '-';
   return s.join('');
 }
+
+export function isOverlap(node1: HTMLElement, node2: HTMLElement) {
+  const rect1 = node1.getBoundingClientRect();
+  const rect2 = node2.getBoundingClientRect();
+  return !(
+    rect1.right < rect2.left ||
+    rect1.left > rect2.right ||
+    rect1.bottom < rect2.top ||
+    rect1.top > rect2.bottom
+  );
+}

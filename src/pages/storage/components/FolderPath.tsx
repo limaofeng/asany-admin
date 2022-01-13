@@ -20,7 +20,7 @@ function FolderPath(props: FolderPathProps) {
           const isFirst = i == 0;
           const isLast = i == paths.length - 1;
           return (
-            <React.Fragment>
+            <React.Fragment key={item.id}>
               <Icon
                 name={isFirst ? 'Duotune/abs039' : 'Duotune/arr071'}
                 className={classnames('svg-icon-2 svg-icon-primary', {

@@ -1,4 +1,5 @@
 import Navigation from '../../Aside/Secondary/Navigation';
+import AsideWorkspace from '../../Aside/Secondary/AsideWorkspace';
 
 import CustomAsideSecondaryContent from './CustomAsideSecondaryContent';
 
@@ -8,5 +9,9 @@ export default function buildMenuRender(menu: MenuData) {
   if (menu.component) {
     return <CustomAsideSecondaryContent menu={menu} component={menu.component} />;
   }
-  return <Navigation title={menu.name} menus={menu.children!} />;
+  return (
+    <AsideWorkspace>
+      <Navigation title={menu.name} menus={menu.children!} />
+    </AsideWorkspace>
+  );
 }

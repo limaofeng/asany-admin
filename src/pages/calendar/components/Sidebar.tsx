@@ -1,12 +1,20 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 import type { DayValue } from 'react-modern-calendar-datepicker';
 import { Calendar } from 'react-modern-calendar-datepicker';
 import { useModel } from 'umi';
+import type { Moment } from 'moment';
+import moment from 'moment';
+
+import { useCalendarEventsWithDaysQuery } from '../hooks';
+
+import type { CalendarEvent } from '@/types';
+import { AsideWorkspace } from '@/pages/Metronic/components';
+
+type EventWithDay = { key: string; date: Moment; events: CalendarEvent[] };
 
 const zh_CN = {
-  // months list by order
   months: [
     '1 月',
     '2 月',
@@ -96,62 +104,156 @@ const zh_CN = {
 };
 
 function Sidebar() {
-  // const [selectedDay, setSelectedDay] = useState<any>(null);
-  const selectedDay = useModel('calendar', ({ state }) => {
-    if (!state.selectedDay) {
-      return;
-    }
-    return {
-      year: state.selectedDay.getFullYear(),
-      month: state.selectedDay.getMonth() + 1,
-      day: state.selectedDay.getDate(),
-    };
-  });
+  const selectedDay = useModel('calendar', ({ state }) => state.selectedDay || new Date());
+  const calendarSet = useModel('calendar', ({ state }) => state.calendarSet);
   const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const state = useRef<{
+    eventsWithDays: EventWithDay[];
+    version: number;
+    timer?: number;
+    toDayOrNextEvent?: EventWithDay;
+  }>({
+    eventsWithDays: [],
+    version: 0,
+  });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
+
+  const { data } = useCalendarEventsWithDaysQuery({
+    variables: {
+      date: selectedDay,
+      days: 60,
+      calendarSet: calendarSet == 'all' ? undefined : calendarSet,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
 
   const handleChange = useCallback(
     (value: DayValue) => {
-      console.log(value);
       value && setSelectedDay(new Date(value.year, value.month - 1, value.day));
     },
     [setSelectedDay],
   );
 
-  console.log('user-xxx', selectedDay);
+  const handleChangeDay = (date: Date) => () => {
+    setSelectedDay(date);
+  };
 
+  const eventsWithDays = useMemo(() => {
+    state.current.version++;
+    if (!data?.events) {
+      return state.current.eventsWithDays;
+    }
+    const eventMap = new Map<string, EventWithDay>();
+    for (const event of data.events) {
+      for (const date of event.dates) {
+        const mdate = moment(date);
+        const key = mdate.format('YYYY-MM-DD');
+        if (eventMap.has(key)) {
+          eventMap.get(key)?.events.push(event as any);
+        } else {
+          eventMap.set(key, { key, date: mdate, events: [event as any] });
+        }
+      }
+    }
+    return (state.current.eventsWithDays = Array.from(eventMap.values()).sort(
+      (l, r) => l.date.toDate().getTime() - r.date.toDate().getTime(),
+    ));
+  }, [data?.events]);
+
+  console.log('eventsWithDays', eventsWithDays.length, state.current.version);
+
+  const gotoDate = useCallback((date: Date) => {
+    if (!scrollRef.current) {
+      return;
+    }
+    const nodes = Array.from(
+      document.getElementsByClassName('event-list-item') as unknown as HTMLElement[],
+    );
+    const node = nodes.find((item) => moment(item.dataset.date).isSameOrAfter(date));
+    if (!node) {
+      return;
+    }
+    const top = node.getBoundingClientRect().top + scrollRef.current.scrollTop;
+    const scrollRect = scrollRef.current.getBoundingClientRect();
+    scrollRef.current.scrollTo({
+      top: top - scrollRect.top - 6,
+    });
+    state.current.toDayOrNextEvent = state.current.eventsWithDays.find(
+      (item) => item.key == node.dataset.date,
+    );
+    forceRender();
+  }, []);
+
+  useEffect(() => {
+    gotoDate(selectedDay);
+  }, [gotoDate, selectedDay, eventsWithDays]);
+
+  const handleScroll = useCallback((e) => {
+    console.log('scroll', e.target.scrollTop);
+
+    // console.log('scroll', 'nodes', nodes);
+
+    clearTimeout(state.current.timer);
+    state.current.timer = setTimeout(() => {
+      console.log('scroll', '触发查询');
+    }, 1000) as unknown as number;
+  }, []);
+
+  const { toDayOrNextEvent } = state.current;
   return (
-    <div className="calendar-sidebar">
-      <Calendar
-        locale={zh_CN as any}
-        value={selectedDay}
-        onChange={handleChange}
-        shouldHighlightWeekends
-        colorPrimary="#04c8c8"
-      />
-      <div className="calendar-day-list px-8">
-        <div className="event-list-header">
-          <span>今天 2022/01/10 </span>
+    <AsideWorkspace padding={false}>
+      <div className="calendar-sidebar">
+        <Calendar
+          locale={zh_CN as any}
+          value={{
+            year: selectedDay.getFullYear(),
+            month: selectedDay.getMonth() + 1,
+            day: selectedDay.getDate(),
+          }}
+          onChange={handleChange}
+          shouldHighlightWeekends
+          colorPrimary="#04c8c8"
+        />
+        <div className="calendar-day-list">
+          <div className="event-list-header">
+            <h6>
+              {toDayOrNextEvent?.date.format('dddd')}
+              <span className="day-subtitle text-muted">
+                {toDayOrNextEvent?.date.format('YYYY-MM-DD')}
+              </span>
+            </h6>
+          </div>
+          <div
+            ref={scrollRef}
+            onScrollCapture={handleScroll}
+            className="event-list-body hover-scroll-y"
+          >
+            {eventsWithDays.map(({ key, date, events }) => (
+              <div className="event-list-item" key={key} data-date={key}>
+                <h6 onClick={handleChangeDay(date.toDate())}>
+                  {date.format('dddd')}
+                  <span className="day-subtitle text-muted">{date.format('YYYY-MM-DD')}</span>
+                </h6>
+                <div className="event-list">
+                  {events.map((item) => (
+                    <span
+                      style={{ backgroundColor: item.color! }}
+                      className="event-day"
+                      key={item.id}
+                    >
+                      {item.title}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <ul>
-          <li>
-            <h6>
-              星期日 <span className="text-muted">2021/12/24</span>
-            </h6>
-            <div>
-              <span>似懂非懂分</span>
-            </div>
-          </li>
-          <li>
-            <h6>
-              星期日 <span className="text-muted">2021/12/24</span>
-            </h6>
-            <div>
-              <span>似懂非懂分</span>
-            </div>
-          </li>
-        </ul>
       </div>
-    </div>
+    </AsideWorkspace>
   );
 }
 

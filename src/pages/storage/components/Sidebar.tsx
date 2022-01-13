@@ -1,5 +1,7 @@
+import { AsideWorkspace } from '@/pages/Metronic/components';
+
 function Sidebar() {
-  return <div>云盘</div>;
+  return <AsideWorkspace>云盘</AsideWorkspace>;
 }
 
 export default Sidebar;

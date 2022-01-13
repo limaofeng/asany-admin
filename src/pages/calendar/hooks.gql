@@ -24,6 +24,26 @@ query calendarEvents($starts: Date!, $ends: Date!, $calendar: ID, $calendarSet: 
   }
 }
 
+query calendarEventsWithDays($date: Date!, $days: Int!, $calendar: ID, $calendarSet: ID) {
+  events: calendarEventsWithDays(
+    date: $date
+    days: $days
+    calendar: $calendar
+    calendarSet: $calendarSet
+  ) {
+    id
+    title
+    color
+    notes
+    datetime {
+      allDay
+      start: starts
+      end: ends
+    }
+    dates
+  }
+}
+
 query calendarEventDates($starts: Date!, $ends: Date!, $calendar: ID, $calendarSet: ID) {
   dates: calendarEventDates(
     starts: $starts

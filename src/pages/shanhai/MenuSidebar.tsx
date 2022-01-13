@@ -5,7 +5,7 @@ import Icon from '@asany/icons';
 
 import { QUEERY_MODELS } from './gql/model.gql';
 
-import { Button, Menu, Modal } from '@/pages/Metronic/components';
+import { AsideWorkspace, Button, Menu, Modal } from '@/pages/Metronic/components';
 import type { SelectEvent } from '@/pages/Metronic/components/base/Menu/typings';
 
 import './style/MenuSidebar.scss';
@@ -55,7 +55,7 @@ function ArticleSidebar() {
   }, []);
 
   return (
-    <>
+    <AsideWorkspace>
       <div className="m-0">
         <h1 className="text-gray-800 fw-bold mb-6 mx-5">自定义建模</h1>
       </div>
@@ -109,7 +109,7 @@ function ArticleSidebar() {
       >
         sdfsdf
       </Modal>
-    </>
+    </AsideWorkspace>
   );
 }
 

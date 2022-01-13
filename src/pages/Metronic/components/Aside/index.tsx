@@ -9,6 +9,7 @@ import { useLayout, useLayoutSelector } from '../Layout/LayoutContext';
 
 import Logo from './Logo';
 import AsideSecondary from './AsideSecondary';
+import AsideWorkspace from './Secondary/AsideWorkspace';
 
 import type { MenuData } from '@/.umi/app/typings';
 
@@ -187,6 +188,8 @@ function Aside(props: AsideProps) {
     </div>
   );
 }
+
+Aside.Workspace = AsideWorkspace;
 
 /* function renderMenu(menu?: MenuData) {
   if (!menu) {

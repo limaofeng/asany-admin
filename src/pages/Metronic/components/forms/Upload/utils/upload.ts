@@ -8,10 +8,9 @@ const MUTATION_UPLOAD = gql`
       id
       name
       path
-      directory
+      isDirectory
       size
       mimeType
-      createdAt
     }
   }
 `;

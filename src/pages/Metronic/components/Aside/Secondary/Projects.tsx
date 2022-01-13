@@ -651,7 +651,7 @@ function Projects() {
                     {/* --begin::Title--*/}
                     <div className="d-flex flex-column">
                       <a href="#" className="fs-6 text-gray-800 text-hover-primary fw-bold">
-                        "Kept API Project Meeting
+                        &quot;Kept API Project Meeting
                       </a>
                       <span className="fs-7 text-muted fw-bold">#84050</span>
                     </div>
@@ -690,7 +690,7 @@ function Projects() {
                     {/* --begin::Title--*/}
                     <div className="d-flex flex-column">
                       <a href="#" className="fs-6 text-gray-800 text-hover-primary fw-bold">
-                        "KPI Monitoring App Launch
+                        &quot;KPI Monitoring App Launch
                       </a>
                       <span className="fs-7 text-muted fw-bold">#84250</span>
                     </div>
@@ -764,7 +764,7 @@ function Projects() {
                     {/* --begin::Title--*/}
                     <div className="d-flex flex-column">
                       <a href="#" className="fs-6 text-gray-800 text-hover-primary fw-bold">
-                        "FitPro App Development
+                        &quot;FitPro App Development
                       </a>
                       <span className="fs-7 text-muted fw-bold">#84250</span>
                     </div>
@@ -823,7 +823,7 @@ function Projects() {
                     {/* --begin::Title--*/}
                     <div className="d-flex flex-column">
                       <a href="#" className="fs-6 text-gray-800 text-hover-primary fw-bold">
-                        "Landing UI Design" Launch
+                        &quot;Landing UI Design&quot; Launch
                       </a>
                       <span className="fs-7 text-muted fw-bold">#24005</span>
                     </div>

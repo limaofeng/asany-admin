@@ -1,6 +1,6 @@
 import Tree from '@asany/tree';
 
-import { Tabs } from '@/pages/Metronic/components';
+import { AsideWorkspace, Tabs } from '@/pages/Metronic/components';
 
 const { TabPane } = Tabs;
 
@@ -37,7 +37,7 @@ const data = [
 
 function Sidebar() {
   return (
-    <>
+    <AsideWorkspace>
       <div className="m-0 px-5">
         <h1 className="text-gray-800 fw-bold mb-6 mx-5">通讯录</h1>
       </div>
@@ -57,7 +57,7 @@ function Sidebar() {
         </Tabs>
         <div className="contacts-sidebar-tags" />
       </div>
-    </>
+    </AsideWorkspace>
   );
 }
 

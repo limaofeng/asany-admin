@@ -4,8 +4,15 @@ module.exports = {
     page: true,
     REACT_APP_ENV: true,
   },
-  plugins: ['import'],
+  plugins: ['import', 'graphql'],
   rules: {
+    'graphql/template-strings': [
+      'error',
+      {
+        env: 'apollo',
+        schemaJson: require('./graphql/index.schema.json'),
+      },
+    ],
     '@typescript-eslint/no-unused-expressions': [
       'error',
       { allowShortCircuit: true, allowTernary: true },

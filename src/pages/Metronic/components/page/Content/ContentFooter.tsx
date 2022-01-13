@@ -15,6 +15,7 @@ function ContentFooter(props: ContentFooterProps) {
             href="https://keenthemes.com"
             target="_blank"
             className="text-muted text-hover-primary fw-bold me-2 fs-6"
+            rel="noreferrer"
           >
             {copyright}
           </a>

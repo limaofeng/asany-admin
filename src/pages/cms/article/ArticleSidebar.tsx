@@ -6,7 +6,7 @@ import { useArticleChannelAllQuery } from '../hooks';
 
 import { NewArticleChannelModal } from './ArticleChannelNew';
 
-import { Button, Menu } from '@/pages/Metronic/components';
+import { AsideWorkspace, Button, Menu } from '@/pages/Metronic/components';
 import { tree } from '@/utils';
 import type { ArticleChannel } from '@/types';
 
@@ -85,7 +85,7 @@ function ArticleSidebar() {
   }, [channels.map((item) => item.id).join(',')]);
 
   return (
-    <>
+    <AsideWorkspace>
       <div className="m-0">
         <h1 className="text-gray-800 fw-bold mb-6 mx-5">内容管理</h1>
       </div>
@@ -140,7 +140,7 @@ function ArticleSidebar() {
         visible={visible}
         onCancel={handleCloseNewChannel}
       />
-    </>
+    </AsideWorkspace>
   );
 }
 

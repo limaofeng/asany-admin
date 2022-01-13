@@ -1,8 +1,8 @@
-import { Button, Menu } from '@/pages/Metronic/components';
+import { AsideWorkspace, Button, Menu } from '@/pages/Metronic/components';
 
 function Sidebar() {
   return (
-    <>
+    <AsideWorkspace>
       <div className="m-0 mt-6">
         <Button className="email-compose mb-6 mx-5" size="sm">
           写信
@@ -30,7 +30,7 @@ function Sidebar() {
           垃圾邮件
         </Menu.Item>
       </Menu>
-    </>
+    </AsideWorkspace>
   );
 }
 

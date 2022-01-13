@@ -113,7 +113,7 @@ function MainCalendar() {
             ref={fullCalendar}
             plugins={[dayGridPlugin, timeGridPlugin, yearGridPlugin, interactionPlugin]}
             locale={locale}
-            initialView="dayGridYear"
+            initialView="dayGridMonth"
             customButtons={{
               customToDay: {
                 text: '今天',
