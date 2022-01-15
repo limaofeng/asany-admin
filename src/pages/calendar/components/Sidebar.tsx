@@ -351,7 +351,7 @@ function Sidebar() {
       state.current.skipNextScroll = false;
       return;
     }
-    console.log('scrollings');
+    // console.log('scrollings');
     const nodes = Array.from(
       document.getElementsByClassName('event-list-item') as unknown as HTMLElement[],
     );
@@ -382,17 +382,19 @@ function Sidebar() {
     forceRender();
 
     clearTimeout(state.current.timer);
-    state.current.timer = setTimeout(() => {
-      console.log('scroll', '触发查询', node.dataset.date);
-      // loadCalendarEventsWithDays({
-      //   variables: {
-      //     date: moment(node.dataset.date).toDate(),
-      //     days: 30,
-      //     calendarSet: state.current.calendarSet == 'all' ? undefined : state.current.calendarSet,
-      //   },
-      // });
+    state.current.timer = setTimeout(async () => {
+      // console.log('scroll', '触发查询', node.dataset.date);
+      const { data: xdata } = await refetchCalendarEventsWithDays({
+        date: eventWithDay.date.toDate(),
+        days: 30,
+        calendarSet: state.current.calendarSet == 'all' ? undefined : state.current.calendarSet,
+      });
+      state.current.eventsWithDays = parseEventsWithDays(xdata.events, state.current.selectedDay!);
+      state.current.skipNextScroll = true;
+      forceRender();
     }, 1000) as unknown as number;
     setSelectedDay((state.current.selectedDay = moment(node.dataset.date).toDate()));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setSelectedDay]);
 
   const { toDayOrNextEvent, eventsWithDays } = state.current;
