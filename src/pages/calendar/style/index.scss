@@ -59,8 +59,8 @@
     padding: 0 1.25rem 0 32px;
     .event-list-header {
       position: relative;
-      // background-color: #fff;
       z-index: 1;
+      background-color: #fff;
       h6 {
         display: flex;
         align-items: flex-end;
@@ -69,6 +69,14 @@
           padding-left: 8px;
           font-weight: normal;
         }
+      }
+      .onday-no-events {
+        position: absolute;
+        background-color: #fff;
+        top: 16px;
+        right: 0;
+        left: 0;
+        font-size: 12px;
       }
     }
     .event-list-body {
@@ -89,6 +97,11 @@
       .event-list {
         min-height: 2rem;
         line-height: 2rem;
+
+        &.is-empty {
+          min-height: 0.25rem;
+          line-height: 0.25rem;
+        }
 
         .event-day {
           margin-right: 16px;

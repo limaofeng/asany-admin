@@ -174,8 +174,8 @@ function DayGridYear(props: DayGridYearProps) {
     let max = 1;
     const dates = new Map<string, { number: number; events: EventRenderRange[] }>();
     for (const event of events) {
-      const mstart = moment(event.range.end);
-      let days = mstart.diff(moment(event.range.start), 'days');
+      const mstart = moment(event.range.start);
+      let days = moment(event.range.end).diff(mstart, 'day');
       do {
         const key = mstart.format('YYYYMMDD');
         if (dates.has(key)) {
