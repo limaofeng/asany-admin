@@ -117,7 +117,7 @@ function AppView(props: AppViewProps) {
               菜单
             </Nav.Item>
             <Nav.Item key="routes" href={`/apps/${id}/routes`}>
-              路由
+              页面
             </Nav.Item>
             <Nav.Item key="settings" href={`/apps/${id}/settings`}>
               设置

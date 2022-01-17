@@ -17,7 +17,7 @@ function RouteTree(props: RouteTreeProps) {
     },
   } = props;
 
-  const { data } = useLoadRoutesQuery({ variables: { id } });
+  const { data } = useLoadRoutesQuery({ variables: { id }, fetchPolicy: 'cache-and-network' });
 
   const routes = data?.app?.routes;
 
@@ -33,6 +33,10 @@ function RouteTree(props: RouteTreeProps) {
       ),
     [routes],
   );
+
+  const handlePageEdit = (_id: string) => () => {
+    window.open('https://hotsoon.app.asany.cn/designer?id=' + _id, '_blank');
+  };
 
   return (
     <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
@@ -75,13 +79,14 @@ function RouteTree(props: RouteTreeProps) {
               key: 'actions',
               title: '操作',
               className: 'min-w-125px',
-              render: () => {
+              render: (_, record) => {
                 return (
                   <div className="d-flex items-center h-100">
                     <Button
                       as="button"
                       size="sm"
                       variant="light"
+                      onClick={handlePageEdit(record.id)}
                       activeStyle="light"
                       activeColor="primary"
                       icon={<Icon className="svg-icon-5 m-0" name="Duotune/art006" />}
