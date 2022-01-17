@@ -270,7 +270,7 @@ function Sidebar() {
     loadCalendarEventsWithDays({
       variables: {
         date: selectedDay,
-        days: 30,
+        days: 60,
         calendarSet: calendarSet == 'all' ? undefined : calendarSet,
       },
     }).then(({ data }) => {
@@ -312,7 +312,7 @@ function Sidebar() {
       }
       const { data: xdata } = await refetchCalendarEventsWithDays({
         date: _selectedDay,
-        days: 30,
+        days: 60,
         calendarSet: state.current.calendarSet == 'all' ? undefined : state.current.calendarSet,
       });
 
@@ -386,7 +386,7 @@ function Sidebar() {
       // console.log('scroll', '触发查询', node.dataset.date);
       const { data: xdata } = await refetchCalendarEventsWithDays({
         date: eventWithDay.date.toDate(),
-        days: 30,
+        days: 60,
         calendarSet: state.current.calendarSet == 'all' ? undefined : state.current.calendarSet,
       });
       state.current.eventsWithDays = parseEventsWithDays(xdata.events, state.current.selectedDay!);
