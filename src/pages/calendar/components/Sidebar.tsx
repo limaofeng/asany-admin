@@ -10,6 +10,8 @@ import classnames from 'classnames';
 
 import { useCalendarEventsWithDaysLazyQuery } from '../hooks';
 
+import NewCalendarEvent from './NewCalendarEvent';
+
 import type { CalendarEvent } from '@/types';
 import { AsideWorkspace } from '@/pages/Metronic/components';
 import { sleep } from '@/utils';
@@ -400,8 +402,9 @@ function Sidebar() {
   const { toDayOrNextEvent, eventsWithDays } = state.current;
   const onDay = eventsWithDays.find((item) => item.key == toDayOrNextEvent?.key);
   return (
-    <AsideWorkspace padding={false}>
+    <AsideWorkspace className="calendar-sidebar-bg state-new-event" padding={false}>
       <div className="calendar-sidebar">
+        <NewCalendarEvent visible={true} />
         <Calendar
           locale={zh_CN as any}
           value={{

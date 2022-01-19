@@ -19,13 +19,21 @@ interface TextAreaProps extends DOMAttributes<HTMLTextAreaElement> {
   onPressEnter?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 function TextArea(props: TextAreaProps) {
-  const { autoSize, solid, bordered = true, onPressEnter, onChange, ...textareaProps } = props;
+  const {
+    autoSize,
+    solid,
+    bordered = true,
+    onPressEnter,
+    onChange,
+    className,
+    ...textareaProps
+  } = props;
 
   const ref = useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = useState(props.value || '');
 
   useEffect(() => {
-    if (!autoSize) {
+    if (!autoSize || typeof autoSize !== 'boolean') {
       return;
     }
     const ele = ref.current!;
@@ -66,7 +74,7 @@ function TextArea(props: TextAreaProps) {
       value={onChange ? props.value || '' : value}
       onChange={handleChange}
       onKeyPress={handleKeyPress}
-      className={classnames('form-control', {
+      className={classnames(className, 'form-control', {
         'form-control-solid': solid,
         'form-control-borderless': !bordered,
       })}

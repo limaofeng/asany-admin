@@ -113,10 +113,10 @@
     scenejs "^1.5.0"
     styled-components "^5.3.3"
 
-"@asany/icons@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.npmjs.org/@asany/icons/-/icons-0.2.3.tgz#9adc4da5019de6ac131254bd8abcd850a49d5a68"
-  integrity sha512-mhOHVd8v2x41vwtReSJFR3CdhqzvBppNEwjQ9NLyZcBbH7wKeq8V6jWuw2mvtoMyc+BfBGVgNzgVtfV74c08Jg==
+"@asany/icons@^0.2.8":
+  version "0.2.8"
+  resolved "https://registry.npmjs.org/@asany/icons/-/icons-0.2.8.tgz#c571999607873885f1921ab074da159d1e8256af"
+  integrity sha512-eUsyIVewV3gsiqTAXJwIQpQ7jB6M9bk0X6ul0Pyngj6FhluhfK3JUG40Tk1+i0IVXvyyDKRzWOymzEcwKFep6A==
   dependencies:
     classnames "^2.3.1"
     dexie "^3.2.0"

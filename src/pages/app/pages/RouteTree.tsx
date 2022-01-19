@@ -86,7 +86,9 @@ function RouteTree(props: RouteTreeProps) {
                       as="button"
                       size="sm"
                       variant="light"
-                      onClick={handlePageEdit(record.id)}
+                      onClick={
+                        record.component?.id ? handlePageEdit(record.component.id) : undefined
+                      }
                       activeStyle="light"
                       activeColor="primary"
                       icon={<Icon className="svg-icon-5 m-0" name="Duotune/art006" />}
