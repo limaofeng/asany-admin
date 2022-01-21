@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import classnames from 'classnames';
+
+import { uuid } from '../../utils';
 
 import type { SelectableType } from './MenuContext';
 import { MenuProvider } from './MenuContext';
@@ -26,15 +28,18 @@ export type MenuProps = {
 
 function InternalMenu(props: any) {
   const { children, className, mode = 'vertical' } = props;
-  const _children = React.Children.map(
-    children,
-    (item: any) =>
-      item &&
-      React.cloneElement(item, {
-        menuKey: item.key,
-        path: item.key + '/',
-      }),
-  ).filter((item: any) => !!item);
+
+  const _children = useMemo(() => {
+    return React.Children.map(
+      children,
+      (item: any) =>
+        item &&
+        React.cloneElement(item, {
+          menuKey: item.key || uuid(),
+          path: item.key + '/',
+        }),
+    ).filter((item: any) => !!item);
+  }, [children]);
 
   return (
     <div

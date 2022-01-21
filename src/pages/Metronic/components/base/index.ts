@@ -17,3 +17,4 @@ export * from './Stat';
 export * from './Drawer';
 export * from './Empty';
 export * from './Tabs';
+export * from './Separator';

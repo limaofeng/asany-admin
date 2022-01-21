@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useClickAway } from 'react-use';
+import { Shortcuts } from '@asany/shortcuts';
 
 import Menu from '../Menu';
 import * as KTMenu from '../../utils/KTMenu';
@@ -21,6 +22,10 @@ type DropdownProps = {
 const placementMapping = {
   bottomLeft: 'bottom-start',
   bottomRight: 'bottom-end',
+  bottomCenter: 'bottom',
+  topLeft: 'top-start',
+  topCenter: 'top',
+  topRight: 'top-end',
 };
 
 function Dropdown(props: DropdownProps) {
@@ -111,12 +116,23 @@ function Dropdown(props: DropdownProps) {
     setVisible(false);
   });
 
+  const handleExit = useCallback((action) => {
+    if (action === 'EXIT') {
+      setVisible(false);
+      (itemRef.current as any).blur();
+    }
+  }, []);
+
   return (
     <>
-      {React.cloneElement(node as React.ReactElement, {
-        onClick: handleVisible,
-        ref: itemRef,
-      })}
+      <Shortcuts
+        tag={React.cloneElement(node as React.ReactElement, {
+          onClick: handleVisible,
+          ref: itemRef,
+        })}
+        name="DROPDOWN"
+        handler={handleExit}
+      />
       {visible &&
         React.cloneElement(overlay, {
           ref: subRef,

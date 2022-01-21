@@ -4,5 +4,8 @@ const keymap = {
     VIEW_PREV: ['left'],
     VIEW_NEXT: ['right'],
   },
+  DROPDOWN: {
+    EXIT: ['esc'],
+  },
 };
 export default keymap;
