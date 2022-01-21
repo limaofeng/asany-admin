@@ -45,6 +45,7 @@ function MainCalendar() {
     callback?: SuccessCallback;
     events: Map<string, any>;
     selectedDay?: Date;
+    isNew?: boolean;
   }>({
     events: new Map(),
   });
@@ -55,6 +56,7 @@ function MainCalendar() {
   const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
   const changeState = useModel('calendar', (model) => model.changeState);
 
+  state.current.isNew = isNew;
   state.current.selectedDay = selectedDay;
 
   const handleSelectedDay = useCallback(
@@ -122,7 +124,6 @@ function MainCalendar() {
   const handleMove = useCallback(
     (action: string) => {
       const calendarApi = fullCalendar.current!.getApi();
-      console.log(action);
       switch (action) {
         case 'VIEW_PREV':
           calendarApi.prev();
@@ -139,21 +140,30 @@ function MainCalendar() {
   );
 
   useEffect(() => {
-    if (isNew) {
-      return;
-    }
-    const domElement = document.activeElement as any;
-    const isInputLikeElement =
-      !!domElement &&
-      (domElement.tagName === 'INPUT' ||
-        domElement.tagName === 'SELECT' ||
-        domElement.tagName === 'TEXTAREA' ||
-        (domElement.contentEditable && domElement.contentEditable === 'true'));
-    if (isInputLikeElement) {
-      return;
-    }
-    document.getElementById('kt_wrapper')!.focus();
-  }, [isNew]);
+    const timer = setInterval(() => {
+      const _isNew = state.current.isNew;
+      const $mainCalendar = document.getElementById('kt_wrapper');
+      const domElement = document.activeElement as any;
+      if (_isNew || $mainCalendar == domElement) {
+        return;
+      }
+      const isInputLikeElement =
+        !!domElement &&
+        (domElement.tagName === 'INPUT' ||
+          domElement.tagName === 'SELECT' ||
+          domElement.tagName === 'TEXTAREA' ||
+          (domElement.contentEditable && domElement.contentEditable === 'true'));
+      if (isInputLikeElement) {
+        return;
+      }
+      if (document.activeElement == document.body) {
+        $mainCalendar?.focus();
+      }
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   return (
     <Shortcuts

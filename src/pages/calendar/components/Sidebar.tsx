@@ -11,7 +11,8 @@ import classnames from 'classnames';
 import { useCalendarEventsWithDaysLazyQuery } from '../hooks';
 
 import NewCalendarEvent from './NewCalendarEvent';
-import CalendarEventHeader from './CalendarEventHeader';
+import CalendarSidebarHeader from './CalendarSidebarHeader';
+import CalendarSidebarFooter from './CalendarSidebarFooter';
 
 import type { CalendarEvent } from '@/types';
 import { AsideWorkspace } from '@/pages/Metronic/components';
@@ -409,7 +410,7 @@ function Sidebar() {
       padding={false}
     >
       <div className="calendar-sidebar">
-        <CalendarEventHeader />
+        <CalendarSidebarHeader />
         <NewCalendarEvent visible={isNew} />
         <Calendar
           locale={zh_CN as any}
@@ -464,6 +465,7 @@ function Sidebar() {
             ))}
           </div>
         </div>
+        <CalendarSidebarFooter />
       </div>
     </AsideWorkspace>
   );

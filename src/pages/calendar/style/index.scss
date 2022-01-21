@@ -140,6 +140,9 @@
   }
 }
 .calendar-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh);
   .Calendar {
     --cl-color-error: #969595;
     width: 100%;
@@ -251,6 +254,30 @@
           border-radius: 6px;
           cursor: pointer;
         }
+      }
+    }
+  }
+  .calendar-sidebar-footer {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    .current-calendar {
+      padding-left: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      .calendar-pointer {
+        margin: 0 4px;
+      }
+    }
+    .menu-sub-dropdown .menu-item .menu-link {
+      position: relative;
+      .menu-icon {
+        position: absolute;
+        left: 0;
+      }
+      .menu-title {
+        margin-left: 14px;
       }
     }
   }
