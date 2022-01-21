@@ -51,6 +51,7 @@
     "@asany/ckeditor5": "^31.1.0-3",
     "@asany/editor": "^0.2.23",
     "@asany/icons": "^0.2.8",
+    "@asany/shortcuts": "^0.1.2",
     "@asany/sortable": "^0.1.30",
     "@asany/tree": "^0.1.14",
     "@ckeditor/ckeditor5-react": "^3.0.3",
@@ -98,7 +99,7 @@
   },
   "devDependencies": {
     "@asany/umi-plugin-apollo": "^0.1.6",
-    "@asany/umi-plugin-app": "^0.1.28",
+    "@asany/umi-plugin-app": "^0.1.30",
     "@graphql-codegen/cli": "^2.3.1",
     "@graphql-codegen/introspection": "^2.1.1",
     "@graphql-codegen/typescript": "^2.4.2",

@@ -11,10 +11,48 @@
     --aside-workspace-bg-color: #f7f7f7;
   }
 
+  .calendar-event-header {
+    position: relative;
+    display: flex;
+    padding: 2rem 1.25rem 0 1.5rem;
+    &.event-header-state-new {
+      .calendar-event-header-left {
+        input {
+          background-color: #fff;
+          opacity: 1;
+          &:focus {
+            border-color: transparent;
+          }
+        }
+      }
+    }
+    &.event-header-state-focused {
+      .calendar-event-header-left {
+        opacity: 1;
+      }
+    }
+    .calendar-event-header-left {
+      flex: 1;
+      input {
+        opacity: 0;
+        &:focus {
+          opacity: 1;
+        }
+      }
+    }
+    .calendar-event-header-right {
+      position: absolute;
+      top: 2rem;
+      right: 22px;
+      margin-top: 6px;
+    }
+  }
+
   .calendar-new-event-container {
     margin-bottom: -2rem;
     padding: 1rem;
 
+    &.invisible,
     .invisible {
       display: none !important;
     }
@@ -105,6 +143,7 @@
   .Calendar {
     --cl-color-error: #969595;
     width: 100%;
+    padding-top: 0;
     background: transparent;
     box-shadow: none;
 
@@ -155,9 +194,12 @@
     }
   }
   .calendar-day-list {
+    margin-top: -20px;
     padding: 0 1.25rem 0 32px;
+    overflow: hidden;
     .event-list-header {
       position: relative;
+      top: 0;
       z-index: 1;
       background-color: var(--aside-workspace-bg-color);
       h6 {
@@ -179,7 +221,7 @@
       }
     }
     .event-list-body {
-      height: calc(100vh - 367px - 28px);
+      height: calc(100vh - 347px - 28px - 60px);
       margin-top: -30px;
       .event-list-item {
         margin-top: 0.5rem;
@@ -242,7 +284,7 @@
           border-radius: 15px;
         }
       }
-      a[data-navlink] {
+      a {
         cursor: inherit;
         .fc-daygrid-day-solar {
           cursor: pointer;

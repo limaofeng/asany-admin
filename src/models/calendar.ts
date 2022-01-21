@@ -1,19 +1,22 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import { useModel } from 'umi';
 
 import { useCalendarSetsLazyQuery } from '@/pages/calendar/hooks';
 
 type CalendarState = {
+  state: 'none' | 'new';
   selectedDay?: Date;
   calendarSet?: 'all' | number;
 };
 
 export default function useCalendarModel() {
-  const [state, setState] = useState<CalendarState>({
+  const state = useRef<CalendarState>({
+    state: 'none',
     selectedDay: new Date(),
     calendarSet: 1,
   });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const [loadCalendarSets, { data, loading }] = useCalendarSetsLazyQuery({
     fetchPolicy: 'cache-and-network',
@@ -21,7 +24,7 @@ export default function useCalendarModel() {
   const currentUser = useModel('@@initialState', ({ initialState }) => initialState?.currentUser);
 
   useEffect(() => {
-    if (currentUser == null || state.calendarSet == 'all') {
+    if (currentUser == null || state.current.calendarSet == 'all') {
       return;
     }
     loadCalendarSets();
@@ -32,24 +35,34 @@ export default function useCalendarModel() {
     if (loading == null || data == null) {
       return;
     }
-    setState((_state) => {
-      if (!data.calendarSets.length) {
-        return { ..._state, calendarSet: 'all' };
-      }
-      // debugger;
-      if (data.calendarSets.some((item) => item.id == _state.calendarSet)) {
-        return _state;
-      }
-      return { ..._state, calendarSet: 'all' };
-    });
+    if (!data.calendarSets.length) {
+      state.current.calendarSet = 'all';
+      forceRender();
+      return;
+    }
+    if (data.calendarSets.some((item) => item.id == state.current.calendarSet)) {
+      return;
+    }
+    state.current.calendarSet = 'all';
+    forceRender();
   }, [data, loading]);
 
   const setSelectedDay = useCallback((day) => {
-    setState((_state) => ({ ..._state, selectedDay: day }));
+    state.current.selectedDay = day;
+    forceRender();
+  }, []);
+
+  const changeState = useCallback((_state: 'none' | 'new', date?: Date) => {
+    state.current.state = _state;
+    if (date) {
+      state.current.selectedDay = date;
+    }
+    forceRender();
   }, []);
 
   return {
-    state,
+    state: state.current,
     setSelectedDay,
+    changeState,
   };
 }

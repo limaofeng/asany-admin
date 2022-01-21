@@ -11,6 +11,7 @@ import classnames from 'classnames';
 import { useCalendarEventsWithDaysLazyQuery } from '../hooks';
 
 import NewCalendarEvent from './NewCalendarEvent';
+import CalendarEventHeader from './CalendarEventHeader';
 
 import type { CalendarEvent } from '@/types';
 import { AsideWorkspace } from '@/pages/Metronic/components';
@@ -201,6 +202,7 @@ function Sidebar() {
   const selectedDay = useModel('calendar', ({ state }) => state.selectedDay || new Date());
   const calendarSet = useModel('calendar', ({ state }) => state.calendarSet);
   const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
+  const isNew = useModel('calendar', (model) => model.state.state == 'new');
 
   const scrollViewRef = useRef<HTMLDivElement>(null);
 
@@ -402,9 +404,13 @@ function Sidebar() {
   const { toDayOrNextEvent, eventsWithDays } = state.current;
   const onDay = eventsWithDays.find((item) => item.key == toDayOrNextEvent?.key);
   return (
-    <AsideWorkspace className="calendar-sidebar-bg state-new-event" padding={false}>
+    <AsideWorkspace
+      className={classnames('calendar-sidebar-bg', { 'state-new-event': isNew })}
+      padding={false}
+    >
       <div className="calendar-sidebar">
-        <NewCalendarEvent visible={true} />
+        <CalendarEventHeader />
+        <NewCalendarEvent visible={isNew} />
         <Calendar
           locale={zh_CN as any}
           value={{

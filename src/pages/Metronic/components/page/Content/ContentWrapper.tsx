@@ -1,3 +1,5 @@
+import React from 'react';
+
 import classnames from 'classnames';
 
 import Content from './Content';
@@ -10,11 +12,13 @@ type ContentWrapperProps = {
   className?: string;
   header?: ContentHeaderProps | false;
   footer?: ContentFooterProps | false;
-  children: React.ReactNode;
+  mask?: boolean;
+  children?: React.ReactNode;
 };
 
-function ContentWrapper(props: ContentWrapperProps) {
+function ContentWrapper(props: ContentWrapperProps, ref: any) {
   const {
+    mask,
     header,
     className,
     footer = { copyright: '版权所有 2021 林暮春 | 沪ICP备11003026号' },
@@ -22,8 +26,11 @@ function ContentWrapper(props: ContentWrapperProps) {
   } = props;
   return (
     <div
-      className={classnames('wrapper d-flex flex-column flex-row-fluid', className)}
+      ref={ref}
       id="kt_wrapper"
+      className={classnames('wrapper d-flex flex-column flex-row-fluid', className, {
+        'content-mask': mask,
+      })}
     >
       {header && <ContentHeader {...header} />}
       <Content>{children}</Content>
@@ -32,4 +39,4 @@ function ContentWrapper(props: ContentWrapperProps) {
   );
 }
 
-export default ContentWrapper;
+export default React.forwardRef(ContentWrapper);

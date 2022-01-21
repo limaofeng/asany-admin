@@ -9,6 +9,7 @@ import { Lunar } from 'lunar-javascript';
 import moment from 'moment';
 import { useModel } from 'umi';
 import { useApolloClient } from '@apollo/client';
+import { Shortcuts } from '@asany/shortcuts';
 
 import yearGridPlugin from '../plugins/yearGridPlugin';
 import type { CalendarEventsQuery, CalendarEventsQueryVariables } from '../hooks';
@@ -48,9 +49,11 @@ function MainCalendar() {
     events: new Map(),
   });
 
+  const isNew = useModel('calendar', (model) => model.state.state == 'new');
   const selectedDay = useModel('calendar', (model) => model.state.selectedDay);
   const calendarSet = useModel('calendar', (model) => model.state.calendarSet);
   const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
+  const changeState = useModel('calendar', (model) => model.changeState);
 
   state.current.selectedDay = selectedDay;
 
@@ -60,6 +63,17 @@ function MainCalendar() {
     },
     [setSelectedDay],
   );
+
+  const handleNewEvent = useCallback(
+    (data: Date) => {
+      changeState('new', data);
+    },
+    [changeState],
+  );
+
+  const handleNavLink = useCallback((e) => {
+    fullCalendar.current?.getApi().changeView('timeGridDay', new Date(e.target.dataset.date));
+  }, []);
 
   const handleEventSource = useCallback(
     async (
@@ -105,117 +119,153 @@ function MainCalendar() {
     });
   }, [setSelectedDay]);
 
-  return (
-    <ContentWrapper header={false} footer={false} className="main-calendar">
-      <Card>
-        <div>
-          <FullCalendar
-            ref={fullCalendar}
-            plugins={[dayGridPlugin, timeGridPlugin, yearGridPlugin, interactionPlugin]}
-            locale={locale}
-            initialView="dayGridMonth"
-            customButtons={{
-              customToDay: {
-                text: '今天',
-                click: function () {
-                  setSelectedDay(new Date());
-                },
-              },
-            }}
-            headerToolbar={{
-              left: 'prev,customToDay,next',
-              center: 'title',
-              right: 'timeGridDay,timeGridWeek,dayGridMonth,dayGridYear',
-            }}
-            views={{
-              dayGridMonth: {
-                dayCellClassNames(item) {
-                  const _classnames = [];
-                  if (item.isOther) {
-                    const prevmont = moment(item.view.currentStart).subtract(1, 'days');
-                    const nextmonth = moment(item.view.currentEnd);
+  const handleMove = useCallback(
+    (action: string) => {
+      const calendarApi = fullCalendar.current!.getApi();
+      console.log(action);
+      switch (action) {
+        case 'VIEW_PREV':
+          calendarApi.prev();
+          break;
+        case 'VIEW_NEXT':
+          calendarApi.next();
+          break;
+        case 'MASK_ESC':
+          changeState('none');
+          break;
+      }
+    },
+    [changeState],
+  );
 
-                    const prevdays = moment(item.date).diff(moment(prevmont), 'days');
-                    const nextdays = moment(item.date).diff(moment(nextmonth), 'days');
-                    if (prevdays <= 0 && prevdays >= -6) {
-                      _classnames.push('fc-day-prevmonth');
-                      if (prevdays == 0 && item.dow != 6) {
-                        _classnames.push('fc-day-month-divider');
-                      }
-                    }
-                    if (nextdays >= 0 && nextdays <= 6) {
-                      _classnames.push('fc-day-nextmonth');
-                      if (nextdays == 0 && item.dow != 0) {
-                        _classnames.push('fc-day-month-divider');
-                      }
-                    }
-                  }
-                  if (moment(item.date).isSame(moment(selectedDay), 'day')) {
-                    _classnames.push('fc-day-selected');
-                  }
-                  return _classnames;
-                },
-                dayCellContent(item) {
-                  const lunar = Lunar.fromDate(item.date);
-                  return (
-                    <>
-                      <label className="fc-daygrid-day-lunar">
-                        {lunar.getDayInChinese()} {lunar.getJieQi()}
-                      </label>
-                      <label className="fc-daygrid-day-solar">{item.date.getDate()}</label>
-                    </>
-                  );
-                },
-                dateClick(event) {
-                  if (isDoubleClick(event.dayEl)) {
-                    console.log('双击事件', event);
-                  } else {
-                    handleSelectedDay(event.date);
-                  }
-                },
+  useEffect(() => {
+    if (isNew) {
+      return;
+    }
+    const domElement = document.activeElement as any;
+    const isInputLikeElement =
+      !!domElement &&
+      (domElement.tagName === 'INPUT' ||
+        domElement.tagName === 'SELECT' ||
+        domElement.tagName === 'TEXTAREA' ||
+        (domElement.contentEditable && domElement.contentEditable === 'true'));
+    if (isInputLikeElement) {
+      return;
+    }
+    document.getElementById('kt_wrapper')!.focus();
+  }, [isNew]);
+
+  return (
+    <Shortcuts
+      tag={<ContentWrapper header={false} footer={false} mask={isNew} className="main-calendar" />}
+      name="CALENDAR"
+      handler={handleMove}
+    >
+      <Card>
+        <FullCalendar
+          ref={fullCalendar}
+          plugins={[dayGridPlugin, timeGridPlugin, yearGridPlugin, interactionPlugin]}
+          locale={locale}
+          initialView="dayGridMonth"
+          customButtons={{
+            customToDay: {
+              text: '今天',
+              click: function () {
+                setSelectedDay(new Date());
               },
-              timeGridWeek: {
-                dayCellClassNames(item) {
-                  const _classnames = [];
-                  if (moment(item.date).isSame(moment(selectedDay), 'day')) {
-                    _classnames.push('fc-day-selected');
+            },
+          }}
+          headerToolbar={{
+            left: 'prev,customToDay,next',
+            center: 'title',
+            right: 'timeGridDay,timeGridWeek,dayGridMonth,dayGridYear',
+          }}
+          views={{
+            dayGridMonth: {
+              dayCellClassNames(item) {
+                const _classnames = [];
+                if (item.isOther) {
+                  const prevmont = moment(item.view.currentStart).subtract(1, 'days');
+                  const nextmonth = moment(item.view.currentEnd);
+
+                  const prevdays = moment(item.date).diff(moment(prevmont), 'days');
+                  const nextdays = moment(item.date).diff(moment(nextmonth), 'days');
+                  if (prevdays <= 0 && prevdays >= -6) {
+                    _classnames.push('fc-day-prevmonth');
+                    if (prevdays == 0 && item.dow != 6) {
+                      _classnames.push('fc-day-month-divider');
+                    }
                   }
-                  return _classnames;
-                },
+                  if (nextdays >= 0 && nextdays <= 6) {
+                    _classnames.push('fc-day-nextmonth');
+                    if (nextdays == 0 && item.dow != 0) {
+                      _classnames.push('fc-day-month-divider');
+                    }
+                  }
+                }
+                if (moment(item.date).isSame(moment(selectedDay), 'day')) {
+                  _classnames.push('fc-day-selected');
+                }
+                return _classnames;
               },
-              dayGridYear: {
-                dayCellClassNames(item) {
-                  const _classnames = [];
-                  if (!item.isOther && moment(item.date).isSame(moment(selectedDay), 'date')) {
-                    _classnames.push('fc-day-selected');
-                  }
-                  if (_classnames.length) {
-                    console.log(
-                      'classnames',
-                      moment(selectedDay).format(),
-                      moment(item.date).format(),
-                      _classnames,
-                    );
-                  }
-                  return _classnames;
-                },
-                dateClick(event) {
+              dayCellContent(item) {
+                const lunar = Lunar.fromDate(item.date);
+                return (
+                  <>
+                    <label className="fc-daygrid-day-lunar">
+                      {lunar.getDayInChinese()} {lunar.getJieQi()}
+                    </label>
+                    <label
+                      className="fc-daygrid-day-solar"
+                      data-date={moment(item.date).format()}
+                      onClick={handleNavLink}
+                    >
+                      {item.date.getDate()}
+                    </label>
+                  </>
+                );
+              },
+              dateClick(event) {
+                if (isDoubleClick(event.dayEl)) {
+                  handleNewEvent(event.date);
+                  console.log('双击事件', event);
+                } else {
                   handleSelectedDay(event.date);
-                },
+                }
               },
-            }}
-            firstDay={0}
-            navLinks={true}
-            selectable={true}
-            selectMirror={true}
-            dateClick={(...args) => {
-              console.log('dateClick', args);
-            }}
-            events={handleEventSource as any}
-          />
-        </div>
+            },
+            timeGridWeek: {
+              dayCellClassNames(item) {
+                const _classnames = [];
+                if (moment(item.date).isSame(moment(selectedDay), 'day')) {
+                  _classnames.push('fc-day-selected');
+                }
+                return _classnames;
+              },
+            },
+            dayGridYear: {
+              dayCellClassNames(item) {
+                const _classnames = [];
+                if (!item.isOther && moment(item.date).isSame(moment(selectedDay), 'date')) {
+                  _classnames.push('fc-day-selected');
+                }
+                return _classnames;
+              },
+              dateClick(event) {
+                handleSelectedDay(event.date);
+              },
+            },
+          }}
+          firstDay={0}
+          selectable={true}
+          selectMirror={true}
+          dateClick={(...args) => {
+            console.log('dateClick', args);
+          }}
+          events={handleEventSource as any}
+        />
       </Card>
-    </ContentWrapper>
+    </Shortcuts>
   );
 }
 

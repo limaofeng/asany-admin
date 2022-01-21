@@ -13,10 +13,17 @@ type NewCalendarEventProps = {
 
 function NewCalendarEvent(props: NewCalendarEventProps) {
   const { visible } = props;
+
   const [showMore, setShowMore] = useState<boolean>(false);
 
   const handleToggle = useCallback(() => {
     setShowMore((show) => !show);
+  }, []);
+
+  const handleEsc = useCallback((e: KeyboardEvent) => {
+    if (e.key == 'Escape') {
+      (document.querySelector('.calendar-event-header input') as any)?.focus();
+    }
   }, []);
 
   const form = Form.useForm();
@@ -26,6 +33,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
       <div className="calendar-new-event">
         <Form
           form={form}
+          onKeyUp={handleEsc as any}
           initialValues={{
             // calendar: 'none',
             allDay: true,
