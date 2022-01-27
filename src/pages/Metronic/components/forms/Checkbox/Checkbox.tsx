@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 
 import classnames from 'classnames';
 
@@ -9,13 +10,14 @@ type CheckboxProps = {
   checked?: boolean;
   size?: 'sm' | 'lg';
   value?: string;
+  style?: CSSProperties;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   className?: string;
 };
 
 function Checkbox(props: CheckboxProps) {
-  const { size, label, disabled, value = '1', className, onChange } = props;
+  const { size, label, style, disabled, value = '1', className, onChange } = props;
 
   const id = useRef<string>(uuid());
   const ref = useRef<HTMLInputElement>(null);
@@ -46,6 +48,7 @@ function Checkbox(props: CheckboxProps) {
         ref={ref}
         id={id.current}
         disabled={disabled}
+        style={style}
         className="form-check-input"
         type="checkbox"
         checked={onChange ? props.checked : checked}

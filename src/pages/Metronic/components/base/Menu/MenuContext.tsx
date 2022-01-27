@@ -108,10 +108,6 @@ class MenuStoreContext {
     this._eventEmitter.emit(MENU_EVENT_OPEN_CHANGE, this._state.openKeys);
   }
   select(key: string, e: React.MouseEvent) {
-    this.dispatch({
-      type: 'select',
-      payload: key,
-    });
     const item = this._state.menus?.get(key);
     if (!item) {
       return;
@@ -125,6 +121,12 @@ class MenuStoreContext {
     };
     this._eventEmitter.emit(MENU_EVENT_CLICK, event);
     this._eventEmitter.emit(MENU_EVENT_SELECT, event);
+    if (event.returnValue) {
+      this.dispatch({
+        type: 'select',
+        payload: key,
+      });
+    }
   }
   dispatch(action: MenuAction) {
     this._state = reducer(this._state, action);
@@ -217,7 +219,10 @@ export function MenuProvider(props: MenuProviderProps) {
     if (!onSelect) {
       return;
     }
-    return store.on('select', onSelect);
+    return store.on('select', (e: SelectEvent) => {
+      const returnValue = onSelect(e);
+      e.returnValue = returnValue === false ? false : true;
+    });
   }, [store, onSelect]);
 
   useEffect(() => {

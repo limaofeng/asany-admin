@@ -17,10 +17,6 @@ function CalendarSidebarHeader() {
   const isNew = useModel('calendar', (model) => model.state.state == 'new');
   const changeState = useModel('calendar', (model) => model.changeState);
 
-  const handleClose = useCallback(() => {
-    changeState('none');
-  }, [changeState]);
-
   const handleFocused = useCallback(() => {
     quicklyEnter.current?.focus();
   }, []);
@@ -32,10 +28,10 @@ function CalendarSidebarHeader() {
   const handleLeave = useCallback(() => {
     const mainCalendar = document.getElementsByClassName('main-calendar')[0] as any;
     mainCalendar?.focus();
-    handleClose();
+    changeState('none');
     setValue('');
     setFocused(false);
-  }, [handleClose]);
+  }, [changeState]);
 
   const handleKeyWithEscape = useCallback(
     (e: KeyboardEvent) => {
@@ -48,12 +44,12 @@ function CalendarSidebarHeader() {
     (e) => {
       setValue(e.target.value);
       if (!e.target.value) {
-        handleClose();
+        changeState('none');
         return;
       }
       !isNew && changeState('new', selectedDay);
     },
-    [changeState, handleClose, isNew, selectedDay],
+    [changeState, isNew, selectedDay],
   );
 
   const handleBlur = useCallback(() => {
@@ -101,7 +97,7 @@ function CalendarSidebarHeader() {
         />
       </div>
       {focused || isNew ? (
-        <a className="calendar-event-header-right" onClick={handleClose}>
+        <a className="calendar-event-header-right" onClick={handleLeave}>
           <Icon className="svg-icon-1" name="Duotune/arr088" />
         </a>
       ) : (

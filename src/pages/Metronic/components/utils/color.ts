@@ -11,14 +11,14 @@ const colorByBgColor = new Map();
 
 const rgbRegex = /^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/;
 
-const hex = (x: string) => ('0' + parseInt(x).toString(16)).slice(-2);
+const hex_convert = (x: string) => ('0' + parseInt(x).toString(16)).slice(-2);
 
 function convertRGBToHex(rgb: string): string {
   const bg = rgb.match(rgbRegex);
   if (!bg) {
     return '';
   }
-  return ('#' + hex(bg[1]) + hex(bg[2]) + hex(bg[3])).toUpperCase();
+  return ('#' + hex_convert(bg[1]) + hex_convert(bg[2]) + hex_convert(bg[3])).toUpperCase();
 }
 
 const CACHE_ERROR = 'error';
@@ -67,4 +67,121 @@ export function contrastTextColor(bgColor: string) {
   const textColor = r * 0.299 + g * 0.587 + b * 0.114 > 186 ? '#000' : '#FFF';
   colorByBgColor.set(bgColor, textColor);
   return textColor;
+}
+
+//RGB颜色转化为16进制颜色
+function colorHex(str: string) {
+  const reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+  const that = str;
+  if (/^(rgb|RGB)/.test(that)) {
+    const aColor = that.replace(/(?:\(|\)|rgb|RGB)*/g, '').split(',');
+    let strHex = '#';
+    for (let i = 0; i < aColor.length; i++) {
+      let hex = Number(aColor[i]).toString(16);
+      if (hex === '0') {
+        hex += hex;
+      }
+      strHex += hex;
+    }
+    if (strHex.length !== 7) {
+      strHex = that;
+    }
+    return strHex;
+  } else if (reg.test(that)) {
+    const aNum = that.replace(/#/, '').split('');
+    if (aNum.length === 6) {
+      return that;
+    } else if (aNum.length === 3) {
+      let numHex = '#';
+      for (let i = 0; i < aNum.length; i += 1) {
+        numHex += aNum[i] + aNum[i];
+      }
+      return numHex;
+    }
+  } else {
+    return that;
+  }
+  return that;
+}
+
+/**
+ * 16进制颜色转化为RGB颜色
+ * @param str 颜色
+ * @returns
+ */
+function colorRgb(str: string) {
+  const reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+  let sColor = str.toLowerCase();
+  if (sColor && reg.test(sColor)) {
+    if (sColor.length === 4) {
+      let sColorNew = '#';
+      for (let i = 1; i < 4; i += 1) {
+        sColorNew += sColor.slice(i, i + 1).concat(sColor.slice(i, i + 1));
+      }
+      sColor = sColorNew;
+    }
+    //处理六位的颜色值
+    const sColorChange = [];
+    for (let i = 1; i < 7; i += 2) {
+      sColorChange.push(parseInt('0x' + sColor.slice(i, i + 2)));
+    }
+    return 'rgb(' + sColorChange.join(',') + ')';
+  } else {
+    return sColor;
+  }
+}
+
+function transformColor(_col: string, amt: number) {
+  let usePound = false;
+  let col = _col;
+  if (col[0] == '#') {
+    col = col.slice(1);
+    usePound = true;
+  }
+
+  const num = parseInt(col, 16);
+
+  let r = (num >> 16) + amt;
+
+  if (r > 255) r = 255;
+  else if (r < 0) r = 0;
+
+  let b = ((num >> 8) & 0x00ff) + amt;
+
+  if (b > 255) b = 255;
+  else if (b < 0) b = 0;
+
+  let g = (num & 0x0000ff) + amt;
+
+  if (g > 255) g = 255;
+  else if (g < 0) g = 0;
+
+  return (
+    (usePound ? '#' : '') + String('000000' + (g | (b << 8) | (r << 16)).toString(16)).slice(-6)
+  );
+}
+
+//判断是否为亮色
+export function getContrastYIQ(hexcolor: string) {
+  const colorrgb = colorRgb(hexcolor);
+  const colors = colorrgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)!;
+  const red = parseInt(colors[1]);
+  const green = parseInt(colors[2]);
+  const blue = parseInt(colors[3]);
+  let brightness;
+  brightness = red * 299 + green * 587 + blue * 114;
+  brightness = brightness / 255000;
+  if (brightness >= 0.5) {
+    return 'light';
+  } else {
+    return 'dark';
+  }
+}
+
+export function lightenColor(color: string, amt: number = 40) {
+  return transformColor(colorHex(color), amt);
+}
+
+export function darkenColor(color: string, amt: number = 40) {
+  return transformColor(colorHex(color), -amt);
 }

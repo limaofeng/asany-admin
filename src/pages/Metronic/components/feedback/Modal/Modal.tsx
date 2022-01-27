@@ -28,6 +28,7 @@ type ModalProps = {
   cancelText?: string;
   okButtonProps?: ButtonProps;
   cancelButtonProps?: ButtonProps;
+  header?: React.ReactNode;
   footer?: React.ReactNode;
   bodyClassName?: string;
   dialogClassName?: string;
@@ -35,6 +36,33 @@ type ModalProps = {
   maskClosable?: boolean;
   children: React.ReactNode;
 };
+
+type ModalHeaderProps = {
+  closable?: boolean;
+  children?: React.ReactNode;
+  onCancel?: () => void;
+};
+
+function ModalHeader(props: ModalHeaderProps) {
+  const { closable, onCancel, children } = props;
+  return (
+    <div
+      className={classnames('modal-header align-items-start', {
+        'pb-0 border-0 justify-content-end ': !React.Children.count(children),
+      })}
+    >
+      {children}
+      {closable && (
+        <div
+          onClick={onCancel}
+          className="btn btn-sm btn-icon btn-active-color-primary align-self-start"
+        >
+          <Icon name="Duotune/arr061" className="svg-icon-1" />
+        </div>
+      )}
+    </div>
+  );
+}
 
 type ModalFooterProps = {
   cancelText?: string;
@@ -86,30 +114,22 @@ function Modal(props: ModalProps) {
     onCancel,
     mask = true,
     maskClosable = true,
+    header = <ModalHeader>{title && <h5 className="modal-title">{title}</h5>}</ModalHeader>,
     footer = <ModalFooter />,
     ...footerProps
   } = props;
-
   return (
     <BsModal
       backdrop={mask && (maskClosable ? mask : 'static')}
       centered={centered}
       show={show}
       dialogClassName={dialogClassName}
-      onHide={onCancel}
+      onHide={onCancel as any}
     >
-      {/*--begin::Modal header--*/}
-      <div className={classnames('modal-header', { 'pb-0 border-0 justify-content-end': !title })}>
-        {title && <h5 className="modal-title">{title}</h5>}
-        {closable && (
-          <div onClick={onCancel} className="btn btn-sm btn-icon btn-active-color-primary">
-            <Icon name="Duotune/arr061" className="svg-icon-1" />
-          </div>
-        )}
-      </div>
+      {header && React.cloneElement(header as React.ReactElement, { closable, onCancel })}
       <BsModal.Body className={classnames('scroll-y', bodyClassName)}>
         {React.Children.count(children) == 1
-          ? React.cloneElement(children as any, { visible: show })
+          ? React.cloneElement(children as any, { visible: `${show}` })
           : children}
       </BsModal.Body>
       {footer && React.cloneElement(footer as React.ReactElement, { ...footerProps, onCancel })}
@@ -206,5 +226,7 @@ Modal.error = (options: ModalOptions) => {
 Modal.warning = (options: ModalOptions) => {
   return message({ ...options, icon: 'warning' });
 };
+
+Modal.Header = ModalHeader;
 
 export default Modal;

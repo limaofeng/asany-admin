@@ -30,7 +30,6 @@ function MainCalendar() {
       const { data } = await client.query<CalendarEventsQuery, CalendarEventsQueryVariables>({
         query: CalendarEventsDocument,
         variables,
-        fetchPolicy: 'network-only',
       });
       return (data?.events || []).map((item) => ({
         ...item,

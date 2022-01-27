@@ -44,6 +44,10 @@ function Dropdown(props: DropdownProps) {
     });
   }, [onVisibleChange]);
 
+  const handleClose = useCallback(() => {
+    setVisible(false);
+  }, []);
+
   const handleClick = useCallback(
     (onClick: (e: any) => void) => (e: any) => {
       onClick && onClick(e);
@@ -136,6 +140,7 @@ function Dropdown(props: DropdownProps) {
       {visible &&
         React.cloneElement(overlay, {
           ref: subRef,
+          closeDropdown: handleClose,
           onClick: handleClick(overlay.props.onClick),
           selectedKeys: [],
         })}

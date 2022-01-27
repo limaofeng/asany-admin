@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
 import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 import type { DayValue } from 'react-modern-calendar-datepicker';
@@ -13,6 +13,7 @@ import { useCalendarEventsWithDaysLazyQuery } from '../hooks';
 import NewCalendarEvent from './NewCalendarEvent';
 import CalendarSidebarHeader from './CalendarSidebarHeader';
 import CalendarSidebarFooter from './CalendarSidebarFooter';
+import Preferences from './preferences';
 
 import type { CalendarEvent } from '@/types';
 import { AsideWorkspace } from '@/pages/Metronic/components';
@@ -205,8 +206,9 @@ function Sidebar() {
   const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
   const isNew = useModel('calendar', (model) => model.state.state == 'new');
 
-  const scrollViewRef = useRef<HTMLDivElement>(null);
+  const [visiblePreferences, setVisiblePreferences] = useState(true);
 
+  const scrollViewRef = useRef<HTMLDivElement>(null);
   const state = useRef<{
     eventsWithDays: EventWithDay[];
     selectedDay?: Date;
@@ -226,6 +228,16 @@ function Sidebar() {
     useCalendarEventsWithDaysLazyQuery({
       fetchPolicy: 'cache-and-network',
     });
+
+  const closePreferences = useCallback(() => {
+    setVisiblePreferences(false);
+  }, []);
+
+  const handleAction = useCallback((key: string) => {
+    if (key === 'manage-calendars') {
+      setVisiblePreferences(true);
+    }
+  }, []);
 
   const handleChange = useCallback(
     (value: DayValue) => {
@@ -465,8 +477,9 @@ function Sidebar() {
             ))}
           </div>
         </div>
-        <CalendarSidebarFooter />
+        <CalendarSidebarFooter onAction={handleAction} />
       </div>
+      <Preferences visible={visiblePreferences} onCancel={closePreferences} />
     </AsideWorkspace>
   );
 }
