@@ -1,8 +1,11 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 import Icon from '@asany/icons';
+import { Shortcuts } from '@asany/shortcuts';
+import type { SortableItemProps } from '@asany/sortable';
+// import { useSortableSelector } from '@asany/sortable';
+import Sortable from '@asany/sortable';
 
 import {
   useCalendarSetsQuery,
@@ -16,38 +19,50 @@ import type { Calendar, CalendarSet } from '@/types';
 import { Checkbox } from '@/pages/Metronic/components';
 import { darkenColor, lightenColor } from '@/pages/Metronic/components/utils/color';
 
-type CalendarSetItemProps = {
+interface CalendarSetItemProps extends SortableItemProps<any> {
   actived: boolean;
   editing: boolean;
+  index: number;
   data: { id: string; name: string };
-  onClick: (id: string) => void;
-  onFocus: (id: string) => void;
-  onBlur: () => void;
-};
+  onSelect: (id: string) => void;
+  onEdit: (id?: string) => void;
+}
 
-function CalendarSetItem(props: CalendarSetItemProps) {
-  const { data, editing, actived, onClick, onBlur, onFocus } = props;
+// function getDropPosition(rect: any, node: any, drop: any, indicator: number, index: number) {
+//   const interval = rect.height / 3 / 2;
+//   const inner = indicator < interval && indicator > -interval && drop?.parentKey !== node.id;
+//   if (inner) {
+//     return index;
+//   }
+//   if (indicator > 0) {
+//     return index + 1;
+//   }
+//   if (indicator < 0) {
+//     return index - 1;
+//   }
+//   return NaN;
+// }
+
+const CalendarSetItem = React.forwardRef(function (props: CalendarSetItemProps, ref: any) {
+  const { data, editing, actived, onSelect, onEdit, drag, indicator /*, index*/ } = props;
 
   const [updateCalendarSet] = useUpdateCalendarSetMutation();
 
   const [value, setValue] = useState(data.name);
-  const liRef = useRef<HTMLLIElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // const dragging = useSortableSelector((state) => state.dragging);
 
   const handleClick = useCallback(() => {
-    onClick(data.id);
-  }, [data.id, onClick]);
+    onSelect(data.id);
+  }, [data.id, onSelect]);
 
   const handleDoubleClick = useCallback(() => {
-    onFocus(data.id);
-  }, [data.id, onFocus]);
-
-  const handleInputFocus = useCallback(() => {
-    onFocus(data.id);
-  }, [data.id, onFocus]);
+    onEdit(data.id);
+  }, [data.id, onEdit]);
 
   const handleInputBlur = useCallback(async () => {
-    onBlur();
+    // onBlur();
+    onEdit();
     if (data.name != value) {
       await updateCalendarSet({
         variables: {
@@ -58,19 +73,29 @@ function CalendarSetItem(props: CalendarSetItemProps) {
         },
       });
     }
-  }, [data.id, data.name, onBlur, updateCalendarSet, value]);
+  }, [data.id, data.name, onEdit, updateCalendarSet, value]);
 
   const handleInputChange = useCallback((e) => {
     setValue(e.target.value);
   }, []);
 
-  const handleKeyUp = useCallback(
-    async (e: KeyboardEvent) => {
-      if (e.key == 'Enter') {
-        onBlur();
-        process.nextTick(() => {
-          liRef.current?.focus();
-        });
+  useEffect(() => {
+    if (!editing) {
+      return;
+    }
+    inputRef.current?.focus();
+    process.nextTick(() => {
+      inputRef.current?.select();
+    });
+  }, [editing]);
+
+  const handleShortcut = useCallback(
+    async (action: string) => {
+      if (action == 'EXIT') {
+        onEdit();
+        setValue(data.name);
+      } else if (action == 'ENTER') {
+        onEdit();
         if (data.name != value) {
           await updateCalendarSet({
             variables: {
@@ -83,40 +108,49 @@ function CalendarSetItem(props: CalendarSetItemProps) {
         }
       }
     },
-    [data.id, data.name, onBlur, updateCalendarSet, value],
+    [data.id, data.name, onEdit, updateCalendarSet, value],
   );
 
-  useEffect(() => {
-    if (!editing) {
-      return;
-    }
-    inputRef.current?.focus();
-    process.nextTick(() => {
-      inputRef.current?.select();
-    });
-  }, [editing]);
+  // const dropPosition = useMemo(() => {
+  //   if (!ref.current?.getBoundingClientRect()) {
+  //     return NaN;
+  //   }
+  //   return getDropPosition(ref.current?.getBoundingClientRect(), data, dragging, indicator, index);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [index, indicator]);
+
+  // console.log('dropPosition', dropPosition);
 
   return (
-    <li
-      tabIndex={0}
-      onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
-      ref={liRef}
-      className={classnames({ active: actived, focused: editing })}
+    <Shortcuts
+      tag={
+        <li
+          ref={drag(ref)}
+          onClick={handleClick}
+          onDoubleClick={handleDoubleClick}
+          className={classnames('calendarset-item', {
+            active: actived,
+            'indicator-drag-over-bottom': indicator > 0,
+            'indicator-drag-over-top': indicator < 0,
+          })}
+        />
+      }
+      name="CALENDAR_PREFERENCES"
+      handler={handleShortcut}
     >
-      <span className="input-state-view">{value}</span>
-      <input
-        className="input-state-edit"
-        ref={inputRef}
-        onChange={handleInputChange}
-        onBlur={handleInputBlur}
-        onFocus={handleInputFocus}
-        onKeyUp={handleKeyUp as any}
-        value={value}
-      />
-    </li>
+      <div className="calendarset-item-btn">
+        <span className="input-state-view">{value}</span>
+        <input
+          className="input-state-edit"
+          ref={inputRef}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          value={value}
+        />
+      </div>
+    </Shortcuts>
   );
-}
+});
 
 type CalendarSetsFooterProps = {
   selectedKey: string;
@@ -163,11 +197,22 @@ type CalendarSetsProps = {
 function CalendarSets(props: CalendarSetsProps) {
   const { data = [], refresh } = props;
 
+  const container = useRef<HTMLDivElement>(null);
+  const temp = useRef<{ activeKey?: string; editing?: string; calendarSets: CalendarSet[] }>({
+    calendarSets: [],
+  });
   const [activeKey, setActiveKey] = useState<string>();
   const [editing, setEditing] = useState<string>();
 
+  temp.current.activeKey = activeKey;
+  temp.current.editing = editing;
+  temp.current.calendarSets = data;
+
   const handleSelect = useCallback((key: string) => {
     setActiveKey(key);
+    process.nextTick(() => {
+      container.current?.focus();
+    });
   }, []);
 
   const handleSuccess = useCallback(
@@ -183,34 +228,108 @@ function CalendarSets(props: CalendarSetsProps) {
     [data, refresh],
   );
 
-  const handleFocus = useCallback(async (key: string) => {
+  const handleEdit = useCallback(async (key?: string) => {
     setEditing(key);
+    if (!key) {
+      process.nextTick(() => {
+        container.current?.focus();
+      });
+    }
   }, []);
 
-  const handleBlur = useCallback(async () => {
-    setEditing(undefined);
+  useEffect(() => {
+    if (!data.length) {
+      return;
+    }
+    if (!data.some((item) => item.id == activeKey)) {
+      setActiveKey(data[0].id);
+    }
+  }, [activeKey, data]);
+
+  const handleShortcut = useCallback(
+    (action: string) => {
+      const { calendarSets, activeKey: key } = temp.current;
+      const index = calendarSets.findIndex((item) => item.id == key);
+      if (action == 'NEXT') {
+        setActiveKey(calendarSets[Math.max(index - 1, 0)].id);
+      } else if (action == 'PREVIOUS') {
+        setActiveKey(calendarSets[Math.min(index + 1, calendarSets.length - 1)].id);
+      } else if (action == 'ENTER') {
+        setEditing(activeKey);
+      } else if (action == 'EXIT') {
+        setEditing(undefined);
+      }
+    },
+    [activeKey],
+  );
+
+  console.log('items', data);
+
+  const handleSort = useCallback((nodes, event) => {
+    console.log('sort', event);
+  }, []);
+
+  const items = useMemo(() => {
+    return data.map((item) => ({
+      ...item,
+      actived: activeKey == item.id,
+      editing: editing == item.id,
+    }));
+  }, [activeKey, data, editing]);
+
+  const handleAllowDrop = useCallback((e) => {
+    if (isNaN(e.dropPosition)) {
+      return false;
+    }
+    return true;
   }, []);
 
   return (
-    <div className="flex-left calendar-sets">
+    <Shortcuts
+      tag={
+        <div
+          ref={container}
+          className={classnames('flex-left calendar-sets', {
+            editing: !!editing,
+          })}
+        />
+      }
+      name="CALENDAR_PREFERENCES"
+      handler={handleShortcut}
+    >
       <div className="calendar-sets-header">日历集</div>
+
       <div className="calendar-sets-body scroll-y">
-        <ul>
-          {data.map((item) => (
-            <CalendarSetItem
-              actived={activeKey == item.id}
-              editing={editing == item.id}
-              key={item.id}
-              data={item}
-              onClick={handleSelect}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-            />
-          ))}
-        </ul>
+        <Sortable
+          onChange={handleSort}
+          tag="ul"
+          mode="indicator"
+          draggable={true}
+          allowDrop={handleAllowDrop}
+          className="calendar-sets-list"
+          items={items}
+          rerender={false}
+          itemRender={(_props: any, ref) => {
+            const { data: item, index } = _props;
+
+            return (
+              <CalendarSetItem
+                {..._props}
+                ref={ref}
+                actived={item.actived}
+                editing={item.editing}
+                key={item.id}
+                data={item}
+                index={index}
+                onSelect={handleSelect}
+                onEdit={handleEdit}
+              />
+            );
+          }}
+        />
       </div>
       <CalendarSetsFooter onSuccess={handleSuccess} selectedKey={activeKey!} />
-    </div>
+    </Shortcuts>
   );
 }
 

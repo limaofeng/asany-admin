@@ -4,6 +4,12 @@ const keymap = {
     VIEW_PREV: ['left'],
     VIEW_NEXT: ['right'],
   },
+  CALENDAR_PREFERENCES: {
+    NEXT: ['up'],
+    PREVIOUS: ['down'],
+    EXIT: ['esc'],
+    ENTER: ['enter'],
+  },
   DROPDOWN: {
     EXIT: ['esc'],
   },

@@ -506,6 +506,31 @@
       border-bottom-right-radius: 3px;
       border-bottom-left-radius: 3px;
 
+      &:focus,
+      &.focused,
+      &.editing {
+        .calendar-sets-body .calendarset-item.active {
+          color: #fff;
+          background-color: #0061e1de;
+          border-radius: 6px;
+        }
+      }
+
+      &:focus-visible {
+        outline: none;
+      }
+
+      &.editing {
+        .calendar-sets-body .calendarset-item.active {
+          .input-state-view {
+            display: none;
+          }
+          .input-state-edit {
+            display: block;
+          }
+        }
+      }
+
       .calendar-sets-header {
         height: 28px;
         padding-left: 16px;
@@ -517,19 +542,51 @@
       }
       .calendar-sets-body {
         height: calc(75vh - 100px - (1.75rem * 2) - 36px - 28px - 24px);
+        margin-right: -5px;
         padding: 8px 0;
 
-        ul {
+        .calendar-sets-list {
           padding: 0 8px;
+          .calendarset-item-btn {
+            flex: 1;
+            padding: 5px 8px;
+          }
         }
-        li {
+        .calendarset-item {
           display: flex;
           align-items: center;
           height: 24px;
-          padding: 5px 8px;
           font-size: 14px;
           line-height: 14px;
           user-select: none;
+          &.indicator-drag-over-top,
+          &.indicator-drag-over-bottom {
+            position: relative;
+            box-sizing: border-box;
+            cursor: move;
+          }
+          &.indicator-drag-over-bottom {
+            &::after {
+              position: absolute;
+              bottom: -1px;
+              z-index: 1;
+              width: 100%;
+              height: 2px;
+              border-bottom: 2px solid #5295e7;
+              content: '';
+            }
+          }
+          &.indicator-drag-over-top {
+            &::before {
+              position: absolute;
+              top: -1px;
+              z-index: 1;
+              width: 100%;
+              height: 2px;
+              border-bottom: 2px solid #5295e7;
+              content: '';
+            }
+          }
           .input-state-edit {
             display: none;
           }
@@ -559,19 +616,10 @@
             background-color: #dcdcdc;
             border-radius: 6px;
           }
-          &:focus,
-          &.focused {
+          &:focus {
             color: #fff;
             background-color: #0061e1de;
             border-radius: 6px;
-          }
-          &.focused {
-            .input-state-view {
-              display: none;
-            }
-            .input-state-edit {
-              display: block;
-            }
           }
         }
       }

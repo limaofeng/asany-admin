@@ -7,7 +7,7 @@ export interface MenuEvent {
 
 export type OpenCallback = (openKeys: string[]) => void;
 
-export type EventCallback<T extends MenuEvent> = (e: T) => void | boolean;
+export type EventCallback<T extends MenuEvent> = (e: T) => Promise<void> | boolean;
 
 export type ClickEvent = SelectEvent;
 

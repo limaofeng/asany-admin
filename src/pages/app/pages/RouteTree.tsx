@@ -57,6 +57,7 @@ function RouteTree(props: RouteTreeProps) {
         <TreeList
           className="app-treelist"
           rowKey="id"
+          draggable={true}
           columns={[
             {
               key: 'title',
