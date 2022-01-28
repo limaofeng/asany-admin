@@ -14,7 +14,7 @@ export default function useCalendarModel() {
   const state = useRef<CalendarState>({
     state: 'none',
     selectedDay: new Date(),
-    calendarSet: 1,
+    calendarSet: 'all',
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 

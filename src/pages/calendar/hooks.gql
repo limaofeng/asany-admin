@@ -6,6 +6,7 @@ mutation createCalendarSet {
   createCalendarSet {
     id
     name
+    index
   }
 }
 
@@ -13,6 +14,7 @@ mutation updateCalendarSet($id: ID!, $input: CalendarSetUpdateInput!) {
   updateCalendarSet(id: $id, input: $input) {
     id
     name
+    index
   }
 }
 
@@ -33,6 +35,10 @@ query calendarSets {
   calendarSets {
     id
     name
+    index
+    calendars {
+      id
+    }
   }
 }
 

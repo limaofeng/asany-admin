@@ -303,7 +303,7 @@ function Sidebar() {
       gotoDate(selectedDay);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadCalendarEventsWithDays]);
+  }, [calendarSet, loadCalendarEventsWithDays]);
 
   const updateSelectedDay = useCallback(
     async (_selectedDay: Date) => {

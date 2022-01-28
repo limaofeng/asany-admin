@@ -6,6 +6,7 @@ import { Shortcuts } from '@asany/shortcuts';
 import type { SortableItemProps } from '@asany/sortable';
 // import { useSortableSelector } from '@asany/sortable';
 import Sortable from '@asany/sortable';
+import { useModel } from 'umi';
 
 import {
   useCalendarSetsQuery,
@@ -191,11 +192,16 @@ function CalendarSetsFooter(props: CalendarSetsFooterProps) {
 
 type CalendarSetsProps = {
   data: CalendarSet[];
+  onSelect: (value: string) => void;
   refresh: () => void;
 };
 
 function CalendarSets(props: CalendarSetsProps) {
-  const { data = [], refresh } = props;
+  const { data = [], refresh, onSelect } = props;
+
+  const [updateCalendarSet] = useUpdateCalendarSetMutation();
+
+  const defaultCalendarSetbyModel = useModel('calendar', (model) => model.state.calendarSet);
 
   const container = useRef<HTMLDivElement>(null);
   const temp = useRef<{ activeKey?: string; editing?: string; calendarSets: CalendarSet[] }>({
@@ -209,6 +215,9 @@ function CalendarSets(props: CalendarSetsProps) {
   temp.current.calendarSets = data;
 
   const handleSelect = useCallback((key: string) => {
+    if (key == temp.current.activeKey) {
+      return;
+    }
     setActiveKey(key);
     process.nextTick(() => {
       container.current?.focus();
@@ -237,14 +246,25 @@ function CalendarSets(props: CalendarSetsProps) {
     }
   }, []);
 
+  console.log(activeKey, editing);
+
   useEffect(() => {
     if (!data.length) {
       return;
     }
     if (!data.some((item) => item.id == activeKey)) {
-      setActiveKey(data[0].id);
+      const key =
+        defaultCalendarSetbyModel == 'all' ? data[0].id : String(defaultCalendarSetbyModel);
+      setActiveKey(key);
     }
-  }, [activeKey, data]);
+  }, [activeKey, data, defaultCalendarSetbyModel]);
+
+  useEffect(() => {
+    if (!activeKey) {
+      return;
+    }
+    onSelect(activeKey);
+  }, [activeKey, onSelect]);
 
   const handleShortcut = useCallback(
     (action: string) => {
@@ -265,17 +285,47 @@ function CalendarSets(props: CalendarSetsProps) {
 
   console.log('items', data);
 
-  const handleSort = useCallback((nodes, event) => {
-    console.log('sort', event);
-  }, []);
+  const handleSort = useCallback(() => {}, []);
 
   const items = useMemo(() => {
     return data.map((item) => ({
       ...item,
+      key: item.id,
       actived: activeKey == item.id,
       editing: editing == item.id,
     }));
   }, [activeKey, data, editing]);
+
+  const handleDrop = useCallback(
+    async (e) => {
+      const _dropPosition = getDropPosition(
+        e.node._rect,
+        e.node,
+        e.dragNode,
+        e.dropPosition,
+        e.node.index,
+      );
+      const dropPos = e.node.pos;
+      const dropPosition = _dropPosition - Number(dropPos[dropPos.length - 1]);
+
+      let toIndex = e.node.index;
+      if (dropPosition == -1) {
+        toIndex--;
+      } else if (dropPosition == 1) {
+        toIndex++;
+      }
+      await updateCalendarSet({
+        variables: {
+          id: e.dragNode.key,
+          input: {
+            index: Math.max(toIndex, 0) + 1,
+          },
+        },
+      });
+      refresh();
+    },
+    [refresh, updateCalendarSet],
+  );
 
   const handleAllowDrop = useCallback((e) => {
     if (isNaN(e.dropPosition)) {
@@ -305,6 +355,7 @@ function CalendarSets(props: CalendarSetsProps) {
           tag="ul"
           mode="indicator"
           draggable={true}
+          onDrop={handleDrop}
           allowDrop={handleAllowDrop}
           className="calendar-sets-list"
           items={items}
@@ -336,11 +387,12 @@ function CalendarSets(props: CalendarSetsProps) {
 type CalendarListItemProps = {
   data: Calendar;
   actived: boolean;
+  checked: boolean;
   onClick: (id: string) => void;
 };
 
 function CalendarListItem(props: CalendarListItemProps) {
-  const { data, onClick, actived } = props;
+  const { data, onClick, actived, checked } = props;
 
   const [focused, setFocused] = useState(false);
 
@@ -356,6 +408,8 @@ function CalendarListItem(props: CalendarListItemProps) {
     setFocused(false);
   }, []);
 
+  const handleChange = useCallback(() => {}, []);
+
   return (
     <li
       tabIndex={0}
@@ -369,6 +423,8 @@ function CalendarListItem(props: CalendarListItemProps) {
           backgroundColor: data.color!,
           borderColor: focused ? lightenColor(data.color!, 80) : darkenColor(data.color!),
         }}
+        checked={checked}
+        onChange={handleChange}
         className="calendar-check"
         size="sm"
       />
@@ -391,7 +447,13 @@ function CalendarsFooter() {
   );
 }
 
-function CalendarList() {
+type CalendarListProps = {
+  calendarSet?: CalendarSet;
+};
+
+function CalendarList(props: CalendarListProps) {
+  const { calendarSet } = props;
+
   const { data } = useCalendarsQuery({ fetchPolicy: 'cache-and-network' });
 
   const [activeKey, setActiveKey] = useState<string>();
@@ -418,7 +480,7 @@ function CalendarList() {
 
   return (
     <div className="calendar-list">
-      <div className="calendar-list-notes">“开发计划”日历集的日历和任务列表。</div>
+      <div className="calendar-list-notes">“{calendarSet?.name}”日历集的日历和任务列表。</div>
       <div className="calendar-list-content">
         <div className="calendars-header">我的日历</div>
         <div className="calendars-body scroll-y">
@@ -430,6 +492,7 @@ function CalendarList() {
                   {g.calendars.map((item) => (
                     <CalendarListItem
                       actived={activeKey == item.id}
+                      checked={!!calendarSet?.calendars.some((c) => c.id == item.id)}
                       onClick={handleSelect}
                       key={item.id}
                       data={item as any}
@@ -487,8 +550,14 @@ function CalendarList() {
 }
 
 function Calendars() {
-  const { data, refetch } = useCalendarSetsQuery();
+  const { data, refetch } = useCalendarSetsQuery({ fetchPolicy: 'cache-and-network' });
   const calendarSets = data?.calendarSets;
+
+  const [selectedKey, setSelectedKey] = useState<string>();
+
+  const handleSelectCalendarSet = useCallback((value: string) => {
+    setSelectedKey(value);
+  }, []);
 
   return (
     <div className="settings-calendars">
@@ -496,9 +565,15 @@ function Calendars() {
         通过创建多个日历集快速更改显示的日历和任务列表。例如，您可能有单独的家庭和工作日历集。
       </div>
       <div className="d-flex">
-        <CalendarSets data={calendarSets as any} refresh={refetch} />
+        <CalendarSets
+          onSelect={handleSelectCalendarSet}
+          data={calendarSets as any}
+          refresh={refetch}
+        />
         <div className="settings-calendars-right flex-root">
-          <CalendarList />
+          <CalendarList
+            calendarSet={(calendarSets || []).find((item) => item.id == selectedKey) as any}
+          />
           {/* 我的日历 / 任务 / 提醒 / 联系人 */}
           <div className="calendar-sets-settings">
             <ul>
@@ -510,6 +585,21 @@ function Calendars() {
       </div>
     </div>
   );
+}
+
+function getDropPosition(rect: any, node: any, drop: any, indicator: number, index: number) {
+  const interval = rect.height / 3 / 2;
+  const inner = indicator < interval && indicator > -interval && drop?.parentKey !== node.id;
+  if (inner) {
+    return index;
+  }
+  if (indicator > 0) {
+    return index + 1;
+  }
+  if (indicator < 0) {
+    return index - 1;
+  }
+  return NaN;
 }
 
 export default Calendars;
