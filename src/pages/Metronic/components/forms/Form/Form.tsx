@@ -14,7 +14,7 @@ import useForm, { FormInstance } from './hooks/useForm';
 export type RequiredMark = boolean | 'optional';
 export type FormLayout = 'horizontal' | 'inline' | 'vertical';
 
-export type SizeType = 'sm' | 'lg';
+export type SizeType = 'xs' | 'sm' | 'lg';
 
 import './style/Form.scss';
 
@@ -30,9 +30,6 @@ export interface FormProps<Values = any> extends Omit<RcFormProps<Values>, 'form
 }
 
 const InternalForm: React.ForwardRefRenderFunction<FormInstance, FormProps> = (props, ref) => {
-  // const contextSize = React.useContext(SizeContext);
-  // const { getPrefixCls, direction, form: contextForm } = React.useContext(ConfigContext);
-
   const {
     prefixCls: customizePrefixCls,
     className = '',
@@ -47,14 +44,16 @@ const InternalForm: React.ForwardRefRenderFunction<FormInstance, FormProps> = (p
     ...restFormProps
   } = props;
 
+  const prefixCls = 'asany-form';
+
   const formClassName = classNames(
-    // prefixCls,
-    // {
-    //   [`${prefixCls}-${layout}`]: true,
-    //   [`${prefixCls}-hide-required-mark`]: requiredMark === false,
-    //   [`${prefixCls}-rtl`]: direction === 'rtl',
-    //   [`${prefixCls}-${size}`]: size,
-    // },
+    prefixCls,
+    {
+      [`${prefixCls}-${layout}`]: !!layout,
+      //   [`${prefixCls}-hide-required-mark`]: requiredMark === false,
+      //   [`${prefixCls}-rtl`]: direction === 'rtl',
+      [`${prefixCls}-${size}`]: size,
+    },
     className,
   );
 

@@ -39,6 +39,8 @@ export function _getDropdownPopperConfig(item: any, placement: string) {
 
   const altAxis = getItemOption(item, 'flip') !== false ? true : false;
 
+  console.log('offset', offset, strategy);
+
   const popperConfig = {
     placement: placement,
     strategy: strategy,
@@ -46,7 +48,7 @@ export function _getDropdownPopperConfig(item: any, placement: string) {
       {
         name: 'offset',
         options: {
-          offset: offset,
+          offset: offset.map((n: any) => parseInt(n)),
         },
       },
       {

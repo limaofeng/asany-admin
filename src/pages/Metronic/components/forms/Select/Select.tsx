@@ -4,16 +4,13 @@ import classnames from 'classnames';
 import $ from 'jquery';
 import 'select2';
 
+import type { OptionData } from './typings';
+
 import './Select.scss';
 
 $.fn.select2.defaults.set('theme', 'bootstrap5');
 $.fn.select2.defaults.set('width', '100%');
 $.fn.select2.defaults.set('selectionCssClass', ':all:');
-
-type OptionData = {
-  label: string;
-  value: string | number;
-};
 
 type SelectProps = {
   value?: string;

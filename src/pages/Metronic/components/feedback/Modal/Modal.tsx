@@ -123,6 +123,8 @@ function Modal(props: ModalProps) {
       backdrop={mask && (maskClosable ? mask : 'static')}
       centered={centered}
       show={show}
+      autoFocus={false}
+      enforceFocus={false}
       dialogClassName={dialogClassName}
       onHide={onCancel as any}
     >

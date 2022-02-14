@@ -1,3 +1,54 @@
 .form-select.form-select-sm {
   min-height: calc(1.5em + 1.1rem + 2px);
 }
+
+.form-select {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  .current-option {
+    width: 100%;
+    height: 14px;
+    padding-right: 24px;
+    padding-left: 8px;
+    font-weight: bold;
+    line-height: 14px;
+    cursor: pointer;
+    .option-pointer {
+      margin: 0 4px;
+    }
+  }
+  .menu-sub-dropdown .menu-item .menu-link {
+    position: relative;
+    padding: 0.5rem 1rem;
+    &.active {
+      background-color: transparent;
+      .menu-icon {
+        display: block;
+      }
+    }
+    .menu-icon {
+      position: absolute;
+      left: 0;
+      display: none;
+      margin: 0;
+    }
+    .menu-title {
+      margin-right: 24px;
+      margin-left: 24px;
+    }
+  }
+}
+
+.form-select-xs {
+  min-height: calc(1em + 1.16rem + 2px);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.725rem;
+  background-position: right 0.75rem center;
+  background-size: 10px 12px;
+  border-radius: 0.25rem;
+  .current-option {
+    padding-right: 18px;
+    padding-left: 4px;
+  }
+}

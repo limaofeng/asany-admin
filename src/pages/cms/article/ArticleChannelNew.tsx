@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useArticleChannelAllQuery, useCreateArticleChannelMutation } from '../hooks';
 
 import type { ClickCallback, FormInstance } from '@/pages/Metronic/components';
-import { Form, Input, Modal, Select, Upload } from '@/pages/Metronic/components';
+import { Form, Input, Modal, Select2, Upload } from '@/pages/Metronic/components';
 import { delay } from '@/utils';
 
 const { UploadAvatar } = Upload;
@@ -24,7 +24,7 @@ function ArticleChannelNew({ form }: ArticleChannelNewProps) {
       <div className="row mb-10">
         <div className="col-md-8">
           <Form.Item name="parent" className="d-flex flex-column mb-7" label="所属栏目">
-            <Select
+            <Select2
               solid
               options={[
                 {

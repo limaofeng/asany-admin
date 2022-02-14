@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import ReactDOM from 'react-dom';
 import { useClickAway } from 'react-use';
 import { Shortcuts } from '@asany/shortcuts';
 
@@ -9,15 +10,46 @@ import * as KTUtil from '../../utils/KTUtil';
 
 import './Dropdown.scss';
 
+export type Placement =
+  | 'bottomLeft'
+  | 'bottomCenter'
+  | 'bottomRight'
+  | 'topLeft'
+  | 'topCenter'
+  | 'topRight'
+  | 'rightStart';
+
 type DropdownProps = {
-  trigger?: string;
+  trigger?: 'click' | 'hover';
   visible?: boolean;
-  placement?: 'bottomLeft' | 'bottomCenter' | 'bottomRight' | 'topLeft' | 'topCenter' | 'topRight';
+  placement?: Placement;
   overlay: React.ReactElement;
   zindex?: number;
   onVisibleChange?: (visible: boolean) => void;
   children: React.ReactNode;
+  getPopupContainer?: () => Element;
 };
+
+type DropdownOverlayProps = {
+  visible: boolean;
+  children: React.ReactNode;
+  getPopupContainer?: () => Element;
+};
+
+function DropdownOverlay(props: DropdownOverlayProps) {
+  const { visible, children, getPopupContainer } = props;
+  if (!visible) {
+    return <React.Fragment />;
+  }
+  if (!getPopupContainer) {
+    return children;
+  }
+  const container = getPopupContainer();
+  if (!container) {
+    return children;
+  }
+  return ReactDOM.createPortal(children, container) as any;
+}
 
 const placementMapping = {
   bottomLeft: 'bottom-start',
@@ -26,10 +58,11 @@ const placementMapping = {
   topLeft: 'top-start',
   topCenter: 'top',
   topRight: 'top-end',
+  rightStart: 'right-start',
 };
 
 function Dropdown(props: DropdownProps) {
-  const { children, overlay, onVisibleChange } = props;
+  const { children, overlay, onVisibleChange, trigger = 'click', getPopupContainer } = props;
 
   const itemRef = useRef();
   const subRef = useRef();
@@ -127,24 +160,84 @@ function Dropdown(props: DropdownProps) {
     }
   }, []);
 
+  const handleMouseOver = useCallback(() => {
+    onVisibleChange && onVisibleChange(true);
+    setVisible(true);
+  }, [onVisibleChange]);
+
+  const handleMouseOut = useCallback(() => {
+    onVisibleChange && onVisibleChange(false);
+    setVisible(false);
+  }, [onVisibleChange]);
+
+  useClickAway(
+    itemRef as any,
+    () => {
+      if (trigger == 'hover') {
+        handleMouseOut();
+      }
+    },
+    ['mousemove'],
+  );
+
+  const targetProps = useMemo(() => {
+    const _targetProps: any = {};
+    if (trigger == 'click') {
+      _targetProps.onClick = (e: React.MouseEvent) => {
+        if ((node as any).props.onClick) {
+          (node as any).props.onClick(e);
+        }
+        handleVisible();
+      };
+    } else if (trigger == 'hover') {
+      _targetProps.onMouseOver = handleMouseOver;
+    }
+    return _targetProps;
+  }, [handleMouseOver, handleVisible, node, trigger]);
+
+  const wrapRef = (originalRef: any, localRef: any) => (ref: any) => {
+    if (originalRef) {
+      if (typeof originalRef === 'object') originalRef.current = ref;
+      if (typeof originalRef === 'function') originalRef(ref);
+    }
+    localRef.current = ref;
+  };
+
+  const mergeProps = useCallback((element: any, overlayProps: any) => {
+    if (typeof element.type == 'string') {
+      delete overlayProps.closeDropdown;
+      delete overlayProps.dropdown;
+      delete overlayProps.selectedKeys;
+    }
+    return {
+      ...overlayProps,
+      ref: wrapRef(element.ref, subRef),
+    };
+  }, []);
+
   return (
-    <>
+    <React.Fragment>
       <Shortcuts
         tag={React.cloneElement(node as React.ReactElement, {
-          onClick: handleVisible,
-          ref: itemRef,
+          ref: wrapRef((node as any).ref, itemRef),
+          ...targetProps,
         })}
         name="DROPDOWN"
         handler={handleExit}
       />
-      {visible &&
-        React.cloneElement(overlay, {
-          ref: subRef,
-          closeDropdown: handleClose,
-          onClick: handleClick(overlay.props.onClick),
-          selectedKeys: [],
-        })}
-    </>
+      <DropdownOverlay visible={!!visible} getPopupContainer={getPopupContainer}>
+        {visible &&
+          React.cloneElement(
+            overlay,
+            mergeProps(overlay as any, {
+              dropdown: true,
+              closeDropdown: handleClose,
+              onClick: handleClick(overlay.props.onClick),
+              selectedKeys: [],
+            }),
+          )}
+      </DropdownOverlay>
+    </React.Fragment>
   );
 }
 

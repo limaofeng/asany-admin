@@ -27,7 +27,7 @@ import {
   Input,
   Menu,
   Modal,
-  Select,
+  Select2,
   Table,
 } from '@/pages/Metronic/components';
 import type { Article } from '@/types';
@@ -245,7 +245,7 @@ function ArticleList(props: ArticleListProps) {
             {/*--begin::Actions--*/}
             <div className="d-flex my-0">
               {/*--begin::Select--*/}
-              <Select
+              <Select2
                 size="sm"
                 className="form-select-white w-125px me-5"
                 placeholder="发布时间"
@@ -259,7 +259,7 @@ function ArticleList(props: ArticleListProps) {
               />
               {/*--end::Select--*/}
               {/*--begin::Select--*/}
-              <Select
+              <Select2
                 size="sm"
                 className="form-select-white w-125px"
                 placeholder="状态"

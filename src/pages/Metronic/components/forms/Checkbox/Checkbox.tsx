@@ -1,35 +1,36 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import type { CSSProperties } from 'react';
 
 import classnames from 'classnames';
 
 import { uuid } from '../../utils';
 
+import './style.scss';
+
 type CheckboxProps = {
   label?: string;
+  solid?: boolean;
   checked?: boolean;
-  size?: 'sm' | 'lg';
+  size?: 'xs' | 'sm' | 'lg';
   value?: string;
   style?: CSSProperties;
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   className?: string;
 };
 
 function Checkbox(props: CheckboxProps) {
-  const { size, label, style, disabled, value = '1', className, onChange } = props;
+  const { solid, size, label, style, disabled, value = '1', className, onChange, onClick } = props;
 
   const id = useRef<string>(uuid());
   const ref = useRef<HTMLInputElement>(null);
-  const [checked, setChecked] = useState(props.checked || false);
 
   const handleClick = useCallback(
     (e) => {
       e.target = ref.current!;
       if (props.checked !== undefined) {
         e.stopPropagation();
-      } else {
-        setChecked((_checked) => !_checked);
       }
       onChange && onChange(e);
     },
@@ -39,9 +40,9 @@ function Checkbox(props: CheckboxProps) {
 
   return (
     <div
-      className={classnames('form-check form-check-custom form-check-solid', className, {
-        'form-check-sm': size == 'sm',
-        'form-check-lg': size == 'lg',
+      className={classnames('form-check form-check-custom', className, {
+        'form-check': solid,
+        [`form-check-${size}`]: size,
       })}
     >
       <input
@@ -51,12 +52,13 @@ function Checkbox(props: CheckboxProps) {
         style={style}
         className="form-check-input"
         type="checkbox"
-        checked={onChange ? props.checked : checked}
+        checked={onChange ? props.checked || false : undefined}
         value={value}
+        onClick={onClick}
         onChange={handleClick}
       />
       {label && (
-        <label onClick={handleClick} className="form-check-label">
+        <label htmlFor={id.current} style={{ userSelect: 'none' }} className="form-check-label">
           {label}
         </label>
       )}

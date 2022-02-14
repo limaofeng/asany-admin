@@ -18,3 +18,4 @@ export * from './Drawer';
 export * from './Empty';
 export * from './Tabs';
 export * from './Separator';
+export * from './Popover';

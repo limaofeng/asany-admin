@@ -6,7 +6,7 @@ import React, { useCallback, useState } from 'react';
 import classnames from 'classnames';
 
 export interface InputProps extends DOMAttributes<HTMLInputElement> {
-  size?: 'sm' | 'lg';
+  size?: 'xs' | 'sm' | 'lg';
   placeholder?: string;
   solid?: boolean;
   value?: string;
@@ -25,6 +25,7 @@ export type InputRef = {
   value: string | undefined;
   input: React.MutableRefObject<HTMLInputElement | null>;
   blur: () => void;
+  select: () => void;
   focus: () => void;
 };
 
@@ -57,6 +58,9 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
       input: inputRef,
       focus: () => {
         inputRef.current?.focus();
+      },
+      select: () => {
+        inputRef.current?.select();
       },
     }),
     [],

@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useCreateMenuMutation, useLoadMenusQuery, useUpdateMenuMutation } from '../hooks';
 
 import type { ClickCallback, FormInstance } from '@/pages/Metronic/components';
-import { Form, Input, Modal, Radio, Select } from '@/pages/Metronic/components';
+import { Form, Input, Modal, Radio, Select2 } from '@/pages/Metronic/components';
 import { delay, flat, tree } from '@/utils';
 
 type MenuFormProps = {
@@ -43,7 +43,7 @@ function MenuForm(props: MenuFormProps) {
   return (
     <Form form={form} initialValues={props.data}>
       <Form.Item name="parentMenu" className="d-flex flex-column mb-7" label="所属栏目">
-        <Select
+        <Select2
           solid
           options={[
             {

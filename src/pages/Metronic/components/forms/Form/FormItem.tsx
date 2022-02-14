@@ -110,7 +110,7 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
     hidden,
     ...restProps
   } = props;
-  const { name: formName, requiredMark } = useContext(FormContext);
+  const { name: formName, requiredMark, size } = useContext(FormContext);
   const isRenderProps = typeof children === 'function';
   const notifyParentMetaChange = useContext(NoStyleItemContext);
 
@@ -228,7 +228,7 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
     // ======================= Children =======================
     return (
       <div
-        className={classNames('fv-row', itemClassName)}
+        className={classNames('asany-form-item fv-row', itemClassName)}
         style={style}
         key="row"
         {...omit(restProps, [
@@ -362,7 +362,7 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
             '`defaultValue` will not work on controlled Field. You should use `initialValues` of Form instead.',
           );
 
-          const childProps = { ...children.props, ...mergedControl };
+          const childProps = { ...children.props, ...mergedControl, size };
           if (!childProps.id) {
             childProps.id = fieldId;
           }
@@ -383,7 +383,6 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
               children.props[eventName]?.(...args);
             };
           });
-
           childNode = (
             <MemoInput value={mergedControl[props.valuePropName || 'value']} update={children}>
               {cloneElement(children, childProps)}

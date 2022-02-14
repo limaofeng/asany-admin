@@ -19,7 +19,7 @@ import ArticleContentEditor from './components/ArticleContentEditor';
 import NavigationPromptModal from './components/NavigationPromptModal';
 
 import { useForm } from '@/pages/Metronic/components/forms/Form/Form';
-import { Button, DatePicker, Form, Input, Select, Spin } from '@/pages/Metronic/components';
+import { Button, DatePicker, Form, Input, Select2, Spin } from '@/pages/Metronic/components';
 import SettingsMenu from '@/components/SettingsMenu';
 import { delay } from '@/utils';
 import type { Article } from '@/types';
@@ -81,10 +81,10 @@ function ArticleSettings({ isNew, onChange }: ArticleSettingsProps) {
           <DatePicker size="sm" />
         </Form.Item>
         <Form.Item className="mb-10" name="tags" label="标签">
-          <Select size="sm" />
+          <Select2 size="sm" />
         </Form.Item>
         <Form.Item className="mb-10" name="access" label="访问权限">
-          <Select size="sm" options={[{ value: 'public', label: '完全公开' }]} />
+          <Select2 size="sm" options={[{ value: 'public', label: '完全公开' }]} />
         </Form.Item>
         <Form.Item className="mb-10" name="summary" label="摘要">
           <Input.TextArea autoSize={{ minRows: 3 }} />
@@ -407,7 +407,7 @@ function ArticleEditor(props: ArticleEditorProps) {
               </div>
               <div className="art-editor-channel">
                 <Form.Item name="channels" noStyle={true}>
-                  <Select
+                  <Select2
                     size="sm"
                     multiple
                     placeholder="选择栏目"

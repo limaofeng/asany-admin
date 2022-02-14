@@ -1,3 +1,35 @@
+query calendarAccounts {
+  calendarAccounts {
+    id
+    type
+    name
+    description
+    index
+  }
+}
+
+mutation createCalendar($input: CalendarCreateInput!) {
+  createCalendar(input: $input) {
+    id
+    name
+    color
+    index
+  }
+}
+
+mutation updateCalendar($id: ID!, $input: CalendarUpdateInput!) {
+  updateCalendar(id: $id, input: $input) {
+    id
+    name
+    color
+    index
+  }
+}
+
+mutation deleteCalendar($id: ID!) {
+  deleteCalendar(id: $id)
+}
+
 mutation deleteCalendarSet($id: ID!) {
   deleteCalendarSet(id: $id)
 }
@@ -21,8 +53,11 @@ mutation updateCalendarSet($id: ID!, $input: CalendarSetUpdateInput!) {
 query calendars {
   calendars {
     id
+    url
+    type
     name
     color
+    refresh
     account {
       id
       name

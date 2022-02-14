@@ -34,6 +34,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
         <Form
           form={form}
           onKeyUp={handleEsc as any}
+          size="sm"
           initialValues={{
             // calendar: 'none',
             allDay: true,

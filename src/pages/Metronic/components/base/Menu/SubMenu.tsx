@@ -8,6 +8,7 @@ import { useHistory } from 'react-router-dom';
 import * as KTUtil from '../../utils/KTUtil';
 import type { BulletProps } from '../Bullet';
 import { Bullet } from '../Bullet';
+import Dropdown from '../Dropdown/Dropdown';
 
 import { useMenuContext, useSelector } from './MenuContext';
 
@@ -27,6 +28,9 @@ interface SubMenuProps {
   url?: string;
   icon?: string;
   title: string;
+  className?: string;
+  bodyClassName?: string;
+  offset?: [number, number];
   bullet?: boolean | BulletProps;
   children?: React.ReactNode;
 }
@@ -70,14 +74,16 @@ async function hide(item: HTMLElement, sub: HTMLElement) {
 }
 
 function SubMenu(props: SubMenuProps) {
-  const { url, menuKey, path, bullet } = props as any;
-  const { icon, title, children } = props;
+  const { url, menuKey, path, bullet, className, bodyClassName } = props as any;
+  const { icon, title, children, offset } = props;
   const itemRef = useRef<HTMLDivElement>(null);
+  const linkRef = useRef<HTMLDivElement>(null);
   const subRef = useRef<HTMLDivElement>(null);
 
   const history = useHistory();
   const context = useMenuContext();
 
+  const dropdown = useSelector((state) => state.dropdown);
   const accordion = useSelector((state) => state.accordion);
   const selectable = useSelector((state) => state.selectable === 'AllMenu');
   const selected = useSelector((state) => {
@@ -137,48 +143,86 @@ function SubMenu(props: SubMenuProps) {
     [context, accordion],
   );
 
+  const menuLink = (
+    <span
+      ref={linkRef}
+      onClick={!dropdown ? (selectable ? handleSelect : handleClick) : undefined}
+      className={classnames('menu-link', { active: selected && selectable })}
+      data-kt-menu-offset={offset ? offset.join(',') : undefined}
+    >
+      {icon ? (
+        <span className="menu-icon">
+          <Icon className="svg-icon-2" name={icon} />
+        </span>
+      ) : (
+        bullet && (
+          <span className="menu-bullet">
+            <Bullet {...(typeof bullet !== 'boolean' ? bullet : {})} />
+          </span>
+        )
+      )}
+      <span className="menu-title">{title}</span>
+      <span onClick={!dropdown && selectable ? handleClick : undefined} className="menu-arrow" />
+    </span>
+  );
+
+  const subMenus = (
+    <div
+      ref={subRef}
+      data-kt-menu="true"
+      className={classnames('menu-sub', bodyClassName, {
+        show: opened,
+        'menu-sub-accordion': accordion,
+        'menu menu-sub-dropdown': dropdown,
+        'menu-active-bg': subSelected,
+      })}
+    >
+      {React.Children.map(children, (item: any) =>
+        React.cloneElement(item, {
+          menuKey: item.key,
+          path: path + item.key + '/',
+        }),
+      )}
+    </div>
+  );
+
+  if (dropdown) {
+    return (
+      <div
+        ref={itemRef}
+        data-menu-key={menuKey}
+        className={classnames(className, 'menu-item menu-accordion', {
+          hover: !selectable && opened,
+          show: opened,
+          here: subSelected,
+        })}
+      >
+        <Dropdown
+          overlay={subMenus}
+          getPopupContainer={() => {
+            return linkRef.current as any;
+          }}
+          trigger="hover"
+          placement="rightStart"
+        >
+          {menuLink}
+        </Dropdown>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={itemRef}
       data-menu-key={menuKey}
-      className={classnames('menu-item menu-accordion', {
+      className={classnames(className, 'menu-item menu-accordion', {
         hover: !selectable && opened,
         show: opened,
         here: subSelected,
       })}
     >
-      <span
-        onClick={selectable ? handleSelect : handleClick}
-        className={classnames('menu-link', { active: selected && selectable })}
-      >
-        {icon ? (
-          <span className="menu-icon">
-            <Icon className="svg-icon-2" name={icon} />
-          </span>
-        ) : (
-          bullet && (
-            <span className="menu-bullet">
-              <Bullet {...(typeof bullet !== 'boolean' ? bullet : {})} />
-            </span>
-          )
-        )}
-        <span className="menu-title">{title}</span>
-        <span onClick={selectable ? handleClick : undefined} className="menu-arrow" />
-      </span>
-      <div
-        ref={subRef}
-        className={classnames('menu-sub menu-sub-accordion', {
-          show: opened,
-          'menu-active-bg': subSelected,
-        })}
-      >
-        {React.Children.map(children, (item: any) =>
-          React.cloneElement(item, {
-            menuKey: item.key,
-            path: path + item.key + '/',
-          }),
-        )}
-      </div>
+      {menuLink}
+      {subMenus}
     </div>
   );
 }

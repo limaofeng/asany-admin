@@ -18,6 +18,7 @@ export type MenuProps = {
   triggerSubMenuAction?: 'hover' | 'click';
   openKeys?: string[];
   mode?: 'horizontal' | 'vertical';
+  dropdown?: boolean;
   selectedKeys?: string[];
   defaultSelectedKeys?: string[];
   defaultOpenKeys?: string[];
@@ -26,7 +27,7 @@ export type MenuProps = {
   onOpenChange?: OpenCallback;
 };
 
-function InternalMenu(props: any) {
+const InternalMenu = React.forwardRef(function (props: any, ref: any) {
   const { children, className, mode = 'vertical' } = props;
 
   const _children = useMemo(() => {
@@ -40,19 +41,19 @@ function InternalMenu(props: any) {
         }),
     ).filter((item: any) => !!item);
   }, [children]);
-
   return (
     <div
-      ref={props.dropdown}
+      ref={ref}
       className={classnames('menu', className, {
         'menu-column': mode == 'vertical',
         'menu-rounded': true,
+        'menu-sub menu-sub-dropdown': props.dropdown,
       })}
     >
       {props.dropdown ? _children : <div className="menu-fit">{_children}</div>}
     </div>
   );
-}
+});
 
 function Menu(props: MenuProps, ref: React.ForwardedRef<HTMLDivElement | null>) {
   const {
@@ -75,6 +76,7 @@ function Menu(props: MenuProps, ref: React.ForwardedRef<HTMLDivElement | null>) 
       state={{
         accordion,
         selectable,
+        dropdown: !!props.dropdown,
         selectedKeys: defaultSelectedKeys!,
         openKeys: defaultOpenKeys!,
       }}
@@ -85,7 +87,7 @@ function Menu(props: MenuProps, ref: React.ForwardedRef<HTMLDivElement | null>) 
       onOpenChange={onOpenChange}
     >
       <InternalMenu
-        dropdown={ref}
+        ref={ref}
         {...otherProps}
         className={classnames(className, { 'menu-tree': !accordion })}
       >

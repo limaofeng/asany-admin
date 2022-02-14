@@ -14,3 +14,18 @@ export function isDoubleClick(ele: HTMLElement) {
   $(ele).data('click-number', clickNumber).data('timer-reset', timer);
   return false;
 }
+
+export function getDropPosition(rect: any, node: any, drop: any, indicator: number, index: number) {
+  const interval = rect.height / 3 / 2;
+  const inner = indicator < interval && indicator > -interval && drop?.parentKey !== node.id;
+  if (inner) {
+    return index;
+  }
+  if (indicator > 0) {
+    return index + 1;
+  }
+  if (indicator < 0) {
+    return index - 1;
+  }
+  return NaN;
+}

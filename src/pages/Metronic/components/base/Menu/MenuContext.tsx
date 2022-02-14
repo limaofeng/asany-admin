@@ -15,6 +15,7 @@ export type SelectableType = 'MenuItem' | 'AllMenu';
 
 type MenuState = {
   accordion: boolean;
+  dropdown?: boolean;
   selectable: SelectableType;
   menus?: Map<string, MenuData>;
   selectedKeys: string[];
