@@ -44,7 +44,7 @@ const CalendarActions = React.forwardRef(function (props: CalendarActionsProps, 
         title="新增日历"
         className="px-2"
         bodyClassName="py-2 w-150px"
-        offset={[6.5, 0]}
+        offset={[-6.5, 0]}
         key="new-calendar"
       >
         {accounts.map((account) => (

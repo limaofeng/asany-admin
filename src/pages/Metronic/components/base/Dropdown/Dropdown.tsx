@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ReactDOM from 'react-dom';
 import { useClickAway } from 'react-use';
 import { Shortcuts } from '@asany/shortcuts';
+import classnames from 'classnames';
 
 import Menu from '../Menu';
 import * as KTMenu from '../../utils/KTMenu';
@@ -23,6 +24,7 @@ type DropdownProps = {
   trigger?: 'click' | 'hover';
   visible?: boolean;
   placement?: Placement;
+  className?: string;
   overlay: React.ReactElement;
   zindex?: number;
   onVisibleChange?: (visible: boolean) => void;
@@ -62,7 +64,14 @@ const placementMapping = {
 };
 
 function Dropdown(props: DropdownProps) {
-  const { children, overlay, onVisibleChange, trigger = 'click', getPopupContainer } = props;
+  const {
+    children,
+    className,
+    overlay,
+    onVisibleChange,
+    trigger = 'click',
+    getPopupContainer,
+  } = props;
 
   const itemRef = useRef();
   const subRef = useRef();
@@ -211,6 +220,7 @@ function Dropdown(props: DropdownProps) {
     }
     return {
       ...overlayProps,
+      className: classnames(element.props.className, overlayProps.className),
       ref: wrapRef(element.ref, subRef),
     };
   }, []);
@@ -231,6 +241,7 @@ function Dropdown(props: DropdownProps) {
             overlay,
             mergeProps(overlay as any, {
               dropdown: true,
+              className,
               closeDropdown: handleClose,
               onClick: handleClick(overlay.props.onClick),
               selectedKeys: [],

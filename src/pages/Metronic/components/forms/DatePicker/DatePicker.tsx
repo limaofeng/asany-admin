@@ -5,7 +5,7 @@ import 'daterangepicker';
 import type { Moment } from 'moment';
 import moment from 'moment';
 
-import Input from '../Input';
+import Input, { InputRef } from '../Input';
 
 interface DatePickerProps {
   size?: 'sm' | 'lg';
@@ -47,7 +47,7 @@ const LOCALE = {
 
 function DatePicker(props: DatePickerProps) {
   const { value = '', autoApply = true, format = 'YYYY-MM-DD', onChange, ...inputProps } = props;
-  const ref = useRef<HTMLInputElement>(null);
+  const ref = useRef<InputRef>(null);
 
   const handleChange = useCallback(
     (date: Moment) => {
@@ -58,7 +58,7 @@ function DatePicker(props: DatePickerProps) {
   );
 
   useEffect(() => {
-    const picker = $(ref.current!).daterangepicker(
+    const picker = $(ref.current!.element!).daterangepicker(
       {
         autoApply,
         singleDatePicker: true,

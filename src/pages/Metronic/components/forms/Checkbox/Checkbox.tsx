@@ -41,7 +41,7 @@ function Checkbox(props: CheckboxProps) {
   return (
     <div
       className={classnames('form-check form-check-custom', className, {
-        'form-check': solid,
+        'form-check-solid': solid,
         [`form-check-${size}`]: size,
       })}
     >

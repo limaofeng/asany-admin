@@ -7,7 +7,7 @@ import { useCalendarSetsLazyQuery } from '@/pages/calendar/hooks';
 type CalendarState = {
   state: 'none' | 'new';
   selectedDay?: Date;
-  calendarSet: 'all' | number;
+  calendarSet: 'all' | string;
 };
 
 export default function useCalendarModel() {
@@ -52,7 +52,7 @@ export default function useCalendarModel() {
     forceRender();
   }, []);
 
-  const setCalendarSet = useCallback((calendarSet: number | 'all') => {
+  const setCalendarSet = useCallback((calendarSet: string | 'all') => {
     state.current.calendarSet = calendarSet;
     forceRender();
   }, []);

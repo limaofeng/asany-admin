@@ -1,20 +1,34 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
 import classnames from 'classnames';
+import { useModel } from 'umi';
+
+import CalendarPicker from './CalendarPicker';
 
 import { Button, Checkbox, DatePicker, Form, Input, Select } from '@/pages/Metronic/components';
+import type { CalendarSet } from '@/types';
 
 const TextArea = Input.TextArea;
 
 type NewCalendarEventProps = {
   visible?: boolean;
+  calendarSets: CalendarSet[];
 };
 
 function NewCalendarEvent(props: NewCalendarEventProps) {
-  const { visible } = props;
+  const { visible, calendarSets } = props;
+
+  const state = useRef<any>({
+    allDay: true,
+    color: 'none',
+    alert: 'none',
+    start: '2022-01-19',
+    end: '2022-01-19',
+  });
 
   const [showMore, setShowMore] = useState<boolean>(false);
+  const calendarSet = useModel('calendar', (model) => model.state.calendarSet);
 
   const handleToggle = useCallback(() => {
     setShowMore((show) => !show);
@@ -28,22 +42,31 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
 
   const form = Form.useForm();
 
+  /* const defaultCalendar = useMemo(() => {
+    if (calendarSet == 'all') {
+      return null;
+    }
+    return;
+  }, [calendarSet, calendarSets]); */
+
+  useEffect(() => {
+    if (!state.current.calendar) {
+      if (calendarSet == 'all') {
+        state.current.calendar = null;
+      } else {
+        state.current.calendar = calendarSets.find(
+          (item) => item.id == calendarSet,
+        )?.defaultCalendar?.id;
+      }
+    }
+    console.log('setFieldsValue', state.current);
+    form.setFieldsValue(state.current);
+  }, [calendarSet, calendarSets, form]);
+
   return (
     <div className={classnames('calendar-new-event-container', { invisible: !visible })}>
       <div className="calendar-new-event">
-        <Form
-          form={form}
-          onKeyUp={handleEsc as any}
-          size="sm"
-          initialValues={{
-            // calendar: 'none',
-            allDay: true,
-            color: 'none',
-            alert: 'none',
-            start: '2022-01-19',
-            end: '2022-01-19',
-          }}
-        >
+        <Form form={form} onKeyUp={handleEsc as any} size="sm" initialValues={state.current}>
           <ul>
             <li>
               <Form.Item name="title" noStyle>
@@ -51,7 +74,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
               </Form.Item>
             </li>
             <li>
-              <Form.Item name="allDay" label="全天">
+              <Form.Item name="allDay" valuePropName="checked" label="全天">
                 <Checkbox size="sm" />
               </Form.Item>
             </li>
@@ -67,19 +90,10 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
             </li>
             <li>
               <Form.Item name="calendar" label="日历">
-                <Select
-                  size="sm"
-                  solid
-                  options={[
-                    {
-                      label: '无',
-                      value: 'none',
-                    },
-                  ]}
-                />
+                <CalendarPicker solid />
               </Form.Item>
             </li>
-            <li>
+            {/* <li>
               <Form.Item name="color" label="颜色">
                 <Select
                   size="sm"
@@ -92,7 +106,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
                   ]}
                 />
               </Form.Item>
-            </li>
+            </li> */}
             <li>
               <Form.Item name="alert" label="提醒">
                 <Select

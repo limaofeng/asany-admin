@@ -8,14 +8,14 @@ import type { Moment } from 'moment';
 import moment from 'moment';
 import classnames from 'classnames';
 
-import { useCalendarEventsWithDaysLazyQuery } from '../hooks';
+import { useCalendarEventsWithDaysLazyQuery, useCalendarSetsQuery } from '../hooks';
 
 import NewCalendarEvent from './NewCalendarEvent';
 import CalendarSidebarHeader from './CalendarSidebarHeader';
 import CalendarSidebarFooter from './CalendarSidebarFooter';
 import Preferences from './preferences';
 
-import type { CalendarEvent } from '@/types';
+import type { CalendarEvent, CalendarSet } from '@/types';
 import { AsideWorkspace } from '@/pages/Metronic/components';
 import { sleep } from '@/utils';
 
@@ -200,13 +200,17 @@ function parseEventsWithDays(events: any[], selectedDay: Date) {
   );
 }
 
+const DEFAULT_CALENDARSETS: CalendarSet[] = [];
+
 function Sidebar() {
+  const { data: calendarSetData } = useCalendarSetsQuery();
+
   const selectedDay = useModel('calendar', ({ state }) => state.selectedDay || new Date());
   const calendarSet = useModel('calendar', ({ state }) => state.calendarSet);
   const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
   const isNew = useModel('calendar', (model) => model.state.state == 'new');
 
-  const [visiblePreferences, setVisiblePreferences] = useState(false);
+  const [visiblePreferences, setVisiblePreferences] = useState<boolean>(true);
 
   const scrollViewRef = useRef<HTMLDivElement>(null);
   const state = useRef<{
@@ -220,6 +224,7 @@ function Sidebar() {
     selectedDay,
     eventsWithDays: [],
   });
+
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
   state.current.calendarSet = calendarSet;
@@ -423,7 +428,10 @@ function Sidebar() {
     >
       <div className="calendar-sidebar">
         <CalendarSidebarHeader />
-        <NewCalendarEvent visible={isNew} />
+        <NewCalendarEvent
+          visible={isNew}
+          calendarSets={(calendarSetData?.calendarSets as any) || DEFAULT_CALENDARSETS}
+        />
         <Calendar
           locale={zh_CN as any}
           value={{
@@ -477,7 +485,10 @@ function Sidebar() {
             ))}
           </div>
         </div>
-        <CalendarSidebarFooter onAction={handleAction} />
+        <CalendarSidebarFooter
+          calendarSets={(calendarSetData?.calendarSets as any) || DEFAULT_CALENDARSETS}
+          onAction={handleAction}
+        />
       </div>
       <Preferences visible={visiblePreferences} onCancel={closePreferences} />
     </AsideWorkspace>

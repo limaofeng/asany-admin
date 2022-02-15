@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 import classnames from 'classnames';
 
@@ -12,6 +12,7 @@ type SelectMenuBodyProps = {
   value?: string;
   onSelect: (key: string) => void;
   closeDropdown?: () => void;
+  className?: string;
   options: OptionData[];
   itemRender?: OptionItemRender;
 };
@@ -30,7 +31,7 @@ function renderMenus(options: OptionData[], itemRender?: OptionItemRender) {
 }
 
 const SelectMenuBody = React.forwardRef(function (props: SelectMenuBodyProps, ref: any) {
-  const { options, closeDropdown, onSelect, itemRender, value } = props;
+  const { options, closeDropdown, onSelect, itemRender, value, className } = props;
 
   const handleSelect = useCallback(
     (menu) => {
@@ -40,9 +41,14 @@ const SelectMenuBody = React.forwardRef(function (props: SelectMenuBodyProps, re
     [closeDropdown, onSelect],
   );
 
+  console.log('options', options);
+
   return (
     <Menu
-      className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-auto py-4"
+      className={classnames(
+        'menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-auto py-4',
+        className,
+      )}
       ref={ref}
       onSelect={handleSelect}
       selectedKeys={value ? [value] : []}
@@ -52,7 +58,7 @@ const SelectMenuBody = React.forwardRef(function (props: SelectMenuBodyProps, re
   );
 });
 
-type DropdownSelectProps = {
+export type SelectProps = {
   placeholder?: string;
   options: OptionData[];
   solid?: boolean;
@@ -65,10 +71,10 @@ type DropdownSelectProps = {
   onChange?: (value: string, option: OptionData) => void;
 };
 
-function DropdownSelect(
-  props: DropdownSelectProps,
-  ref: React.ForwardedRef<HTMLDivElement | null>,
-) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+type SelectRef = {};
+
+function DropdownSelect(props: SelectProps, ref: React.ForwardedRef<SelectRef | null>) {
   const { placement, offset, options, itemRender, size, className, solid, onChange, placeholder } =
     props;
 
@@ -86,12 +92,20 @@ function DropdownSelect(
   }, []);
 
   useEffect(() => {
+    if (!props.value && !placeholder) {
+      const key = options[0]?.value;
+      if (key) {
+        setValue(key);
+        onChange && onChange(key, (options || []).find((item) => item.value == key)!);
+      }
+      return;
+    }
     if (value == props.value) {
       return;
     }
     setValue(props.value);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.value]);
+  }, [props.value, options]);
 
   const displayText = useMemo(() => {
     if (!value) {
@@ -104,25 +118,27 @@ function DropdownSelect(
     return (itemRender && itemRender(opt, true)) || opt.label;
   }, [value, options, itemRender, placeholder]);
 
+  useImperativeHandle(ref, () => ({}));
+
   return (
-    <div
-      tabIndex={-1}
-      ref={ref}
-      className={classnames('form-select', className, {
-        [`form-select-${size}`]: !!size,
-        'form-select-solid': solid,
-      })}
+    <Dropdown
+      overlay={
+        <SelectMenuBody
+          value={value}
+          className="form-select-popover"
+          itemRender={itemRender}
+          onSelect={handleSelect}
+          options={options}
+        />
+      }
+      placement={placement}
     >
-      <Dropdown
-        overlay={
-          <SelectMenuBody
-            value={value}
-            itemRender={itemRender}
-            onSelect={handleSelect}
-            options={options}
-          />
-        }
-        placement={placement}
+      <div
+        tabIndex={-1}
+        className={classnames('form-select', className, {
+          [`form-select-${size}`]: !!size,
+          'form-select-solid': solid,
+        })}
       >
         <a
           data-kt-menu-offset={offset ? offset.join(',') : undefined}
@@ -131,8 +147,8 @@ function DropdownSelect(
         >
           {displayText}
         </a>
-      </Dropdown>
-    </div>
+      </div>
+    </Dropdown>
   );
 }
 

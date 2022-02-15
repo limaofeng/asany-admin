@@ -15,7 +15,12 @@ import CalendarListFooter from './CalendarListFooter';
 import type { Calendar, CalendarSet } from '@/types';
 import { Checkbox, Form, Input, Modal, Popover, Select } from '@/pages/Metronic/components';
 import { darkenColor, lightenColor } from '@/pages/Metronic/components/utils/color';
-import { useCalendarsQuery, useUpdateCalendarMutation } from '@/pages/calendar/hooks';
+import {
+  useAddCalendarToSetMutation,
+  useCalendarsQuery,
+  useRemoveCalendarFromSetMutation,
+  useUpdateCalendarMutation,
+} from '@/pages/calendar/hooks';
 import { getDropPosition } from '@/pages/calendar/utils';
 import type { InputRef, OptionData } from '@/pages/Metronic/components';
 
@@ -24,13 +29,25 @@ interface CalendarListItemProps extends SortableItemProps<any> {
   actived: boolean;
   checked: boolean;
   editing: boolean;
+  onCheck: (id: string, checked: string) => void;
   onSelect: (id: string) => void;
   onEdit: (id?: string, type?: 'modal' | 'inline') => void;
   onShortcut: (action: string) => void;
 }
 
 const CalendarListItem = React.forwardRef(function (props: CalendarListItemProps, ref: any) {
-  const { data, onSelect, onEdit, editing, actived, checked, drag, indicator, onShortcut } = props;
+  const {
+    data,
+    onSelect,
+    onEdit,
+    onCheck,
+    editing,
+    actived,
+    checked,
+    drag,
+    indicator,
+    onShortcut,
+  } = props;
 
   const [value, setValue] = useState(data.name);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -92,7 +109,13 @@ const CalendarListItem = React.forwardRef(function (props: CalendarListItemProps
     },
     [regainFocus],
   );
-  const handleChange = useCallback(() => {}, []);
+
+  const handleChange = useCallback(
+    (e) => {
+      onCheck(data.id, e.target.checked);
+    },
+    [data, onCheck],
+  );
 
   const handleDoubleClick = useCallback(() => {
     onEdit(data.id, 'modal');
@@ -160,29 +183,40 @@ const CalendarListItem = React.forwardRef(function (props: CalendarListItemProps
 });
 
 type CalendarListProps = {
+  refresh: () => void;
   calendarSet?: CalendarSet;
 };
 
 function CalendarList(props: CalendarListProps) {
-  const { calendarSet } = props;
+  const { refresh, calendarSet } = props;
 
   const [updateCalendar] = useUpdateCalendarMutation();
+  const [addCalendarToSet] = useAddCalendarToSetMutation();
+  const [removeCalendarFromSet] = useRemoveCalendarFromSetMutation();
   const { data, refetch } = useCalendarsQuery({ fetchPolicy: 'cache-and-network' });
 
   const [activeKey, setActiveKey] = useState<string>();
   const [editing, setEditing] = useState<{ key?: string; type?: 'modal' | 'inline' }>();
+  const [checkedKeys, setCheckedKeys] = useState(
+    calendarSet?.calendars.map((item) => item.id) || [],
+  );
 
   const container = useRef<HTMLDivElement>(null);
   const temp = useRef<{
     activeKey?: string;
     editing?: { key?: string; type?: 'modal' | 'inline' };
     calendars: Calendar[];
+    checkedKeys: string[];
+    calendarSet?: CalendarSet;
   }>({
+    checkedKeys: [],
     calendars: [],
   });
 
+  temp.current.checkedKeys = checkedKeys;
   temp.current.activeKey = activeKey;
   temp.current.editing = editing;
+  temp.current.calendarSet = calendarSet;
   temp.current.calendars = data?.calendars || ([] as any);
 
   const regainFocus = useCallback((key?: string) => {
@@ -227,6 +261,7 @@ function CalendarList(props: CalendarListProps) {
         key: calendar.id,
         actived: activeKey == calendar.id,
         editing: editing?.key == calendar.id && editing?.type == 'inline',
+        checked: checkedKeys.some((key) => key == calendar.id),
         _type: calendar.type,
       };
       delete cloneCalendar.type;
@@ -238,7 +273,7 @@ function CalendarList(props: CalendarListProps) {
       }
     }
     return accounts.sort((l, r) => l.index! - r.index!);
-  }, [activeKey, data?.calendars, editing]);
+  }, [activeKey, checkedKeys, data?.calendars, editing?.key, editing?.type]);
 
   const handleSuccess = useCallback(
     async (calendar?: Calendar) => {
@@ -316,6 +351,37 @@ function CalendarList(props: CalendarListProps) {
     regainFocus();
   }, [regainFocus]);
 
+  const handleCheck = useCallback(
+    async (id: string, checked: boolean) => {
+      const calendarSetId = temp.current.calendarSet?.id;
+      const _checkedKeys = temp.current.checkedKeys;
+      console.log('handleChange', id, checked, calendarSetId);
+      if (checked) {
+        setCheckedKeys([..._checkedKeys, id]);
+        await addCalendarToSet({
+          variables: {
+            id,
+            set: calendarSetId,
+          },
+        });
+      } else {
+        setCheckedKeys(_checkedKeys.filter((key) => key != id));
+        await removeCalendarFromSet({
+          variables: {
+            id,
+            set: calendarSetId,
+          },
+        });
+      }
+      refresh();
+    },
+    [refresh, addCalendarToSet, removeCalendarFromSet],
+  );
+
+  useEffect(() => {
+    setCheckedKeys(calendarSet?.calendars.map((item) => item.id) || []);
+  }, [calendarSet?.calendars]);
+
   return (
     <Shortcuts
       tag={
@@ -355,6 +421,8 @@ function CalendarList(props: CalendarListProps) {
                         ref={ref}
                         actived={item.actived}
                         editing={item.editing}
+                        checked={item.checked}
+                        onCheck={handleCheck}
                         key={item.id}
                         data={item}
                         index={index}
@@ -529,7 +597,10 @@ function UpdateCalendarModal(props: UpdateCalendarModalProps) {
                   onChange={handleColorChange}
                   placement="bottomCenter"
                   itemRender={(option: OptionData, display?: boolean) => {
-                    const _color = option.value == 'other' ? color || data!.color! : option.value!;
+                    const _color = option.value == 'other' ? color || data?.color : option.value;
+                    if (!_color) {
+                      return <></>;
+                    }
                     const colorBlock = (
                       <div
                         style={{

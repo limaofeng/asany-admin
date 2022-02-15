@@ -8,6 +8,24 @@ query calendarAccounts {
   }
 }
 
+mutation addCalendarToSet($id: ID!, $set: ID!) {
+  addCalendarToSet(id: $id, set: $set) {
+    id
+    calendars {
+      id
+    }
+  }
+}
+
+mutation removeCalendarFromSet($id: ID!, $set: ID!) {
+  removeCalendarFromSet(id: $id, set: $set) {
+    id
+    calendars {
+      id
+    }
+  }
+}
+
 mutation createCalendar($input: CalendarCreateInput!) {
   createCalendar(input: $input) {
     id
@@ -47,6 +65,9 @@ mutation updateCalendarSet($id: ID!, $input: CalendarSetUpdateInput!) {
     id
     name
     index
+    defaultCalendar {
+      id
+    }
   }
 }
 
@@ -71,6 +92,9 @@ query calendarSets {
     id
     name
     index
+    defaultCalendar {
+      id
+    }
     calendars {
       id
     }

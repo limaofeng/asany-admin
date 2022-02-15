@@ -2,22 +2,17 @@ import { useCallback, useMemo } from 'react';
 
 import { useModel } from 'umi';
 
-import { useCalendarSetsQuery } from '../hooks';
-
 import { Select } from '@/pages/Metronic/components';
 import type { OptionData } from '@/pages/Metronic/components/forms/Select/typings';
+import type { CalendarSet } from '@/types';
 
 type CalendarSidebarFooterProps = {
+  calendarSets: CalendarSet[];
   onAction: (key: string) => void;
 };
 
-const DEFAULT_CALENDARSETS: any[] = [];
-
 function CalendarSidebarFooter(props: CalendarSidebarFooterProps) {
-  const { onAction } = props;
-
-  const { data } = useCalendarSetsQuery();
-  const calendarSets = data?.calendarSets || DEFAULT_CALENDARSETS;
+  const { calendarSets, onAction } = props;
 
   const calendarSet = useModel('calendar', (model) => model.state.calendarSet);
   const setCalendarSet = useModel('calendar', (model) => model.setCalendarSet);

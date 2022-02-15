@@ -67,6 +67,10 @@
 
   &.state-new-event {
     --aside-workspace-bg-color: #f7f7f7;
+
+    .calendar-sidebar-footer {
+      display: none;
+    }
   }
 
   .calendar-event-header {
@@ -124,10 +128,12 @@
         li {
           display: flex;
           align-items: center;
-          min-height: 40px;
+          min-height: 32px;
           color: #3f4254 !important;
-          line-height: 40px;
 
+          .asany-form-item {
+            margin-bottom: 0;
+          }
           .fv-row {
             display: flex;
             flex: 1;
@@ -139,11 +145,9 @@
               font-weight: normal;
               font-size: inherit;
               text-align: right;
-            }
-            & > div,
-            & > .form-control,
-            & > .select2 {
-              flex: 1;
+              &::after {
+                display: none;
+              }
             }
           }
           input {
@@ -173,7 +177,6 @@
             }
           }
           .form-select.form-select-solid {
-            display: inline-block;
             width: auto;
             height: 34px;
           }
@@ -762,7 +765,9 @@
             border-bottom: 1px solid #e6e6e6;
           }
           .calendars-body {
-            height: calc(75vh - 100px - (1.75rem * 2) - 36px - 96px - 34px - 28px - 17px);
+            height: calc(
+              75vh - 100px - (1.75rem * 2) - 36px - 96px - 34px - 28px - 17px + 34px /*--*/
+            );
             margin-top: -26px;
             .calendars-group:last-child {
               padding-bottom: 8px;
@@ -893,14 +898,20 @@
       }
       .calendar-sets-settings {
         margin-top: 8px;
-        padding: 16px;
+        padding: 10px 16px;
         background-color: #e4e5e5;
         border: 1px solid #dddede;
         border-radius: 3px;
 
-        li {
-          height: 24px;
-          line-height: 24px;
+        .flex-row {
+          margin-bottom: 0.25rem;
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+
+        .form-label {
+          width: 25%;
         }
       }
     }
@@ -915,6 +926,11 @@
   }
   .calendar-name {
     flex: 1;
+  }
+  .asany-form {
+    .flex-row {
+      margin-bottom: 0.5rem;
+    }
   }
 }
 .popover-content-body {

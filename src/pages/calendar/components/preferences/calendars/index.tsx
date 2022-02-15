@@ -1,19 +1,50 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { useCalendarSetsQuery } from '../../../hooks';
+import { useCalendarSetsQuery, useUpdateCalendarSetMutation } from '../../../hooks';
+import CalendarPicker from '../../CalendarPicker';
 
 import CalendarSets from './CalendarSets';
 import CalendarList from './CalendarList';
 
+import { Form } from '@/pages/Metronic/components';
+
 function Calendars() {
+  const [updateCalendarSet] = useUpdateCalendarSetMutation();
   const { data, refetch } = useCalendarSetsQuery({ fetchPolicy: 'cache-and-network' });
   const calendarSets = data?.calendarSets;
 
+  const form = Form.useForm();
   const [selectedKey, setSelectedKey] = useState<string>();
 
   const handleSelectCalendarSet = useCallback((value: string) => {
     setSelectedKey(value);
   }, []);
+
+  const calendarSet = (calendarSets || []).find((item) => item.id == selectedKey) as any;
+
+  useEffect(() => {
+    form.setFieldsValue({ defaultCalendar: calendarSet?.defaultCalendar?.id });
+  }, [calendarSet, form]);
+
+  const handleChange = useCallback(async () => {
+    const values = form.getFieldsValue();
+    if (!calendarSet) {
+      return;
+    }
+    console.log('handleChange calendarSet', values);
+    await updateCalendarSet({
+      variables: {
+        id: calendarSet.id,
+        input: values,
+      },
+    });
+  }, [calendarSet, form, updateCalendarSet]);
+
+  // useEffect(() => {
+  //   if (!calendarSet.defaultCalendar) {
+  //     return;
+  //   }
+  // }, [calendarSet]);
 
   return (
     <div className="settings-calendars">
@@ -27,15 +58,27 @@ function Calendars() {
           refresh={refetch}
         />
         <div className="settings-calendars-right flex-root">
-          <CalendarList
-            calendarSet={(calendarSets || []).find((item) => item.id == selectedKey) as any}
-          />
+          <CalendarList refresh={refetch} calendarSet={calendarSet} />
           {/* 我的日历 / 任务 / 提醒 / 联系人 */}
           <div className="calendar-sets-settings">
-            <ul>
-              <li>默认日历</li>
-              <li>默认任务列表</li>
-            </ul>
+            <Form
+              form={form}
+              layout="horizontal"
+              size="xs"
+              initialValues={{ defaultCalendar: calendarSet?.defaultCalendar?.id }}
+              onFieldsChange={handleChange}
+            >
+              <div className="d-flex flex-row flex-center">
+                <Form.Item name="defaultCalendar" label="默认日历">
+                  <CalendarPicker solid />
+                </Form.Item>
+              </div>
+              {/* <div className="d-flex flex-row flex-center">
+                <Form.Item name="url" label="默认任务列表">
+                  <CalendarPicker solid />
+                </Form.Item>
+              </div> */}
+            </Form>
           </div>
         </div>
       </div>

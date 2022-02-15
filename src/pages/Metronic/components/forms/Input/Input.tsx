@@ -27,6 +27,7 @@ export type InputRef = {
   blur: () => void;
   select: () => void;
   focus: () => void;
+  element: HTMLInputElement | null;
 };
 
 function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
@@ -51,6 +52,9 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     () => ({
       blur: () => {
         inputRef.current?.blur();
+      },
+      get element() {
+        return inputRef.current;
       },
       get value() {
         return inputRef.current?.value;
