@@ -12,7 +12,7 @@ type CalendarState = {
 
 export default function useCalendarModel() {
   const state = useRef<CalendarState>({
-    state: 'none',
+    state: 'new', // 'none',
     selectedDay: new Date(),
     calendarSet: 'all',
   });

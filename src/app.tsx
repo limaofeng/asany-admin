@@ -1,8 +1,20 @@
 import { history, loadCurrentuser } from 'umi';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
 
 import type { CurrentUser } from './.umi/app/typings';
 
 import PageLoading from '@/components/PageLoading';
+
+moment.locale('zh-cn', {
+  meridiem: function (hour) {
+    if (hour < 12) {
+      return '上午';
+    } else {
+      return '下午';
+    }
+  },
+});
 
 // const isDev = process.env.NODE_ENV === 'development';
 

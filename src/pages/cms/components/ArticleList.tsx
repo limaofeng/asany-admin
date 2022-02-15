@@ -6,9 +6,6 @@ import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import classnames from 'classnames';
 import moment from 'moment';
-import 'moment/locale/zh-cn';
-
-moment.locale('zh-cn');
 
 import type { ArticlesQueryVariables } from '../hooks';
 import {

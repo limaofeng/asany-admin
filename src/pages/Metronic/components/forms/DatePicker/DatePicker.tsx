@@ -5,7 +5,8 @@ import 'daterangepicker';
 import type { Moment } from 'moment';
 import moment from 'moment';
 
-import Input, { InputRef } from '../Input';
+import type { InputRef } from '../Input';
+import Input from '../Input';
 
 interface DatePickerProps {
   size?: 'sm' | 'lg';
@@ -16,6 +17,7 @@ interface DatePickerProps {
   bordered?: boolean;
   autoApply?: boolean;
   format?: string;
+  timePicker?: boolean;
   onChange?: (date: Moment, dateString: string) => void;
 }
 
@@ -46,7 +48,14 @@ const LOCALE = {
 };
 
 function DatePicker(props: DatePickerProps) {
-  const { value = '', autoApply = true, format = 'YYYY-MM-DD', onChange, ...inputProps } = props;
+  const {
+    value = '',
+    autoApply = true,
+    timePicker,
+    format = 'YYYY-MM-DD',
+    onChange,
+    ...inputProps
+  } = props;
   const ref = useRef<InputRef>(null);
 
   const handleChange = useCallback(
@@ -60,6 +69,7 @@ function DatePicker(props: DatePickerProps) {
   useEffect(() => {
     const picker = $(ref.current!.element!).daterangepicker(
       {
+        timePicker,
         autoApply,
         singleDatePicker: true,
         showDropdowns: true,
@@ -71,9 +81,14 @@ function DatePicker(props: DatePickerProps) {
       (picker.data('daterangepicker') as any)?.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [autoApply, format, timePicker]);
 
   useEffect(() => {
+    if (typeof value == 'string') {
+      process.nextTick(() => {
+        onChange && onChange(moment(value), moment(value).format(format));
+      });
+    }
     $(ref.current!).val(toDateString(value, format));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);

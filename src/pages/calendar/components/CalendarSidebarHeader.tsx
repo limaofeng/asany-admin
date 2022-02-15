@@ -96,15 +96,20 @@ function CalendarSidebarHeader() {
           onKeyUp={handleKeyWithEscape as any}
         />
       </div>
-      {focused || isNew ? (
-        <a className="calendar-event-header-right" onClick={handleLeave}>
-          <Icon className="svg-icon-1" name="Duotune/arr088" />
-        </a>
-      ) : (
-        <a className="calendar-event-header-right" onClick={handleFocused}>
-          <Icon className="svg-icon-1" name="Duotune/arr087" />
-        </a>
-      )}
+      <a
+        className={classnames('calendar-event-header-right', {
+          'calendar-event-new-icon': !(focused || isNew),
+        })}
+        onClick={focused || isNew ? handleLeave : handleFocused}
+      >
+        <Icon
+          className={classnames({
+            'svg-icon-1': focused || isNew,
+            'svg-icon-2x svg-icon-dark': !(focused || isNew),
+          })}
+          name={focused || isNew ? 'Duotune/arr088' : 'Duotune/arr087'}
+        />
+      </a>
     </div>
   );
 }

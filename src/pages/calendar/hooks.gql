@@ -1,3 +1,9 @@
+mutation addCalendarEvent($calendar: ID!, $input: CalendarEventCreateInput!) {
+  addCalendarEvent(calendar: $calendar, input: $input) {
+    id
+  }
+}
+
 query calendarAccounts {
   calendarAccounts {
     id

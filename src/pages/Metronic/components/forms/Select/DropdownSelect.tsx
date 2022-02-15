@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { Dropdown } from '../../base/Dropdown';
 import Menu from '../../base/Menu';
 import type { Placement } from '../../base/Dropdown/Dropdown';
+import { uuid } from '../../utils';
 
 import type { OptionData, OptionItemRender } from './typings';
 
@@ -20,7 +21,7 @@ type SelectMenuBodyProps = {
 function renderMenus(options: OptionData[], itemRender?: OptionItemRender) {
   return options.map((option) => {
     if (option.type == 'separator') {
-      return <Menu.Separator key={option.type} className="mx-1" />;
+      return <Menu.Separator key={option.type + '-' + uuid()} className="mx-1" />;
     }
     return (
       <Menu.Item icon="Duotune/arr085" className="px-3" key={option.value}>
@@ -40,8 +41,6 @@ const SelectMenuBody = React.forwardRef(function (props: SelectMenuBodyProps, re
     },
     [closeDropdown, onSelect],
   );
-
-  console.log('options', options);
 
   return (
     <Menu
@@ -91,13 +90,24 @@ function DropdownSelect(props: SelectProps, ref: React.ForwardedRef<SelectRef | 
     (e.target as HTMLAnchorElement).parentElement?.focus();
   }, []);
 
-  useEffect(() => {
-    if (!props.value && !placeholder) {
-      const key = options[0]?.value;
+  const resetDefaults = useCallback(
+    (_options: OptionData[]) => {
+      const key = _options[0]?.value;
       if (key) {
         setValue(key);
-        onChange && onChange(key, (options || []).find((item) => item.value == key)!);
+        onChange && onChange(key, (_options || []).find((item) => item.value == key)!);
       }
+    },
+    [setValue, onChange],
+  );
+
+  useEffect(() => {
+    if (!props.value && !placeholder) {
+      resetDefaults(options);
+      return;
+    }
+    if (props.value && !options.some((it) => it.value == props.value)) {
+      resetDefaults(options);
       return;
     }
     if (value == props.value) {

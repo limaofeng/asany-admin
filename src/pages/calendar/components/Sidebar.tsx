@@ -210,7 +210,7 @@ function Sidebar() {
   const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
   const isNew = useModel('calendar', (model) => model.state.state == 'new');
 
-  const [visiblePreferences, setVisiblePreferences] = useState<boolean>(true);
+  const [visiblePreferences, setVisiblePreferences] = useState<boolean>(false);
 
   const scrollViewRef = useRef<HTMLDivElement>(null);
   const state = useRef<{

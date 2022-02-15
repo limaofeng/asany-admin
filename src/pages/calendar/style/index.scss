@@ -104,9 +104,19 @@
     }
     .calendar-event-header-right {
       position: absolute;
-      top: 2rem;
+      top: 2.1rem;
       right: 22px;
-      margin-top: 6px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      border-radius: 8px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      &.calendar-event-new-icon {
+        background-color: #e8e8e8;
+      }
     }
   }
 
