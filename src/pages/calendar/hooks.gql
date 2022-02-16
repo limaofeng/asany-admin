@@ -1,6 +1,12 @@
 mutation addCalendarEvent($calendar: ID!, $input: CalendarEventCreateInput!) {
-  addCalendarEvent(calendar: $calendar, input: $input) {
+  event: addCalendarEvent(calendar: $calendar, input: $input) {
     id
+    title
+    datetime {
+      allDay
+      starts
+      ends
+    }
   }
 }
 

@@ -205,10 +205,12 @@ const DEFAULT_CALENDARSETS: CalendarSet[] = [];
 function Sidebar() {
   const { data: calendarSetData } = useCalendarSetsQuery();
 
-  const selectedDay = useModel('calendar', ({ state }) => state.selectedDay || new Date());
   const calendarSet = useModel('calendar', ({ state }) => state.calendarSet);
-  const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
   const isNew = useModel('calendar', (model) => model.state.state == 'new');
+  const selectedDay = useModel('calendar', ({ state }) => state.selectedDay || new Date());
+  const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
+  const setNewed = useModel('calendar', (model) => model.changeState);
+  const fullCalendar = useModel('calendar', (model) => model.state.fullCalendar);
 
   const [visiblePreferences, setVisiblePreferences] = useState<boolean>(false);
 
@@ -419,8 +421,21 @@ function Sidebar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setSelectedDay]);
 
+  const handleSuccess = useCallback(
+    (event: CalendarEvent) => {
+      const mainCalendar = document.getElementsByClassName('main-calendar')[0] as any;
+      mainCalendar?.focus();
+      setNewed('none');
+      console.log('fullCalendar', fullCalendar?.getApi());
+      fullCalendar?.getApi().refetchEvents();
+      updateSelectedDay(new Date(event.datetime.starts));
+    },
+    [fullCalendar, setNewed, updateSelectedDay],
+  );
+
   const { toDayOrNextEvent, eventsWithDays } = state.current;
   const onDay = eventsWithDays.find((item) => item.key == toDayOrNextEvent?.key);
+
   return (
     <AsideWorkspace
       className={classnames('calendar-sidebar-bg', { 'state-new-event': isNew })}
@@ -430,6 +445,7 @@ function Sidebar() {
         <CalendarSidebarHeader />
         <NewCalendarEvent
           visible={isNew}
+          onSuccess={handleSuccess}
           calendarSets={(calendarSetData?.calendarSets as any) || DEFAULT_CALENDARSETS}
         />
         <Calendar

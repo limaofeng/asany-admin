@@ -8,11 +8,15 @@ import moment from 'moment';
 import type { InputRef } from '../Input';
 import Input from '../Input';
 
+import './style.scss';
+
 interface DatePickerProps {
   size?: 'sm' | 'lg';
   placeholder?: string;
   solid?: boolean;
   value?: string | Moment;
+  minDate?: string | Moment;
+  maxDate?: string | Moment;
   autoComplete?: boolean;
   bordered?: boolean;
   autoApply?: boolean;
@@ -52,6 +56,8 @@ function DatePicker(props: DatePickerProps) {
     value = '',
     autoApply = true,
     timePicker,
+    minDate,
+    maxDate,
     format = 'YYYY-MM-DD',
     onChange,
     ...inputProps
@@ -69,6 +75,8 @@ function DatePicker(props: DatePickerProps) {
   useEffect(() => {
     const picker = $(ref.current!.element!).daterangepicker(
       {
+        minDate: toDate(minDate),
+        maxDate: toDate(maxDate),
         timePicker,
         autoApply,
         singleDatePicker: true,
@@ -81,7 +89,7 @@ function DatePicker(props: DatePickerProps) {
       (picker.data('daterangepicker') as any)?.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoApply, format, timePicker]);
+  }, [autoApply, format, timePicker, minDate, maxDate]);
 
   useEffect(() => {
     if (typeof value == 'string') {
@@ -89,9 +97,12 @@ function DatePicker(props: DatePickerProps) {
         onChange && onChange(moment(value), moment(value).format(format));
       });
     }
-    $(ref.current!).val(toDateString(value, format));
+    if (toMoment(minDate)?.isAfter(toMoment(value))) {
+      onChange && onChange(toMoment(minDate)!, toMoment(minDate)!.format(format));
+    }
+    // ref.current!.setValue(toDateString(value, format));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  }, [value, minDate]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -111,19 +122,34 @@ function DatePicker(props: DatePickerProps) {
       ref={ref}
       {...inputProps}
       onKeyDown={handleKeyDown}
-      defaultValue={toDateString(value, format)}
+      onChange={() => {}}
+      value={toDateString(value, format)}
     />
   );
 }
 
-function toDateString(value: string | Moment, format: string) {
+function toDate(value: string | Moment | undefined): string | Date | undefined {
   if (typeof value === 'string') {
-    if (!!value) {
-      return moment(value).format(format);
-    }
-    return '';
+    return value;
   }
-  return value.format(format);
+  if (moment.isMoment(value)) {
+    return value.toDate();
+  }
+  return undefined;
+}
+
+function toMoment(value: string | Moment | undefined): Moment | undefined {
+  if (typeof value === 'string' && !!value) {
+    return moment(value);
+  }
+  if (moment.isMoment(value)) {
+    return value;
+  }
+  return undefined;
+}
+
+function toDateString(value: string | Moment, format: string) {
+  return toMoment(value)?.format(format) || null;
 }
 
 export default DatePicker;

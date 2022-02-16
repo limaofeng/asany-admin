@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import { useModel } from 'umi';
+import type FullCalendar from '@fullcalendar/react';
 
 import { useCalendarSetsLazyQuery } from '@/pages/calendar/hooks';
 
@@ -8,11 +9,12 @@ type CalendarState = {
   state: 'none' | 'new';
   selectedDay?: Date;
   calendarSet: 'all' | string;
+  fullCalendar?: FullCalendar;
 };
 
 export default function useCalendarModel() {
   const state = useRef<CalendarState>({
-    state: 'new', // 'none',
+    state: 'none',
     selectedDay: new Date(),
     calendarSet: 'all',
   });
@@ -65,10 +67,16 @@ export default function useCalendarModel() {
     forceRender();
   }, []);
 
+  const setFullCalendar = useCallback((fullCalendar: FullCalendar) => {
+    state.current.fullCalendar = fullCalendar;
+    forceRender();
+  }, []);
+
   return {
     state: state.current,
     setCalendarSet,
     setSelectedDay,
+    setFullCalendar,
     changeState,
   };
 }

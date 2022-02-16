@@ -61,6 +61,8 @@ function CalendarSidebarHeader() {
 
   useEffect(() => {
     if (!isNew) {
+      setValue('');
+      setFocused(false);
       return;
     }
     const domElement = document.activeElement as any;

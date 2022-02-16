@@ -9,7 +9,7 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
   size?: 'xs' | 'sm' | 'lg';
   placeholder?: string;
   solid?: boolean;
-  value?: string;
+  value?: string | null;
   defaultValue?: string;
   type?: 'text' | 'password';
   autoComplete?: boolean;
@@ -23,6 +23,7 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
 
 export type InputRef = {
   value: string | undefined;
+  setValue: (v: string) => void;
   input: React.MutableRefObject<HTMLInputElement | null>;
   blur: () => void;
   select: () => void;
@@ -46,29 +47,6 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   } = props;
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useImperativeHandle(
-    ref,
-    () => ({
-      blur: () => {
-        inputRef.current?.blur();
-      },
-      get element() {
-        return inputRef.current;
-      },
-      get value() {
-        return inputRef.current?.value;
-      },
-      input: inputRef,
-      focus: () => {
-        inputRef.current?.focus();
-      },
-      select: () => {
-        inputRef.current?.select();
-      },
-    }),
-    [],
-  );
 
   const [value, setValue] = useState(props.value != null ? props.value : props.defaultValue || '');
 
@@ -97,6 +75,32 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     return props.value != null ? props.value : '';
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.value]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      blur: () => {
+        inputRef.current?.blur();
+      },
+      get element() {
+        return inputRef.current;
+      },
+      get value() {
+        return inputRef.current?.value;
+      },
+      setValue(v: string) {
+        setValue(v);
+      },
+      input: inputRef,
+      focus: () => {
+        inputRef.current?.focus();
+      },
+      select: () => {
+        inputRef.current?.select();
+      },
+    }),
+    [],
+  );
 
   const input = (
     <input

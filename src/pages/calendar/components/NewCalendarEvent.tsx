@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 import { useModel } from 'umi';
+import moment from 'moment';
 
 import { useAddCalendarEventMutation } from '../hooks';
 
@@ -10,12 +11,13 @@ import CalendarPicker from './CalendarPicker';
 
 import type { OptionData } from '@/pages/Metronic/components';
 import { Button, Checkbox, DatePicker, Form, Input, Select } from '@/pages/Metronic/components';
-import type { CalendarSet } from '@/types';
+import type { CalendarEvent, CalendarSet } from '@/types';
 
 const TextArea = Input.TextArea;
 
 type NewCalendarEventProps = {
   visible?: boolean;
+  onSuccess: (event: CalendarEvent) => void;
   calendarSets: CalendarSet[];
 };
 
@@ -24,6 +26,9 @@ const alertOptions: OptionData[] = [
     label: '无',
     value: 'none',
     scope: ['all-day', 'general'],
+    remind: {
+      alert: 'NONE',
+    },
   },
   {
     type: 'separator',
@@ -33,71 +38,125 @@ const alertOptions: OptionData[] = [
     label: '日程当天 (上午 8:00)',
     value: 'on time of event',
     scope: ['all-day'],
+    remind: {
+      alert: 'ON_TIME_OF_EVENT',
+    },
   },
   {
     label: '1 天前 (上午 8:00)',
     value: '1 day before 8:00',
     scope: ['all-day'],
+    remind: {
+      alert: 'DAYS_BEFORE',
+      times: 1,
+    },
   },
   {
     label: '2 天前 (上午 8:00)',
     value: '2 day before 8:00',
     scope: ['all-day'],
+    remind: {
+      alert: 'DAYS_BEFORE',
+      times: 2,
+    },
   },
   {
     label: '日程发生时',
     value: 'at time of event',
     scope: ['general'],
+    remind: {
+      alert: 'AT_TIME_OF_EVENT',
+    },
   },
   {
     label: '1 分钟前',
     value: '1 minute before',
     scope: ['general'],
+    remind: {
+      alert: 'MINUTES_BEFORE',
+      times: 1,
+    },
   },
   {
     label: '5 分钟前',
     value: '5 minute before',
     scope: ['general'],
+    remind: {
+      alert: 'MINUTES_BEFORE',
+      times: 5,
+    },
   },
   {
     label: '10 分钟前',
     value: '10 minute before',
     scope: ['general'],
+    remind: {
+      alert: 'MINUTES_BEFORE',
+      times: 10,
+    },
   },
   {
     label: '15 分钟前',
     value: '15 minute before',
     scope: ['general'],
+    remind: {
+      alert: 'MINUTES_BEFORE',
+      times: 15,
+    },
   },
   {
     label: '30 分钟前',
     value: '30 minute before',
     scope: ['general'],
+    remind: {
+      alert: 'MINUTES_BEFORE',
+      times: 30,
+    },
   },
   {
     label: '45 分钟前',
     value: '45 minute before',
     scope: ['general'],
+    remind: {
+      alert: 'MINUTES_BEFORE',
+      times: 45,
+    },
   },
   {
     label: '1 小时前',
     value: '1 hour before',
     scope: ['general'],
+    remind: {
+      alert: 'HOURS_BEFORE',
+      times: 1,
+    },
   },
   {
     label: '2 小时前',
     value: '2 hour before',
     scope: ['general'],
+    remind: {
+      alert: 'HOURS_BEFORE',
+      times: 2,
+    },
   },
   {
     label: '1 天前',
     value: '1 day before',
     scope: ['general'],
+    remind: {
+      alert: 'DAYS_BEFORE',
+      times: 1,
+    },
   },
   {
     label: '2 天前',
     value: '2 day before',
     scope: ['general'],
+    remind: {
+      alert: 'DAYS_BEFORE',
+      times: 2,
+    },
   },
   {
     type: 'separator',
@@ -111,9 +170,10 @@ const alertOptions: OptionData[] = [
 ];
 
 function NewCalendarEvent(props: NewCalendarEventProps) {
-  const { visible, calendarSets } = props;
+  const { visible, calendarSets, onSuccess } = props;
 
-  const state = useRef<any>({
+  const formInitialValues = useRef<any>({
+    title: '测试',
     allDay: true,
     color: 'none',
     alert: 'none',
@@ -122,9 +182,16 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
   });
 
   const [showMore, setShowMore] = useState<boolean>(false);
+  const selectedDay = useModel('calendar', ({ state }) =>
+    moment(state.selectedDay || new Date()).format('YYYY-MM-DD'),
+  );
+  const isNew = useModel('calendar', (model) => model.state.state == 'new');
   const calendarSet = useModel('calendar', (model) => model.state.calendarSet);
 
   const [addCalendarEvent] = useAddCalendarEventMutation();
+
+  formInitialValues.current.starts = selectedDay;
+  formInitialValues.current.ends = selectedDay;
 
   const handleToggle = useCallback(() => {
     setShowMore((show) => !show);
@@ -138,38 +205,39 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
 
   const form = Form.useForm();
 
-  /* const defaultCalendar = useMemo(() => {
-    if (calendarSet == 'all') {
-      return null;
-    }
-    return;
-  }, [calendarSet, calendarSets]); */
-
   useEffect(() => {
-    if (!state.current.calendar) {
+    if (!formInitialValues.current.calendar) {
       if (calendarSet == 'all') {
-        state.current.calendar = null;
+        formInitialValues.current.calendar = null;
       } else {
-        state.current.calendar = calendarSets.find(
+        formInitialValues.current.calendar = calendarSets.find(
           (item) => item.id == calendarSet,
         )?.defaultCalendar?.id;
       }
     }
-    form.setFieldsValue(state.current);
+    form.setFieldsValue(formInitialValues.current);
   }, [calendarSet, calendarSets, form]);
 
   const handleSubmit = useCallback(
     async ({ calendar, alert, ...values }) => {
-      console.log('values', calendar, values, values.starts.format('YYYY-MM-DD'));
-      await addCalendarEvent({
+      const remind = alertOptions.find((item) => item.value == alert)?.remind;
+      const { data } = await addCalendarEvent({
         variables: {
           calendar,
-          input: values,
+          input: { ...values, remind: remind || { alert: 'NONE' } },
         },
       });
+      onSuccess(data?.event as any);
     },
-    [addCalendarEvent],
+    [addCalendarEvent, onSuccess],
   );
+
+  useEffect(() => {
+    if (!isNew) {
+      return;
+    }
+    form.setFieldsValue(formInitialValues.current);
+  }, [isNew, form]);
 
   return (
     <div className={classnames('calendar-new-event-container', { invisible: !visible })}>
@@ -179,7 +247,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
           form={form}
           onKeyUp={handleEsc as any}
           size="sm"
-          initialValues={state.current}
+          initialValues={formInitialValues.current}
         >
           <ul>
             <li>
@@ -207,12 +275,13 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
               </Form.Item>
             </li>
             <li>
-              <Form.Item noStyle dependencies={['allDay']}>
+              <Form.Item noStyle dependencies={['allDay', 'starts']}>
                 {() => (
                   <Form.Item name="ends" label="结束时间">
                     <DatePicker
                       solid
                       size="sm"
+                      minDate={form.getFieldValue('starts')}
                       timePicker={!form.getFieldValue('allDay')}
                       format={form.getFieldValue('allDay') ? 'YYYY-MM-DD' : 'YYYY-MM-DD A HH:mm'}
                     />

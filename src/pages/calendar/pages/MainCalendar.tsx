@@ -30,6 +30,7 @@ function MainCalendar() {
       const { data } = await client.query<CalendarEventsQuery, CalendarEventsQueryVariables>({
         query: CalendarEventsDocument,
         variables,
+        fetchPolicy: 'network-only',
       });
       return (data?.events || []).map((item) => ({
         ...item,
@@ -41,7 +42,6 @@ function MainCalendar() {
   );
 
   const state = useRef<{
-    callback?: SuccessCallback;
     events: Map<string, any>;
     selectedDay?: Date;
     isNew?: boolean;
@@ -54,6 +54,7 @@ function MainCalendar() {
   const calendarSet = useModel('calendar', (model) => model.state.calendarSet);
   const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
   const changeState = useModel('calendar', (model) => model.changeState);
+  const setFullCalendar = useModel('calendar', (model) => model.setFullCalendar);
 
   state.current.isNew = isNew;
   state.current.selectedDay = selectedDay;
@@ -77,19 +78,17 @@ function MainCalendar() {
   }, []);
 
   const handleEventSource = useCallback(
-    async (
+    (
       arg: { start: Date; end: Date; startStr: string; endStr: string; timeZone: string },
       callback: SuccessCallback,
     ) => {
-      state.current.callback = callback;
-      const events = await loadCalendarEvents({
+      loadCalendarEvents({
         variables: {
           calendarSet: calendarSet == 'all' ? undefined : calendarSet,
           starts: arg.startStr,
           ends: arg.endStr,
         },
-      });
-      return events;
+      }).then(callback);
     },
     [calendarSet, loadCalendarEvents],
   );
@@ -164,6 +163,14 @@ function MainCalendar() {
     };
   }, []);
 
+  const withFullCalendar = useCallback(
+    (_fullCalendar: FullCalendar) => {
+      (fullCalendar as any).current = _fullCalendar;
+      setFullCalendar(_fullCalendar);
+    },
+    [setFullCalendar],
+  );
+
   return (
     <Shortcuts
       tag={<ContentWrapper header={false} footer={false} mask={isNew} className="main-calendar" />}
@@ -172,7 +179,7 @@ function MainCalendar() {
     >
       <Card>
         <FullCalendar
-          ref={fullCalendar}
+          ref={withFullCalendar}
           plugins={[dayGridPlugin, timeGridPlugin, yearGridPlugin, interactionPlugin]}
           locale={locale}
           initialView="dayGridMonth"

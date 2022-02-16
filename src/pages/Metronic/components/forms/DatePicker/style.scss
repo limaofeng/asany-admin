@@ -1,0 +1,29 @@
+.daterangepicker option.disabled,
+.daterangepicker td.disabled {
+  position: relative;
+  padding-right: 0;
+  padding-left: 0;
+  text-decoration: none;
+  border-right-width: 0;
+  border-left-width: 0;
+  color: #00000040;
+  cursor: not-allowed;
+  &:hover {
+    background-color: transparent;
+    color: #00000040;
+  }
+  &:before {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    z-index: 1;
+    height: 24px;
+    transform: translateY(-50%);
+    transition: all 0.3s;
+    content: '';
+  }
+  &:before {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
