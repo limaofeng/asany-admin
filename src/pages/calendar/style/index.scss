@@ -106,12 +106,12 @@
       position: absolute;
       top: 2.1rem;
       right: 22px;
-      width: 32px;
-      height: 32px;
       display: flex;
-      border-radius: 8px;
       align-items: center;
       justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
       cursor: pointer;
 
       &.calendar-event-new-icon {
@@ -319,9 +319,11 @@
         }
 
         .event-day {
+          display: inline-block;
           margin-right: 16px;
           padding: 2px 6px;
           color: #fff;
+          line-height: 15px;
           border-radius: 6px;
           cursor: pointer;
         }
@@ -347,34 +349,6 @@
         font-size: 13px;
       }
     }
-
-    // .current-calendar {
-    //   padding-left: 8px;
-    //   font-weight: bold;
-    //   cursor: pointer;
-    //   .calendar-pointer {
-    //     margin: 0 4px;
-    //   }
-    // }
-    // .menu-sub-dropdown .menu-item .menu-link {
-    //   position: relative;
-    //   padding: 0.5rem 1rem;
-    //   &.active {
-    //     background-color: transparent;
-    //     .menu-icon {
-    //       display: block;
-    //     }
-    //   }
-    //   .menu-icon {
-    //     position: absolute;
-    //     left: 0;
-    //     display: none;
-    //     margin: 0;
-    //   }
-    //   .menu-title {
-    //     margin-left: 24px;
-    //   }
-    // }
   }
 }
 .main-calendar {
@@ -386,28 +360,36 @@
   }
   .fc-theme-standard {
     --fc-border-color: #e0e0e0;
-    .fc-dayGridMonth-view {
-      --fc-highlight-color: rgba(240, 250, 250, 0);
-      .fc-daygrid-day-number {
+    .fc-daygrid-day-number,
+    .fc-more-popover-misc {
+      display: flex;
+      flex: 1;
+      justify-content: space-between;
+      .fc-daygrid-day-lunar,
+      .fc-daygrid-day-solar {
         display: flex;
-        flex: 1;
-        justify-content: space-between;
-        .fc-daygrid-day-lunar,
-        .fc-daygrid-day-solar {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .fc-daygrid-day-solar {
-          width: 30px;
-          height: 30px;
-          font-weight: 500;
-          font-size: 14px;
-          border-radius: 15px;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    .fc-daygrid-day-solar {
+      width: 30px;
+      height: 30px;
+      font-weight: 500;
+      font-size: 14px;
+      border-radius: 15px;
+    }
+    .fc-popover.fc-more-popover {
+      .fc-more-popover-misc {
+        .fc-daygrid-day-lunar {
+          padding-left: 6px;
         }
       }
+    }
+    .fc-dayGridMonth-view {
+      --fc-highlight-color: rgba(240, 250, 250, 0);
+
       a {
-        cursor: inherit;
         .fc-daygrid-day-solar {
           cursor: pointer;
         }
@@ -478,9 +460,9 @@
       }
     }
     .fc-dayGridYear-view {
-      padding-top: 1rem;
+      padding-top: 0.5rem;
       & > .row {
-        padding-bottom: 1rem;
+        padding-bottom: 0.5rem;
         .col {
           --bs-gutter-x: 2.5rem;
           h3 {

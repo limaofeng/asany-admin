@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -10,6 +10,7 @@ import moment from 'moment';
 import { useModel } from 'umi';
 import { useApolloClient } from '@apollo/client';
 import { Shortcuts } from '@asany/shortcuts';
+import { useWindowSize } from 'react-use';
 
 import yearGridPlugin from '../plugins/yearGridPlugin';
 import type { CalendarEventsQuery, CalendarEventsQueryVariables } from '../hooks';
@@ -171,6 +172,12 @@ function MainCalendar() {
     [setFullCalendar],
   );
 
+  const size = useWindowSize();
+
+  const contentHeight = useMemo(() => {
+    return Math.max(806, size.height - 165);
+  }, [size.height]);
+
   return (
     <Shortcuts
       tag={<ContentWrapper header={false} footer={false} mask={isNew} className="main-calendar" />}
@@ -272,9 +279,13 @@ function MainCalendar() {
               },
             },
           }}
+          aspectRatio={3}
           firstDay={0}
+          contentHeight={contentHeight}
+          nowIndicator={true}
           selectable={true}
           selectMirror={true}
+          dayMaxEvents={true}
           dateClick={(...args) => {
             console.log('dateClick', args);
           }}
