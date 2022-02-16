@@ -5,15 +5,12 @@ import { createPlugin, sliceEvents } from '@fullcalendar/react';
 import type {
   CalendarApi,
   ClassNamesGenerator,
-  DateMarker,
-  DateRange,
   DayCellContentArg,
   Identity,
   ViewOptionsRefined,
   ViewProps,
 } from '@fullcalendar/common';
 import { DateComponent } from '@fullcalendar/common';
-import { NowTimer } from '@fullcalendar/common';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import classnames from 'classnames';
@@ -193,12 +190,12 @@ function DayGridYear(props: DayGridYearProps) {
 
   return (
     <div className="fc-daygrid fc-dayGridYear-view fc-view">
-      <NowTimer unit="day">
+      {/* <NowTimer unit="day">
         {(nowDate: DateMarker, todayRange: DateRange) => {
           console.log('day', nowDate, todayRange);
           return <div />;
         }}
-      </NowTimer>
+      </NowTimer> */}
       {[1, 2, 3].map((i) => {
         return (
           <div key={`${(i - 1) * 4}-${i * 4}`} className="row">
