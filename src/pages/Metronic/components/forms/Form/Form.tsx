@@ -36,7 +36,7 @@ const InternalForm: React.ForwardRefRenderFunction<FormInstance, FormProps> = (p
     size,
     form,
     colon,
-    layout = 'horizontal',
+    layout = 'vertical',
     scrollToFirstError,
     requiredMark,
     onFinishFailed,

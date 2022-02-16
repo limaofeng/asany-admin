@@ -574,6 +574,41 @@ function UpdateCalendarModal(props: UpdateCalendarModalProps) {
           </div>
           <div className="d-flex flex-column-auto flex-center">
             <div className="asany-form-item">
+              <Select
+                value={colorValue}
+                size="xs"
+                onChange={handleColorChange}
+                placement="bottomCenter"
+                itemRender={(option: OptionData, display?: boolean) => {
+                  const _color = option.value == 'other' ? color || data?.color : option.value;
+                  if (!_color) {
+                    return <></>;
+                  }
+                  const colorBlock = (
+                    <div
+                      style={{
+                        backgroundColor: _color,
+                        width: 20,
+                        height: 14,
+                        marginRight: 8,
+                        border: `1px solid ${darkenColor(_color)}`,
+                      }}
+                    />
+                  );
+                  if (display) {
+                    return React.cloneElement(colorBlock, {
+                      style: { ...colorBlock.props.style, marginRight: 5 },
+                    });
+                  }
+                  return (
+                    <>
+                      {colorBlock}
+                      {option.label}
+                    </>
+                  );
+                }}
+                options={colors}
+              />
               <Popover
                 visible={visibleColorPicker}
                 overlayClassName="popover-content-body"
@@ -591,41 +626,7 @@ function UpdateCalendarModal(props: UpdateCalendarModalProps) {
                   </div>
                 }
               >
-                <Select
-                  value={colorValue}
-                  size="xs"
-                  onChange={handleColorChange}
-                  placement="bottomCenter"
-                  itemRender={(option: OptionData, display?: boolean) => {
-                    const _color = option.value == 'other' ? color || data?.color : option.value;
-                    if (!_color) {
-                      return <></>;
-                    }
-                    const colorBlock = (
-                      <div
-                        style={{
-                          backgroundColor: _color,
-                          width: 20,
-                          height: 14,
-                          marginRight: 8,
-                          border: `1px solid ${darkenColor(_color)}`,
-                        }}
-                      />
-                    );
-                    if (display) {
-                      return React.cloneElement(colorBlock, {
-                        style: { ...colorBlock.props.style, marginRight: 5 },
-                      });
-                    }
-                    return (
-                      <>
-                        {colorBlock}
-                        {option.label}
-                      </>
-                    );
-                  }}
-                  options={colors}
-                />
+                <div />
               </Popover>
             </div>
           </div>

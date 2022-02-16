@@ -247,6 +247,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
           form={form}
           onKeyUp={handleEsc as any}
           size="sm"
+          layout="horizontal"
           initialValues={formInitialValues.current}
         >
           <ul>

@@ -24,6 +24,7 @@ function Popover(props: PopoverProps) {
     <BsOverlayTrigger
       trigger={trigger}
       show={visible}
+      rootClose={true}
       placement={placement}
       overlay={
         <BsPopover className={overlayClassName}>

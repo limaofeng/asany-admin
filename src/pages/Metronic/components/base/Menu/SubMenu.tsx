@@ -172,7 +172,7 @@ function SubMenu(props: SubMenuProps) {
       data-kt-menu="true"
       className={classnames('menu-sub', bodyClassName, {
         show: opened,
-        'menu-sub-accordion': accordion,
+        'menu-sub-accordion': !dropdown,
         'menu menu-sub-dropdown': dropdown,
         'menu-active-bg': subSelected,
       })}

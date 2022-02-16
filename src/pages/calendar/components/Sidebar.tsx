@@ -16,7 +16,7 @@ import CalendarSidebarFooter from './CalendarSidebarFooter';
 import Preferences from './preferences';
 
 import type { CalendarEvent, CalendarSet } from '@/types';
-import { AsideWorkspace } from '@/pages/Metronic/components';
+import { AsideWorkspace, Popover } from '@/pages/Metronic/components';
 import { sleep } from '@/utils';
 
 type EventWithDay = {
@@ -487,13 +487,15 @@ function Sidebar() {
                   })}
                 >
                   {events.map((item) => (
-                    <span
-                      style={{ backgroundColor: item.color! }}
-                      className="event-day"
-                      key={item.id}
-                    >
-                      {item.title}
-                    </span>
+                    <Popover key={item.id} content={<div>12312313</div>}>
+                      <span
+                        style={{ backgroundColor: item.color! }}
+                        className="event-day"
+                        key={item.id}
+                      >
+                        {item.title}
+                      </span>
+                    </Popover>
                   ))}
                   {/* {!events.length && isSelected && 'No Events'} */}
                 </div>

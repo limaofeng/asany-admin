@@ -256,6 +256,9 @@ function MainCalendar() {
                   handleSelectedDay(event.date);
                 }
               },
+              eventClick(e) {
+                console.log(e);
+              },
             },
             timeGridWeek: {
               dayCellClassNames(item) {
