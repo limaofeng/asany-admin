@@ -6,7 +6,7 @@ import type { ClickEvent, EventCallback, MenuEvent, OpenCallback, SelectEvent } 
 
 type MenuData = {
   key: string;
-  icon?: string;
+  icon?: string | React.ReactNode;
   path: string;
   title?: string;
 };

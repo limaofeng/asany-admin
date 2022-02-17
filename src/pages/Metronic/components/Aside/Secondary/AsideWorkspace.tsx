@@ -6,12 +6,14 @@ import { useScroll } from '../../utils';
 
 type AsideWorkspaceProps = {
   className?: string;
+  width?: number;
   children: React.ReactNode;
   padding?: string | false;
+  pure?: boolean;
 };
 
 function AsideWorkspace(props: AsideWorkspaceProps) {
-  const { className, padding = 'p-5' } = props;
+  const { className, padding = 'p-5', width = 325, pure } = props;
 
   const workspaceRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -21,8 +23,13 @@ function AsideWorkspace(props: AsideWorkspaceProps) {
 
   useScroll(scrollRef, workspaceRef, []);
 
+  console.log('todo width config', width);
+
   return (
-    <div ref={workspaceRef} className={classnames('aside-workspace', padding, className)}>
+    <div
+      ref={workspaceRef}
+      className={classnames('aside-workspace', { [`${padding}`]: !pure }, className)}
+    >
       <div className="d-flex h-100 flex-column">
         {/* --begin::Wrapper--*/}
         <div ref={scrollRef} className="flex-column-fluid hover-scroll-y">

@@ -44,11 +44,13 @@ const SelectMenuBody = React.forwardRef(function (props: SelectMenuBodyProps, re
 
   return (
     <Menu
+      fit
+      rounded
+      ref={ref}
       className={classnames(
         'menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-auto py-4',
         className,
       )}
-      ref={ref}
       onSelect={handleSelect}
       selectedKeys={value ? [value] : []}
     >

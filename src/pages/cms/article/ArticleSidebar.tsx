@@ -90,13 +90,14 @@ function ArticleSidebar() {
         <h1 className="text-gray-800 fw-bold mb-6 mx-5">内容管理</h1>
       </div>
       <Menu
-        className="cms-menu-sider menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 px-3 my-5 my-lg-0"
+        className="cms-menu-sider menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 px-3 my-5 my-lg-0"
         onSelect={handleSelect}
         openKeys={openKeys}
         selectedKeys={selectedKey ? [selectedKey] : []}
         onOpenChange={handleOpenChange}
         accordion={false}
         selectable="AllMenu"
+        fit={true}
       >
         <Menu.Section>我的</Menu.Section>
         <Menu.Item url="/cms/my/drafts" icon="Duotune/art008" key="draft">

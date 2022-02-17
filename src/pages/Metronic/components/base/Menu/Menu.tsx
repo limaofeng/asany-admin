@@ -19,6 +19,8 @@ export type MenuProps = {
   openKeys?: string[];
   mode?: 'horizontal' | 'vertical';
   dropdown?: boolean;
+  fit?: boolean;
+  rounded?: boolean;
   selectedKeys?: string[];
   defaultSelectedKeys?: string[];
   defaultOpenKeys?: string[];
@@ -28,7 +30,7 @@ export type MenuProps = {
 };
 
 const InternalMenu = React.forwardRef(function (props: any, ref: any) {
-  const { children, className, mode = 'vertical' } = props;
+  const { children, className, mode = 'vertical', rounded, fit } = props;
 
   const _children = useMemo(() => {
     return React.Children.map(
@@ -46,11 +48,15 @@ const InternalMenu = React.forwardRef(function (props: any, ref: any) {
       ref={ref}
       className={classnames('menu', className, {
         'menu-column': mode == 'vertical',
-        'menu-rounded': true,
+        'menu-rounded': rounded,
         'menu-sub menu-sub-dropdown': props.dropdown,
       })}
     >
-      {props.dropdown ? _children : <div className="menu-fit">{_children}</div>}
+      {props.dropdown ? (
+        _children
+      ) : (
+        <div className={classnames({ 'menu-fit': fit })}>{_children}</div>
+      )}
     </div>
   );
 });

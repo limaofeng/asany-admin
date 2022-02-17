@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from 'react';
+import React from 'react';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
@@ -11,12 +12,15 @@ import { useMenuContext, useSelector } from './MenuContext';
 
 export type MenuItemProps = {
   url?: string;
-  icon?: string;
+  icon?: string | React.ReactNode;
   title?: string;
   className?: string;
+  as?: string;
+  titleClassName?: string;
   linkClassName?: string;
   bullet?: boolean | BulletProps;
   children?: React.ReactNode;
+  badge?: React.ReactNode;
 };
 
 export function MenuSection(props: MenuItemProps) {
@@ -36,7 +40,18 @@ export function MenuSection(props: MenuItemProps) {
 }
 
 function MenuItem(props: MenuItemProps) {
-  const { url, icon, children, title, bullet, className, linkClassName } = props;
+  const {
+    url,
+    icon,
+    badge,
+    as = 'span',
+    children,
+    title,
+    bullet,
+    className,
+    linkClassName,
+    titleClassName,
+  } = props;
   const { menuKey, path } = props as any;
 
   const context = useMenuContext();
@@ -61,23 +76,28 @@ function MenuItem(props: MenuItemProps) {
 
   return (
     <div className={classnames('menu-item', className)}>
-      <a
-        onClick={handleClick}
-        className={classnames('menu-link', linkClassName, { active: selected })}
-      >
-        {icon ? (
-          <span className="menu-icon">
-            <Icon className="svg-icon-2" name={icon} />
-          </span>
-        ) : (
-          bullet && (
-            <span className="menu-bullet">
-              <Bullet {...(typeof bullet !== 'boolean' ? bullet : {})} />
+      {React.createElement(
+        as,
+        {
+          onClick: handleClick,
+          className: classnames('menu-link', linkClassName, { active: selected }),
+        },
+        <>
+          {icon ? (
+            <span className="menu-icon">
+              {typeof icon == 'string' ? <Icon className="svg-icon-2" name={icon} /> : icon}
             </span>
-          )
-        )}
-        <span className="menu-title">{children || title}</span>
-      </a>
+          ) : (
+            bullet && (
+              <span className="menu-bullet">
+                <Bullet {...(typeof bullet !== 'boolean' ? bullet : {})} />
+              </span>
+            )
+          )}
+          <span className={classnames('menu-title', titleClassName)}>{children || title}</span>
+          {badge}
+        </>,
+      )}
     </div>
   );
 }

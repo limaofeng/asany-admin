@@ -1,15 +1,186 @@
 .email-compose {
-  width: 86%;
+  margin-top: 2rem;
+  margin-right: 2.25rem;
+  margin-bottom: 2rem;
+  margin-left: 2.25rem;
   letter-spacing: 32px;
   text-align: center;
   text-indent: 32px;
 }
+
+.email-sidebar-aside {
+  .email-sidebar {
+    display: flex;
+    flex-direction: column;
+    .email-sidebar-body {
+      height: calc(100vh - 4rem - 43px - 34px);
+      margin-right: 0.75rem;
+      padding-right: 2.25rem;
+      padding-left: 2.25rem;
+    }
+    .email-sidebar-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 34px;
+      border-top: #f7f7f7 1px solid;
+
+      .mail-preferences {
+        color: #5e6278;
+        font-weight: bold;
+        font-size: 13px;
+        cursor: pointer;
+      }
+    }
+  }
+}
 .apps-email-mailbox {
   #kt_content_container {
+    display: flex;
+    padding-right: 0;
     padding-left: 0;
 
+    .mailbox-resizer {
+      left: 1px;
+    }
     .mailbox-card {
+      background-color: #f0f0f2;
+      border-right: #b0b0b0 1px solid;
       border-radius: 0;
+
+      // &.has-inbox {
+      //   padding-bottom: 0;
+      // }
+
+      & > .card-header {
+        min-height: auto;
+        padding-top: 1rem;
+        padding-bottom: 10px;
+        background-color: #fff;
+        border-bottom: #d9d9d9 1px solid;
+        border-radius: 0;
+      }
+
+      & > .card-body {
+        position: relative;
+        padding: 0;
+        // &::before {
+        //   position: absolute;
+        //   width: 100%
+        //   border-top: #d9d9d9 1px solid;
+        //   content: '';
+        // }
+      }
+      .mailbox-list-header {
+        display: flex;
+        align-items: center;
+        height: 38px;
+        margin-top: 6px;
+        padding-left: 8px;
+        font-weight: bold;
+        font-size: 12px;
+        background-color: #fff;
+        border-top: #d9d9d9 1px solid;
+        border-bottom: #d9d9d9 1px solid;
+
+        .box-name {
+          margin-left: 6px;
+        }
+      }
+
+      .mailbox-list {
+        height: calc(100vh - 2rem - 43px - 2rem) !important;
+        margin-top: 0;
+        overflow-x: hidden;
+
+        .mailbox-list-inner {
+          background-color: #fff;
+          &:focus-within {
+            .email-message.active {
+              background-color: #e7f2fb;
+              border-color: #8cc7fc;
+            }
+          }
+        }
+
+        .email-message {
+          position: relative;
+          width: 100%;
+          height: 80px;
+          padding: 0.25rem 2rem 0 0;
+          border-top: transparent 1px solid;
+          border-bottom: transparent 1px solid;
+
+          &:hover {
+            background-color: #f4f6f8;
+          }
+
+          &.active {
+            background-color: #ecedee;
+            border-color: #e4e4e5;
+            .email-message-body {
+              border-color: transparent;
+            }
+          }
+          &-actions {
+            align-items: center;
+            justify-content: space-between;
+            width: calc(1.25rem + 16px);
+            padding: 0.3rem 0.5rem 0.75rem 0.75rem;
+            &:hover {
+              .svg-icon {
+                display: flex;
+              }
+            }
+            .svg-icon {
+              display: none;
+              align-items: center;
+              justify-content: center;
+              width: 16px;
+              height: 16px;
+            }
+          }
+          .email-message-body {
+            position: relative;
+            bottom: -1px;
+            flex: 1;
+            justify-content: space-between;
+            padding-bottom: 0.5rem;
+            border-bottom: #e4e6ef 1px solid;
+            .email-message-attrs {
+              display: flex;
+              align-items: center;
+              height: 24px;
+              .smart-type {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+                height: 24px;
+              }
+              .email-user {
+                flex: 1;
+                font-weight: bold;
+                font-size: 14px;
+              }
+              .inbox-time {
+                color: #7e7f82;
+                font-size: 12px;
+              }
+            }
+            .email-message-title {
+              font-weight: 500;
+            }
+            .email-message-summary {
+              color: #7d7e81;
+            }
+          }
+        }
+      }
+    }
+    .mail-message-details {
+      flex: 1;
+      height: 100vh;
     }
   }
 }

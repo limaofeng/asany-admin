@@ -1,6 +1,7 @@
 import { history, loadCurrentuser } from 'umi';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+import 'overlayscrollbars/css/OverlayScrollbars.css';
 
 import type { CurrentUser } from './.umi/app/typings';
 
