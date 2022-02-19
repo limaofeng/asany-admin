@@ -12,13 +12,16 @@ import type { MenuData } from '@/.umi/app/typings';
 
 export type LayoutState = {
   aside: {
+    pure: boolean;
+    width: number;
     menus: MenuData[];
     minimize: boolean;
+    collapsible?: boolean;
   };
 };
 
 type LayoutAction = {
-  type: 'ASIDE_MINIMIZE';
+  type: 'ASIDE_MINIMIZE' | 'ASIDE_WIDTH' | 'ASIDE_COLLAPSIBLE';
   payload?: any;
 };
 
@@ -49,6 +52,12 @@ const reducer = (state: LayoutState, action?: LayoutAction) => {
   }
   if (action.type === 'ASIDE_MINIMIZE') {
     return { ...state, aside: { ...state.aside, minimize: !!action.payload } };
+  }
+  if (action.type === 'ASIDE_WIDTH') {
+    return { ...state, aside: { ...state.aside, width: action.payload } };
+  }
+  if (action.type === 'ASIDE_COLLAPSIBLE') {
+    return { ...state, aside: { ...state.aside, collapsible: action.payload } };
   }
   return state;
 };
@@ -105,6 +114,8 @@ export interface LayoutApi {
   aside: {
     state: { minimize: boolean };
     minimize: (miniable: boolean) => void;
+    width: (w: number) => void;
+    collapsible: (b: boolean) => void;
   };
 }
 
@@ -115,8 +126,14 @@ export function useLayout(): LayoutApi {
       get state() {
         return store.getState().aside;
       },
+      width(w: number) {
+        store.dispatch({ type: 'ASIDE_WIDTH', payload: w });
+      },
       minimize(miniable: boolean) {
         store.dispatch({ type: 'ASIDE_MINIMIZE', payload: miniable });
+      },
+      collapsible(b: boolean) {
+        store.dispatch({ type: 'ASIDE_COLLAPSIBLE', payload: b });
       },
     },
   });

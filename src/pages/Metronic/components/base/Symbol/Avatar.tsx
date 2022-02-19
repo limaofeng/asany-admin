@@ -52,7 +52,7 @@ function Avatar(props: AvatarProps) {
       >
         {loadFailed ? (
           <div style={{ backgroundColor, color }} className="symbol-label fs-2 fw-bold">
-            {alt.substr(0, 1).toUpperCase()}
+            {alt.substring(0, 1).toUpperCase()}
           </div>
         ) : (
           renderImg(src, alt, gap, handleError)

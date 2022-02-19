@@ -1,34 +1,51 @@
 import { useCallback, useMemo, useReducer, useRef } from 'react';
 
-import type { RouteComponentProps } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 import { Resizer } from '@asany/editor';
 import classnames from 'classnames';
 import Icon from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { debounce } from 'lodash';
 import { Shortcuts } from '@asany/shortcuts';
+import { useHistory } from 'umi';
+import moment from 'moment';
 
-import MailMessageDetails from '../components/MailMessageDetails';
+import { useMailboxMessagesQuery } from '../hooks';
+import { toPlainText } from '../utils';
+
+import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
 
 import { Card, ContentWrapper, Input } from '@/pages/Metronic/components';
-
-type MailboxProps = RouteComponentProps<{ folder: string }>;
+import type { MailboxMessage } from '@/types';
 
 interface MailboxState {
   width: number;
+  folder: string;
+  activeId?: string;
+  messages: MailboxMessage[];
 }
 
 const MIN_WIDTH = 320;
 const MAX_WIDTH = 500;
 
 type MailMessageProps = {
+  mailbox: string;
+  data: MailboxMessage;
+  onClick: (id: string) => void;
   active: boolean;
 };
 
 function MailMessage(props: MailMessageProps) {
-  const { active } = props;
+  const { data, active, onClick, mailbox } = props;
+
+  const handleClick = useCallback(() => {
+    onClick(data.id);
+  }, [data.id, onClick]);
+
+  console.log('MailMessage', data);
+
   return (
-    <div className={classnames('email-message d-flex flex-row', { active })}>
+    <div onClick={handleClick} className={classnames('email-message d-flex flex-row', { active })}>
       <div className="d-flex flex-column email-message-actions">
         <Icon className="svg-icon-6" name="Duotune/abs009" />
         <Icon className="svg-icon-6" name="Duotune/fil016" />
@@ -37,29 +54,80 @@ function MailMessage(props: MailMessageProps) {
       <div className="email-message-body d-flex flex-column">
         <div className="email-message-attrs">
           <Icon className="svg-icon-4 smart-type" name="Duotune/abs018" />
-          <span className="email-user">发件人</span>
-          <span className="inbox-time">上午 3:06</span>
+          <span className="email-user">{renderWhose(data, mailbox)}</span>
+          <span className="inbox-time">{renderDataTime(data)}</span>
         </div>
-        <div className="email-message-title">邮件标题。。。。。</div>
-        <div className="email-message-summary">邮件摘要</div>
+        <div className="email-message-title">{data.subject}</div>
+        <div className="email-message-summary">{renderSummary(data)}</div>
       </div>
     </div>
   );
 }
 
+function renderSummary(data: MailboxMessage) {
+  if (data.mimeType == 'text/html') {
+    return toPlainText(data.body);
+  }
+  return data.body;
+}
+
+function renderDataTime(data: MailboxMessage) {
+  const mdate = moment(data.date);
+  const days = moment().diff(mdate, 'days');
+  if (days == 0) {
+    return mdate.format('A HH:mm');
+  }
+  if (days == 1) {
+    return mdate.fromNow();
+  }
+  return mdate.format('YYYY-MM-DD');
+}
+
+function renderWhose(data: MailboxMessage, mailbox: string) {
+  if (mailbox == 'inbox') {
+    return data.from.map((item) => item.name || item.localPart).join(',');
+  }
+  if (mailbox == 'sent') {
+    return data.to.map((item) => item.name || item.localPart).join(',');
+  }
+  return data.from.map((item) => item.name || item.localPart).join(',');
+}
+
 function Mailbox(props: MailboxProps) {
   const {
+    children,
     match: {
       params: { folder },
     },
   } = props;
-  console.log('folder', folder);
+
+  const match = useRouteMatch<MailboxRouteParams>({
+    path: '/email/:folder/:id',
+    strict: true,
+    sensitive: true,
+  });
+
+  const activeId = match?.params.id;
+
+  const history = useHistory();
 
   const scrollbar = useRef<OverlayScrollbarsComponent>(null);
   const state = useRef<MailboxState>({
     width: MIN_WIDTH,
+    folder,
+    messages: [],
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
+
+  state.current.folder = folder;
+  state.current.activeId = activeId;
+
+  const { data } = useMailboxMessagesQuery({
+    fetchPolicy: 'cache-and-network',
+    variables: {
+      mailbox: folder,
+    },
+  });
 
   const forceResize = useMemo(
     () =>
@@ -67,6 +135,14 @@ function Mailbox(props: MailboxProps) {
         forceRender();
       }, 10),
     [],
+  );
+
+  const handleMessageClick = useCallback(
+    (id: string) => {
+      const message = state.current.messages.find((item) => item.id == id);
+      history.push(`/email/${state.current.folder}/${id}`, { message });
+    },
+    [history],
   );
 
   const handleResize = useCallback(
@@ -83,18 +159,41 @@ function Mailbox(props: MailboxProps) {
 
   const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, state.current.width));
 
-  const handleShortcut = useCallback((action, event: React.KeyboardEvent) => {
-    console.log(action, document.activeElement, event, scrollbar.current);
-    event.preventDefault();
-  }, []);
+  const messages = useMemo(() => {
+    if (!data?.messages) {
+      return [];
+    }
+    return data.messages as MailboxMessage[];
+  }, [data?.messages]);
+
+  state.current.messages = messages;
+
+  const handleShortcut = useCallback(
+    (action, event: React.KeyboardEvent) => {
+      event.preventDefault();
+      const { messages: _messages, activeId: _activeId } = state.current;
+      const index = _messages.findIndex((item) => item.id == _activeId);
+      if (action == 'NEXT') {
+        if (index == -1) {
+          handleMessageClick(_messages[0].id);
+        } else if (_messages.length != index + 1) {
+          handleMessageClick(_messages[index + 1].id);
+        }
+      } else if (action == 'PREVIOUS') {
+        if (index == -1) {
+          handleMessageClick(_messages[_messages.length - 1].id);
+        } else if (index > 0) {
+          handleMessageClick(_messages[index - 1].id);
+        }
+      }
+    },
+    [handleMessageClick],
+  );
 
   return (
     <ContentWrapper className="apps-email-mailbox" header={false} footer={false}>
       <Resizer
-        className={classnames('mailbox-resizer d-flex flex-column flex-lg-row', {
-          // disabled: !keepOpen,
-          // minimizable,
-        })}
+        className={classnames('mailbox-resizer d-flex flex-column flex-lg-row')}
         style={{ width }}
         onResize={handleResize}
         onResizeEnd={handleResizeEnd}
@@ -131,8 +230,14 @@ function Mailbox(props: MailboxProps) {
                 }}
               >
                 <Shortcuts className="mailbox-list-inner" name="MAILBOX" handler={handleShortcut}>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => (
-                    <MailMessage key={item} active={item == 1} />
+                  {messages.map((item) => (
+                    <MailMessage
+                      onClick={handleMessageClick}
+                      key={item.id}
+                      data={item as any}
+                      mailbox={folder}
+                      active={item.id == activeId}
+                    />
                   ))}
                 </Shortcuts>
               </OverlayScrollbarsComponent>
@@ -141,7 +246,7 @@ function Mailbox(props: MailboxProps) {
         </div>
         <div className="flex-lg-row-fluid ms-lg-7 ms-xl-10" />
       </Resizer>
-      <MailMessageDetails />
+      {children}
     </ContentWrapper>
   );
 }

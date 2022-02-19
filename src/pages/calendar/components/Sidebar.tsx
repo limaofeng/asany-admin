@@ -438,6 +438,8 @@ function Sidebar() {
 
   return (
     <AsideWorkspace
+      collapsible={false}
+      resizeable={true}
       className={classnames('calendar-sidebar-bg', { 'state-new-event': isNew })}
       padding={false}
     >

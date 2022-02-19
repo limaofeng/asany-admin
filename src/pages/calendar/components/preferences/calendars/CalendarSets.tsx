@@ -209,9 +209,9 @@ function CalendarSets(props: CalendarSetsProps) {
     (action: string) => {
       const { calendarSets, activeKey: key } = temp.current;
       const index = calendarSets.findIndex((item) => item.id == key);
-      if (action == 'NEXT') {
+      if (action == 'PREVIOUS') {
         setActiveKey(calendarSets[Math.max(index - 1, 0)].id);
-      } else if (action == 'PREVIOUS') {
+      } else if (action == 'NEXT') {
         setActiveKey(calendarSets[Math.min(index + 1, calendarSets.length - 1)].id);
       } else if (action == 'ENTER') {
         setEditing(activeKey);

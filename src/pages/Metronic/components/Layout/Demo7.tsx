@@ -14,6 +14,8 @@ import buildMenuRender from './components';
 import * as utils from '@/utils';
 import type { MenuData } from '@/.umi/app/typings';
 
+import './style.scss';
+
 interface LayoutProps extends RouteComponentProps {
   /**
    * 路由信息
@@ -35,6 +37,28 @@ interface LayoutProps extends RouteComponentProps {
    * 展示二级栏目
    */
   menuRender: boolean | React.ReactElement;
+}
+
+interface LayoutInnerProps extends LayoutProps {
+  pure: boolean;
+}
+
+function LayoutInner(props: LayoutInnerProps) {
+  const { children, pure, activeKey, onSelect, menuRender, ...otherProps } = props;
+  if (pure) {
+    return children as any;
+  }
+
+  return (
+    <InternalLayout
+      {...otherProps}
+      activeKey={activeKey}
+      onSelect={onSelect}
+      menuRender={menuRender}
+    >
+      {children}
+    </InternalLayout>
+  );
 }
 
 function InternalLayout(props: LayoutProps) {
@@ -134,19 +158,18 @@ function LayoutWrapper(props: LayoutProps) {
   }, [menus, layoutRestProps.menuRender, activeMenuKey]);
 
   return (
-    <LayoutProvider state={{ aside: { menus, minimize: false } }}>
-      {layoutRestProps.pure ? (
-        children
-      ) : (
-        <InternalLayout
-          {...props}
-          activeKey={state.current.activeMenuKey}
-          onSelect={handleSelect}
-          menuRender={menuRender}
-        >
-          {children}
-        </InternalLayout>
-      )}
+    <LayoutProvider
+      state={{ aside: { menus, minimize: false, pure: layoutRestProps.pure, width: 200 } }}
+    >
+      <LayoutInner
+        {...props}
+        activeKey={state.current.activeMenuKey}
+        onSelect={handleSelect}
+        menuRender={menuRender}
+        pure={layoutRestProps.pure}
+      >
+        {children}
+      </LayoutInner>
     </LayoutProvider>
   );
 }

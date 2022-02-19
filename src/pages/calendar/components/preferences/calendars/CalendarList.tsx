@@ -334,9 +334,9 @@ function CalendarList(props: CalendarListProps) {
     (action: string) => {
       const { calendars, activeKey: key } = temp.current;
       const index = calendars.findIndex((item) => item.id == key);
-      if (action == 'NEXT') {
+      if (action == 'PREVIOUS') {
         regainFocus(calendars[Math.max(index - 1, 0)].id);
-      } else if (action == 'PREVIOUS') {
+      } else if (action == 'NEXT') {
         setActiveKey(calendars[Math.min(index + 1, calendars.length - 1)].id);
       } else if (action == 'ENTER') {
         setEditing({ key, type: 'inline' });

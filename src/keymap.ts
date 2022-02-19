@@ -5,16 +5,14 @@ const keymap = {
     VIEW_NEXT: ['right'],
   },
   CALENDAR_PREFERENCES: {
-    NEXT: ['up'],
-    PREVIOUS: ['down'],
+    NEXT: ['down'],
+    PREVIOUS: ['up'],
     EXIT: ['esc'],
     ENTER: ['enter'],
   },
   MAILBOX: {
-    NEXT: ['up'],
-    PREVIOUS: ['down'],
-    EXIT: ['esc'],
-    ENTER: ['enter'],
+    NEXT: ['down'],
+    PREVIOUS: ['up'],
   },
   DROPDOWN: {
     EXIT: ['esc'],

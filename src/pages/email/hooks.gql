@@ -1,0 +1,37 @@
+query mailboxMessage($id: ID!) {
+  message: mailboxMessage(id: $id) {
+    ...MailboxMessageParts
+  }
+}
+
+query mailboxMessages($mailbox: ID!, $size: Int = 30, $account: ID) {
+  messages: mailboxMessages(mailbox: $mailbox, size: $size, account: $account) {
+    ...MailboxMessageParts
+  }
+}
+
+fragment MailboxMessageParts on MailboxMessage {
+  id
+  subject
+  date
+  sender {
+    name
+    domain
+    localPart
+    address
+  }
+  from {
+    name
+    localPart
+    domain
+    address
+  }
+  to {
+    name
+    localPart
+    domain
+    address
+  }
+  mimeType
+  body
+}

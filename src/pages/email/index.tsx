@@ -1,5 +1,6 @@
 import { component, library } from 'sunmao';
 
+import MailMessageDetails from './pages/MailMessageDetails';
 import Sidebar from './components/Sidebar';
 import Mailbox from './pages/Mailbox';
 
@@ -15,6 +16,8 @@ class Contacts {
   Sidebar = Sidebar;
   @component()
   Mailbox = Mailbox;
+  @component()
+  MailMessageDetails = MailMessageDetails;
 }
 
 export default new Contacts();

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import classnames from 'classnames';
 import { Button, Nav, OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -101,28 +101,43 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
 
 const DEFAULT_APP_PATHS = ['/storage', '/calendar', '/email'];
 
+const MIN_WIDTH = 300;
+const MAX_WIDTH = 500;
+
 function Aside(props: AsideProps) {
   const { logo, menuRender, activeKey, onSelect } = props;
 
+  const resizeWidth = useRef<{ width: number; resize: 0 }>({ width: 425, resize: 0 });
   const wrapperRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   useScroll(scrollRef, wrapperRef, [logoRef, footerRef]);
 
-  const menus = useLayoutSelector((state) => state.aside.menus || []);
+  const collapsible = useLayoutSelector((state) => state.aside.collapsible);
+  const asideWidth = useLayoutSelector((state) => state.aside.width);
   const minimize = useLayoutSelector((state) => state.aside.minimize);
+  const menus = useLayoutSelector((state) => state.aside.menus || []);
 
   const layout = useLayout();
+
+  // const forceResize = useMemo(
+  //   () =>
+  //     debounce(() => {
+  //       console.log('forceResize', resizeWidth.current);
+  //       // layout.aside.width(width + resize);
+  //       resizeWidth.current.width += resizeWidth.current.resize;
+  //       resizeWidth.current.resize = 0;
+  //       forceRender();
+  //     }, 10),
+  //   [layout.aside],
+  // );
 
   const handleToggle = useCallback(() => {
     layout.aside.minimize(!minimize);
   }, [layout, minimize]);
-
-  useEffect(() => {
-    layout.aside.minimize(false);
-  }, [activeKey, layout.aside]);
 
   const handleSelect = useCallback(
     (eventKey: any) => {
@@ -131,17 +146,41 @@ function Aside(props: AsideProps) {
     [onSelect],
   );
 
+  // const handleResize = useCallback(
+  //   (x) => {
+  //     resizeWidth.current.resize += x;
+  //     console.log('handleResize', x, resizeWidth.current);
+  //     forceResize();
+  //   },
+  //   [forceResize],
+  // );
+
+  // const handleResizeEnd = useCallback(() => {}, []);
+
   const bottomMenus = useMemo(
     () => menus.filter((item) => DEFAULT_APP_PATHS.includes(item.path!)),
     [menus],
   );
+
   const topMenus = useMemo(
     () => menus.filter((item) => !DEFAULT_APP_PATHS.includes(item.path!)),
     [menus],
   );
 
+  useEffect(() => {
+    resizeWidth.current.width = asideWidth;
+    forceRender();
+  }, [asideWidth]);
+
+  const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, resizeWidth.current.width));
+
   return (
-    <div className="aside aside-extended">
+    <div
+      className={classnames('aside', {
+        'aside-extended': !minimize,
+      })}
+      style={{ width: !minimize ? width : undefined }}
+    >
       <div className="aside-primary d-flex flex-column align-items-lg-center flex-row-auto">
         <Logo ref={logoRef} url="/" logo={logo} />
         <div
@@ -172,7 +211,7 @@ function Aside(props: AsideProps) {
         <Footer ref={footerRef} menus={bottomMenus} onSelect={handleSelect} activeKey={activeKey} />
       </div>
       {menuRender != false && <AsideSecondary>{menuRender}</AsideSecondary>}
-      {menuRender != false && (
+      {menuRender != false && collapsible && (
         <Button
           style={{ marginBottom: '1.35rem', zIndex: 10 }}
           size="sm"

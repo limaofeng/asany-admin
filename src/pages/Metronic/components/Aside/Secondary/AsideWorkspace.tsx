@@ -1,34 +1,58 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import classnames from 'classnames';
 
 import { useScroll } from '../../utils';
+import { useLayout, useLayoutSelector } from '../../Layout/LayoutContext';
 
 type AsideWorkspaceProps = {
   className?: string;
   width?: number;
   children: React.ReactNode;
   padding?: string | false;
-  pure?: boolean;
+  footer?: React.ReactNode;
+  collapsible?: boolean;
+  resizeable?: boolean;
 };
 
 function AsideWorkspace(props: AsideWorkspaceProps) {
-  const { className, padding = 'p-5', width = 325, pure } = props;
+  const {
+    className,
+    padding = 'p-5',
+    width = 325,
+    children,
+    footer,
+    collapsible = true,
+    resizeable,
+  } = props;
+  const minimize = useLayoutSelector((state) => state.aside.minimize);
+  const asideWidth = useLayoutSelector((state) => state.aside.width);
 
   const workspaceRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   // const footerRef = useRef<HTMLDivElement>(null);
 
-  const { children } = props;
+  const layout = useLayout();
 
   useScroll(scrollRef, workspaceRef, []);
 
-  console.log('todo width config', width);
+  useEffect(() => {
+    layout.aside.width(width + 100);
+  }, [layout.aside, width]);
+
+  useEffect(() => {
+    layout.aside.collapsible(collapsible);
+  }, [layout.aside, collapsible]);
+
+  useEffect(() => {
+    layout.aside.collapsible(!!resizeable);
+  }, [layout.aside, resizeable]);
 
   return (
     <div
       ref={workspaceRef}
-      className={classnames('aside-workspace', { [`${padding}`]: !pure }, className)}
+      style={{ width: !minimize ? asideWidth - 100 : undefined }}
+      className={classnames('aside-workspace', padding, className)}
     >
       <div className="d-flex h-100 flex-column">
         {/* --begin::Wrapper--*/}
@@ -45,6 +69,7 @@ function AsideWorkspace(props: AsideWorkspaceProps) {
         ))*/}
           {/* </Tab.Content> */}
         </div>
+        {footer}
         {/* <div ref={footerRef} className="flex-column-auto pt-10 px-5">
       <a
         href="#"

@@ -1,8 +1,16 @@
+.text-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .email-compose {
   margin-top: 2rem;
   margin-right: 2.25rem;
   margin-bottom: 2rem;
   margin-left: 2.25rem;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
   letter-spacing: 32px;
   text-align: center;
   text-indent: 32px;
@@ -89,16 +97,24 @@
       }
 
       .mailbox-list {
-        height: calc(100vh - 2rem - 43px - 2rem) !important;
+        height: calc(100vh - 2rem - 51px - 2rem) !important;
         margin-top: 0;
         overflow-x: hidden;
 
+        .os-content {
+          background-color: #fff;
+        }
+
         .mailbox-list-inner {
+          padding-top: 1px;
           background-color: #fff;
           &:focus-within {
             .email-message.active {
               background-color: #e7f2fb;
-              border-color: #8cc7fc;
+              &::after,
+              &::before {
+                background-color: #8cc7fc;
+              }
             }
           }
         }
@@ -107,9 +123,23 @@
           position: relative;
           width: 100%;
           height: 80px;
-          padding: 0.25rem 2rem 0 0;
-          border-top: transparent 1px solid;
-          border-bottom: transparent 1px solid;
+          padding: 0.25rem 1.25rem 0 0;
+          &::before {
+            position: absolute;
+            top: -1px;
+            width: 100%;
+            height: 1px;
+            // border-top: transparent 1px solid;
+            content: '';
+          }
+          &::after {
+            position: absolute;
+            bottom: 0;
+            // border-bottom: transparent 1px solid;
+            width: 100%;
+            height: 1px;
+            content: '';
+          }
 
           &:hover {
             background-color: #f4f6f8;
@@ -117,12 +147,16 @@
 
           &.active {
             background-color: #ecedee;
-            border-color: #e4e4e5;
-            .email-message-body {
-              border-color: transparent;
+            &::after,
+            &::before {
+              background-color: #e4e4e5;
             }
+            /*  .email-message-body {
+              border-color: transparent;
+            } */
           }
           &-actions {
+            flex-shrink: 0;
             align-items: center;
             justify-content: space-between;
             width: calc(1.25rem + 16px);
@@ -140,13 +174,15 @@
               height: 16px;
             }
           }
-          .email-message-body {
+          &-body {
             position: relative;
-            bottom: -1px;
             flex: 1;
             justify-content: space-between;
             padding-bottom: 0.5rem;
             border-bottom: #e4e6ef 1px solid;
+
+            @extend .text-ellipsis;
+
             .email-message-attrs {
               display: flex;
               align-items: center;
@@ -154,7 +190,7 @@
               .smart-type {
                 display: flex;
                 align-items: center;
-                justify-content: center;
+                justify-content: start;
                 width: 24px;
                 height: 24px;
               }
@@ -170,6 +206,7 @@
             }
             .email-message-title {
               font-weight: 500;
+              @extend .text-ellipsis;
             }
             .email-message-summary {
               color: #7d7e81;
@@ -181,6 +218,45 @@
     .mail-message-details {
       flex: 1;
       height: 100vh;
+      background-color: #fff;
+
+      .mail-message-container {
+        background-color: transparent;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .inbox-message-details {
+        width: fit-content;
+      }
+
+      .message_wrapper {
+        .mail-message-date {
+          text-align: right;
+        }
+        .message_wrapper_preview-message {
+          display: -webkit-box;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+        }
+        .cursor-pointer {
+          justify-content: space-between;
+        }
+        &.shrink {
+          .cursor-pointer {
+            flex-direction: column;
+          }
+          .message_wrapper_actions {
+            width: 100%;
+            .mail-message-date {
+              flex: 1;
+              text-align: left;
+            }
+          }
+        }
+      }
     }
   }
 }
