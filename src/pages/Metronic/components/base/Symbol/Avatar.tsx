@@ -52,7 +52,7 @@ function Avatar(props: AvatarProps) {
       >
         {loadFailed ? (
           <div style={{ backgroundColor, color }} className="symbol-label fs-2 fw-bold">
-            {alt.substring(0, 1).toUpperCase()}
+            {isChinese(alt) ? alt.substring(0, 1) : alt.substring(0, 2).toUpperCase()}
           </div>
         ) : (
           renderImg(src, alt, gap, handleError)
@@ -60,6 +60,10 @@ function Avatar(props: AvatarProps) {
       </div>
     </Tooltip>
   );
+}
+
+function isChinese(word: string) {
+  return /^[\u4e00-\u9fa5]+.*$/.test(word);
 }
 
 function renderImg(

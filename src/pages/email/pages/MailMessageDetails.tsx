@@ -450,7 +450,7 @@ function MessageWrapper(props: MessageWrapperProps) {
                 >
                   <table className="table mb-0">
                     <tbody>
-                      {mailbox != 'send' && (
+                      {mailbox != 'sent' && (
                         <tr>
                           <td className="w-75px text-muted">发件人</td>
                           <td>
