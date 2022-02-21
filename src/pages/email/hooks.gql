@@ -1,12 +1,36 @@
-query mailboxMessage($id: ID!) {
-  message: mailboxMessage(id: $id) {
-    ...MailboxMessageParts
+mutation moveMailboxMessageToFolder($id: ID!, $mailbox: ID!) {
+  moveMailboxMessageToFolder(id: $id, mailbox: $mailbox) {
+    id
+    ...MailboxMessageFlagParts
   }
 }
 
-query mailboxMessages($mailbox: ID!, $size: Int = 30, $account: ID) {
-  messages: mailboxMessages(mailbox: $mailbox, size: $size, account: $account) {
+mutation updateMailboxMessageFlags($id: ID!, $flags: [String!]!, $mode: MailboxFlagsUpdateMode) {
+  updateMailboxMessageFlags(id: $id, flags: $flags, mode: $mode) {
+    id
+    ...MailboxMessageFlagParts
+  }
+}
+
+query mailboxMessage($id: ID!) {
+  message: mailboxMessage(id: $id) {
     ...MailboxMessageParts
+    ...MailboxMessageFlagParts
+  }
+}
+
+query mailboxMessages($account: ID, $filter: MailboxMessageFilter) {
+  mailboxMessages(account: $account, filter: $filter) {
+    totalCount
+    pageSize
+    totalPage
+    currentPage
+    edges {
+      node {
+        ...MailboxMessageParts
+        ...MailboxMessageFlagParts
+      }
+    }
   }
 }
 
@@ -34,4 +58,13 @@ fragment MailboxMessageParts on MailboxMessage {
   }
   mimeType
   body
+}
+
+fragment MailboxMessageFlagParts on MailboxMessage {
+  answered
+  deleted
+  draft
+  flagged
+  recent
+  seen
 }

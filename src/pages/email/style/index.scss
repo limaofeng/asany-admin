@@ -151,9 +151,6 @@
             &::before {
               background-color: #e4e4e5;
             }
-            /*  .email-message-body {
-              border-color: transparent;
-            } */
           }
           &-actions {
             flex-shrink: 0;
@@ -166,6 +163,20 @@
                 display: flex;
               }
             }
+
+            &.message-unread {
+              .flags-read .svg-icon {
+                display: flex;
+              }
+            }
+
+            .flags-read {
+              transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
+              &:hover {
+                transform: scale(1.2, 1.2);
+              }
+            }
+
             .svg-icon {
               display: none;
               align-items: center;

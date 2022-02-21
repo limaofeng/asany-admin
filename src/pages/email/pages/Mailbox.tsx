@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useReducer, useRef } from 'react';
+import React, { useCallback, useMemo, useReducer, useRef } from 'react';
 
 import { useRouteMatch } from 'react-router-dom';
 import { Resizer } from '@asany/editor';
@@ -42,14 +42,25 @@ function MailMessage(props: MailMessageProps) {
     onClick(data.id);
   }, [data.id, onClick]);
 
-  console.log('MailMessage', data);
-
   return (
     <div onClick={handleClick} className={classnames('email-message d-flex flex-row', { active })}>
-      <div className="d-flex flex-column email-message-actions">
-        <Icon className="svg-icon-6" name="Duotune/abs009" />
-        <Icon className="svg-icon-6" name="Duotune/fil016" />
-        <Icon className="svg-icon-5" name="Duotune/gen027" />
+      <div
+        className={classnames('d-flex flex-column email-message-actions', {
+          'message-unread': !data.seen,
+        })}
+      >
+        <a className="flags-read">
+          <Icon
+            className="svg-icon-6 svg-icon-success"
+            name={data.seen ? 'Duotune/abs009' : 'Duotune/abs050'}
+          />
+        </a>
+        <a>
+          <Icon className="svg-icon-6" name="Duotune/fil016" />
+        </a>
+        <a>
+          <Icon className="svg-icon-5" name="Duotune/gen027" />
+        </a>
       </div>
       <div className="email-message-body d-flex flex-column">
         <div className="email-message-attrs">
@@ -122,10 +133,12 @@ function Mailbox(props: MailboxProps) {
   state.current.folder = folder;
   state.current.activeId = activeId;
 
-  const { data } = useMailboxMessagesQuery({
+  const { data, refetch } = useMailboxMessagesQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
-      mailbox: folder,
+      filter: {
+        mailbox: folder,
+      },
     },
   });
 
@@ -159,18 +172,30 @@ function Mailbox(props: MailboxProps) {
 
   const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, state.current.width));
 
+  const pagination = useMemo(() => {
+    if (!data?.mailboxMessages || !activeId) {
+      return {};
+    }
+    const { edges, ..._pagination } = data.mailboxMessages;
+    const index = edges.findIndex((item) => item.node.id == activeId);
+    return {
+      ..._pagination,
+      current: (_pagination.currentPage - 1) * _pagination.pageSize + index + 1,
+    };
+  }, [data?.mailboxMessages, activeId]);
+
   const messages = useMemo(() => {
-    if (!data?.messages) {
+    if (!data?.mailboxMessages) {
       return [];
     }
-    return data.messages as MailboxMessage[];
-  }, [data?.messages]);
+    return data.mailboxMessages.edges.map((item) => item.node) as MailboxMessage[];
+  }, [data?.mailboxMessages]);
 
   state.current.messages = messages;
 
   const handleShortcut = useCallback(
-    (action, event: React.KeyboardEvent) => {
-      event.preventDefault();
+    (action, event?: React.KeyboardEvent) => {
+      event && event.preventDefault();
       const { messages: _messages, activeId: _activeId } = state.current;
       const index = _messages.findIndex((item) => item.id == _activeId);
       if (action == 'NEXT') {
@@ -189,6 +214,18 @@ function Mailbox(props: MailboxProps) {
     },
     [handleMessageClick],
   );
+
+  const handleNext = useCallback(() => {
+    handleShortcut('NEXT');
+  }, [handleShortcut]);
+
+  const handlePrev = useCallback(() => {
+    handleShortcut('PREVIOUS');
+  }, [handleShortcut]);
+
+  const refresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   return (
     <ContentWrapper className="apps-email-mailbox" header={false} footer={false}>
@@ -246,7 +283,12 @@ function Mailbox(props: MailboxProps) {
         </div>
         <div className="flex-lg-row-fluid ms-lg-7 ms-xl-10" />
       </Resizer>
-      {children}
+      {React.cloneElement(children as any, {
+        pagination,
+        next: handleNext,
+        prev: handlePrev,
+        refresh,
+      })}
     </ContentWrapper>
   );
 }

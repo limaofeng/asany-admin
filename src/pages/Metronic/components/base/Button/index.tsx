@@ -116,12 +116,13 @@ function Button(
       onClick,
       ref,
       type: htmlType,
-      disabled: disabled || loading,
+      disabled: as == 'button' ? disabled || loading : undefined,
       className: classnames(
         'btn',
         buttonStyle,
         {
           active,
+          disabled: disabled && as != 'button',
           'btn-flush': flushed,
           [`btn-${size}`]: !!size,
           [`btn-color-${color}`]: !!color,
