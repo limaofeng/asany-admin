@@ -174,12 +174,14 @@ function Aside(props: AsideProps) {
 
   const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, resizeWidth.current.width));
 
+  const hideAside = menuRender == false;
+
   return (
     <div
       className={classnames('aside', {
         'aside-extended': !minimize,
       })}
-      style={{ width: !minimize ? width : undefined }}
+      style={{ width: !hideAside ? width : undefined }}
     >
       <div className="aside-primary d-flex flex-column align-items-lg-center flex-row-auto">
         <Logo ref={logoRef} url="/" logo={logo} />
@@ -210,8 +212,8 @@ function Aside(props: AsideProps) {
         </div>
         <Footer ref={footerRef} menus={bottomMenus} onSelect={handleSelect} activeKey={activeKey} />
       </div>
-      {menuRender != false && <AsideSecondary>{menuRender}</AsideSecondary>}
-      {menuRender != false && collapsible && (
+      {!hideAside && <AsideSecondary>{menuRender}</AsideSecondary>}
+      {!hideAside && collapsible && (
         <Button
           style={{ marginBottom: '1.35rem', zIndex: 10 }}
           size="sm"
