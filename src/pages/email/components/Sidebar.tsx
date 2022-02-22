@@ -1,24 +1,29 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
 import { useRouteMatch } from 'umi';
 
+import Preferences from './preferences';
+
 import { AsideWorkspace, Badge, Button, Menu } from '@/pages/Metronic/components';
 
-function SidebarFooter() {
+type SidebarFooterProps = {
+  onAction: () => void;
+};
+
+function SidebarFooter(props: SidebarFooterProps) {
+  const { onAction } = props;
   return (
     <div className="email-sidebar-footer">
-      <span className="mail-preferences">偏好设置</span>
+      <span className="mail-settings" onClick={onAction}>
+        偏好设置
+      </span>
     </div>
   );
 }
 
 function Sidebar() {
-  // const {
-  //   match: {
-  //     params: { folder },
-  //   },
-  // } = props;
+  const [visiblePreferences, setVisiblePreferences] = useState<boolean>(true);
 
   const match = useRouteMatch<{ folder?: string }>({
     path: '/email/:folder',
@@ -34,6 +39,14 @@ function Sidebar() {
   }, [match]);
 
   console.log(selectedKeys);
+
+  const handleClosePreferences = useCallback(() => {
+    setVisiblePreferences(false);
+  }, []);
+
+  const handleOpenPreferences = useCallback(() => {
+    setVisiblePreferences(true);
+  }, []);
 
   return (
     <AsideWorkspace width={275} collapsible={false} className="email-sidebar-aside" padding={false}>
@@ -122,8 +135,9 @@ function Sidebar() {
             </Menu.Item>
           </Menu>
         </div>
-        <SidebarFooter />
+        <SidebarFooter onAction={handleOpenPreferences} />
       </div>
+      <Preferences visible={visiblePreferences} onCancel={handleClosePreferences} />
     </AsideWorkspace>
   );
 }

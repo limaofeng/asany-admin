@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 
 import Icon from '@asany/icons';
 import Tree from '@asany/tree';
-import type { TreeNode } from '@asany/tree/dist/typings';
+import type { IconRender, TreeNode } from '@asany/tree/dist/typings';
 import classnames from 'classnames';
 import { useMeasure } from 'react-use';
 
@@ -16,11 +16,13 @@ import './style/TreeList.scss';
 
 type TreeListProps<T> = {
   className?: string;
+  expandedKeys?: string[];
   rowKey?: string | ((record: T & TreeNode) => string);
   rowSelection?: RowSelection;
   dataSource?: (T & TreeNode)[];
   draggable?: boolean;
   columns: TableColumn<T & TreeNode>[];
+  iconRender?: false | IconRender;
 };
 
 function hasWidth<T>(col: TableColumn<T>) {
@@ -135,7 +137,15 @@ type TreeListState = {
 };
 
 function TreeList<T>(props: TreeListProps<T>) {
-  const { draggable, columns, className, dataSource, rowKey = 'key' } = props;
+  const {
+    draggable,
+    expandedKeys,
+    columns,
+    className,
+    dataSource,
+    iconRender,
+    rowKey = 'key',
+  } = props;
 
   const state = useRef<TreeListState>(
     (() => {
@@ -155,12 +165,22 @@ function TreeList<T>(props: TreeListProps<T>) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleIconRender = useCallback((node: any, { isDirectory }: any) => {
-    if (!node.icon) {
-      return <Icon name={isDirectory ? 'Material/folder' : 'Material/file'} />;
-    }
-    return <Icon name={node.icon} />;
-  }, []);
+  const handleIconRender = useCallback(
+    (node: any, _state: any) => {
+      if (iconRender == false) {
+        return <></>;
+      }
+      if (typeof iconRender == 'function') {
+        return (iconRender as any)(node, state);
+      }
+      const { isDirectory } = _state;
+      if (!node.icon) {
+        return <Icon name={isDirectory ? 'Material/folder' : 'Material/file'} />;
+      }
+      return <Icon name={node.icon} />;
+    },
+    [iconRender],
+  );
 
   const handleContentRender = useCallback(
     (node: any, { rowIndex }: any) => {
@@ -205,6 +225,7 @@ function TreeList<T>(props: TreeListProps<T>) {
       <Tree
         className="tree-list-body"
         draggable={draggable}
+        expandedKeys={expandedKeys}
         iconRender={handleIconRender}
         contentRender={handleContentRender}
         treeData={dataSource!}

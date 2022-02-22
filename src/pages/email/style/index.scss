@@ -1,3 +1,5 @@
+@import '../../Metronic/components/style/index.scss';
+
 .text-ellipsis {
   overflow: hidden;
   white-space: nowrap;
@@ -33,7 +35,7 @@
       height: 34px;
       border-top: #f7f7f7 1px solid;
 
-      .mail-preferences {
+      .mail-settings {
         color: #5e6278;
         font-weight: bold;
         font-size: 13px;
@@ -265,6 +267,151 @@
               flex: 1;
               text-align: left;
             }
+          }
+        }
+      }
+    }
+  }
+}
+.mail-preferences {
+  color: #343434;
+  .modal-header {
+    background-color: #fff;
+    .nav-link {
+      margin-right: 0;
+      margin-left: 0;
+    }
+  }
+  .modal-content {
+    background-color: #f2f2f2;
+  }
+  .modal-body {
+    height: calc(75vh - 100px);
+  }
+  .settings-mailbox-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .settings-mailbox-notes {
+      margin-bottom: 16px;
+    }
+
+    .title.d-flex {
+      flex: 1;
+    }
+
+    .settings-mailbox {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      background-color: #ebebed;
+      border: 1px solid #dedfdf;
+      border-bottom-right-radius: 3px;
+      border-bottom-left-radius: 3px;
+
+      .tree-list-header {
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        border: none;
+        .tree-list-header-col:first-child {
+          margin-left: 40px;
+        }
+      }
+
+      .tree-list-header-col {
+        padding: 0;
+      }
+
+      .asany-treeview-node {
+        min-height: 28px;
+        line-height: 28px;
+        cursor: default;
+        &::after {
+          content: none;
+        }
+        &.selected {
+          color: initial;
+        }
+        &.sub_selected .monaco-tl-twistie .svg-icon svg path {
+          fill: initial !important;
+        }
+
+        .title {
+          font-size: 12px;
+        }
+        .mailbox-check {
+          display: inline-flex;
+          margin-left: 14px;
+          input {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 3px;
+          }
+        }
+        .monaco-tl-indent {
+          .indent-guide {
+            border-color: transparent !important;
+          }
+        }
+        .monaco-tl-twistie {
+          .svg-icon {
+            svg {
+              width: 14px;
+              height: 14px;
+            }
+          }
+        }
+      }
+
+      .asany-treeview-node.sortable-item-dragging {
+        cursor: auto;
+      }
+
+      .tree-list-body .asany-treeview-node .tree-list-col {
+        padding: 0;
+      }
+
+      .settings-mailbox-header {
+        height: 28px;
+        padding-left: 16px;
+        color: #858585;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 28px;
+        background-color: #fff;
+        border-bottom: 1px solid #e6e6e6;
+        .field-folder {
+          flex: 1;
+          padding-left: 16px;
+        }
+        .field-favorites {
+          width: 100px;
+          padding-left: 16px;
+        }
+      }
+      .settings-mailbox-body {
+        height: calc(75vh - 100px - (1.75rem * 2) - 36px - 28px - 23px);
+        margin-top: 4px;
+        background-color: #fff;
+      }
+      .settings-mailbox-footer {
+        display: flex;
+        height: 24px;
+        background-color: #e4e6e7;
+
+        & > a {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          margin-left: 4px;
+          cursor: pointer;
+
+          .svg-icon svg [fill]:not(.permanent):not(g) {
+            fill: #000;
           }
         }
       }

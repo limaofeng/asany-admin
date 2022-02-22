@@ -1,3 +1,11 @@
+query mailboxes {
+  mailboxes {
+    id
+    name
+    namespace
+  }
+}
+
 mutation moveMailboxMessageToFolder($id: ID!, $mailbox: ID!) {
   moveMailboxMessageToFolder(id: $id, mailbox: $mailbox) {
     id

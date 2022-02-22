@@ -18,6 +18,7 @@ export type ClickCallback = (e: React.MouseEvent) => void;
 
 type ModalProps = {
   title?: string;
+  scroll?: { x: boolean; y: boolean } | boolean;
   centered?: boolean;
   closable?: boolean;
   visible?: boolean;
@@ -105,6 +106,7 @@ function ModalFooter(props: ModalFooterProps) {
 function Modal(props: ModalProps) {
   const {
     children,
+    scroll: pscroll = { y: true },
     centered,
     visible: show,
     dialogClassName,
@@ -118,6 +120,9 @@ function Modal(props: ModalProps) {
     footer = <ModalFooter />,
     ...footerProps
   } = props;
+
+  const scroll = typeof pscroll == 'boolean' ? (pscroll ? { y: true } : null) : pscroll;
+
   return (
     <BsModal
       backdrop={mask && (maskClosable ? mask : 'static')}
@@ -129,7 +134,7 @@ function Modal(props: ModalProps) {
       onHide={onCancel as any}
     >
       {header && React.cloneElement(header as React.ReactElement, { closable, onCancel })}
-      <BsModal.Body className={classnames('scroll-y', bodyClassName)}>
+      <BsModal.Body className={classnames({ 'scroll-y': scroll?.y }, bodyClassName)}>
         {React.Children.count(children) == 1
           ? React.cloneElement(children as any, { visible: `${show}` })
           : children}

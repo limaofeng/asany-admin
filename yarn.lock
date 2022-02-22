@@ -151,10 +151,18 @@
     lodash-es "^4.17.21"
     react-flip-toolkit "^7.0.13"
 
-"@asany/tree@^0.1.14", "@asany/tree@^0.1.19":
+"@asany/tree@^0.1.14":
   version "0.1.19"
   resolved "https://registry.npmjs.org/@asany/tree/-/tree-0.1.19.tgz#e57607123e0492215eef0b8f98472898e9e69d78"
   integrity sha512-QZPMh5c0OxSrmDx/eG92rQQzGbycjj647SbC1MblWPYXaeVtuh7lo/mFkV00ETpw5a/thpfJWGapBU0GT9STuQ==
+  dependencies:
+    "@asany/sortable" "^0.1.30"
+    classnames "^2.3.1"
+
+"@asany/tree@^0.1.21":
+  version "0.1.21"
+  resolved "https://registry.npmjs.org/@asany/tree/-/tree-0.1.21.tgz#b66022418a2c7f7f0ae7aab38c534807ee22ac34"
+  integrity sha512-lEBaftqfxNoKZf6A/tksi8LFGtI8UqfXt5PAuOl7WcSkWH/0Pt5PZSIOdECXkEElhl2UJsp8dYEv89XjgnSTfQ==
   dependencies:
     "@asany/sortable" "^0.1.30"
     classnames "^2.3.1"

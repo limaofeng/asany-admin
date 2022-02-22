@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 import Icon from '@asany/icons';
 
-import Calendars from './calendars';
+import Mailbox from './mailbox';
 
 import { Modal, Nav } from '@/pages/Metronic/components';
 
@@ -15,7 +15,7 @@ function Preferences(props: PreferencesProps) {
   const { visible, onCancel } = props;
 
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [activeKey, setActiveKey] = useState('calendars');
+  const [activeKey, setActiveKey] = useState('mailbox');
 
   const handleSubmit = useCallback(() => {
     setConfirmLoading(true);
@@ -32,9 +32,9 @@ function Preferences(props: PreferencesProps) {
       visible={visible}
       onCancel={onCancel}
       onOk={handleSubmit}
-      scroll={false}
       confirmLoading={confirmLoading}
-      dialogClassName="mw-750px calendar-preferences"
+      scroll={false}
+      dialogClassName="mw-750px mail-preferences"
       header={
         <Modal.Header>
           <Nav onSelect={handleSelect as any} selectedKey={activeKey}>
@@ -42,23 +42,31 @@ function Preferences(props: PreferencesProps) {
               <Nav.Link className="btn d-flex flex-column btn-active-light-primary">
                 <Icon name="Duotune/cod001" className="svg-icon-2 me-0" />
                 <span className="d-flex flex-column align-items-start pt-2">
-                  <span className="fs-7">常规</span>
+                  <span className="fs-7">通用</span>
                 </span>
               </Nav.Link>
             </Nav.Item>
-            <Nav.Item key="calendars" className="me-2 mb-md-0">
+            <Nav.Item key="mailbox" className="me-2 mb-md-0">
               <Nav.Link className="btn d-flex flex-column btn-active-light-success">
-                <Icon name="Duotune/gen014" className="svg-icon-2  me-0" />
+                <Icon name="Duotune/fil012" className="svg-icon-2  me-0" />
                 <span className="d-flex flex-column align-items-start pt-2">
-                  <span className="fs-7">日历</span>
+                  <span className="fs-7">文件夹</span>
                 </span>
               </Nav.Link>
             </Nav.Item>
-            <Nav.Item key="weather" className="me-2 mb-md-0">
-              <Nav.Link className="btn d-flex flex-column btn-active-light-info">
-                <Icon name="Duotune/fil020" className="svg-icon-2  me-0" />
+            <Nav.Item key="signature" className="me-2 mb-md-0">
+              <Nav.Link className="btn d-flex flex-column btn-active-light-dark">
+                <Icon name="Duotune/art008" className="svg-icon-2  me-0" />
                 <span className="d-flex flex-column align-items-start pt-2">
-                  <span className="fs-7">天气</span>
+                  <span className="fs-7">签名</span>
+                </span>
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item key="template" className="me-2 mb-md-0">
+              <Nav.Link className="btn d-flex flex-column btn-active-light-warning">
+                <Icon name="Duotune/art008" className="svg-icon-2  me-0" />
+                <span className="d-flex flex-column align-items-start pt-2">
+                  <span className="fs-7">模版</span>
                 </span>
               </Nav.Link>
             </Nav.Item>
@@ -67,7 +75,7 @@ function Preferences(props: PreferencesProps) {
       }
       footer={null}
     >
-      <Calendars />
+      <Mailbox />
     </Modal>
   );
 }
