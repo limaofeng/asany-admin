@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Shortcuts } from '@asany/shortcuts';
 import classnames from 'classnames';
@@ -8,9 +8,9 @@ import { cloneDeep } from 'lodash';
 import MailboxFooter from './MailboxFooter';
 
 import { Checkbox, TreeList } from '@/pages/Metronic/components';
-import type { Mailbox } from '@/types';
-import { useMailboxesQuery } from '@/pages/email/hooks';
+import { useMailboxesQuery, useUpdateMyFavoriteMailboxesMutation } from '@/pages/email/hooks';
 import { DEFAULT_MAILBOXES } from '@/pages/email/utils';
+import type { Mailbox } from '@/types';
 
 const NAMESPACES: any[] = [
   {
@@ -30,12 +30,58 @@ const NAMESPACES: any[] = [
   },
 ];
 
-function Folder() {
+type MailboxFolderProps = {
+  mailboxes: string[];
+};
+
+function MailboxFolder(props: MailboxFolderProps) {
   const container = useRef<HTMLDivElement>(null);
 
   const { data } = useMailboxesQuery();
 
   const [activeKey] = useState<string>();
+  const [checkedKeys, setCheckedKeys] = useState<string[]>(props.mailboxes);
+
+  const [updateMyFavorites] = useUpdateMyFavoriteMailboxesMutation({
+    updateQueries: {
+      mailUser: (prev, { mutationResult }) => {
+        return {
+          ...prev,
+          mailUser: {
+            ...prev.mailUser,
+            settings: {
+              ...prev.mailUser.settings,
+              mailboxes: mutationResult!.data!.mailboxes,
+            },
+          },
+        };
+      },
+    },
+    // update(cache, { data: result }) {
+    //   cache.modify({
+    //     fields: {
+    //       mailUser(user: any) {
+    //         const mailUser = (cache as any).data.data[user.__ref];
+    //         console.log('mailUser', mailUser);
+    //         const newMailUser = {
+    //           ...mailUser,
+    //           settings: { ...mailUser.settings, mailboxes: [...mailUser.settings.mailboxes] },
+    //         };
+    //         console.log('newMailUser', newMailUser);
+    //         newMailUser.settings.mailboxes = result!.mailboxes;
+    //         console.log(result);
+    //         // return = cache.writeFragment({
+    //         //   id: id._ref,
+    //         //   data: newMailUser,
+    //         //   fragment: MyFavoriteMailboxesFragmentDoc,
+    //         // });
+    //         // console.log(x);
+    //         return { ...user, ...newMailUser };
+    //       },
+    //     },
+    //   });
+    // },
+  });
 
   const handleSuccess = useCallback(async (mailbox?: Mailbox) => {
     console.log(mailbox);
@@ -52,6 +98,21 @@ function Folder() {
     console.log(action);
   }, []);
 
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<any>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('handleChange', e.target.checked, e.target.value);
+      updateMyFavorites({
+        variables: {
+          mailboxes: [e.target.value],
+          mode: e.target.checked ? 'ADD' : 'REMOVE',
+        },
+      });
+    },
+    [updateMyFavorites],
+  );
+
   const treeData = useMemo(() => {
     if (!data?.mailboxes) {
       return cloneDeep(NAMESPACES);
@@ -59,7 +120,7 @@ function Folder() {
     const namespaces = cloneDeep(NAMESPACES);
     for (const mailbox of data.mailboxes) {
       const namespace = namespaces.find((item) => item.key == mailbox.namespace);
-      if (mailbox.name == 'Outbox') {
+      if (mailbox.name == 'Outbox' || mailbox.name == 'INBOX') {
         continue;
       }
       if (!namespace?.children) {
@@ -77,11 +138,20 @@ function Folder() {
       .children!.map((item: any) => {
         const zindex = DEFAULT_MAILBOXES.findIndex((m) => m.id == item.name);
         const details = DEFAULT_MAILBOXES[zindex];
-        return { ...item, zindex, title: details.name, icon: details.name };
+        return {
+          ...item,
+          zindex,
+          title: details.name,
+          icon: details.name,
+        };
       })
       .sort((l: any, r: any) => l.zindex - r.zindex);
     return namespaces.filter((item) => item.children?.length);
   }, [data?.mailboxes]);
+
+  useEffect(() => {
+    setCheckedKeys(props.mailboxes);
+  }, [props.mailboxes]);
 
   return (
     <div className="settings-mailbox-container">
@@ -120,7 +190,7 @@ function Folder() {
                 if (nodeState.isDirectory) {
                   return;
                 }
-                console.log(_, nodeState);
+                // console.log(_, nodeState);
                 return '';
               }}
               columns={[
@@ -140,15 +210,14 @@ function Folder() {
                   title: '操作',
                   className: 'min-w-100px',
                   render(_, record: any) {
-                    console.log(record, record.type == 'directory');
                     if (record.type == 'directory') {
                       return <div />;
                     }
                     return (
                       <Checkbox
-                        // checked={checked}
-                        // onClick={handleVariofocus}
-                        // onChange={handleChange}
+                        value={record.namespace + '.' + record.name}
+                        checked={checkedKeys.includes(record.namespace + '.' + record.name)}
+                        onChange={handleChange}
                         className="mailbox-check"
                         size="sm"
                       />
@@ -159,11 +228,11 @@ function Folder() {
               dataSource={treeData}
             />
           </OverlayScrollbarsComponent>
-          <MailboxFooter onSuccess={handleSuccess} selectedKey={activeKey!} />
+          <MailboxFooter onSuccess={handleSuccess} selectedKey={activeKey} />
         </Shortcuts>
       </div>
     </div>
   );
 }
 
-export default Folder;
+export default MailboxFolder;

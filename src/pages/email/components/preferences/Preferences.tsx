@@ -1,18 +1,20 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import Icon from '@asany/icons';
 
-import Mailbox from './mailbox';
+import MailboxFolder from './mailbox';
 
 import { Modal, Nav } from '@/pages/Metronic/components';
+import type { MailSettings, MailUser } from '@/types';
 
 type PreferencesProps = {
+  mailUser: MailUser;
   visible: boolean;
   onCancel: () => void;
 };
 
 function Preferences(props: PreferencesProps) {
-  const { visible, onCancel } = props;
+  const { visible, onCancel, mailUser } = props;
 
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [activeKey, setActiveKey] = useState('mailbox');
@@ -24,6 +26,13 @@ function Preferences(props: PreferencesProps) {
   const handleSelect = useCallback((key: string) => {
     setActiveKey(key);
   }, []);
+
+  const settings = useMemo(() => {
+    if (!mailUser?.settings) {
+      return { mailboxes: [] as any } as unknown as MailSettings;
+    }
+    return mailUser.settings as unknown as MailSettings;
+  }, [mailUser]);
 
   return (
     <Modal
@@ -75,7 +84,7 @@ function Preferences(props: PreferencesProps) {
       }
       footer={null}
     >
-      <Mailbox />
+      <MailboxFolder mailboxes={settings.mailboxes} />
     </Modal>
   );
 }

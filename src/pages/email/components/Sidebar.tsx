@@ -3,6 +3,9 @@ import { useCallback, useMemo, useState } from 'react';
 import { Icon } from '@asany/icons';
 import { useRouteMatch } from 'umi';
 
+import { useMailUserQuery } from '../hooks';
+import { DEFAULT_MAILBOXES } from '../utils';
+
 import Preferences from './preferences';
 
 import { AsideWorkspace, Badge, Button, Menu } from '@/pages/Metronic/components';
@@ -38,7 +41,9 @@ function Sidebar() {
     return [match.params.folder];
   }, [match]);
 
-  console.log(selectedKeys);
+  const { data } = useMailUserQuery({ fetchPolicy: 'cache-and-network' });
+
+  console.log(selectedKeys, data?.mailUser, data?.mailboxes);
 
   const handleClosePreferences = useCallback(() => {
     setVisiblePreferences(false);
@@ -47,6 +52,54 @@ function Sidebar() {
   const handleOpenPreferences = useCallback(() => {
     setVisiblePreferences(true);
   }, []);
+
+  const mailboxes = useMemo(() => {
+    if (!data?.mailboxes || !data?.mailboxes) {
+      const inbox = DEFAULT_MAILBOXES.find((item) => item.id == 'INBOX')!;
+      const outbox = DEFAULT_MAILBOXES.find((item) => item.id == 'Outbox')!;
+      return {
+        inbox: { ...inbox, title: inbox.name },
+        outbox: { ...outbox, title: outbox.name },
+        private: DEFAULT_MAILBOXES.filter((item) => !['Outbox', 'INBOX'].includes(item.id)).map(
+          (item) => ({ ...item, title: inbox.name }),
+        ),
+        smart: [],
+        custom: [],
+      };
+    }
+    const allMailboxes = data.mailboxes
+      .map((item) => {
+        if (item.namespace == '#private') {
+          const index = DEFAULT_MAILBOXES.findIndex((m) => m.id == item.name);
+          return {
+            ...item,
+            index,
+            title: DEFAULT_MAILBOXES[index].name,
+            icon: DEFAULT_MAILBOXES[index].icon,
+          };
+        }
+        return { ...item, title: item.name!, index: 0, icon: undefined };
+      })
+      .filter((item) => {
+        if (['Outbox', 'INBOX'].includes(item.name!)) {
+          return true;
+        }
+        console.log('...', data?.mailUser?.settings?.mailboxes);
+        return data?.mailUser?.settings?.mailboxes.includes(item.namespace + '.' + item.name);
+      })
+      .sort((l, r) => l.index - r.index);
+
+    const defaultMailboxes = allMailboxes.filter((item) => item.namespace == '#private');
+    return {
+      inbox: defaultMailboxes.find((item) => item.name == 'INBOX')!,
+      outbox: defaultMailboxes.find((item) => item.name == 'Outbox')!,
+      private: defaultMailboxes.filter((item) => !['Outbox', 'INBOX'].includes(item.name!)),
+      smart: allMailboxes.filter((item) => item.namespace == '#smart'),
+      custom: allMailboxes.filter((item) => item.namespace == '#custom'),
+    };
+  }, [data?.mailUser, data?.mailboxes]);
+
+  console.log('mailboxes', mailboxes);
 
   return (
     <AsideWorkspace width={275} collapsible={false} className="email-sidebar-aside" padding={false}>
@@ -67,10 +120,21 @@ function Sidebar() {
               icon={<Icon className="svg-icon-2 me-3" name="Duotune/com010" />}
               key="inbox"
             >
-              收件箱
+              {mailboxes.inbox.title}
             </Menu.Item>
             <Menu.Section>文件夹</Menu.Section>
-            <Menu.Item
+            {mailboxes.private.map((item) => (
+              <Menu.Item
+                className="mb-3"
+                url={`/email/${item.name!.toLowerCase()}`}
+                titleClassName="fw-bolder"
+                icon={<Icon className="svg-icon-2 me-3" name={item.icon!} />}
+                key={item.name}
+              >
+                {item.title}
+              </Menu.Item>
+            ))}
+            {/* <Menu.Item
               className="mb-3"
               url="/email/marked"
               titleClassName="fw-bolder"
@@ -78,8 +142,8 @@ function Sidebar() {
               key="marked"
             >
               星标邮件
-            </Menu.Item>
-            <Menu.Item
+            </Menu.Item> */}
+            {/* <Menu.Item
               className="mb-3"
               url="/email/sent"
               titleClassName="fw-bolder"
@@ -114,7 +178,7 @@ function Sidebar() {
               key="spam"
             >
               垃圾邮件
-            </Menu.Item>
+            </Menu.Item> */}
           </Menu>
           <Menu rounded={true} className="menu-state-bg menu-state-title-primary">
             <Menu.Section>标签</Menu.Section>
@@ -137,7 +201,11 @@ function Sidebar() {
         </div>
         <SidebarFooter onAction={handleOpenPreferences} />
       </div>
-      <Preferences visible={visiblePreferences} onCancel={handleClosePreferences} />
+      <Preferences
+        mailUser={data?.mailUser as any}
+        visible={visiblePreferences}
+        onCancel={handleClosePreferences}
+      />
     </AsideWorkspace>
   );
 }

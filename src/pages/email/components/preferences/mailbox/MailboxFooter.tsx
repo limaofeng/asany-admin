@@ -5,7 +5,7 @@ import Icon from '@asany/icons';
 import type { Mailbox } from '@/types';
 
 type FooterProps = {
-  selectedKey: string;
+  selectedKey?: string;
   onSuccess: (mailbox?: Mailbox) => void;
 };
 

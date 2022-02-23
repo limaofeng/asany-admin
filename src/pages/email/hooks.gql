@@ -1,9 +1,31 @@
+query mailUser {
+  mailUser {
+    id
+    name
+    domain {
+      name
+    }
+    settings {
+      mailboxes
+    }
+  }
+  mailboxes {
+    id
+    name
+    namespace
+  }
+}
+
 query mailboxes {
   mailboxes {
     id
     name
     namespace
   }
+}
+
+mutation updateMyFavoriteMailboxes($mailboxes: [String!]!, $mode: UpdateMode) {
+  mailboxes: updateMyFavoriteMailboxes(mailboxes: $mailboxes, mode: $mode)
 }
 
 mutation moveMailboxMessageToFolder($id: ID!, $mailbox: ID!) {
@@ -27,8 +49,8 @@ query mailboxMessage($id: ID!) {
   }
 }
 
-query mailboxMessages($account: ID, $filter: MailboxMessageFilter) {
-  mailboxMessages(account: $account, filter: $filter) {
+query mailboxMessages($user: ID, $filter: MailboxMessageFilter) {
+  mailboxMessages(user: $user, filter: $filter) {
     totalCount
     pageSize
     totalPage
