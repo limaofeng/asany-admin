@@ -31,10 +31,13 @@ const NAMESPACES: any[] = [
 ];
 
 type MailboxFolderProps = {
+  user: string;
   mailboxes: string[];
 };
 
 function MailboxFolder(props: MailboxFolderProps) {
+  const { user } = props;
+
   const container = useRef<HTMLDivElement>(null);
 
   const { data } = useMailboxesQuery();
@@ -228,7 +231,7 @@ function MailboxFolder(props: MailboxFolderProps) {
               dataSource={treeData}
             />
           </OverlayScrollbarsComponent>
-          <MailboxFooter onSuccess={handleSuccess} selectedKey={activeKey} />
+          <MailboxFooter user={user} onSuccess={handleSuccess} selectedKey={activeKey} />
         </Shortcuts>
       </div>
     </div>

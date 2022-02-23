@@ -24,6 +24,14 @@ query mailboxes {
   }
 }
 
+mutation createMailbox($namespace: String!, $name: String!) {
+  createMailbox(namespace: $namespace, name: $name) {
+    id
+    name
+    namespace
+  }
+}
+
 mutation updateMyFavoriteMailboxes($mailboxes: [String!]!, $mode: UpdateMode) {
   mailboxes: updateMyFavoriteMailboxes(mailboxes: $mailboxes, mode: $mode)
 }

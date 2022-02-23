@@ -78,16 +78,19 @@
       padding: 1rem;
       background-color: #fff;
       border-radius: 1rem;
+      .asany-form-horizontal .asany-form-item {
+        align-items: center;
+        margin-bottom: 0;
+        .fv-control-wrapper {
+          flex: none;
+        }
+      }
       ul {
         li {
           display: flex;
           align-items: center;
           min-height: 32px;
           color: #3f4254 !important;
-
-          .asany-form-item {
-            margin-bottom: 0;
-          }
           .fv-row {
             display: flex;
             flex: 1;
@@ -867,6 +870,9 @@
   .asany-form {
     .flex-row {
       margin-bottom: 0.5rem;
+      &.last {
+        margin-bottom: 0;
+      }
     }
   }
 }

@@ -71,11 +71,11 @@ const FormItemInput: React.FC<FormItemInputProps & FormItemInputMiscProps> = (pr
     formItemRender && formItemRender.mark === 'pro_table_render' && formItemRender.render ? (
       formItemRender.render(props, { input: inputDom, errorList: errorListDom, extra: extraDom })
     ) : (
-      <>
+      <div className="fv-control-wrapper">
         {inputDom}
         {errorListDom}
         {extraDom}
-      </>
+      </div>
     );
   return <FormContext.Provider value={subFormContext}>{dom}</FormContext.Provider>;
 };

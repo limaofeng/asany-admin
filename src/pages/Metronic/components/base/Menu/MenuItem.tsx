@@ -57,7 +57,9 @@ function MenuItem(props: MenuItemProps) {
   const context = useMenuContext();
   const history = useHistory();
 
-  const selected = useSelector((state) => state.selectedKeys.includes(menuKey));
+  const selected = useSelector((state) => {
+    return state.selectedKeys.includes(menuKey);
+  });
 
   useEffect(() => {
     context.addMenuData(menuKey, { key: menuKey, icon, title, path });

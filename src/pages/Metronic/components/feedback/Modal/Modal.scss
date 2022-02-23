@@ -19,10 +19,44 @@
 }
 .modal-dialog {
   .modal-header {
-    padding-bottom: 1.15rem;
     padding-top: 1.15rem;
+    padding-bottom: 1.15rem;
   }
   .modal-footer {
-    padding: .75rem 1.5rem;
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+.modal-dialog-small {
+  .modal-footer {
+    padding: 0.5rem 1.5rem 0.75rem 1.5rem;
+  }
+  .btn:not(.btn-outline):not(.btn-dashed):not(.border-hover):not(.border-active):not(.btn-flush):not(.btn-icon).btn-xs {
+    padding: calc(0.25rem + 1px) calc(1.25rem + 1px);
+  }
+  .modal-dialog-header {
+    padding-bottom: 16px;
+    .modal-dialog-icon {
+      padding-right: 16px;
+    }
+    .modal-dialog-instructions {
+      flex: 1;
+      .modal-dialog-title {
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .modal-dialog-description {
+        font-size: 13px;
+        padding: 8px 0;
+      }
+    }
+  }
+  .asany-form {
+    .flex-row {
+      margin-bottom: 0.5rem;
+      &.last {
+        margin-bottom: 0;
+      }
+    }
   }
 }

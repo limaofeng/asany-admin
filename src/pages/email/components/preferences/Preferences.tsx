@@ -84,7 +84,7 @@ function Preferences(props: PreferencesProps) {
       }
       footer={null}
     >
-      <MailboxFolder mailboxes={settings.mailboxes} />
+      <MailboxFolder user={mailUser?.name} mailboxes={settings.mailboxes} />
     </Modal>
   );
 }

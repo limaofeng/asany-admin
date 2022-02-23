@@ -26,7 +26,7 @@ function SidebarFooter(props: SidebarFooterProps) {
 }
 
 function Sidebar() {
-  const [visiblePreferences, setVisiblePreferences] = useState<boolean>(true);
+  const [visiblePreferences, setVisiblePreferences] = useState<boolean>(false);
 
   const match = useRouteMatch<{ folder?: string }>({
     path: '/email/:folder',
@@ -58,10 +58,10 @@ function Sidebar() {
       const inbox = DEFAULT_MAILBOXES.find((item) => item.id == 'INBOX')!;
       const outbox = DEFAULT_MAILBOXES.find((item) => item.id == 'Outbox')!;
       return {
-        inbox: { ...inbox, title: inbox.name },
-        outbox: { ...outbox, title: outbox.name },
+        inbox: { ...inbox, title: inbox.name, key: inbox.name.toLowerCase() },
+        outbox: { ...outbox, title: outbox.name, key: outbox.name.toLowerCase() },
         private: DEFAULT_MAILBOXES.filter((item) => !['Outbox', 'INBOX'].includes(item.id)).map(
-          (item) => ({ ...item, title: inbox.name }),
+          (item) => ({ ...item, title: inbox.name, key: item.name.toLowerCase() }),
         ),
         smart: [],
         custom: [],
@@ -76,15 +76,21 @@ function Sidebar() {
             index,
             title: DEFAULT_MAILBOXES[index].name,
             icon: DEFAULT_MAILBOXES[index].icon,
+            key: item.name!.toLowerCase(),
           };
         }
-        return { ...item, title: item.name!, index: 0, icon: undefined };
+        return {
+          ...item,
+          title: item.name!,
+          index: 0,
+          icon: undefined,
+          key: item.name!.toLowerCase(),
+        };
       })
       .filter((item) => {
         if (['Outbox', 'INBOX'].includes(item.name!)) {
           return true;
         }
-        console.log('...', data?.mailUser?.settings?.mailboxes);
         return data?.mailUser?.settings?.mailboxes.includes(item.namespace + '.' + item.name);
       })
       .sort((l, r) => l.index - r.index);
@@ -99,7 +105,7 @@ function Sidebar() {
     };
   }, [data?.mailUser, data?.mailboxes]);
 
-  console.log('mailboxes', mailboxes);
+  console.log('mailboxes', mailboxes, 'selectedKeys', selectedKeys);
 
   return (
     <AsideWorkspace width={275} collapsible={false} className="email-sidebar-aside" padding={false}>
@@ -126,59 +132,29 @@ function Sidebar() {
             {mailboxes.private.map((item) => (
               <Menu.Item
                 className="mb-3"
-                url={`/email/${item.name!.toLowerCase()}`}
+                url={`/email/${item.key}`}
                 titleClassName="fw-bolder"
                 icon={<Icon className="svg-icon-2 me-3" name={item.icon!} />}
-                key={item.name}
+                key={item.key}
               >
                 {item.title}
               </Menu.Item>
             ))}
-            {/* <Menu.Item
-              className="mb-3"
-              url="/email/marked"
-              titleClassName="fw-bolder"
-              icon={<Icon className="svg-icon-2 me-3" name="Duotune/abs024" />}
-              key="marked"
-            >
-              星标邮件
-            </Menu.Item> */}
-            {/* <Menu.Item
-              className="mb-3"
-              url="/email/sent"
-              titleClassName="fw-bolder"
-              icon={<Icon className="svg-icon-2 me-3" name="Duotune/gen016" />}
-              key="sent"
-            >
-              已发送
-            </Menu.Item>
-            <Menu.Item
-              className="mb-3"
-              url="/email/drafts"
-              titleClassName="fw-bolder"
-              icon={<Icon className="svg-icon-2 me-3" name="Duotune/gen009" />}
-              key="drafts"
-            >
-              草稿
-            </Menu.Item>
-            <Menu.Item
-              className="mb-3"
-              url="/email/archive"
-              titleClassName="fw-bolder"
-              icon={<Icon className="svg-icon-2 me-3" name="Duotune/fil016" />}
-              key="archive"
-            >
-              归档
-            </Menu.Item>
-            <Menu.Item
-              className="mb-3"
-              url="/email/spam"
-              titleClassName="fw-bolder"
-              icon={<Icon className="svg-icon-2 me-3" name="Duotune/gen027" />}
-              key="spam"
-            >
-              垃圾邮件
-            </Menu.Item> */}
+            {mailboxes.custom.length && (
+              <>
+                <Menu.Section>自定义</Menu.Section>
+                {mailboxes.custom.map((item) => (
+                  <Menu.Item
+                    className="mb-3"
+                    url={`/email/${item.key}`}
+                    titleClassName="fw-bolder"
+                    key={item.key}
+                  >
+                    {item.title}
+                  </Menu.Item>
+                ))}
+              </>
+            )}
           </Menu>
           <Menu rounded={true} className="menu-state-bg menu-state-title-primary">
             <Menu.Section>标签</Menu.Section>

@@ -29,19 +29,63 @@ export type MenuProps = {
   onOpenChange?: OpenCallback;
 };
 
+function unpack(node: any): any[] {
+  const newChildren = [];
+  const originalChildren: any[] = React.Children.toArray(node.props.children);
+  for (const child of originalChildren) {
+    if (!child) {
+      continue;
+    }
+    if (child.type === React.Fragment) {
+      newChildren.push(...unpack(child));
+    } else {
+      newChildren.push(child);
+    }
+  }
+  return newChildren;
+}
+
 const InternalMenu = React.forwardRef(function (props: any, ref: any) {
-  const { children, className, mode = 'vertical', rounded, fit } = props;
+  const { children, className, mode = 'vertical', rounded = true, fit } = props;
 
   const _children = useMemo(() => {
-    return React.Children.map(
-      children,
-      (item: any) =>
-        item &&
-        React.cloneElement(item, {
-          menuKey: item.key || uuid(),
-          path: item.key + '/',
-        }),
-    ).filter((item: any) => !!item);
+    const newChildren = [];
+    const originalChildren: any[] = React.Children.toArray(children);
+    for (const child of originalChildren) {
+      if (!child) {
+        continue;
+      }
+      if (child.type === React.Fragment) {
+        newChildren.push(
+          ...unpack(child).map((x) => {
+            const key = x.key.replace(/^[^$]+[$]/, '');
+            return React.cloneElement(x, {
+              menuKey: key || uuid(),
+              path: key + '/',
+            });
+          }),
+        );
+      } else {
+        const key = child.key.replace(/^[^$]+[$]/, '');
+        newChildren.push(
+          React.cloneElement(child, {
+            menuKey: key || uuid(),
+            path: key + '/',
+          }),
+        );
+      }
+    }
+    return newChildren;
+
+    // return React.Children.map(
+    //   children,
+    //   (item: any) =>
+    //     item &&
+    //     React.cloneElement(item, {
+    //       menuKey: item.key || uuid(),
+    //       path: item.key + '/',
+    //     }),
+    // ).filter((item: any) => !!item);
   }, [children]);
   return (
     <div
