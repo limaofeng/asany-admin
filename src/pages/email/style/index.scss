@@ -98,6 +98,26 @@
         }
       }
 
+      .mailbox-is-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        img {
+          width: 80%;
+        }
+        .empty-title {
+          padding: 16px 0;
+          font-weight: 400;
+          font-size: 14px;
+        }
+        .empty-subtitle {
+          color: #858585;
+          font-size: 13px;
+        }
+      }
+
       .mailbox-list {
         height: calc(100vh - 2rem - 51px - 2rem) !important;
         margin-top: 0;

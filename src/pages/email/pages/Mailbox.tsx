@@ -11,11 +11,11 @@ import { useHistory } from 'umi';
 import moment from 'moment';
 
 import { useMailboxMessagesQuery } from '../hooks';
-import { toPlainText } from '../utils';
+import { DEFAULT_MAILBOXES, toPlainText } from '../utils';
 
 import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
 
-import { Card, ContentWrapper, Input } from '@/pages/Metronic/components';
+import { Card, ContentWrapper, Input, NProgress } from '@/pages/Metronic/components';
 import type { MailboxMessage } from '@/types';
 
 interface MailboxState {
@@ -133,7 +133,7 @@ function Mailbox(props: MailboxProps) {
   state.current.folder = folder;
   state.current.activeId = activeId;
 
-  const { data, refetch } = useMailboxMessagesQuery({
+  const { data, loading, refetch } = useMailboxMessagesQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
       filter: {
@@ -227,6 +227,20 @@ function Mailbox(props: MailboxProps) {
     refetch();
   }, [refetch]);
 
+  const mailbox = useMemo(() => {
+    const _mailbox = DEFAULT_MAILBOXES.find((item) => item.id.toLowerCase() == folder);
+    if (!_mailbox) {
+      return {
+        id: folder,
+        name: folder,
+        icon: undefined,
+      };
+    }
+    return _mailbox;
+  }, [folder]);
+
+  console.log('mailbox', mailbox);
+
   return (
     <ContentWrapper className="apps-email-mailbox" header={false} footer={false}>
       <Resizer
@@ -251,8 +265,10 @@ function Mailbox(props: MailboxProps) {
             </Card.Header>
             <Card.Body>
               <div className="mailbox-list-header">
-                <Icon className="svg-icon-5 svg-icon-success" name="Duotune/com002" />
-                <span className="box-name">收件箱</span>
+                {mailbox.icon && (
+                  <Icon className="svg-icon-5 svg-icon-success" name={mailbox.icon} />
+                )}
+                <span className="box-name">{mailbox.name}</span>
               </div>
               <OverlayScrollbarsComponent
                 ref={scrollbar}
@@ -266,17 +282,31 @@ function Mailbox(props: MailboxProps) {
                   // },
                 }}
               >
-                <Shortcuts className="mailbox-list-inner" name="MAILBOX" handler={handleShortcut}>
-                  {messages.map((item) => (
-                    <MailMessage
-                      onClick={handleMessageClick}
-                      key={item.id}
-                      data={item as any}
-                      mailbox={folder}
-                      active={item.id == activeId}
-                    />
-                  ))}
-                </Shortcuts>
+                <NProgress isAnimating={loading} position="top" />
+                {messages.length ? (
+                  <Shortcuts className="mailbox-list-inner" name="MAILBOX" handler={handleShortcut}>
+                    {messages.map((item) => (
+                      <MailMessage
+                        onClick={handleMessageClick}
+                        key={item.id}
+                        data={item as any}
+                        mailbox={folder}
+                        active={item.id == activeId}
+                      />
+                    ))}
+                  </Shortcuts>
+                ) : (
+                  <div
+                    className="mailbox-is-empty"
+                    style={{
+                      height: '100%',
+                    }}
+                  >
+                    <img src="/assets/media/illustrations/dozzy-1/4.png" />
+                    <span className="empty-title">此文件夹为空</span>
+                    <span className="empty-subtitle">请查看其他文件夹</span>
+                  </div>
+                )}
               </OverlayScrollbarsComponent>
             </Card.Body>
           </Card>

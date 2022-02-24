@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
 import { useRouteMatch } from 'umi';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { useMailUserQuery } from '../hooks';
 import { DEFAULT_MAILBOXES } from '../utils';
@@ -61,7 +62,7 @@ function Sidebar() {
         inbox: { ...inbox, title: inbox.name, key: inbox.name.toLowerCase() },
         outbox: { ...outbox, title: outbox.name, key: outbox.name.toLowerCase() },
         private: DEFAULT_MAILBOXES.filter((item) => !['Outbox', 'INBOX'].includes(item.id)).map(
-          (item) => ({ ...item, title: inbox.name, key: item.name.toLowerCase() }),
+          (item) => ({ ...item, title: item.name, key: item.name.toLowerCase() }),
         ),
         smart: [],
         custom: [],
@@ -111,7 +112,12 @@ function Sidebar() {
     <AsideWorkspace width={275} collapsible={false} className="email-sidebar-aside" padding={false}>
       <div className="email-sidebar">
         <Button className="email-compose text-uppercase">写信</Button>
-        <div className="email-sidebar-body hover-scroll-y">
+        <OverlayScrollbarsComponent
+          className="email-sidebar-body custom-scrollbar"
+          options={{
+            scrollbars: { autoHide: 'scroll' },
+          }}
+        >
           <Menu
             className="menu-title-gray-600 menu-icon-gray-400 menu-state-bg menu-state-primary menu-state-icon-primary menu-state-bullet-primary mb-10"
             accordion={false}
@@ -174,7 +180,7 @@ function Sidebar() {
               添加标签
             </Menu.Item>
           </Menu>
-        </div>
+        </OverlayScrollbarsComponent>
         <SidebarFooter onAction={handleOpenPreferences} />
       </div>
       <Preferences

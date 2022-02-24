@@ -7,22 +7,22 @@ export const DEFAULT_MAILBOXES = [
   {
     id: 'Sent',
     name: '已发送',
-    icon: 'Duotune/com010',
+    icon: 'Duotune/gen016',
   },
   {
     id: 'Drafts',
     name: '草稿',
-    icon: 'Duotune/com010',
+    icon: 'Duotune/gen009',
   },
   {
     id: 'Archive',
     name: '归档',
-    icon: 'Duotune/fil016',
+    icon: 'Duotune/lay010',
   },
   {
     id: 'Spam',
     name: '垃圾邮件',
-    icon: 'Duotune/gen027',
+    icon: 'Duotune/fil015',
   },
   {
     id: 'Trash',
