@@ -21,3 +21,4 @@ export * from './Separator';
 export * from './Popover';
 export * from './Tooltip';
 export * from './NProgress';
+export * from './InfiniteScroll';

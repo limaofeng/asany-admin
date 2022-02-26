@@ -8,7 +8,7 @@ import Container from './Container';
 const Progress: React.FC<{
   isAnimating: boolean;
   position: 'top' | 'bottom';
-}> = ({ isAnimating }) => {
+}> = ({ isAnimating, position = 'top' }) => {
   const { animationDuration, isFinished, progress } = useNProgress({
     isAnimating,
   });
@@ -29,7 +29,7 @@ const Progress: React.FC<{
   }, [isFinished]);
 
   return (
-    <Container animationDuration={animationDuration} isFinished={isFinished}>
+    <Container position={position} animationDuration={animationDuration} isFinished={isFinished}>
       <Bar animationDuration={animationDuration} progress={progressRef.current} />
     </Container>
   );

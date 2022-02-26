@@ -118,6 +118,10 @@
         }
       }
 
+      .infinite-scroll-container {
+        position: relative;
+      }
+
       .mailbox-list {
         height: calc(100vh - 2rem - 51px - 2rem) !important;
         margin-top: 0;
@@ -127,9 +131,13 @@
           background-color: #fff;
         }
 
-        .mailbox-list-inner {
-          padding-top: 1px;
+        .infinite-scroll-inner {
+          min-height: 100%;
           background-color: #fff;
+          &.empty {
+            display: flex;
+            align-items: center;
+          }
           &:focus-within {
             .email-message.active {
               background-color: #e7f2fb;
@@ -142,7 +150,7 @@
         }
 
         .email-message {
-          position: relative;
+          position: absolute;
           width: 100%;
           height: 80px;
           padding: 0.25rem 1.25rem 0 0;

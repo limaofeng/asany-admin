@@ -44,8 +44,6 @@ function Sidebar() {
 
   const { data } = useMailUserQuery({ fetchPolicy: 'cache-and-network' });
 
-  console.log(selectedKeys, data?.mailUser, data?.mailboxes);
-
   const handleClosePreferences = useCallback(() => {
     setVisiblePreferences(false);
   }, []);
@@ -62,7 +60,7 @@ function Sidebar() {
         inbox: { ...inbox, title: inbox.name, key: inbox.name.toLowerCase() },
         outbox: { ...outbox, title: outbox.name, key: outbox.name.toLowerCase() },
         private: DEFAULT_MAILBOXES.filter((item) => !['Outbox', 'INBOX'].includes(item.id)).map(
-          (item) => ({ ...item, title: item.name, key: item.name.toLowerCase() }),
+          (item) => ({ ...item, title: item.name, key: item.name.toLowerCase(), count: 0 }),
         ),
         smart: [],
         custom: [],
@@ -106,6 +104,8 @@ function Sidebar() {
     };
   }, [data?.mailUser, data?.mailboxes]);
 
+  const unreadNumber = useMemo(() => data?.inbox?.unread || 0, [data?.inbox?.unread]);
+
   console.log('mailboxes', mailboxes, 'selectedKeys', selectedKeys);
 
   return (
@@ -130,6 +130,7 @@ function Sidebar() {
               url="/email/inbox"
               titleClassName="fw-bolder"
               icon={<Icon className="svg-icon-2 me-3" name="Duotune/com010" />}
+              badge={!!unreadNumber && <Badge lightStyle="success">{unreadNumber}</Badge>}
               key="inbox"
             >
               {mailboxes.inbox.title}
@@ -141,6 +142,10 @@ function Sidebar() {
                 url={`/email/${item.key}`}
                 titleClassName="fw-bolder"
                 icon={<Icon className="svg-icon-2 me-3" name={item.icon!} />}
+                badge={
+                  !!item.count &&
+                  item.key == 'drafts' && <Badge lightStyle="warning">{item.count}</Badge>
+                }
                 key={item.key}
               >
                 {item.title}

@@ -117,6 +117,7 @@
     "@types/lodash": "^4.14.178",
     "@types/md5": "^2.3.1",
     "@types/moment": "^2.13.0",
+    "@types/overlayscrollbars": "^1.12.1",
     "@types/react": "^17.0.38",
     "@types/react-color": "^3.0.6",
     "@types/react-dom": "^17.0.11",

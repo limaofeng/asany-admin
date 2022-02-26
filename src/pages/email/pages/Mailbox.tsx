@@ -1,34 +1,51 @@
+import type { CSSProperties } from 'react';
+import { useEffect } from 'react';
 import React, { useCallback, useMemo, useReducer, useRef } from 'react';
 
 import { useRouteMatch } from 'react-router-dom';
 import { Resizer } from '@asany/editor';
 import classnames from 'classnames';
 import Icon from '@asany/icons';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { debounce } from 'lodash';
-import { Shortcuts } from '@asany/shortcuts';
 import { useHistory } from 'umi';
 import moment from 'moment';
 
-import { useMailboxMessagesQuery } from '../hooks';
+import { useCountUnreadLazyQuery, useMailboxMessagesQuery } from '../hooks';
 import { DEFAULT_MAILBOXES, toPlainText } from '../utils';
 
 import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
 
-import { Card, ContentWrapper, Input, NProgress } from '@/pages/Metronic/components';
-import type { MailboxMessage } from '@/types';
+import type { InfiniteScrollRef, ShortcutEvent } from '@/pages/Metronic/components';
+import {
+  Card,
+  ContentWrapper,
+  InfiniteScroll,
+  Input,
+  NProgress,
+} from '@/pages/Metronic/components';
+import type { MailboxMessage, MailboxMessageConnection } from '@/types';
+import { sleep } from '@/utils';
 
 interface MailboxState {
   width: number;
   folder: string;
   activeId?: string;
+  pageIndex: number[];
+  viewport: {
+    startIndex: number;
+    endIndex: number;
+    size: number;
+  };
   messages: MailboxMessage[];
+  pages: Map<number, MailboxMessageConnection>;
+  pagination: typeof DEFAULT_PAGINATION;
 }
 
 const MIN_WIDTH = 320;
 const MAX_WIDTH = 500;
 
 type MailMessageProps = {
+  style?: CSSProperties;
   mailbox: string;
   data: MailboxMessage;
   onClick: (id: string) => void;
@@ -36,14 +53,18 @@ type MailMessageProps = {
 };
 
 function MailMessage(props: MailMessageProps) {
-  const { data, active, onClick, mailbox } = props;
+  const { style, data, active, onClick, mailbox } = props;
 
   const handleClick = useCallback(() => {
     onClick(data.id);
   }, [data.id, onClick]);
 
   return (
-    <div onClick={handleClick} className={classnames('email-message d-flex flex-row', { active })}>
+    <div
+      style={style}
+      onClick={handleClick}
+      className={classnames('email-message d-flex flex-row', { active })}
+    >
       <div
         className={classnames('d-flex flex-column email-message-actions', {
           'message-unread': !data.seen,
@@ -104,6 +125,16 @@ function renderWhose(data: MailboxMessage, mailbox: string) {
   return data.from.map((item) => item.name || item.localPart).join(',');
 }
 
+const DEFAULT_PAGINATION = {
+  current: 0,
+  totalCount: 0,
+  pageSize: 0,
+  totalPage: 0,
+  currentPage: 0,
+};
+
+const LIST_ITEM = 80;
+
 function Mailbox(props: MailboxProps) {
   const {
     children,
@@ -122,11 +153,19 @@ function Mailbox(props: MailboxProps) {
 
   const history = useHistory();
 
-  const scrollbar = useRef<OverlayScrollbarsComponent>(null);
+  const scrollbar = useRef<InfiniteScrollRef>(null);
   const state = useRef<MailboxState>({
     width: MIN_WIDTH,
     folder,
     messages: [],
+    pageIndex: [1],
+    pages: new Map(),
+    pagination: DEFAULT_PAGINATION,
+    viewport: {
+      startIndex: 0,
+      endIndex: 15,
+      size: 15,
+    },
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
@@ -141,6 +180,7 @@ function Mailbox(props: MailboxProps) {
       },
     },
   });
+  const [countUnread] = useCountUnreadLazyQuery({ fetchPolicy: 'cache-and-network' });
 
   const forceResize = useMemo(
     () =>
@@ -152,7 +192,8 @@ function Mailbox(props: MailboxProps) {
 
   const handleMessageClick = useCallback(
     (id: string) => {
-      const message = state.current.messages.find((item) => item.id == id);
+      const message = state.current.messages.find((item) => item && item.id == id);
+      console.log('handleMessageClick', message?.seen);
       history.push(`/email/${state.current.folder}/${id}`, { message });
     },
     [history],
@@ -172,60 +213,100 @@ function Mailbox(props: MailboxProps) {
 
   const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, state.current.width));
 
-  const pagination = useMemo(() => {
-    if (!data?.mailboxMessages || !activeId) {
-      return {};
-    }
-    const { edges, ..._pagination } = data.mailboxMessages;
-    const index = edges.findIndex((item) => item.node.id == activeId);
-    return {
-      ..._pagination,
-      current: (_pagination.currentPage - 1) * _pagination.pageSize + index + 1,
-    };
-  }, [data?.mailboxMessages, activeId]);
+  useMemo(() => {
+    state.current.pagination = { ...DEFAULT_PAGINATION };
+    state.current.messages = [];
+    state.current.pages.clear();
+    state.current.folder = folder;
+  }, [folder]);
 
-  const messages = useMemo(() => {
-    if (!data?.mailboxMessages) {
-      return [];
-    }
-    return data.mailboxMessages.edges.map((item) => item.node) as MailboxMessage[];
-  }, [data?.mailboxMessages]);
+  // state.current.pagination = pagination;
 
-  state.current.messages = messages;
+  // state.current.messages = messages;
+  // state.current.pages.set(pagination.currentPage, messages);
 
   const handleShortcut = useCallback(
-    (action, event?: React.KeyboardEvent) => {
-      event && event.preventDefault();
+    async (action, e: ShortcutEvent) => {
       const { messages: _messages, activeId: _activeId } = state.current;
-      const index = _messages.findIndex((item) => item.id == _activeId);
+      const index = _messages.findIndex((item) => item && item.id == _activeId);
       if (action == 'NEXT') {
-        if (index == -1) {
-          handleMessageClick(_messages[0].id);
-        } else if (_messages.length != index + 1) {
-          handleMessageClick(_messages[index + 1].id);
+        let newIndex;
+        if ((index + 1) * LIST_ITEM < e.viewport.start || index * LIST_ITEM > e.viewport.end) {
+          newIndex = Math.floor(e.viewport.start / LIST_ITEM);
+          e.scrollbar.scroll(newIndex * LIST_ITEM);
+        } else {
+          newIndex = Math.min(_messages.length - 1, index == -1 ? 0 : index + 1);
+          if ((index + 2) * LIST_ITEM > e.viewport.end) {
+            e.scrollbar.scroll((index + 2) * LIST_ITEM - e.viewport.height);
+          }
         }
+        let message = _messages[newIndex];
+        while (!message) {
+          await sleep(600);
+        }
+        message = _messages[newIndex];
+        handleMessageClick(message.id);
       } else if (action == 'PREVIOUS') {
-        if (index == -1) {
-          handleMessageClick(_messages[_messages.length - 1].id);
-        } else if (index > 0) {
-          handleMessageClick(_messages[index - 1].id);
+        let newIndex;
+        if ((index + 1) * LIST_ITEM < e.viewport.start || index * LIST_ITEM > e.viewport.end) {
+          newIndex = Math.floor(e.viewport.end / LIST_ITEM);
+          e.scrollbar.scroll((newIndex + 1) * LIST_ITEM - e.viewport.height);
+        } else {
+          newIndex = Math.max(0, index == -1 ? _messages.length - 1 : index - 1);
+        }
+        let message = _messages[newIndex];
+        while (!message) {
+          await sleep(600);
+        }
+        message = _messages[newIndex];
+        handleMessageClick(message.id);
+        if (newIndex * LIST_ITEM < e.viewport.start) {
+          e.scrollbar.scroll(newIndex * LIST_ITEM);
         }
       }
     },
     [handleMessageClick],
   );
 
-  const handleNext = useCallback(() => {
-    handleShortcut('NEXT');
-  }, [handleShortcut]);
+  const handleGoto = useCallback(
+    async (index: number) => {
+      const { messages: _messages } = state.current;
+      let message = _messages[index];
+      const viewport = scrollbar.current!.viewport;
+      if (index * LIST_ITEM < viewport.start || index * LIST_ITEM > viewport.end) {
+        scrollbar.current!.scrollTo(index * LIST_ITEM);
+      }
+      while (!message) {
+        await sleep(600);
+      }
+      message = _messages[index];
+      handleMessageClick(message.id);
+    },
+    [handleMessageClick],
+  );
 
-  const handlePrev = useCallback(() => {
-    handleShortcut('PREVIOUS');
-  }, [handleShortcut]);
+  const handleScrollTo = useCallback(async (index: number) => {
+    while (!state.current.pagination?.totalCount) {
+      await sleep(300);
+    }
+    state.current.pagination.current = index;
+    scrollbar.current?.scrollTo((index - 1) * LIST_ITEM);
+  }, []);
 
-  const refresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  const refresh = useCallback(
+    (page: number) => {
+      refetch({
+        filter: {
+          mailbox: state.current.folder,
+        },
+        page,
+      });
+      if (state.current.folder == 'inbox') {
+        countUnread();
+      }
+    },
+    [countUnread, refetch],
+  );
 
   const mailbox = useMemo(() => {
     const _mailbox = DEFAULT_MAILBOXES.find((item) => item.id.toLowerCase() == folder);
@@ -239,7 +320,71 @@ function Mailbox(props: MailboxProps) {
     return _mailbox;
   }, [folder]);
 
-  console.log('mailbox', mailbox);
+  const reset = useCallback(function (mailboxMessages: MailboxMessageConnection) {
+    const { messages } = state.current;
+    if (!mailboxMessages) {
+      messages.length = 0;
+      return;
+    }
+    const { currentPage, edges, totalCount, totalPage, pageSize } = mailboxMessages;
+    messages.length = totalCount;
+
+    const startIndex = (currentPage - 1) * pageSize;
+    const items = edges.map((item) => item.node) as MailboxMessage[];
+
+    items.forEach((item, i) => {
+      messages[startIndex + i] = item;
+    });
+
+    console.log('更新', mailboxMessages.currentPage);
+    state.current.pages.set(currentPage, mailboxMessages);
+
+    state.current.pagination = {
+      totalPage,
+      currentPage,
+      totalCount,
+      pageSize,
+      current: state.current.pagination.current,
+    };
+  }, []);
+
+  const { current: handleLoader } = useRef(async (page: number) => {
+    const {
+      data: { mailboxMessages },
+    } = await refetch({
+      filter: {
+        mailbox: state.current.folder,
+      },
+      page,
+    });
+    reset(mailboxMessages as any);
+  });
+
+  useEffect(() => {
+    console.log('..............');
+    if (!data?.mailboxMessages) {
+      return;
+    }
+    if (data.mailboxMessages == state.current.pages.get(data.mailboxMessages.currentPage)) {
+      console.log('已缓存，忽略更新', data.mailboxMessages.currentPage);
+      return;
+    }
+    reset(data.mailboxMessages as any);
+    forceRender();
+  }, [data?.mailboxMessages, reset]);
+
+  useMemo(() => {
+    if (!activeId) {
+      state.current.pagination.current = -1;
+    }
+    const index = state.current.messages.findIndex((item) => item && item.id == activeId);
+    if (index == -1) {
+      return;
+    }
+    state.current.pagination.current = index + 1;
+  }, [activeId]);
+
+  const { messages, pagination } = state.current;
 
   return (
     <ContentWrapper className="apps-email-mailbox" header={false} footer={false}>
@@ -270,44 +415,46 @@ function Mailbox(props: MailboxProps) {
                 )}
                 <span className="box-name">{mailbox.name}</span>
               </div>
-              <OverlayScrollbarsComponent
-                ref={scrollbar}
-                className="mailbox-list custom-scrollbar"
-                options={{
-                  scrollbars: { autoHide: 'scroll' },
-                  // callbacks: {
-                  //   onScrollStart: () => {
-                  //     return false;
-                  //   },
-                  // },
-                }}
-              >
-                <NProgress isAnimating={loading} position="top" />
-                {messages.length ? (
-                  <Shortcuts className="mailbox-list-inner" name="MAILBOX" handler={handleShortcut}>
-                    {messages.map((item) => (
-                      <MailMessage
-                        onClick={handleMessageClick}
-                        key={item.id}
-                        data={item as any}
-                        mailbox={folder}
-                        active={item.id == activeId}
-                      />
-                    ))}
-                  </Shortcuts>
-                ) : (
-                  <div
-                    className="mailbox-is-empty"
-                    style={{
-                      height: '100%',
-                    }}
-                  >
-                    <img src="/assets/media/illustrations/dozzy-1/4.png" />
-                    <span className="empty-title">此文件夹为空</span>
-                    <span className="empty-subtitle">请查看其他文件夹</span>
-                  </div>
-                )}
-              </OverlayScrollbarsComponent>
+              <div className="infinite-scroll-container">
+                <NProgress isAnimating={!!loading} position="top" />
+                <InfiniteScroll
+                  ref={scrollbar}
+                  pagination={pagination}
+                  itemHeight={LIST_ITEM}
+                  onShortcut={handleShortcut}
+                  loader={handleLoader}
+                  className="mailbox-list"
+                >
+                  {(startIndex, endIndex, e) => {
+                    if (e.isEmpty) {
+                      return (
+                        <div
+                          className="mailbox-is-empty"
+                          style={{
+                            height: '100%',
+                          }}
+                        >
+                          <img src="/assets/media/illustrations/dozzy-1/4.png" />
+                          <span className="empty-title">此文件夹为空</span>
+                          <span className="empty-subtitle">请查看其他文件夹</span>
+                        </div>
+                      );
+                    }
+                    return messages
+                      .slice(startIndex, endIndex)
+                      .map((item, index) => (
+                        <MailMessage
+                          style={{ top: (startIndex + index) * e.itemHeight + 1 }}
+                          onClick={handleMessageClick}
+                          key={item.id}
+                          data={item as any}
+                          mailbox={folder}
+                          active={item.id == activeId}
+                        />
+                      ));
+                  }}
+                </InfiniteScroll>
+              </div>
             </Card.Body>
           </Card>
         </div>
@@ -315,9 +462,10 @@ function Mailbox(props: MailboxProps) {
       </Resizer>
       {React.cloneElement(children as any, {
         pagination,
-        next: handleNext,
-        prev: handlePrev,
+        scrollTo: handleScrollTo,
+        goto: handleGoto,
         refresh,
+        message: state.current.messages.find((item) => item && item.id == activeId),
       })}
     </ContentWrapper>
   );

@@ -10,7 +10,7 @@ const keymap = {
     EXIT: ['esc'],
     ENTER: ['enter'],
   },
-  MAILBOX: {
+  GENERAL: {
     NEXT: ['down'],
     PREVIOUS: ['up'],
   },

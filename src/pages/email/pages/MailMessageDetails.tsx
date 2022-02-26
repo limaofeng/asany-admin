@@ -102,10 +102,25 @@ function MailMessageActions(props: MailMessageActionsProps) {
   );
 }
 
-type PaginationProps = MessageParentProps;
+type PaginationProps = {
+  pagination: {
+    current: number;
+    totalCount: number;
+    pageSize: number;
+    totalPage: number;
+    currentPage: number;
+  };
+  goto: (index: number) => void;
+};
 
 function Pagination(props: PaginationProps) {
-  const { pagination, next, prev } = props;
+  const { pagination, goto } = props;
+  const handlePrev = useCallback(() => {
+    goto(Math.max(0, pagination.current - 2));
+  }, [goto, pagination]);
+  const handleNext = useCallback(() => {
+    goto(Math.min(pagination.totalCount - 1, pagination.current));
+  }, [goto, pagination]);
   return (
     <div className="d-flex align-items-center">
       <span className="fw-bold text-muted me-2">
@@ -113,7 +128,7 @@ function Pagination(props: PaginationProps) {
       </span>
       <Tooltip placement="bottom" title="上一封邮件">
         <Button
-          onClick={prev}
+          onClick={handlePrev}
           icon={<Icon name="Duotune/arr074" className="svg-icon-2 m-0" />}
           size="sm"
           variant="light"
@@ -125,7 +140,7 @@ function Pagination(props: PaginationProps) {
       </Tooltip>
       <Tooltip placement="bottom" title="下一封邮件">
         <Button
-          onClick={next}
+          onClick={handleNext}
           icon={<Icon name="Duotune/arr071" className="svg-icon-2 m-0" />}
           size="sm"
           variant="light"
@@ -382,10 +397,10 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
     match: {
       params: { folder: mailbox, id },
     },
-    location,
+    message: passthrough,
     pagination,
-    next,
-    prev,
+    goto,
+    scrollTo,
     refresh,
   } = props;
 
@@ -400,16 +415,21 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
   const [toFolder] = useMoveMailboxMessageToFolderMutation();
   const [updateFlags] = useUpdateMailboxMessageFlagsMutation();
 
-  const temp = useRef<{ message?: MailboxMessage; autoReadExecuted?: boolean }>({});
+  const temp = useRef<{ message?: MailboxMessage; autoReadExecuted?: boolean; pagination: any }>({
+    pagination,
+  });
 
-  const message = (data?.message as MailboxMessage | undefined) || location.state?.message;
+  const message = (data?.message as MailboxMessage | undefined) || passthrough;
 
-  temp.current.message = !temp.current.message ? message : temp.current.message;
+  temp.current.message = message;
+  temp.current.pagination = pagination;
 
   const handleAction = useCallback(
     async (action: ActionType) => {
+      const _message = temp.current.message;
+      const _pagination = temp.current.pagination;
       if (action == 'read' || action == 'unread') {
-        updateFlags({
+        await updateFlags({
           variables: {
             id,
             flags: ['seen'],
@@ -417,7 +437,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
           },
         });
       } else if (action == 'deleted') {
-        updateFlags({
+        await updateFlags({
           variables: {
             id,
             flags: ['deleted'],
@@ -432,7 +452,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
           },
         });
       }
-      refresh && refresh();
+      refresh && refresh(Math.ceil(_message!.index! / _pagination.pageSize), _message!);
     },
     [id, refresh, toFolder, updateFlags],
   );
@@ -442,12 +462,27 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
   }, [id]);
 
   useEffect(() => {
-    if (!message || temp.current.autoReadExecuted || message.seen) {
+    if (!message || message.id != id) {
+      return;
+    }
+    if (temp.current.autoReadExecuted || message.seen) {
+      temp.current.autoReadExecuted = true;
       return;
     }
     temp.current.autoReadExecuted = true;
     handleAction('read');
-  }, [handleAction, message]);
+  }, [handleAction, id, message]);
+
+  useEffect(() => {
+    if (!data?.message) {
+      return;
+    }
+    const p = temp.current.pagination;
+    if (data?.message.index && p.current != data?.message.index) {
+      scrollTo && scrollTo(data.message.index);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.message]);
 
   return (
     <OverlayScrollbarsComponent
@@ -459,7 +494,10 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
           {message && (
             <MailMessageActions message={message} mailbox={mailbox} onAction={handleAction} />
           )}
-          <Pagination pagination={pagination} next={next} prev={prev} />
+          <Pagination
+            pagination={{ ...pagination, current: message?.index || pagination.current }}
+            goto={goto}
+          />
         </div>
         <div className="card-body">
           <div className="d-flex flex-wrap gap-2 justify-content-between mb-8">
@@ -500,9 +538,10 @@ interface MessageParentProps {
     totalPage: number;
     currentPage: number;
   };
-  next: () => void;
-  prev: () => void;
-  refresh?: () => void;
+  message: MailboxMessage;
+  goto: (index: number) => void;
+  scrollTo?: (index: number) => void;
+  refresh?: (index: number, message: MailboxMessage) => void;
 }
 
 interface MessageWrapperProps {

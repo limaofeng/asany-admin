@@ -13,6 +13,18 @@ query mailUser {
     id
     name
     namespace
+    count
+  }
+  inbox: mailbox(id: "inbox") {
+    id
+    unread: count(type: UNREAD)
+  }
+}
+
+query countUnread {
+  inbox: mailbox(id: "inbox") {
+    id
+    unread: count(type: UNREAD)
   }
 }
 
@@ -52,13 +64,14 @@ mutation updateMailboxMessageFlags($id: ID!, $flags: [String!]!, $mode: MailboxF
 
 query mailboxMessage($id: ID!) {
   message: mailboxMessage(id: $id) {
+    index
     ...MailboxMessageParts
     ...MailboxMessageFlagParts
   }
 }
 
-query mailboxMessages($user: ID, $filter: MailboxMessageFilter) {
-  mailboxMessages(user: $user, filter: $filter) {
+query mailboxMessages($user: ID, $filter: MailboxMessageFilter, $page: Int = 1) {
+  mailboxMessages(user: $user, filter: $filter, page: $page) {
     totalCount
     pageSize
     totalPage
