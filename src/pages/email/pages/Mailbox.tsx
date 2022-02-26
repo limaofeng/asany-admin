@@ -102,7 +102,8 @@ function MailMessageActions(props: MailMessageActionsProps) {
         mode: data.seen ? 'REMOVE' : 'ADD',
       },
     });
-  }, [data.id, data.seen, updateFlags]);
+    refresh();
+  }, [data.id, data.seen, refresh, updateFlags]);
 
   const handleArchive = useCallback(async () => {
     await toFolder({
@@ -536,7 +537,9 @@ function Mailbox(props: MailboxProps) {
                           style={{ top: (startIndex + index) * e.itemHeight + 1 }}
                           onClick={handleMessageClick}
                           key={item.id}
-                          refresh={() => refresh(Math.ceil((startIndex + index) / e.size))}
+                          refresh={() =>
+                            refresh(Math.ceil((startIndex + index) / e.pagination.pageSize))
+                          }
                           forwardNextMessage={() =>
                             item.id == activeId &&
                             handleGoto(Math.min(pagination.totalCount - 1, startIndex + index))

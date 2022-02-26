@@ -410,8 +410,6 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
     refresh,
   } = props;
 
-  console.log('...', props);
-
   const { data } = useMailboxMessageQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
