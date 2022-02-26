@@ -5,7 +5,7 @@ import { useRouteMatch } from 'umi';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { useMailUserQuery } from '../hooks';
-import { DEFAULT_MAILBOXES } from '../utils';
+import { DEFAULT_MAILBOXES, getDefaultMailboxBadgeStyle } from '../utils';
 
 import Preferences from './preferences';
 
@@ -130,27 +130,36 @@ function Sidebar() {
               url="/email/inbox"
               titleClassName="fw-bolder"
               icon={<Icon className="svg-icon-2 me-3" name="Duotune/com010" />}
-              badge={!!unreadNumber && <Badge lightStyle="success">{unreadNumber}</Badge>}
+              badge={
+                !!unreadNumber && (
+                  <Badge lightStyle={getDefaultMailboxBadgeStyle('inbox')! as any}>
+                    {unreadNumber}
+                  </Badge>
+                )
+              }
               key="inbox"
             >
               {mailboxes.inbox.title}
             </Menu.Item>
             <Menu.Section>文件夹</Menu.Section>
-            {mailboxes.private.map((item) => (
-              <Menu.Item
-                className="mb-3"
-                url={`/email/${item.key}`}
-                titleClassName="fw-bolder"
-                icon={<Icon className="svg-icon-2 me-3" name={item.icon!} />}
-                badge={
-                  !!item.count &&
-                  item.key == 'drafts' && <Badge lightStyle="warning">{item.count}</Badge>
-                }
-                key={item.key}
-              >
-                {item.title}
-              </Menu.Item>
-            ))}
+            {mailboxes.private.map((item) => {
+              const lightStyle = getDefaultMailboxBadgeStyle(item.key);
+              return (
+                <Menu.Item
+                  className="mb-3"
+                  url={`/email/${item.key}`}
+                  titleClassName="fw-bolder"
+                  icon={<Icon className="svg-icon-2 me-3" name={item.icon!} />}
+                  badge={
+                    !!lightStyle &&
+                    !!item.count && <Badge lightStyle={lightStyle as any}>{item.count}</Badge>
+                  }
+                  key={item.key}
+                >
+                  {item.title}
+                </Menu.Item>
+              );
+            })}
             {mailboxes.custom.length && (
               <>
                 <Menu.Section>自定义</Menu.Section>

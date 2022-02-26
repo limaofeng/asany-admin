@@ -10,7 +10,13 @@ import { debounce } from 'lodash';
 import { useHistory } from 'umi';
 import moment from 'moment';
 
-import { useCountUnreadLazyQuery, useMailboxMessagesQuery } from '../hooks';
+import {
+  CountUnreadDocument,
+  useCountUnreadLazyQuery,
+  useMailboxMessagesQuery,
+  useMoveMailboxMessageToFolderMutation,
+  useUpdateMailboxMessageFlagsMutation,
+} from '../hooks';
 import { DEFAULT_MAILBOXES, toPlainText } from '../utils';
 
 import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
@@ -45,6 +51,8 @@ const MIN_WIDTH = 320;
 const MAX_WIDTH = 500;
 
 type MailMessageProps = {
+  refresh: () => void;
+  forwardNextMessage: () => void;
   style?: CSSProperties;
   mailbox: string;
   data: MailboxMessage;
@@ -52,8 +60,102 @@ type MailMessageProps = {
   active: boolean;
 };
 
+type MailMessageActionsProps = {
+  refresh: () => void;
+  forwardNextMessage: () => void;
+  data: MailboxMessage;
+  mailbox: string;
+};
+
+function MailMessageActions(props: MailMessageActionsProps) {
+  const { data, mailbox, refresh, forwardNextMessage } = props;
+
+  const [toFolder] = useMoveMailboxMessageToFolderMutation({
+    updateQueries: {
+      mailboxMessages: (prev, { mutationResult }) => {
+        const updateId = mutationResult!.data!.moveMailboxMessageToFolder.id;
+        if (!prev.mailboxMessages.edges.some((item: any) => item.node.id == updateId)) {
+          return prev;
+        }
+        return {
+          ...prev,
+          mailboxMessages: {
+            ...prev.mailboxMessages,
+            totalCount: prev.mailboxMessages.totalCount - 1,
+            edges: prev.mailboxMessages.edges.filter(
+              (item: any) => item.node.id != mutationResult!.data!.moveMailboxMessageToFolder.id,
+            ),
+          },
+        };
+      },
+    },
+  });
+  const [updateFlags] = useUpdateMailboxMessageFlagsMutation({
+    refetchQueries: [CountUnreadDocument],
+  });
+
+  const toggleReadState = useCallback(async () => {
+    await updateFlags({
+      variables: {
+        id: data.id,
+        flags: ['seen'],
+        mode: data.seen ? 'REMOVE' : 'ADD',
+      },
+    });
+  }, [data.id, data.seen, updateFlags]);
+
+  const handleArchive = useCallback(async () => {
+    await toFolder({
+      variables: {
+        id: data.id,
+        mailbox: 'archive',
+      },
+    });
+    forwardNextMessage();
+    refresh();
+  }, [data.id, forwardNextMessage, refresh, toFolder]);
+
+  const handleTrash = useCallback(async () => {
+    await toFolder({
+      variables: {
+        id: data.id,
+        mailbox: 'trash',
+      },
+    });
+    forwardNextMessage();
+    refresh();
+  }, [data.id, forwardNextMessage, refresh, toFolder]);
+
+  return (
+    <div
+      className={classnames('d-flex flex-column email-message-actions', {
+        'message-unread': !data.seen,
+      })}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <a onClick={toggleReadState} className="flags-read">
+        <Icon
+          className="svg-icon-7 svg-icon-success"
+          name={data.seen ? 'Duotune/abs009' : 'Duotune/abs050'}
+        />
+      </a>
+      {mailbox != 'archive' && (
+        <a onClick={handleArchive}>
+          <Icon
+            className="svg-icon-6"
+            name={DEFAULT_MAILBOXES.find((item) => item.id == 'Archive')!.icon}
+          />
+        </a>
+      )}
+      <a onClick={handleTrash}>
+        <Icon className="svg-icon-5" name="Duotune/gen027" />
+      </a>
+    </div>
+  );
+}
+
 function MailMessage(props: MailMessageProps) {
-  const { style, data, active, onClick, mailbox } = props;
+  const { style, forwardNextMessage, data, active, onClick, mailbox, refresh } = props;
 
   const handleClick = useCallback(() => {
     onClick(data.id);
@@ -65,24 +167,12 @@ function MailMessage(props: MailMessageProps) {
       onClick={handleClick}
       className={classnames('email-message d-flex flex-row', { active })}
     >
-      <div
-        className={classnames('d-flex flex-column email-message-actions', {
-          'message-unread': !data.seen,
-        })}
-      >
-        <a className="flags-read">
-          <Icon
-            className="svg-icon-6 svg-icon-success"
-            name={data.seen ? 'Duotune/abs009' : 'Duotune/abs050'}
-          />
-        </a>
-        <a>
-          <Icon className="svg-icon-6" name="Duotune/fil016" />
-        </a>
-        <a>
-          <Icon className="svg-icon-5" name="Duotune/gen027" />
-        </a>
-      </div>
+      <MailMessageActions
+        mailbox={mailbox}
+        forwardNextMessage={forwardNextMessage}
+        refresh={refresh}
+        data={data}
+      />
       <div className="email-message-body d-flex flex-column">
         <div className="email-message-attrs">
           <Icon className="svg-icon-4 smart-type" name="Duotune/abs018" />
@@ -336,7 +426,7 @@ function Mailbox(props: MailboxProps) {
       messages[startIndex + i] = item;
     });
 
-    console.log('更新', mailboxMessages.currentPage);
+    // console.log('更新', mailboxMessages.currentPage);
     state.current.pages.set(currentPage, mailboxMessages);
 
     state.current.pagination = {
@@ -361,12 +451,11 @@ function Mailbox(props: MailboxProps) {
   });
 
   useEffect(() => {
-    console.log('..............');
     if (!data?.mailboxMessages) {
       return;
     }
     if (data.mailboxMessages == state.current.pages.get(data.mailboxMessages.currentPage)) {
-      console.log('已缓存，忽略更新', data.mailboxMessages.currentPage);
+      // console.log('已缓存，忽略更新', data.mailboxMessages.currentPage);
       return;
     }
     reset(data.mailboxMessages as any);
@@ -447,6 +536,11 @@ function Mailbox(props: MailboxProps) {
                           style={{ top: (startIndex + index) * e.itemHeight + 1 }}
                           onClick={handleMessageClick}
                           key={item.id}
+                          refresh={() => refresh(Math.ceil((startIndex + index) / e.size))}
+                          forwardNextMessage={() =>
+                            item.id == activeId &&
+                            handleGoto(Math.min(pagination.totalCount - 1, startIndex + index))
+                          }
                           data={item as any}
                           mailbox={folder}
                           active={item.id == activeId}

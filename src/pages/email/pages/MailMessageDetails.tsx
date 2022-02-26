@@ -13,7 +13,7 @@ import {
   useMoveMailboxMessageToFolderMutation,
   useUpdateMailboxMessageFlagsMutation,
 } from '../hooks';
-import { toPlainText } from '../utils';
+import { DEFAULT_MAILBOXES, toPlainText } from '../utils';
 
 import type { MailboxMessage } from '@/types';
 import { Badge, Button, Popover, Tooltip } from '@/pages/Metronic/components';
@@ -63,7 +63,10 @@ function MailMessageActions(props: MailMessageActionsProps) {
           onClick={buildClick('archive')}
           className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
         >
-          <Icon name="Duotune/com010" className="svg-icon-2 m-0" />
+          <Icon
+            name={DEFAULT_MAILBOXES.find((item) => item.id == 'Archive')!.icon}
+            className="svg-icon-2 m-0"
+          />
         </a>
       </Tooltip>
       <Tooltip placement="bottom" title="垃圾邮件">
@@ -71,7 +74,10 @@ function MailMessageActions(props: MailMessageActionsProps) {
           onClick={buildClick('spam')}
           className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
         >
-          <Icon name="Duotune/gen044" className="svg-icon-2 m-0" />
+          <Icon
+            name={DEFAULT_MAILBOXES.find((item) => item.id == 'Spam')!.icon}
+            className="svg-icon-2 m-0"
+          />
         </a>
       </Tooltip>
       <Tooltip placement="bottom" title="删除邮件">
