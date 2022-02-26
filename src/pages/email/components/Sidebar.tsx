@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
-import { useRouteMatch } from 'umi';
+import { Link, useRouteMatch } from 'umi';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { useMailUserQuery } from '../hooks';
@@ -111,7 +111,9 @@ function Sidebar() {
   return (
     <AsideWorkspace width={275} collapsible={false} className="email-sidebar-aside" padding={false}>
       <div className="email-sidebar">
-        <Button className="email-compose text-uppercase">写信</Button>
+        <Button as={Link} to="/email/compose" className="email-compose text-uppercase">
+          写信
+        </Button>
         <OverlayScrollbarsComponent
           className="email-sidebar-body custom-scrollbar"
           options={{

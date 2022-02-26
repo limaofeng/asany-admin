@@ -43,8 +43,8 @@ type ActiveColor =
   | 'gray-900';
 
 type ButtonColor = ActiveColor;
-export interface ButtonProps {
-  as?: 'button' | 'a' | React.ComponentType<any>;
+export type ButtonProps<AsProps> = {
+  as?: 'button' | 'a' | React.ComponentType<AsProps>;
   id?: string;
   variant?: Variant;
   variantStyle?: VariantStyle;
@@ -63,8 +63,8 @@ export interface ButtonProps {
   children?: React.ReactNode;
   loading?: boolean;
   onClick?: (e: React.MouseEvent) => void;
-  to?: string;
-}
+  // to?: string;
+} & AsProps;
 
 function Button(
   {
@@ -86,7 +86,7 @@ function Button(
     disabled,
     onClick,
     ...props
-  }: ButtonProps,
+  }: ButtonProps<any>,
   ref: any,
 ) {
   const buttonStyle = useMemo(() => {

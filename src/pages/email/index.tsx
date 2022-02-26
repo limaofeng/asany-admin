@@ -3,6 +3,7 @@ import { component, library } from 'sunmao';
 import MailMessageDetails from './pages/MailMessageDetails';
 import Sidebar from './components/Sidebar';
 import Mailbox from './pages/Mailbox';
+import ComposeMail from './pages/ComposeMail';
 
 import './style/index.scss';
 
@@ -18,6 +19,8 @@ class Contacts {
   Mailbox = Mailbox;
   @component()
   MailMessageDetails = MailMessageDetails;
+  @component()
+  Compose = ComposeMail;
 }
 
 export default new Contacts();

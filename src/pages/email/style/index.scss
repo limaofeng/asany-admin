@@ -18,6 +18,21 @@
   text-indent: 32px;
 }
 
+.apps-email-compose {
+  padding-top: 30px;
+  #kt_content_container {
+    display: flex;
+    flex-direction: row;
+  }
+  .email-compose-editor {
+    flex: 1;
+  }
+  .email-compose-tools {
+    margin-left: 30px;
+    width: 240px;
+  }
+}
+
 .email-sidebar-aside {
   .email-sidebar {
     display: flex;

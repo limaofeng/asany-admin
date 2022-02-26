@@ -1,9 +1,11 @@
-function ComposeMail() {
+import { Card, ContentWrapper } from '@/pages/Metronic/components';
+
+function MailEditor() {
   return (
-    <div className="card">
+    <div className="card flex-1 email-compose-editor">
       <div className="card-header align-items-center">
         <div className="card-title">
-          <h2>Compose Message</h2>
+          <h2>新信息</h2>
         </div>
       </div>
       <div className="card-body p-0">
@@ -129,9 +131,9 @@ function ComposeMail() {
                         className="progress-bar bg-primary"
                         role="progressbar"
                         /*      aria-valuemin="0"
-                        aria-valuemax="100"
-                        aria-valuenow="0"
-                        data-dz-uploadprogress="" */
+                  aria-valuemax="100"
+                  aria-valuenow="0"
+                  data-dz-uploadprogress="" */
                       />
                     </div>
                   </div>
@@ -350,6 +352,24 @@ function ComposeMail() {
         {/*--end::Form--*/}
       </div>
     </div>
+  );
+}
+
+function Tools() {
+  return (
+    <Card className="email-compose-tools">
+      <Card.Header>s1123123</Card.Header>
+      <Card.Body>sdfsfsdf</Card.Body>
+    </Card>
+  );
+}
+
+function ComposeMail() {
+  return (
+    <ContentWrapper className="apps-email-compose" footer={false}>
+      <MailEditor />
+      <Tools />
+    </ContentWrapper>
   );
 }
 
