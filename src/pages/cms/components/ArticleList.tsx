@@ -161,7 +161,7 @@ function ArticleActions(props: ArticleActionsProps) {
       onVisibleChange={setVisible}
       visible={visible}
     >
-      <Button variant="light" activeStyle="light" activeColor="primary" size="sm">
+      <Button variant="light" activeColor="light-primary" size="sm">
         操 作
         <Icon className="ms-2 svg-icon-5 m-0" name="Duotune/arr072" />
       </Button>

@@ -18,6 +18,7 @@ import { DEFAULT_MAILBOXES, toPlainText } from '../utils';
 import type { MailboxMessage } from '@/types';
 import { Badge, Button, Popover, Tooltip } from '@/pages/Metronic/components';
 import Avatar from '@/pages/Metronic/components/base/Symbol/Avatar';
+import { sleep } from '@/utils';
 
 export type MailboxRouteParams = {
   folder: string;
@@ -138,8 +139,7 @@ function Pagination(props: PaginationProps) {
           icon={<Icon name="Duotune/arr074" className="svg-icon-2 m-0" />}
           size="sm"
           variant="light"
-          activeStyle="light"
-          activeColor="primary"
+          activeColor="light-primary"
           className="me-3"
           disabled={pagination.current == 1}
         />
@@ -150,14 +150,11 @@ function Pagination(props: PaginationProps) {
           icon={<Icon name="Duotune/arr071" className="svg-icon-2 m-0" />}
           size="sm"
           variant="light"
-          activeStyle="light"
-          activeColor="primary"
+          activeColor="light-primary"
           className="me-2"
           disabled={pagination.current == pagination.totalCount}
         />
       </Tooltip>
-
-      {/*--begin::Settings menu--*/}
     </div>
   );
 }
@@ -430,7 +427,11 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
 
   const handleAction = useCallback(
     async (action: ActionType) => {
-      const _message = temp.current.message;
+      let _message = temp.current.message;
+      while (_message?.index == undefined) {
+        await sleep(60);
+        _message = temp.current.message;
+      }
       const _pagination = temp.current.pagination;
       if (action == 'read' || action == 'unread') {
         await updateFlags({
@@ -441,13 +442,13 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
           },
         });
       } else if (action == 'deleted') {
-        await updateFlags({
+        await toFolder({
           variables: {
             id,
-            flags: ['deleted'],
-            mode: 'ADD',
+            mailbox: 'trash',
           },
         });
+        goto(Math.min(pagination.totalCount - 1, pagination.current));
       } else if (['archive', 'spam'].includes(action)) {
         await toFolder({
           variables: {
@@ -455,10 +456,14 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
             mailbox: action,
           },
         });
+        goto(Math.min(pagination.totalCount - 1, pagination.current));
+      }
+      if (_message?.index == undefined) {
+        debugger;
       }
       refresh && refresh(Math.ceil(_message!.index! / _pagination.pageSize), _message!);
     },
-    [id, refresh, toFolder, updateFlags],
+    [goto, id, pagination, refresh, toFolder, updateFlags],
   );
 
   useEffect(() => {

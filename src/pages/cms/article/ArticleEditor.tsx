@@ -354,8 +354,7 @@ function ArticleEditor(props: ArticleEditorProps) {
                   <Button
                     variant="white"
                     color="primary"
-                    activeColor="primary"
-                    activeStyle="text"
+                    activeTextColor="primary"
                     className="me-3"
                   >
                     预览
@@ -386,9 +385,8 @@ function ArticleEditor(props: ArticleEditorProps) {
                 >
                   <Button
                     icon={<Icon name="Duotune/arr087" className="svg-icon-2" />}
-                    variantStyle="link"
-                    activeStyle="text"
-                    activeColor="gray-700"
+                    type="link"
+                    activeTextColor="gray-700"
                     flushed={true}
                   >
                     添加封面图

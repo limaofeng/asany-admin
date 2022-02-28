@@ -134,7 +134,7 @@ function Sidebar() {
               icon={<Icon className="svg-icon-2 me-3" name="Duotune/com010" />}
               badge={
                 !!unreadNumber && (
-                  <Badge lightStyle={getDefaultMailboxBadgeStyle('inbox')! as any}>
+                  <Badge size="sm" lightStyle={getDefaultMailboxBadgeStyle('inbox')! as any}>
                     {unreadNumber}
                   </Badge>
                 )
@@ -154,7 +154,11 @@ function Sidebar() {
                   icon={<Icon className="svg-icon-2 me-3" name={item.icon!} />}
                   badge={
                     !!lightStyle &&
-                    !!item.count && <Badge lightStyle={lightStyle as any}>{item.count}</Badge>
+                    !!item.count && (
+                      <Badge size="sm" lightStyle={lightStyle as any}>
+                        {item.count}
+                      </Badge>
+                    )
                   }
                   key={item.key}
                 >
@@ -178,7 +182,7 @@ function Sidebar() {
               </>
             )}
           </Menu>
-          <Menu rounded={true} className="menu-state-bg menu-state-title-primary">
+          {/* <Menu rounded={true} className="menu-state-bg menu-state-title-primary">
             <Menu.Section>标签</Menu.Section>
             <Menu.Item
               className="mb-3"
@@ -195,7 +199,7 @@ function Sidebar() {
             >
               添加标签
             </Menu.Item>
-          </Menu>
+          </Menu> */}
         </OverlayScrollbarsComponent>
         <SidebarFooter onAction={handleOpenPreferences} />
       </div>

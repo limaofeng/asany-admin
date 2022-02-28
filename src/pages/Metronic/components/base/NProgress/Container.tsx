@@ -11,6 +11,7 @@ const Container: React.FC<{
       [position]: 0,
       opacity: isFinished ? 0 : 1,
       pointerEvents: 'none',
+      width: '100%',
       transition: `opacity ${animationDuration}ms linear`,
     }}
   >

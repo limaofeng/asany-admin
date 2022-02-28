@@ -6,11 +6,12 @@ import TabPane from './TabPane';
 
 interface TabsProps {
   defaultActiveKey?: string;
+  className?: string;
   children: React.ReactElement[];
 }
 
 function Tabs(props: TabsProps) {
-  const { children, defaultActiveKey } = props;
+  const { children, defaultActiveKey, className } = props;
 
   const panes = useMemo(() => {
     return React.Children.map(children, (item) => ({
@@ -35,7 +36,7 @@ function Tabs(props: TabsProps) {
 
   return (
     <div>
-      <ul className="nav nav-tabs nav-line-tabs mb-5 fs-6">
+      <ul className={classnames('nav nav-tabs nav-line-tabs mb-5 fs-6', className)}>
         {panes.map((item) => (
           <li key={item.id} className="nav-item">
             <a

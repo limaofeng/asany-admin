@@ -98,8 +98,7 @@ function FileActions(props: FileActionsProps) {
               as="button"
               size="sm"
               variant="light"
-              activeStyle="light"
-              activeColor="primary"
+              activeColor="light-primary"
               icon={<Icon className="svg-icon-5 m-0" name="Duotune/cod007" />}
             />
           </ShareLink>
@@ -137,8 +136,7 @@ function FileActions(props: FileActionsProps) {
             as="button"
             size="sm"
             variant="light"
-            activeStyle="light"
-            activeColor="primary"
+            activeColor="light-primary"
             className="me-2"
             icon={<Icon className="svg-icon-5 m-0" name="Duotune/gen052" />}
           />

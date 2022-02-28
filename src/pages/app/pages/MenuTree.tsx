@@ -83,8 +83,7 @@ function MenuActions(props: MenuActionsProps) {
             as="button"
             size="sm"
             variant="light"
-            activeStyle="light"
-            activeColor="primary"
+            activeColor="light-primary"
             className="me-2"
             icon={<Icon className="svg-icon-5 m-0" name="Duotune/gen052" />}
           />
@@ -116,7 +115,13 @@ function MenuTree(props: MenuTreeProps) {
         {
           pidKey: 'parent.id',
           sort: (l, r) => l.index - r.index,
-          converter: (item) => ({ ...item, key: item.id, title: item.name!, menuType: item.type }),
+          converter: (item) => ({
+            ...item,
+            key: item.id,
+            title: item.name!,
+            menuType: item.type,
+            type: 'directory',
+          }),
         },
       ),
     [routes],

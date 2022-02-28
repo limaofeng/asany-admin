@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import classnames from 'classnames';
 
@@ -17,11 +17,19 @@ type Variant =
   | 'link'
   | 'default';
 
-type VariantStyle = 'light' | 'background' | 'dashed' | 'link';
+type VariantStyle = 'light' | 'background';
 
-type ActiveStyle = 'text' | 'light';
+type ACTIVE_LIGHT_STYLE =
+  | 'light-white'
+  | 'light-primary'
+  | 'light-secondary'
+  | 'light-success'
+  | 'light-info'
+  | 'light-warning'
+  | 'light-danger'
+  | 'light-dark';
 
-type ActiveColor =
+type ButtonColor =
   | 'white'
   | 'primary'
   | 'secondary'
@@ -42,18 +50,22 @@ type ActiveColor =
   | 'gray-800'
   | 'gray-900';
 
-type ButtonColor = ActiveColor;
-export type ButtonProps<AsProps> = {
-  as?: 'button' | 'a' | React.ComponentType<AsProps>;
+type ActiveColor = Variant | ACTIVE_LIGHT_STYLE;
+
+export interface ButtonProps<AsProps> {
+  as?: 'button' | 'a' | 'span' | React.ComponentType<AsProps>;
   id?: string;
-  variant?: Variant;
+  variant?: Variant | 'clean';
   variantStyle?: VariantStyle;
   dashed?: boolean;
+  type?: 'dashed' | 'link';
   disabled?: boolean;
   icon?: React.ReactNode;
   color?: ButtonColor;
+  iconColor?: ButtonColor;
+  activeIconColor?: ButtonColor;
   textColor?: ButtonColor;
-  activeStyle?: ActiveStyle;
+  activeTextColor?: ButtonColor;
   activeColor?: ActiveColor;
   flushed?: boolean;
   active?: boolean;
@@ -63,8 +75,8 @@ export type ButtonProps<AsProps> = {
   children?: React.ReactNode;
   loading?: boolean;
   onClick?: (e: React.MouseEvent) => void;
-  // to?: string;
-} & AsProps;
+  to?: string;
+}
 
 function Button(
   {
@@ -77,34 +89,20 @@ function Button(
     flushed,
     loading,
     htmlType,
+    type,
     variantStyle,
+    variant = 'primary',
     textColor,
-    variant = variantStyle == 'dashed' ? 'default' : 'primary',
     active,
-    activeStyle,
     activeColor,
+    activeIconColor,
+    activeTextColor,
     disabled,
     onClick,
     ...props
   }: ButtonProps<any>,
   ref: any,
 ) {
-  const buttonStyle = useMemo(() => {
-    if (variantStyle == 'link') {
-      return 'btn-link';
-    }
-    if (variantStyle == 'dashed') {
-      return `btn-outline btn-outline-dashed btn-outline-${variant}`;
-    }
-    if (variantStyle == 'background') {
-      return `btn-bg-${variant}`;
-    }
-    if (variantStyle == 'light') {
-      return `btn-light-${variant}`;
-    }
-    return `btn-${variant}`;
-  }, [variantStyle, variant]);
-
   if (loading != null) {
     props['data-kt-indicator'] = loading ? 'on' : 'off';
   }
@@ -119,18 +117,21 @@ function Button(
       disabled: as == 'button' ? disabled || loading : undefined,
       className: classnames(
         'btn',
-        buttonStyle,
         {
           active,
           disabled: disabled && as != 'button',
-          'btn-flush': flushed,
-          [`btn-${size}`]: !!size,
+          'btn-link': type == 'link',
+          [`btn-${variant}`]: !variantStyle,
           [`btn-color-${color}`]: !!color,
           [`btn-color-text-${textColor}`]: !!textColor,
-          'btn-color-muted': variantStyle == 'link' && !color,
-          [`btn-active-${activeColor}`]: !!activeColor && !activeStyle,
-          [`btn-active-light-${activeColor}`]: !!activeColor && activeStyle == 'light',
-          [`btn-active-color-${activeColor}`]: !!activeColor && activeStyle == 'text',
+          [`btn-active-${activeColor}`]: !!activeColor,
+          [`btn-active-text-${activeTextColor}`]: !!activeTextColor,
+          [`btn-active-icon-${activeIconColor}`]: !!activeIconColor,
+          [`btn-bg-${variant}`]: variantStyle == 'background',
+          [`btn-outline btn-outline-dashed btn-outline-${variant} btn-active-light-${variant}`]:
+            type == 'dashed',
+          'btn-flush': flushed,
+          [`btn-${size}`]: !!size,
           'btn-icon': !!icon && React.Children.count(children) == 0,
           ['d-inline-flex align-items-center']: !!icon && React.Children.count(children) > 0,
         },

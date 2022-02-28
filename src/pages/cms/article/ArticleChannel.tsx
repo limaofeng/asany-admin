@@ -73,8 +73,7 @@ function ArticleChannel(props: ArticleChannelProps) {
             size="sm"
             variantStyle="background"
             variant="light"
-            activeStyle="text"
-            activeColor="primary"
+            activeTextColor="primary"
             to="/cms/articles/new"
           >
             新建信息
@@ -106,8 +105,7 @@ function ArticleChannel(props: ArticleChannelProps) {
                 size="sm"
                 variantStyle="background"
                 variant="light"
-                activeStyle="text"
-                activeColor="primary"
+                activeTextColor="primary"
                 icon={<i className="bi bi-three-dots fs-3" />}
               />
             </Dropdown>

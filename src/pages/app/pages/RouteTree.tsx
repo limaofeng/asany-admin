@@ -28,7 +28,13 @@ function RouteTree(props: RouteTreeProps) {
         {
           pidKey: 'parent.id',
           sort: (l, r) => l.index - r.index,
-          converter: (item) => ({ ...item, key: item.id, title: item.name }),
+          converter: (item) => ({
+            ...item,
+            key: item.id,
+            title: item.name,
+            routeType: item.type,
+            type: 'directory',
+          }),
         },
       ),
     [routes],
@@ -90,8 +96,7 @@ function RouteTree(props: RouteTreeProps) {
                       onClick={
                         record.component?.id ? handlePageEdit(record.component.id) : undefined
                       }
-                      activeStyle="light"
-                      activeColor="primary"
+                      activeColor="light-primary"
                       icon={<Icon className="svg-icon-5 m-0" name="Duotune/art006" />}
                     />
                   </div>

@@ -27,9 +27,11 @@ type UploadResult = {
 
 type UseUploadResult = [(file: File) => void, UploadResult | undefined, number];
 
-export const useUpload = (): UseUploadResult => {
+export const useUpload = (namespace?: string, path?: string): UseUploadResult => {
   const [uploadResult, setUploadResult] = useState();
   const [progress, setProgress] = useState(0);
+
+  console.log('todo:', namespace, path);
 
   const [mutate] = useMutation(MUTATION_UPLOAD, {
     context: {
