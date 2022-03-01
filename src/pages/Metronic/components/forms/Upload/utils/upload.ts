@@ -1,16 +1,20 @@
-import { useCallback, useState } from 'react';
+/* eslint-disable graphql/template-strings */
+import { useCallback, useReducer, useRef } from 'react';
 
 import { gql, useMutation } from '@apollo/client';
 
+import { sleep } from '@/utils';
+
 const MUTATION_UPLOAD = gql`
-  mutation upload($file: Upload!) {
-    upload(file: $file) {
+  mutation upload($file: Upload!, $options: UploadOptions) {
+    upload(file: $file, options: $options) {
       id
       name
       path
       isDirectory
       size
       mimeType
+      md5
     }
   }
 `;
@@ -25,37 +29,61 @@ type UploadResult = {
   createdAt: string;
 };
 
-type UseUploadResult = [(file: File) => void, UploadResult | undefined, number];
+type UseUploadResult = [(file: File) => Promise<UploadResult>, UploadResult | undefined, number];
 
-export const useUpload = (namespace?: string, path?: string): UseUploadResult => {
-  const [uploadResult, setUploadResult] = useState();
-  const [progress, setProgress] = useState(0);
+type UseUploadState = {
+  data?: UploadResult;
+  progress: number;
+};
 
-  console.log('todo:', namespace, path);
+export const useUpload = (namespace: string = 'Default'): UseUploadResult => {
+  const state = useRef<UseUploadState>({
+    progress: 0,
+  });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const [mutate] = useMutation(MUTATION_UPLOAD, {
     context: {
       fetchOptions: {
         onUploadProgress: (_progress: any) => {
           const percent = ((_progress.loaded / _progress.total) * 100) << 0;
-          setProgress(percent);
+          if (percent == 100) {
+            state.current.progress = Math.max(state.current.progress, 85);
+            return forceRender();
+          }
+          state.current.progress = percent;
+          forceRender();
         },
       },
     },
   });
 
-  const upload = useCallback(async (file) => {
-    setUploadResult(undefined);
-    setProgress(0);
-    const { data } = await mutate({
-      variables: {
-        file,
-      },
-    });
-    setUploadResult(data.upload);
-    return data;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const upload = useCallback(
+    async (file): Promise<UploadResult> => {
+      state.current.data = undefined;
+      state.current.progress = 0;
+      await sleep(60);
+      try {
+        const { data } = await mutate({
+          variables: {
+            file,
+            options: {
+              space: namespace,
+            },
+          },
+        });
+        state.current.data = data.upload;
+        state.current.progress = 100;
+        return data.upload;
+      } catch (e) {
+        state.current.progress = 0;
+        throw e;
+      } finally {
+        forceRender();
+      }
+    },
+    [mutate, namespace],
+  );
 
-  return [upload, uploadResult, progress];
+  return [upload, state.current.data, state.current.progress];
 };

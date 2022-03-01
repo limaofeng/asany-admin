@@ -1,16 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import ReactQuill, { Quill } from 'react-quill';
 import Icon from '@asany/icons';
-import { useDropzone } from 'react-dropzone';
 
+import type { QueueUploadRef } from '@/pages/Metronic/components';
 import {
   Button,
   Card,
   ContentWrapper,
+  Form,
+  Input,
+  QueueUpload,
   Tabs,
   Tooltip,
-  useUpload,
 } from '@/pages/Metronic/components';
 
 const { TabPane } = Tabs;
@@ -54,23 +56,106 @@ Font.whitelist = fontFamily;
 Quill.register(Size, true);
 Quill.register(Font, true);
 
+type ContentEditorProps = {
+  mode: 'html' | 'text';
+  value?: string;
+  onChange?: (value: string) => void;
+};
+
+function ContentEditor(props: ContentEditorProps) {
+  const { mode, onChange } = props;
+
+  const valueRef = useRef(props.value || '');
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleChange = useCallback(
+    (_value) => {
+      onChange && onChange((valueRef.current = _value));
+    },
+    [onChange],
+  );
+
+  const handleTextChange = useCallback(
+    function (e) {
+      const el = e.target;
+      if (el.innerHTML.trim() === '<br>' || el.innerHTML.trim() === '<div><br></div>') {
+        el.innerHTML = '';
+        return;
+      }
+      onChange && onChange(el.innerHTML); // el.innerText
+    },
+    [onChange],
+  );
+
+  useEffect(() => {
+    if (mode == 'text' && ref.current!.innerHTML !== props.value) {
+      ref.current!.innerHTML = valueRef.current = props.value || '';
+    }
+  }, [mode, props.value]);
+
+  if (mode == 'html') {
+    return (
+      <ReactQuill
+        id="kt_inbox_form_editor"
+        className="quill-zh_hans"
+        modules={{
+          toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ font: fontFamily }],
+            [{ size: fontSize }],
+            [{ color: [] }, { background: [] }],
+            [{ list: 'bullet' }, { list: 'ordered' }],
+            [{ indent: '-1' }, { indent: '+1' }],
+            [{ align: [] }],
+            ['clean'],
+          ],
+        }}
+        placeholder="输入正文"
+        theme="snow"
+        value={props.value}
+        onChange={handleChange}
+      />
+    );
+  }
+  return (
+    <div id="kt_inbox_form_editor" className="bg-transparent border-0 px-3">
+      <div
+        ref={ref}
+        contentEditable
+        placeholder="输入正文"
+        className="editor_mode_text"
+        onInput={handleTextChange}
+        dangerouslySetInnerHTML={{ __html: valueRef.current! }}
+      />
+    </div>
+  );
+}
+
 function MailEditor() {
   const [mode, setMode] = useState<'text' | 'html'>('text');
   const [recipients, setRecipients] = useState<('cc' | 'bcc')[]>([]);
 
-  const [upload, data, progress] = useUpload();
+  const form = Form.useForm();
 
-  console.log(data, progress);
+  const queueUpload = useRef<QueueUploadRef>(null);
+  // const [attachments, setAttachments] = useState<FileObject[]>([]);
 
-  const onDrop = useCallback(
-    (acceptedFiles) => {
-      console.log(upload, acceptedFiles);
-      // upload(acceptedFiles[0]);
-    },
-    [upload],
-  );
+  // const [upload, data, progress] = useUpload('email');
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+  // console.log(data, progress);
+
+  // const onDrop = useCallback(
+  //   async (acceptedFiles) => {
+  //     console.log('开始上传', acceptedFiles);
+  //     // const fileObject = await upload(acceptedFiles[0]);
+  //     console.log('上传成功', fileObject);
+  //   },
+  //   [upload],
+  // );
+
+  // const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
+  // console.log('getRootProps', getRootProps())
 
   const buildToggleRecipients = useCallback(
     (method: 'cc' | 'bcc') => () => {
@@ -88,15 +173,6 @@ function MailEditor() {
     setMode((_mode) => (_mode == 'text' ? 'html' : 'text'));
   }, []);
 
-  const handleTextChange = useCallback(function (e) {
-    const el = e.target;
-    if (el.innerHTML.trim() === '<br>' || el.innerHTML.trim() === '<div><br></div>') {
-      el.innerHTML = '';
-      return;
-    }
-    console.log(el.innerText);
-  }, []);
-
   useEffect(() => {
     if (mode == 'text') {
       return;
@@ -108,36 +184,34 @@ function MailEditor() {
     container?.classList.add('bg-transparent', 'border-0', 'px-3', 'ql-snow');
   }, [mode]);
 
+  const handleUploadAttachment = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    queueUpload.current?.browse(e);
+  }, []);
+
+  const handleSubmit = useCallback(async () => {
+    await queueUpload.current?.uploadAll();
+    const values = await form.validateFields();
+    console.log('handleSubmit', values);
+  }, [form]);
+
   return (
     <Card className="email-compose-editor">
       <Card.Header>
         <Card.Title>新信息</Card.Title>
       </Card.Header>
       <Card.Body className="p-0">
-        <form id="kt_inbox_compose_form">
-          {/*--begin::Body--*/}
+        <Form form={form} onFinish={handleSubmit} id="kt_inbox_compose_form">
           <div className="email-compose-editor-body">
-            {/*--begin::To--*/}
             <div className="d-flex align-items-center border-bottom px-8 min-h-45px">
-              {/*--begin::Label--*/}
               <div className="text-dark fw-bolder w-75px">收件人:</div>
-              {/*--end::Label--*/}
-              {/*--begin::Input--*/}
-              <input
-                type="text"
-                className="form-control form-control-transparent border-0"
-                name="compose_to"
-                value=""
-                data-kt-inbox-form="tagify"
-              />
-              {/*--end::Input--*/}
-              {/*--begin::CC & BCC buttons--*/}
+              <Form.Item noStyle name="to">
+                <Input className="border-0" transparent />
+              </Form.Item>
               <div className="ms-auto w-75px text-end">
                 {!recipients.includes('cc') && (
                   <span
                     onClick={buildToggleRecipients('cc')}
                     className="text-muted fs-bold cursor-pointer text-hover-primary me-2"
-                    data-kt-inbox-form="cc_button"
                   >
                     抄送
                   </span>
@@ -146,171 +220,71 @@ function MailEditor() {
                   <span
                     onClick={buildToggleRecipients('bcc')}
                     className="text-muted fs-bold cursor-pointer text-hover-primary"
-                    data-kt-inbox-form="bcc_button"
                   >
                     密送
                   </span>
                 )}
               </div>
-              {/*--end::CC & BCC buttons--*/}
             </div>
-            {/*--end::To--*/}
-            {/*--begin::CC--*/}
             {recipients.includes('cc') && (
-              <div
-                className="align-items-center border-bottom ps-8 pe-5 min-h-45px d-flex"
-                data-kt-inbox-form="cc"
-              >
-                {/*--begin::Label--*/}
+              <div className="align-items-center border-bottom ps-8 pe-5 min-h-45px d-flex">
                 <div className="text-dark fw-bolder w-75px">抄送:</div>
-                {/*--end::Label--*/}
-                {/*--begin::Input--*/}
-                <input
-                  type="text"
-                  className="form-control form-control-transparent border-0"
-                  name="compose_cc"
-                  value=""
-                  data-kt-inbox-form="tagify"
-                />
-                {/*--end::Input--*/}
-                {/*--begin::Close--*/}
+                <Form.Item noStyle name="cc">
+                  <Input className="border-0" transparent />
+                </Form.Item>
                 <span
                   className="btn btn-clean btn-xs btn-icon"
                   onClick={buildToggleRecipients('cc')}
                 >
                   <i className="la la-close" />
                 </span>
-                {/*--end::Close--*/}
               </div>
             )}
-            {/*--end::CC--*/}
-            {/*--begin::BCC--*/}
             {recipients.includes('bcc') && (
-              <div
-                className="align-items-center border-bottom inbox-to-bcc ps-8 pe-5 min-h-45px d-flex"
-                data-kt-inbox-form="bcc"
-              >
-                {/*--begin::Label--*/}
+              <div className="align-items-center border-bottom inbox-to-bcc ps-8 pe-5 min-h-45px d-flex">
                 <div className="text-dark fw-bolder w-75px">密送:</div>
-                {/*--end::Label--*/}
-                {/*--begin::Input--*/}
-                <input
-                  type="text"
-                  className="form-control form-control-transparent border-0"
-                  name="compose_bcc"
-                  value=""
-                  data-kt-inbox-form="tagify"
-                />
-                {/*--end::Input--*/}
-                {/*--begin::Close--*/}
+                <Form.Item noStyle name="bcc">
+                  <Input className="border-0" transparent />
+                </Form.Item>
                 <span
                   className="btn btn-clean btn-xs btn-icon"
                   onClick={buildToggleRecipients('bcc')}
                 >
                   <i className="la la-close" />
                 </span>
-                {/*--end::Close--*/}
               </div>
             )}
-            {/*--end::BCC--*/}
-            {/*--begin::Subject--*/}
             <div className="border-bottom">
-              <input
-                className="form-control form-control-transparent border-0 px-8 min-h-45px"
-                name="compose_subject"
-                placeholder="主题"
-              />
+              <Form.Item noStyle name="subject">
+                <Input className="border-0 px-8 min-h-45px" placeholder="主题" transparent />
+              </Form.Item>
             </div>
-            {/*--end::Subject--*/}
-            {mode == 'html' ? (
-              <ReactQuill
-                id="kt_inbox_form_editor"
-                className="quill-zh_hans"
-                modules={{
-                  toolbar: [
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ font: fontFamily }],
-                    [{ size: fontSize }],
-                    [{ color: [] }, { background: [] }],
-                    [{ list: 'bullet' }, { list: 'ordered' }],
-                    [{ indent: '-1' }, { indent: '+1' }],
-                    [{ align: [] }],
-                    ['clean'],
-                  ],
-                }}
-                placeholder="输入正文"
-                theme="snow"
-                value=""
-              />
-            ) : (
-              <div id="kt_inbox_form_editor" className="bg-transparent border-0 px-3">
-                <div
-                  contentEditable
-                  placeholder="输入正文"
-                  className="editor_mode_text"
-                  onInput={handleTextChange}
-                />
-              </div>
-            )}
-            {/*--begin::Attachments--*/}
-            <div
-              className="dropzone dropzone-queue px-8 py-4"
-              id="kt_inbox_reply_attachments"
-              data-kt-inbox-form="dropzone"
-            >
-              <div className="dropzone-items">
-                <div className="dropzone-item">
-                  {/*--begin::Dropzone filename--*/}
-                  <div className="dropzone-file">
-                    <div className="dropzone-filename" title="some_image_file_name.jpg">
-                      <span data-dz-name="">some_image_file_name.jpg</span>
-                      <strong>
-                        (<span data-dz-size="">340kb</span>)
-                      </strong>
-                    </div>
-                    <div className="dropzone-error" data-dz-errormessage="" />
-                  </div>
-                  {/*--end::Dropzone filename--*/}
-                  {/*--begin::Dropzone progress--*/}
-                  <div className="dropzone-progress">
-                    <div className="progress">
-                      <div
-                        className="progress-bar bg-primary"
-                        role="progressbar"
-                        /*      aria-valuemin="0"
-                  aria-valuemax="100"
-                  aria-valuenow="0"
-                  data-dz-uploadprogress="" */
-                      />
-                    </div>
-                  </div>
-                  {/*--end::Dropzone progress--*/}
-                  {/*--begin::Dropzone toolbar--*/}
-                  <div className="dropzone-toolbar">
-                    <span className="dropzone-delete" data-dz-remove="">
-                      <i className="bi bi-x fs-1" />
-                    </span>
-                  </div>
-                  {/*--end::Dropzone toolbar--*/}
-                </div>
-              </div>
-            </div>
-            {/*--end::Attachments--*/}
+            <Form.Item noStyle name="content">
+              <ContentEditor mode={mode} />
+            </Form.Item>
+            <Form.Item noStyle name="attachments">
+              <QueueUpload ref={queueUpload} namespace="email" />
+            </Form.Item>
           </div>
           <div className="d-flex flex-stack flex-wrap gap-2 py-5 ps-8 pe-5 border-top">
             <div className="d-flex align-items-center me-3">
               <div className="btn-group me-4">
-                <Button loading={false} className="fs-bold px-8" variant="primary">
+                <Button
+                  htmlType="button"
+                  loading={false}
+                  className="fs-bold px-8"
+                  variant="primary"
+                  onClick={handleSubmit}
+                >
                   发送
                 </Button>
               </div>
             </div>
             <div className="d-flex align-items-center">
               <span
-                {...getRootProps()}
+                onClick={handleUploadAttachment}
                 className="btn btn-icon btn-sm btn-clean btn-active-light-primary me-2 dz-clickable"
               >
-                <input {...getInputProps()} />
                 <Icon className="svg-icon-2 m-0" name="Duotune/com008" />
               </span>
               <Tooltip title="切换编辑器" placement="bottom">
@@ -325,9 +299,8 @@ function MailEditor() {
                 />
               </Tooltip>
             </div>
-            {/*--end::Toolbar--*/}
           </div>
-        </form>
+        </Form>
       </Card.Body>
     </Card>
   );

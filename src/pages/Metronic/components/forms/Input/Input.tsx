@@ -15,6 +15,7 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
   autoComplete?: boolean;
   bordered?: boolean;
   prefix?: React.ReactNode;
+  transparent?: boolean;
   onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
@@ -38,6 +39,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     type = 'text',
     bordered = true,
     autoComplete = false,
+    transparent,
     onPressEnter,
     size,
     onChange,
@@ -110,6 +112,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
       className={classnames('form-control', className, {
         [`form-control-${size}`]: !!size,
         'form-control-solid': solid,
+        'form-control-transparent': transparent,
         'form-control-borderless': !bordered,
       })}
       defaultValue={props.defaultValue}

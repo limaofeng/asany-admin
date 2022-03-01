@@ -5,10 +5,10 @@ import type { Placement } from '@restart/ui/usePopper';
 import type { OverlayTriggerType } from 'react-bootstrap/esm/OverlayTrigger';
 
 export type TooltipProps = {
-  title?: React.ReactNode;
-  trigger?: OverlayTriggerType;
+  title?: string;
   placement?: Placement;
   children: React.ReactElement;
+  trigger?: OverlayTriggerType | OverlayTriggerType[];
 };
 
 function Tooltip(props: TooltipProps) {
