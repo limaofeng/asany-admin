@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   ContentWrapper,
+  EmailTagsInput,
   Form,
   Input,
   QueueUpload,
@@ -205,7 +206,7 @@ function MailEditor() {
             <div className="d-flex align-items-center border-bottom px-8 min-h-45px">
               <div className="text-dark fw-bolder w-75px">收件人:</div>
               <Form.Item noStyle name="to">
-                <Input className="border-0" transparent />
+                <EmailTagsInput className="border-0" transparent />
               </Form.Item>
               <div className="ms-auto w-75px text-end">
                 {!recipients.includes('cc') && (

@@ -1,0 +1,53 @@
+.email-tags-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-left: -3.5px;
+  padding-top: calc(0.75rem - 3.5px);
+  cursor: text;
+  .email-tag {
+    display: flex;
+    align-items: center;
+    margin: 0 3.5px;
+    margin-top: 3.5px;
+    padding: 2px 2px 2px 5px;
+    border-radius: 3px;
+    cursor: default;
+    user-select: none;
+    &:focus-visible {
+      outline: 0;
+    }
+    &.invalid {
+      background-color: #ffbcb8;
+      .svg-icon svg [fill]:not(.permanent):not(g) {
+        fill: rgb(235, 12, 0);
+      }
+    }
+
+    .svg-icon svg [fill]:not(.permanent):not(g) {
+      transition: none;
+      // fill: #0071eb;
+    }
+
+    &.selected {
+      color: #fff;
+      background-color: #0071eb;
+      .svg-icon svg [fill]:not(.permanent):not(g) {
+        fill: #fff;
+      }
+      &.invalid {
+        background-color: #eb0c00;
+      }
+    }
+  }
+  .standard {
+    display: inline;
+    align-items: center;
+    margin: 0 3.5px;
+    margin-top: 3.5px;
+    border-radius: 3px;
+    &:focus-visible {
+      outline: 0;
+    }
+  }
+}
