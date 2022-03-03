@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import ReactQuill, { Quill } from 'react-quill';
 import Icon from '@asany/icons';
+import type { ValidateErrorEntity } from 'rc-field-form/lib/interface';
 
 import type { QueueUploadRef } from '@/pages/Metronic/components';
+import { parseMail } from '@/pages/Metronic/components';
 import {
   Button,
   Card,
@@ -11,6 +14,7 @@ import {
   EmailTagsInput,
   Form,
   Input,
+  Modal,
   QueueUpload,
   Tabs,
   Tooltip,
@@ -56,6 +60,16 @@ Font.whitelist = fontFamily;
 
 Quill.register(Size, true);
 Quill.register(Font, true);
+
+const RULE_VERIFY_MAIL = {
+  async validator(_: any, emails: string[]) {
+    for (const email of emails) {
+      if (parseMail(email).invalid) {
+        throw new Error('电子邮件地址无效');
+      }
+    }
+  },
+};
 
 type ContentEditorProps = {
   mode: 'html' | 'text';
@@ -191,8 +205,31 @@ function MailEditor() {
 
   const handleSubmit = useCallback(async () => {
     await queueUpload.current?.uploadAll();
-    const values = await form.validateFields();
-    console.log('handleSubmit', values);
+    try {
+      const values = await form.validateFields();
+      console.log('handleSubmit', values);
+    } catch (e) {
+      const error = e as ValidateErrorEntity;
+      const firstError = error.errorFields[0];
+
+      console.log('error', error);
+
+      let content;
+      if (firstError.name.includes('to')) {
+        content = `“收件人：”字段中的一个或多个地址无效。请在纠正后重试。`;
+      } else if (firstError.name.includes('cc')) {
+        content = `“抄送：”字段中的一个或多个地址无效。请在纠正后重试。`;
+      } else if (firstError.name.includes('bcc')) {
+        content = `“密送：”字段中的一个或多个地址无效。请在纠正后重试。`;
+      } else {
+        content = '请在纠正后重试。';
+      }
+
+      Modal.error({
+        title: firstError.errors[0],
+        content,
+      });
+    }
   }, [form]);
 
   return (
@@ -201,11 +238,18 @@ function MailEditor() {
         <Card.Title>新信息</Card.Title>
       </Card.Header>
       <Card.Body className="p-0">
-        <Form form={form} onFinish={handleSubmit} id="kt_inbox_compose_form">
+        <Form
+          form={form}
+          onFinish={handleSubmit}
+          initialValues={{
+            to: ['玩玩<sxxx@msn.com>', 'limaofeng@msn.com;xxx@123.com;', 'xxx'],
+          }}
+          id="kt_inbox_compose_form"
+        >
           <div className="email-compose-editor-body">
             <div className="d-flex align-items-center border-bottom px-8 min-h-45px">
               <div className="text-dark fw-bolder w-75px">收件人:</div>
-              <Form.Item noStyle name="to">
+              <Form.Item noStyle name="to" rules={[RULE_VERIFY_MAIL]}>
                 <EmailTagsInput className="border-0" transparent />
               </Form.Item>
               <div className="ms-auto w-75px text-end">
@@ -230,8 +274,8 @@ function MailEditor() {
             {recipients.includes('cc') && (
               <div className="align-items-center border-bottom ps-8 pe-5 min-h-45px d-flex">
                 <div className="text-dark fw-bolder w-75px">抄送:</div>
-                <Form.Item noStyle name="cc">
-                  <Input className="border-0" transparent />
+                <Form.Item noStyle name="cc" rules={[RULE_VERIFY_MAIL]}>
+                  <EmailTagsInput className="border-0" transparent />
                 </Form.Item>
                 <span
                   className="btn btn-clean btn-xs btn-icon"
@@ -244,8 +288,8 @@ function MailEditor() {
             {recipients.includes('bcc') && (
               <div className="align-items-center border-bottom inbox-to-bcc ps-8 pe-5 min-h-45px d-flex">
                 <div className="text-dark fw-bolder w-75px">密送:</div>
-                <Form.Item noStyle name="bcc">
-                  <Input className="border-0" transparent />
+                <Form.Item noStyle name="bcc" rules={[RULE_VERIFY_MAIL]}>
+                  <EmailTagsInput className="border-0" transparent />
                 </Form.Item>
                 <span
                   className="btn btn-clean btn-xs btn-icon"

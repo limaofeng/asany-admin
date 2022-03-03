@@ -28,26 +28,33 @@ export type EmailTagsInputProps = {
   onChange?: (emails: string[]) => void;
 };
 
+function initialState(emails: string[]): EmailTagsInputState {
+  return {
+    selectedKey: undefined,
+    activeIndex: -1,
+    status: 'input',
+    tags: emails
+      .map((item) => item.split(';').filter((e) => !!e))
+      .reduce((arr, item) => {
+        arr.push(...item);
+        return arr;
+      }, [])
+      .map((item) => ({ ...parseMail(item), id: uuid() })),
+  };
+}
+
 function EmailTagsInput(props: EmailTagsInputProps) {
-  const { className, transparent, onChange } = props;
+  const { className, transparent } = props;
 
   const container = useRef<HTMLDivElement>(null);
   const input = useRef<EmailTagEditingRef>(null);
 
-  const state = useRef<EmailTagsInputState>({
-    activeIndex: -1,
-    status: 'input',
-    tags: [
-      // { name: 'xxxxx', address: 'limaofeng@msn.com', id: uuid() },
-      // { name: 'xxxxx', address: '', id: uuid() },
-      // { name: 'xxxxx', address: '253161354@qq.cn', id: uuid() },
-      // { name: 'xxxxx', address: 'xxx@163.cn', id: uuid() },
-      // { name: 'xxxxx', address: 'xxx@111.sd', id: uuid() },
-      // { name: 'xxxxx', address: '', id: uuid() },
-      // { name: 'xxxxx', address: '', id: uuid() },
-      // 'input',
-    ],
-  });
+  const temp = useRef({ onChange: props.onChange, value: props.value, intact: '' });
+
+  temp.current.onChange = props.onChange;
+  temp.current.value = props.value;
+
+  const state = useRef<EmailTagsInputState>(initialState(temp.current.value || []));
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const handleClick = useCallback(async (e: React.MouseEvent<HTMLDivElement>) => {
@@ -77,7 +84,7 @@ function EmailTagsInput(props: EmailTagsInputProps) {
         const x2 = x1 + itemRect.width;
         const y2 = y1 + itemRect.height;
 
-        console.log({ x, y }, starting);
+        // console.log({ x, y }, starting);
 
         if (x1 < starting.x1) {
           if (x > starting.x1 && y > starting.y1) {
@@ -222,6 +229,19 @@ function EmailTagsInput(props: EmailTagsInputProps) {
     [handleFocus, removeInput],
   );
 
+  const execChange = useCallback(() => {
+    temp.current.intact = state.current.tags
+      .filter((item) => item != 'input')
+      .map((item) => mailToString(item as any))
+      .join(';');
+
+    const { intact, onChange, value: propsValue } = temp.current;
+    if (intact == propsValue?.join(';')) {
+      return;
+    }
+    onChange && onChange(intact.split(';').filter((item) => !!item));
+  }, []);
+
   const handleChange = useCallback(
     (index: number) => (value: string) => {
       // console.log('保存', index, state.current.activeIndex);
@@ -259,8 +279,9 @@ function EmailTagsInput(props: EmailTagsInputProps) {
         forceRender();
         handleFocus();
       }
+      execChange();
     },
-    [handleFocus],
+    [execChange, handleFocus],
   );
 
   const handleItemClick = useCallback(
@@ -284,6 +305,7 @@ function EmailTagsInput(props: EmailTagsInputProps) {
     state.current.tags.splice(activeIndex, 1, 'input');
     state.current.tags = [...state.current.tags];
     forceRender();
+    execChange();
     while (!input.current) {
       await sleep(60);
     }
@@ -291,7 +313,7 @@ function EmailTagsInput(props: EmailTagsInputProps) {
       // console.log('.....', state.current.tags, input.current);
       input.current?.focus();
     });
-  }, []);
+  }, [execChange]);
 
   const handleEnter = useCallback(() => {
     state.current.status = 'editing';
@@ -317,9 +339,16 @@ function EmailTagsInput(props: EmailTagsInputProps) {
       .join(';');
   }, [tags]);
 
+  temp.current.intact = intact;
+
   useEffect(() => {
-    onChange && onChange(intact.split(';').filter((item) => !!item));
-  }, [intact, onChange]);
+    if (!props.value || temp.current.intact == props.value.join(';')) {
+      return;
+    }
+    state.current = initialState(props.value || []);
+    forceRender();
+    console.log('props.value', props.value, state.current);
+  }, [props.value]);
 
   return (
     <div

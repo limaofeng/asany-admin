@@ -10,29 +10,28 @@ export function parseMail(text: string) {
     const name = text.substring(0, lestIndex);
     const emailExpArray = HAS_DETAILS.exec(text);
     if ((name && name.includes('<')) || !emailExpArray || !EMAIL.test(emailExpArray![1])) {
-      // ?
       return {
-        name: text,
+        name: text.trim(),
         address: '',
         invalid: true,
       };
     }
     return {
-      name: name,
+      name: name.trim(),
       address: emailExpArray[1],
       invalid: false,
     };
   }
   if (!EMAIL.test(text)) {
     return {
-      name: text,
+      name: text.trim(),
       address: '',
       invalid: true,
     };
   }
   return {
     name: '',
-    address: text,
+    address: text.trim(),
     invalid: false,
   };
 }

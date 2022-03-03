@@ -13,12 +13,13 @@ import {
   useMoveMailboxMessageToFolderMutation,
   useUpdateMailboxMessageFlagsMutation,
 } from '../hooks';
-import { DEFAULT_MAILBOXES, toPlainText } from '../utils';
+import { DEFAULT_MAILBOXES } from '../utils';
 
 import type { MailboxMessage } from '@/types';
 import { Badge, Button, Popover, Tooltip } from '@/pages/Metronic/components';
 import Avatar from '@/pages/Metronic/components/base/Symbol/Avatar';
 import { sleep } from '@/utils';
+import { toPlainText } from '@/pages/Metronic/components/utils/format';
 
 export type MailboxRouteParams = {
   folder: string;
