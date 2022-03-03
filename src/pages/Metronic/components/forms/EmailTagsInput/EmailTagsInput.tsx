@@ -1,333 +1,18 @@
-import React, {
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useReducer,
-  useRef,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import classnames from 'classnames';
-import Icon from '@asany/icons';
+import { useClickAway } from 'react-use';
 
 import { uuid } from '../../utils';
+
+import type { EmailTagData, EmailTagEditingRef } from './typings';
+import { mailToString, parseMail } from './utils';
+import EmailTagEditing from './EmailTagEditing';
+import EmailTag from './EmailTag';
 
 import { sleep } from '@/utils';
 
 import './style.scss';
-
-const EMAIL = /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/;
-
-const HAS_DETAILS = /<([^<>]+)>$/;
-
-function parseMail(text: string) {
-  if (HAS_DETAILS.test(text)) {
-    const lestIndex = text.lastIndexOf('<');
-    const name = text.substring(0, lestIndex);
-    const emailExpArray = HAS_DETAILS.exec(text);
-    if ((name && name.includes('<')) || !emailExpArray || !EMAIL.test(emailExpArray![1])) {
-      // ?
-      return {
-        name: text,
-        address: '',
-        invalid: true,
-      };
-    }
-    return {
-      name: name,
-      address: emailExpArray[1],
-      invalid: false,
-    };
-  }
-  if (!EMAIL.test(text)) {
-    return {
-      name: text,
-      address: '',
-      invalid: true,
-    };
-  }
-  return {
-    name: '',
-    address: text,
-    invalid: false,
-  };
-}
-
-type EmailTagData = {
-  id: string;
-  name: string;
-  address: string;
-  invalid?: boolean;
-};
-
-type EmailTagsInputProps = {
-  transparent?: boolean;
-  className?: string;
-};
-
-type EmailTagEditingProps = {
-  value?: string;
-  onChange: (value: string) => void;
-  onPrev: () => void;
-  onNext: () => void;
-  onDelete: () => void;
-};
-
-type EmailTagEditingRef = {
-  focus: () => void;
-  select: () => void;
-  setValue: (value: string) => void;
-};
-
-const EmailTagEditing = React.forwardRef(function EmailTagEditing(
-  props: EmailTagEditingProps,
-  ref: React.ForwardedRef<EmailTagEditingRef | null>,
-) {
-  const { value, onChange, onPrev, onNext, onDelete } = props;
-  const input = useRef<HTMLSpanElement>(null);
-
-  console.log('onDelete', onDelete);
-
-  const handleBlur = useCallback(async () => {
-    const name = input.current!.textContent!;
-    if (!name || props.value == name) {
-      return;
-    }
-    await onChange(name);
-    return true;
-  }, [onChange, props.value]);
-
-  const handleKeyDown = useCallback(
-    async (e: React.KeyboardEvent) => {
-      console.log('----=----', e.key);
-      if (e.key == 'Backspace') {
-        if (!input.current!.textContent) {
-          onPrev();
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      } else if (e.key == 'ArrowLeft') {
-        const selection = window.getSelection();
-        console.log(e, selection);
-        if (selection?.focusOffset == 0) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (await handleBlur()) {
-            onPrev();
-          }
-          onPrev();
-        }
-      } else if (e.key == 'ArrowRight') {
-        const selection = window.getSelection();
-        console.log(e, selection);
-        if (selection?.focusOffset == input.current?.textContent?.length) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (!(await handleBlur())) {
-            onNext();
-          }
-        }
-      } else if (e.key == 'Enter') {
-        const name = input.current!.textContent!;
-        if (!name) {
-          return;
-        }
-        // console.log('保存', name);
-        e.preventDefault();
-        e.stopPropagation();
-        onChange(name);
-        // input.current!.innerHTML = '';
-      } else if (e.key == 'Escape') {
-        const name = input.current!.textContent!;
-        if (!name) {
-          return;
-        }
-        e.preventDefault();
-        e.stopPropagation();
-        onChange(name);
-      }
-    },
-    [handleBlur, onChange, onNext, onPrev],
-  );
-
-  useImperativeHandle(ref, () => ({
-    focus() {
-      console.log('---===--- 2', input.current);
-      input.current?.focus();
-    },
-    select() {
-      const range = document.createRange();
-      range.selectNodeContents(input.current!);
-      window.getSelection()!.removeAllRanges();
-      window.getSelection()!.addRange(range);
-    },
-    setValue(v: string) {
-      input.current!.innerHTML = v;
-    },
-  }));
-
-  useEffect(() => {
-    if (input.current && value !== input.current.textContent) {
-      input.current.textContent = value || '';
-    }
-  }, [value]);
-
-  return (
-    <span
-      ref={input}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
-      dangerouslySetInnerHTML={{ __html: value! }}
-      onKeyDown={handleKeyDown}
-      onBlur={handleBlur}
-      contentEditable
-      className="standard"
-    />
-  );
-});
-
-type EmailTagProps = {
-  data: EmailTagData;
-  editing: boolean;
-  selected: boolean;
-  onClick: (data: EmailTagData) => void;
-  onDoubleClick: (data: EmailTagData) => void;
-  onEnter: () => void;
-} & EmailTagEditingProps;
-
-const EmailTag = React.forwardRef(function EmailTag(
-  props: EmailTagProps,
-  ref: React.ForwardedRef<EmailTagEditingRef | null>,
-) {
-  const {
-    data,
-    onChange,
-    selected,
-    onClick,
-    onPrev,
-    onNext,
-    onEnter,
-    onDelete,
-    onDoubleClick,
-    editing,
-  } = props;
-  const input = useRef<EmailTagEditingRef | any>(null);
-
-  const { invalid = !EMAIL.test(data.address) } = data;
-
-  // console.log('data', selected, data);
-
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onClick(data);
-    },
-    [data, onClick],
-  );
-
-  const handleDoubleClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onDoubleClick(data);
-    },
-    [data, onDoubleClick],
-  );
-
-  const handleChange = useCallback(
-    (name: string) => {
-      onChange(name);
-    },
-    [onChange],
-  );
-
-  const value = useMemo(() => {
-    let _value = data.name || '';
-    if (data.address) {
-      if (_value) {
-        _value += ` <${data.address}>`;
-      } else {
-        _value = data.address;
-      }
-    }
-    return _value;
-  }, [data]);
-
-  useEffect(() => {
-    if (!editing) {
-      return;
-    }
-    input.current?.focus();
-    process.nextTick(() => {
-      input.current?.select();
-    });
-  }, [editing]);
-
-  useImperativeHandle(ref, () => ({
-    focus() {
-      console.log('---===--- 1', input.current);
-      input.current?.focus();
-    },
-    select() {},
-    setValue(v: string) {
-      console.log(v);
-    },
-  }));
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      console.log('handleKeyDown', e.key);
-      if (e.key == 'ArrowLeft') {
-        onPrev();
-        e.preventDefault();
-        e.stopPropagation();
-      } else if (e.key == 'ArrowRight') {
-        onNext();
-        e.preventDefault();
-        e.stopPropagation();
-      } else if (e.key == 'Backspace') {
-        onDelete();
-        e.preventDefault();
-        e.stopPropagation();
-      } else if (e.key == 'Enter') {
-        onEnter();
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    },
-    [onDelete, onEnter, onNext, onPrev],
-  );
-
-  if (editing) {
-    return (
-      <EmailTagEditing
-        ref={input}
-        value={value}
-        onDelete={props.onDelete}
-        onChange={handleChange}
-        onPrev={props.onPrev}
-        onNext={props.onNext}
-      />
-    );
-  }
-
-  return (
-    <span
-      tabIndex={-1}
-      ref={input}
-      onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
-      onKeyDown={handleKeyDown}
-      className={classnames('email-tag', { selected, invalid })}
-    >
-      <span className="token-content">{data.name || data.address}</span>
-      <Icon name="Duotune/arr071" />
-    </span>
-  );
-});
 
 type EmailTagsInputState = {
   status: 'input' | 'editing' | 'active';
@@ -336,8 +21,15 @@ type EmailTagsInputState = {
   tags: (EmailTagData | 'input')[];
 };
 
+export type EmailTagsInputProps = {
+  transparent?: boolean;
+  className?: string;
+  value?: string[];
+  onChange?: (emails: string[]) => void;
+};
+
 function EmailTagsInput(props: EmailTagsInputProps) {
-  const { className, transparent } = props;
+  const { className, transparent, onChange } = props;
 
   const container = useRef<HTMLDivElement>(null);
   const input = useRef<EmailTagEditingRef>(null);
@@ -346,14 +38,14 @@ function EmailTagsInput(props: EmailTagsInputProps) {
     activeIndex: -1,
     status: 'input',
     tags: [
-      { name: 'xxxxx', address: 'limaofeng@msn.com', id: uuid() },
-      { name: 'xxxxx', address: '', id: uuid() },
-      { name: 'xxxxx', address: '253161354@qq.cn', id: uuid() },
-      { name: 'xxxxx', address: 'xxx@163.cn', id: uuid() },
-      { name: 'xxxxx', address: 'xxx@111.sd', id: uuid() },
-      { name: 'xxxxx', address: '', id: uuid() },
-      { name: 'xxxxx', address: '', id: uuid() },
-      'input',
+      // { name: 'xxxxx', address: 'limaofeng@msn.com', id: uuid() },
+      // { name: 'xxxxx', address: '', id: uuid() },
+      // { name: 'xxxxx', address: '253161354@qq.cn', id: uuid() },
+      // { name: 'xxxxx', address: 'xxx@163.cn', id: uuid() },
+      // { name: 'xxxxx', address: 'xxx@111.sd', id: uuid() },
+      // { name: 'xxxxx', address: '', id: uuid() },
+      // { name: 'xxxxx', address: '', id: uuid() },
+      // 'input',
     ],
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
@@ -457,7 +149,7 @@ function EmailTagsInput(props: EmailTagsInputProps) {
       }
       state.current.status = 'active';
       state.current.selectedKey = data.id;
-      console.log('data', data, state.current.selectedKey, state.current.tags);
+      // console.log('data', data, state.current.selectedKey, state.current.tags);
       state.current.activeIndex = nextActiveIndex;
       removeInput();
       forceRender();
@@ -505,27 +197,75 @@ function EmailTagsInput(props: EmailTagsInputProps) {
     }
   }, [handleFocus, removeInput]);
 
+  const handleLocationTo = useCallback(
+    (index, type = 'input') => {
+      if (type == 'input') {
+        removeInput();
+        state.current.status = 'input';
+        state.current.selectedKey = undefined;
+        state.current.tags.splice(index, 0, 'input');
+        state.current.activeIndex = state.current.tags.findIndex((item) => item == 'input');
+        input.current!.setValue('');
+        forceRender();
+        handleFocus();
+      } else {
+        state.current.status = 'active';
+        state.current.selectedKey = (state.current.tags[index] as EmailTagData).id;
+        removeInput();
+        state.current.activeIndex = state.current.tags.findIndex(
+          (item) => item != 'input' && item.id == state.current.selectedKey,
+        );
+        forceRender();
+        handleFocus();
+      }
+    },
+    [handleFocus, removeInput],
+  );
+
   const handleChange = useCallback(
     (index: number) => (value: string) => {
-      console.log('保存', index, state.current.activeIndex);
+      // console.log('保存', index, state.current.activeIndex);
       const current = state.current.tags[index];
+      const emails = value.split(';').filter((item) => !!item);
+      if (!emails.length) {
+        return;
+      }
       if (current == 'input') {
-        state.current.tags.splice(index, 0, { ...parseMail(value), id: uuid() });
+        state.current.tags.splice(
+          index,
+          0,
+          ...emails.map((item) => ({ ...parseMail(item), id: uuid() })),
+        );
         state.current.status = 'input';
         state.current.activeIndex = state.current.tags.findIndex((item) => item == 'input');
         input.current!.setValue('');
+        state.current.tags = [...state.current.tags];
+        forceRender();
       } else {
-        state.current.status = 'active';
-        state.current.tags.splice(index, 1, { ...parseMail(value), id: current.id });
+        state.current.tags.splice(
+          index,
+          1,
+          ...emails.map((item, i) => ({ ...parseMail(item), id: i == 0 ? current.id : uuid() })),
+        );
+        if (emails.length > 1) {
+          state.current.status = 'input';
+          state.current.selectedKey = undefined;
+          state.current.tags.splice(index + emails.length, 0, 'input');
+          state.current.activeIndex = state.current.tags.findIndex((item) => item == 'input');
+        } else {
+          state.current.status = 'active';
+        }
+        state.current.tags = [...state.current.tags];
+        forceRender();
+        handleFocus();
       }
-      forceRender();
     },
-    [],
+    [handleFocus],
   );
 
   const handleItemClick = useCallback(
     (data: EmailTagData) => {
-      console.log('handleItemClick', data);
+      // console.log('handleItemClick', data);
       state.current.status = 'active';
       state.current.selectedKey = data.id;
       removeInput();
@@ -542,12 +282,13 @@ function EmailTagsInput(props: EmailTagsInputProps) {
     state.current.status = 'input';
     state.current.selectedKey = undefined;
     state.current.tags.splice(activeIndex, 1, 'input');
+    state.current.tags = [...state.current.tags];
     forceRender();
     while (!input.current) {
       await sleep(60);
     }
     process.nextTick(() => {
-      console.log('.....', state.current.tags, input.current);
+      // console.log('.....', state.current.tags, input.current);
       input.current?.focus();
     });
   }, []);
@@ -562,7 +303,23 @@ function EmailTagsInput(props: EmailTagsInputProps) {
     handleEnter();
   }, [handleEnter]);
 
+  useClickAway(container, () => {
+    state.current.selectedKey = undefined;
+    forceRender();
+  });
+
   const { tags, selectedKey, status } = state.current;
+
+  const intact = useMemo(() => {
+    return tags
+      .filter((item) => item != 'input')
+      .map((item) => mailToString(item as any))
+      .join(';');
+  }, [tags]);
+
+  useEffect(() => {
+    onChange && onChange(intact.split(';').filter((item) => !!item));
+  }, [intact, onChange]);
 
   return (
     <div
@@ -578,8 +335,9 @@ function EmailTagsInput(props: EmailTagsInputProps) {
             <EmailTagEditing
               onPrev={handlePrev}
               onNext={handleNext}
-              onDelete={handleDelete}
               ref={input}
+              index={index}
+              locationTo={handleLocationTo}
               key={item}
               onChange={handleChange(index)}
             />
@@ -593,6 +351,8 @@ function EmailTagsInput(props: EmailTagsInputProps) {
               onDelete={handleDelete}
               onEnter={handleEnter}
               data={item}
+              index={index}
+              locationTo={handleLocationTo}
               onChange={handleChange(index)}
               editing={item.id == selectedKey && status == 'editing'}
               onClick={handleItemClick}

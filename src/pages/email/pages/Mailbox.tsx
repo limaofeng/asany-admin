@@ -17,7 +17,7 @@ import {
   useMoveMailboxMessageToFolderMutation,
   useUpdateMailboxMessageFlagsMutation,
 } from '../hooks';
-import { DEFAULT_MAILBOXES, toPlainText } from '../utils';
+import { DEFAULT_MAILBOXES } from '../utils';
 
 import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
 
@@ -31,6 +31,7 @@ import {
 } from '@/pages/Metronic/components';
 import type { MailboxMessage, MailboxMessageConnection } from '@/types';
 import { sleep } from '@/utils';
+import { toPlainText } from '@/pages/Metronic/components/utils/format';
 
 interface MailboxState {
   width: number;
