@@ -12,16 +12,19 @@ import moment from 'moment';
 
 import {
   CountUnreadDocument,
-  useCountUnreadLazyQuery,
+  MailboxesDocument,
+  useDeleteMailboxMessageMutation,
   useMailboxMessagesQuery,
   useMoveMailboxMessageToFolderMutation,
   useUpdateMailboxMessageFlagsMutation,
 } from '../hooks';
-import { DEFAULT_MAILBOXES } from '../utils';
+import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL, displayName } from '../utils';
 
 import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
 
 import type { InfiniteScrollRef, ShortcutEvent } from '@/pages/Metronic/components';
+import { Button } from '@/pages/Metronic/components';
+import { Modal } from '@/pages/Metronic/components';
 import {
   Card,
   ContentWrapper,
@@ -65,11 +68,10 @@ type MailMessageActionsProps = {
   refresh: () => void;
   forwardNextMessage: () => void;
   data: MailboxMessage;
-  mailbox: string;
 };
 
 function MailMessageActions(props: MailMessageActionsProps) {
-  const { data, mailbox, refresh, forwardNextMessage } = props;
+  const { data, refresh, forwardNextMessage } = props;
 
   const [toFolder] = useMoveMailboxMessageToFolderMutation({
     updateQueries: {
@@ -93,6 +95,9 @@ function MailMessageActions(props: MailMessageActionsProps) {
   });
   const [updateFlags] = useUpdateMailboxMessageFlagsMutation({
     refetchQueries: [CountUnreadDocument],
+  });
+  const [deleteMailboxMessage] = useDeleteMailboxMessageMutation({
+    refetchQueries: [MailboxesDocument],
   });
 
   const toggleReadState = useCallback(async () => {
@@ -118,15 +123,36 @@ function MailMessageActions(props: MailMessageActionsProps) {
   }, [data.id, forwardNextMessage, refresh, toFolder]);
 
   const handleTrash = useCallback(async () => {
-    await toFolder({
-      variables: {
-        id: data.id,
-        mailbox: 'trash',
-      },
-    });
+    if (
+      data.mailboxName == DEFAULT_MAILBOXES.Drafts.id ||
+      data.mailboxName == DEFAULT_MAILBOXES.Trash.id
+    ) {
+      const result = await Modal.confirm({
+        title: '警告',
+        content:
+          data.mailboxName == DEFAULT_MAILBOXES.Trash.id
+            ? '确定永久删除信息？'
+            : '确定永久删除草稿？',
+      });
+      if (!result.isConfirmed) {
+        return;
+      }
+      await deleteMailboxMessage({
+        variables: {
+          id: data.id,
+        },
+      });
+    } else {
+      await toFolder({
+        variables: {
+          id: data.id,
+          mailbox: 'trash',
+        },
+      });
+    }
     forwardNextMessage();
     refresh();
-  }, [data.id, forwardNextMessage, refresh, toFolder]);
+  }, [data.mailboxName, data.id, forwardNextMessage, refresh, deleteMailboxMessage, toFolder]);
 
   return (
     <div
@@ -141,12 +167,13 @@ function MailMessageActions(props: MailMessageActionsProps) {
           name={data.seen ? 'Duotune/abs009' : 'Duotune/abs050'}
         />
       </a>
-      {mailbox != 'archive' && (
+      {![
+        DEFAULT_MAILBOXES.Archive.id,
+        DEFAULT_MAILBOXES.Drafts.id,
+        DEFAULT_MAILBOXES.Trash.id,
+      ].includes(data.mailboxName) && (
         <a onClick={handleArchive}>
-          <Icon
-            className="svg-icon-6"
-            name={DEFAULT_MAILBOXES.find((item) => item.id == 'Archive')!.icon}
-          />
+          <Icon className="svg-icon-6" name={DEFAULT_MAILBOXES.Archive.icon} />
         </a>
       )}
       <a onClick={handleTrash}>
@@ -157,7 +184,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
 }
 
 function MailMessage(props: MailMessageProps) {
-  const { style, forwardNextMessage, data, active, onClick, mailbox, refresh } = props;
+  const { style, forwardNextMessage, data, active, onClick, refresh } = props;
 
   const handleClick = useCallback(() => {
     onClick(data.id);
@@ -169,20 +196,17 @@ function MailMessage(props: MailMessageProps) {
       onClick={handleClick}
       className={classnames('email-message d-flex flex-row', { active })}
     >
-      <MailMessageActions
-        mailbox={mailbox}
-        forwardNextMessage={forwardNextMessage}
-        refresh={refresh}
-        data={data}
-      />
+      <MailMessageActions forwardNextMessage={forwardNextMessage} refresh={refresh} data={data} />
       <div className="email-message-body d-flex flex-column">
         <div className="email-message-attrs">
           <Icon className="svg-icon-4 smart-type" name="Duotune/abs018" />
-          <span className="email-user">{renderWhose(data, mailbox)}</span>
+          <span className="email-user">{renderWhose(data) || '(无收件人)'}</span>
           <span className="inbox-time">{renderDataTime(data)}</span>
         </div>
-        <div className="email-message-title">{data.subject}</div>
-        <div className="email-message-summary">{renderSummary(data)}</div>
+        <div className="email-message-title">{data.subject || '(无主题)'}</div>
+        <div className="email-message-summary">
+          {renderSummary(data) || '此邮件中没有文本内容。'}
+        </div>
       </div>
     </div>
   );
@@ -190,7 +214,7 @@ function MailMessage(props: MailMessageProps) {
 
 function renderSummary(data: MailboxMessage) {
   if (data.mimeType == 'text/html') {
-    return toPlainText(data.body);
+    return toPlainText(data.body || '');
   }
   return data.body;
 }
@@ -207,14 +231,14 @@ function renderDataTime(data: MailboxMessage) {
   return mdate.format('YYYY-MM-DD');
 }
 
-function renderWhose(data: MailboxMessage, mailbox: string) {
-  if (mailbox == 'inbox') {
-    return data.from.map((item) => item.name || item.localPart).join(',');
+function renderWhose(data: MailboxMessage) {
+  if (data.mailboxName == DEFAULT_MAILBOXES.INBOX.id) {
+    return data.from.map(displayName).join('、');
   }
-  if (mailbox == 'sent') {
-    return data.to.map((item) => item.name || item.localPart).join(',');
+  if (data.mailboxName == DEFAULT_MAILBOXES.Sent.id) {
+    return data.to.map(displayName).join('、');
   }
-  return data.from.map((item) => item.name || item.localPart).join(',');
+  return data.to.map(displayName).join('、');
 }
 
 const DEFAULT_PAGINATION = {
@@ -272,7 +296,6 @@ function Mailbox(props: MailboxProps) {
       },
     },
   });
-  const [countUnread] = useCountUnreadLazyQuery({ fetchPolicy: 'cache-and-network' });
 
   const forceResize = useMemo(
     () =>
@@ -393,15 +416,33 @@ function Mailbox(props: MailboxProps) {
         },
         page,
       });
-      if (state.current.folder == 'inbox') {
-        countUnread();
-      }
     },
-    [countUnread, refetch],
+    [refetch],
   );
 
+  const handleTrashClear = useCallback(async () => {
+    const result = await Modal.confirm({
+      title: '清空&nbsp;&nbsp;回收站',
+      content: '确定永久删除 回收站 文件夹内的全部邮件？',
+      // showLoaderOnConfirm: true,
+      // preConfirm: (ok) => {
+      //   console.log(ok);
+      //   //TODO:  JS 修改按钮 Loading 样式， 默认样式有点差强人意
+      //   return sleep(20000);
+      // },
+    });
+    if (result.isConfirmed) {
+      await Modal.success({
+        title: '操作成功',
+        content: '回收站已被清空',
+        timer: 1000,
+      });
+      return;
+    }
+  }, []);
+
   const mailbox = useMemo(() => {
-    const _mailbox = DEFAULT_MAILBOXES.find((item) => item.id.toLowerCase() == folder);
+    const _mailbox = DEFAULT_MAILBOXES_ALL.find((item) => item.id.toLowerCase() == folder);
     if (!_mailbox) {
       return {
         id: folder,
@@ -505,6 +546,20 @@ function Mailbox(props: MailboxProps) {
                   <Icon className="svg-icon-5 svg-icon-success" name={mailbox.icon} />
                 )}
                 <span className="box-name">{mailbox.name}</span>
+                {mailbox.id == DEFAULT_MAILBOXES.Trash.id && (
+                  <div className="box-actions">
+                    <Button
+                      className="trash-clear"
+                      variantStyle="light"
+                      variant="danger"
+                      size="sm"
+                      activeColor="light-danger"
+                      onClick={handleTrashClear}
+                    >
+                      清空&nbsp;&nbsp;回收站
+                    </Button>
+                  </div>
+                )}
               </div>
               <div className="infinite-scroll-container">
                 <NProgress isAnimating={!!loading} position="top" />
@@ -531,25 +586,33 @@ function Mailbox(props: MailboxProps) {
                         </div>
                       );
                     }
-                    return messages
-                      .slice(startIndex, endIndex)
-                      .map((item, index) => (
-                        <MailMessage
-                          style={{ top: (startIndex + index) * e.itemHeight + 1 }}
-                          onClick={handleMessageClick}
-                          key={item.id}
-                          refresh={() =>
-                            refresh(Math.ceil((startIndex + index) / e.pagination.pageSize))
+                    return messages.slice(startIndex, endIndex).map((item, index) => (
+                      <MailMessage
+                        style={{ top: (startIndex + index) * e.itemHeight + 1 }}
+                        onClick={handleMessageClick}
+                        key={item.id}
+                        refresh={() =>
+                          refresh(Math.ceil((startIndex + index) / e.pagination.pageSize))
+                        }
+                        forwardNextMessage={() => {
+                          if (item.id != activeId) {
+                            return;
                           }
-                          forwardNextMessage={() =>
-                            item.id == activeId &&
-                            handleGoto(Math.min(pagination.totalCount - 1, startIndex + index))
+                          if (index == pagination.totalCount - 1) {
+                            if (pagination.totalCount > 1) {
+                              handleGoto(pagination.totalCount - 2);
+                            } else {
+                              history.push(`/email/${state.current.folder}`);
+                            }
+                            return;
                           }
-                          data={item as any}
-                          mailbox={folder}
-                          active={item.id == activeId}
-                        />
-                      ));
+                          handleGoto(Math.min(pagination.totalCount - 1, startIndex + index));
+                        }}
+                        data={item as any}
+                        mailbox={folder}
+                        active={item.id == activeId}
+                      />
+                    ));
                   }}
                 </InfiniteScroll>
               </div>

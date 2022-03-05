@@ -4,8 +4,8 @@ import { Icon } from '@asany/icons';
 import { Link, useRouteMatch } from 'umi';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import { useMailUserQuery } from '../hooks';
-import { DEFAULT_MAILBOXES, getDefaultMailboxBadgeStyle } from '../utils';
+import { useCountUnreadQuery, useMailUserQuery, useMailboxesQuery } from '../hooks';
+import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL } from '../utils';
 
 import Preferences from './preferences';
 
@@ -43,6 +43,8 @@ function Sidebar() {
   }, [match]);
 
   const { data } = useMailUserQuery({ fetchPolicy: 'cache-and-network' });
+  const { data: mailboxesData } = useMailboxesQuery({ fetchPolicy: 'cache-and-network' });
+  const { data: countUnread } = useCountUnreadQuery({ fetchPolicy: 'cache-and-network' });
 
   const handleClosePreferences = useCallback(() => {
     setVisiblePreferences(false);
@@ -53,28 +55,28 @@ function Sidebar() {
   }, []);
 
   const mailboxes = useMemo(() => {
-    if (!data?.mailboxes || !data?.mailboxes) {
-      const inbox = DEFAULT_MAILBOXES.find((item) => item.id == 'INBOX')!;
-      const outbox = DEFAULT_MAILBOXES.find((item) => item.id == 'Outbox')!;
+    if (!data?.mailUser || !mailboxesData?.mailboxes) {
+      const inbox = DEFAULT_MAILBOXES.INBOX;
+      const outbox = DEFAULT_MAILBOXES.Outbox;
       return {
         inbox: { ...inbox, title: inbox.name, key: inbox.name.toLowerCase() },
         outbox: { ...outbox, title: outbox.name, key: outbox.name.toLowerCase() },
-        private: DEFAULT_MAILBOXES.filter((item) => !['Outbox', 'INBOX'].includes(item.id)).map(
+        private: DEFAULT_MAILBOXES_ALL.filter((item) => !['Outbox', 'INBOX'].includes(item.id)).map(
           (item) => ({ ...item, title: item.name, key: item.name.toLowerCase(), count: 0 }),
         ),
         smart: [],
         custom: [],
       };
     }
-    const allMailboxes = data.mailboxes
+    const allMailboxes = mailboxesData.mailboxes
       .map((item) => {
         if (item.namespace == '#private') {
-          const index = DEFAULT_MAILBOXES.findIndex((m) => m.id == item.name);
+          const index = DEFAULT_MAILBOXES_ALL.findIndex((m) => m.id == item.name);
           return {
             ...item,
             index,
-            title: DEFAULT_MAILBOXES[index].name,
-            icon: DEFAULT_MAILBOXES[index].icon,
+            title: DEFAULT_MAILBOXES_ALL[index].name,
+            icon: DEFAULT_MAILBOXES_ALL[index].icon,
             key: item.name!.toLowerCase(),
           };
         }
@@ -102,11 +104,11 @@ function Sidebar() {
       smart: allMailboxes.filter((item) => item.namespace == '#smart'),
       custom: allMailboxes.filter((item) => item.namespace == '#custom'),
     };
-  }, [data?.mailUser, data?.mailboxes]);
+  }, [data?.mailUser, mailboxesData?.mailboxes]);
 
-  const unreadNumber = useMemo(() => data?.inbox?.unread || 0, [data?.inbox?.unread]);
+  const unreadNumber = useMemo(() => countUnread?.inbox?.unread || 0, [countUnread?.inbox?.unread]);
 
-  console.log('mailboxes', mailboxes, 'selectedKeys', selectedKeys);
+  // console.log('mailboxes', mailboxes, 'selectedKeys', selectedKeys);
 
   return (
     <AsideWorkspace width={275} collapsible={false} className="email-sidebar-aside" padding={false}>
@@ -134,7 +136,7 @@ function Sidebar() {
               icon={<Icon className="svg-icon-2 me-3" name="Duotune/com010" />}
               badge={
                 !!unreadNumber && (
-                  <Badge size="sm" lightStyle={getDefaultMailboxBadgeStyle('inbox')! as any}>
+                  <Badge size="sm" lightStyle={DEFAULT_MAILBOXES.INBOX.badge as any}>
                     {unreadNumber}
                   </Badge>
                 )
@@ -145,7 +147,7 @@ function Sidebar() {
             </Menu.Item>
             <Menu.Section>文件夹</Menu.Section>
             {mailboxes.private.map((item) => {
-              const lightStyle = getDefaultMailboxBadgeStyle(item.key);
+              const lightStyle = DEFAULT_MAILBOXES[item.name]?.badge;
               return (
                 <Menu.Item
                   className="mb-3"

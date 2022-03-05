@@ -7,16 +7,20 @@ import type { RouteComponentProps } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import classnames from 'classnames';
+import { useHistory } from 'umi';
 
 import {
+  CountUnreadDocument,
+  MailboxesDocument,
+  useDeleteMailboxMessageMutation,
   useMailboxMessageQuery,
   useMoveMailboxMessageToFolderMutation,
   useUpdateMailboxMessageFlagsMutation,
 } from '../hooks';
-import { DEFAULT_MAILBOXES } from '../utils';
+import { DEFAULT_MAILBOXES, displayName } from '../utils';
 
 import type { MailboxMessage } from '@/types';
-import { Badge, Button, Popover, Tooltip } from '@/pages/Metronic/components';
+import { Button, Modal, Popover, Tooltip } from '@/pages/Metronic/components';
 import Avatar from '@/pages/Metronic/components/base/Symbol/Avatar';
 import { sleep } from '@/utils';
 import { toPlainText } from '@/pages/Metronic/components/utils/format';
@@ -34,16 +38,15 @@ export type MailboxProps = RouteComponentProps<MailboxRouteParams> & {
   children: React.ReactNode;
 };
 
-type ActionType = 'archive' | 'spam' | 'deleted' | 'read' | 'unread';
+type ActionType = 'archive' | 'spam' | 'deleted' | 'read' | 'unread' | 'inbox' | 'sent';
 
 type MailMessageActionsProps = {
   onAction: (action: ActionType) => void;
   message: MailboxMessage;
-  mailbox: string;
 };
 
 function MailMessageActions(props: MailMessageActionsProps) {
-  const { message, mailbox, onAction } = props;
+  const { message, onAction } = props;
   const buildClick = useCallback(
     (action: ActionType) => () => {
       onAction(action);
@@ -55,33 +58,57 @@ function MailMessageActions(props: MailMessageActionsProps) {
       <Tooltip placement="bottom" title="返回">
         <Link
           className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3"
-          to={`/email/${mailbox}`}
+          to={`/email/${message.mailboxName.toLowerCase()}`}
         >
           <Icon name="Duotune/arr063" className="svg-icon-1 m-0" />
         </Link>
       </Tooltip>
-      <Tooltip placement="bottom" title="存档">
-        <a
-          onClick={buildClick('archive')}
-          className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
-        >
-          <Icon
-            name={DEFAULT_MAILBOXES.find((item) => item.id == 'Archive')!.icon}
-            className="svg-icon-2 m-0"
-          />
-        </a>
-      </Tooltip>
-      <Tooltip placement="bottom" title="垃圾邮件">
-        <a
-          onClick={buildClick('spam')}
-          className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
-        >
-          <Icon
-            name={DEFAULT_MAILBOXES.find((item) => item.id == 'Spam')!.icon}
-            className="svg-icon-2 m-0"
-          />
-        </a>
-      </Tooltip>
+      {![DEFAULT_MAILBOXES.INBOX.id, DEFAULT_MAILBOXES.Drafts.id].includes(message.mailboxName) &&
+        DEFAULT_MAILBOXES.INBOX.id == message.originalMailboxName && (
+          <Tooltip placement="bottom" title="收件箱">
+            <a
+              onClick={buildClick('inbox')}
+              className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+            >
+              <Icon name={DEFAULT_MAILBOXES.INBOX.icon} className="svg-icon-2 m-0" />
+            </a>
+          </Tooltip>
+        )}
+      {![DEFAULT_MAILBOXES.Sent.id, DEFAULT_MAILBOXES.Drafts.id].includes(message.mailboxName) &&
+        DEFAULT_MAILBOXES.Sent.id == message.originalMailboxName && (
+          <Tooltip placement="bottom" title="已发送">
+            <a
+              onClick={buildClick('sent')}
+              className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+            >
+              <Icon name={DEFAULT_MAILBOXES.Sent.icon} className="svg-icon-2 m-0" />
+            </a>
+          </Tooltip>
+        )}
+      {![
+        DEFAULT_MAILBOXES.Archive.id,
+        DEFAULT_MAILBOXES.Drafts.id,
+        DEFAULT_MAILBOXES.Trash.id,
+      ].includes(message.mailboxName) && (
+        <Tooltip placement="bottom" title="存档">
+          <a
+            onClick={buildClick('archive')}
+            className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+          >
+            <Icon name={DEFAULT_MAILBOXES.Archive.icon} className="svg-icon-2 m-0" />
+          </a>
+        </Tooltip>
+      )}
+      {![DEFAULT_MAILBOXES.Spam.id, DEFAULT_MAILBOXES.Drafts.id].includes(message.mailboxName) && (
+        <Tooltip placement="bottom" title="垃圾邮件">
+          <a
+            onClick={buildClick('spam')}
+            className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+          >
+            <Icon name={DEFAULT_MAILBOXES.Spam.icon} className="svg-icon-2 m-0" />
+          </a>
+        </Tooltip>
+      )}
       <Tooltip placement="bottom" title="删除邮件">
         <a
           onClick={buildClick('deleted')}
@@ -408,21 +435,37 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
     refresh,
   } = props;
 
+  const history = useHistory();
+
   const { data } = useMailboxMessageQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
       id,
     },
   });
-  const [toFolder] = useMoveMailboxMessageToFolderMutation();
-  const [updateFlags] = useUpdateMailboxMessageFlagsMutation();
+  const [toFolder] = useMoveMailboxMessageToFolderMutation({
+    refetchQueries: [CountUnreadDocument, MailboxesDocument],
+  });
+  const [updateFlags] = useUpdateMailboxMessageFlagsMutation({
+    refetchQueries: [CountUnreadDocument],
+  });
+  const [deleteMailboxMessage] = useDeleteMailboxMessageMutation({
+    refetchQueries: [MailboxesDocument],
+  });
 
-  const temp = useRef<{ message?: MailboxMessage; autoReadExecuted?: boolean; pagination: any }>({
+  const temp = useRef<{
+    mailbox: string;
+    message?: MailboxMessage;
+    autoReadExecuted?: boolean;
+    pagination: any;
+  }>({
     pagination,
+    mailbox,
   });
 
   const message = (data?.message as MailboxMessage | undefined) || passthrough;
 
+  temp.current.mailbox = mailbox;
   temp.current.message = message;
   temp.current.pagination = pagination;
 
@@ -443,28 +486,48 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
           },
         });
       } else if (action == 'deleted') {
-        await toFolder({
-          variables: {
-            id,
-            mailbox: 'trash',
-          },
-        });
-        goto(Math.min(pagination.totalCount - 1, pagination.current));
-      } else if (['archive', 'spam'].includes(action)) {
+        if (mailbox == 'drafts' || mailbox == 'trash') {
+          const result = await Modal.confirm({
+            title: '警告',
+            content: mailbox == 'trash' ? '确定永久删除信息？' : '确定永久删除草稿？',
+          });
+          if (!result.isConfirmed) {
+            return;
+          }
+          await deleteMailboxMessage({
+            variables: {
+              id,
+            },
+          });
+        } else {
+          await toFolder({
+            variables: {
+              id,
+              mailbox: 'trash',
+            },
+          });
+        }
+        if (_pagination.current == _pagination.totalCount) {
+          if (_pagination.totalCount > 1) {
+            goto(_pagination.totalCount - 2);
+          } else {
+            history.push(`/email/${mailbox}`);
+          }
+        } else {
+          goto(Math.min(_pagination.totalCount - 1, _pagination.current));
+        }
+      } else if (['archive', 'spam', 'inbox', 'sent'].includes(action)) {
         await toFolder({
           variables: {
             id,
             mailbox: action,
           },
         });
-        goto(Math.min(pagination.totalCount - 1, pagination.current));
-      }
-      if (_message?.index == undefined) {
-        debugger;
+        goto(Math.min(_pagination.totalCount - 1, _pagination.current));
       }
       refresh && refresh(Math.ceil(_message!.index! / _pagination.pageSize), _message!);
     },
-    [goto, id, pagination, refresh, toFolder, updateFlags],
+    [deleteMailboxMessage, goto, history, id, mailbox, refresh, toFolder, updateFlags],
   );
 
   useEffect(() => {
@@ -473,6 +536,9 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
 
   useEffect(() => {
     if (!message || message.id != id) {
+      return;
+    }
+    if (temp.current.mailbox == 'drafts') {
       return;
     }
     if (temp.current.autoReadExecuted || message.seen) {
@@ -501,9 +567,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
     >
       <div className="card mail-message-container">
         <div className="card-header align-items-center py-5 gap-5">
-          {message && (
-            <MailMessageActions message={message} mailbox={mailbox} onAction={handleAction} />
-          )}
+          {message && <MailMessageActions message={message} onAction={handleAction} />}
           <Pagination
             pagination={{ ...pagination, current: message?.index || pagination.current }}
             goto={goto}
@@ -513,16 +577,16 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
           <div className="d-flex flex-wrap gap-2 justify-content-between mb-8">
             <div className="d-flex align-items-center flex-wrap gap-2">
               {/*--begin::Heading--*/}
-              <h2 className="fw-bold me-3 my-1">{message?.subject}</h2>
+              <h2 className="fw-bold me-3 my-1">{message?.subject || '(无主题)'}</h2>
               {/*--begin::Heading--*/}
-              {/*--begin::Badges--*/}
+              {/*--begin::Badges-
               <Badge className="my-1 me-2" lightStyle="primary">
                 inbox
               </Badge>
               <Badge className="my-1" lightStyle="danger">
                 important
               </Badge>
-              {/*--end::Badges--*/}
+              -*/}
             </div>
             <div className="d-flex">
               <Tooltip placement="bottom" title="打印">
@@ -584,7 +648,7 @@ function MessageWrapper(props: MessageWrapperProps) {
         <div className="d-flex align-items-center message-handover">
           {/*--begin::Avatar--*/}
           <Avatar
-            alt={message?.from.map((item) => item.name || item.localPart).join(',')}
+            alt={message?.from.map(displayName).join('、')}
             src="assets/media/avatars/300-6.jpg"
             size={50}
             className="me-4"
@@ -600,7 +664,7 @@ function MessageWrapper(props: MessageWrapperProps) {
             {/*--begin::Author details--*/}
             <div className="d-flex align-items-center flex-wrap gap-1">
               <a className="fw-bolder text-dark text-hover-primary">
-                {message?.from.map((item) => item.name || item.localPart).join(',')}
+                {message?.from.map(displayName).join('、')}
               </a>
               <Icon className="svg-icon-7 svg-icon-success mx-3" name="Duotune/abs050" />
               <span className="text-muted fw-bolder">
@@ -619,25 +683,13 @@ function MessageWrapper(props: MessageWrapperProps) {
                       {mailbox != 'sent' && (
                         <tr>
                           <td className="w-75px text-muted">发件人</td>
-                          <td>
-                            {message?.from
-                              .map(
-                                (item) => (item.name || item.localPart) + '<' + item.address + '>',
-                              )
-                              .join(',')}
-                          </td>
+                          <td>{message?.from.join('、')}</td>
                         </tr>
                       )}
                       {mailbox != 'inbox' && (
                         <tr>
                           <td className="w-75px text-muted">收件人</td>
-                          <td>
-                            {message?.to
-                              .map(
-                                (item) => (item.name || item.localPart) + '<' + item.address + '>',
-                              )
-                              .join(',')}
-                          </td>
+                          <td>{message?.to.join('、')}</td>
                         </tr>
                       )}
                       <tr>
@@ -651,9 +703,7 @@ function MessageWrapper(props: MessageWrapperProps) {
                       {message?.replyTo && (
                         <tr>
                           <td className="text-muted">回复</td>
-                          <td>
-                            {message.replyTo.map((item) => item.name || item.localPart).join(',')}
-                          </td>
+                          <td>{message.replyTo.map(displayName).join('、')}</td>
                         </tr>
                       )}
                     </tbody>
@@ -663,7 +713,9 @@ function MessageWrapper(props: MessageWrapperProps) {
               placement="bottom-start"
             >
               <div className={classnames('inbox-message-details', { 'd-none': !expand })}>
-                <span className="text-muted fw-bold">发送给我</span>
+                <span className="text-muted fw-bold">
+                  发送给 {mailbox == 'inbox' ? '我' : message?.to.map(displayName).join('、')}
+                </span>
                 {/*--begin::Menu toggle--*/}
                 <a
                   className="me-1"
@@ -682,7 +734,7 @@ function MessageWrapper(props: MessageWrapperProps) {
                 },
               )}
             >
-              {message?.mimeType == 'text/html' ? toPlainText(message.body) : message?.body}
+              {message?.mimeType == 'text/html' ? toPlainText(message.body || '') : message?.body}
             </div>
           </div>
         </div>

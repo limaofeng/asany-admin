@@ -5,6 +5,9 @@
     right: 1rem;
     margin-top: 0;
   }
+  .text-left {
+    text-align: left;
+  }
   .swal2-title {
     padding-top: 0;
     padding-left: 0;
@@ -14,6 +17,7 @@
     padding-left: 0;
   }
   .swal2-actions {
+    margin-top: 0;
     margin-bottom: 0;
   }
 }

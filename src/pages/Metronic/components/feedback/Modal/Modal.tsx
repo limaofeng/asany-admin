@@ -177,6 +177,7 @@ const message = async (options: MessageOptions) => {
     html: content,
     confirmButtonText,
     buttonsStyling: false,
+    allowOutsideClick: () => !Swal.isLoading(),
     customClass: {
       ...customClass,
       confirmButton: customClass.confirmButton || 'btn btn-primary',
@@ -205,11 +206,11 @@ Modal.confirm = async (options: ModalOptions) => {
     customClass: {
       container: 'modal-confirm',
       closeButton: 'btn btn-icon btn-sm btn-active-light-primary ms-2',
-      title: 'text-left',
-      htmlContainer: 'text-left',
+      title: 'text-left pe-0',
+      htmlContainer: 'text-left pe-0',
       actions: 'justify-content-end',
-      confirmButton: okClassName,
-      cancelButton: cancelClassName,
+      confirmButton: classnames('btn btn-sm btn-primary', okClassName),
+      cancelButton: classnames('btn btn-sm btn-secondary', cancelClassName),
     },
   });
 };
@@ -235,5 +236,19 @@ Modal.warning = (options: ModalOptions) => {
 };
 
 Modal.Header = ModalHeader;
+
+/* const template = document.createElement('template');
+template.id = 'my-template';
+template.innerHTML = `
+<swal-title>Save changes to "Untitled 1" before closing?</swal-title>
+<swal-icon type="warning" color="red" />
+<swal-button type="confirm">Save As</swal-button>
+<swal-button type="cancel">Cancel</swal-button>
+<swal-button type="deny">Close without Saving</swal-button>
+<swal-param name="allowEscapeKey" value="false" />
+<swal-param name="customClass" value='{ "popup": "my-popup" }' />
+`;
+
+document.body.appendChild(template); */
 
 export default Modal;

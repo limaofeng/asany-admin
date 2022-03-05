@@ -9,16 +9,20 @@ query mailUser {
       mailboxes
     }
   }
-  mailboxes {
+}
+
+mutation createMailboxMessage($input: MailboxMessageCreateInput!) {
+  createMailboxMessage(input: $input) {
     id
-    name
-    namespace
-    count
+    subject
+    from
+    to
+    seen
   }
-  inbox: mailbox(id: "inbox") {
-    id
-    unread: count(type: UNREAD)
-  }
+}
+
+mutation deleteMailboxMessage($id: ID!) {
+  deleteMailboxMessage(id: $id)
 }
 
 query countUnread {
@@ -33,6 +37,7 @@ query mailboxes {
     id
     name
     namespace
+    count
   }
 }
 
@@ -89,26 +94,12 @@ fragment MailboxMessageParts on MailboxMessage {
   id
   subject
   date
-  sender {
-    name
-    domain
-    localPart
-    address
-  }
-  from {
-    name
-    localPart
-    domain
-    address
-  }
-  to {
-    name
-    localPart
-    domain
-    address
-  }
+  from
+  to
   mimeType
   body
+  mailboxName
+  originalMailboxName
 }
 
 fragment MailboxMessageFlagParts on MailboxMessage {

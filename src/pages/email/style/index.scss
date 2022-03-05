@@ -340,13 +340,24 @@
         margin-top: 6px;
         padding-left: 8px;
         font-weight: bold;
-        font-size: 12px;
         background-color: #fff;
         border-top: #d9d9d9 1px solid;
         border-bottom: #d9d9d9 1px solid;
 
         .box-name {
+          flex: 1;
           margin-left: 6px;
+          font-size: 13px;
+        }
+
+        .box-actions {
+          padding-right: 8px;
+          .trash-clear {
+            padding: calc(0.1rem + 1px) calc(0.5rem + 1px);
+            font-size: 12px;
+            border: 1px solid #f1416c;
+            border-radius: 2px;
+          }
         }
       }
 

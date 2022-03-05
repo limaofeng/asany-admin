@@ -9,7 +9,7 @@ import MailboxFooter from './MailboxFooter';
 
 import { Checkbox, TreeList } from '@/pages/Metronic/components';
 import { useMailboxesQuery, useUpdateMyFavoriteMailboxesMutation } from '@/pages/email/hooks';
-import { DEFAULT_MAILBOXES } from '@/pages/email/utils';
+import { DEFAULT_MAILBOXES_ALL } from '@/pages/email/utils';
 import type { Mailbox } from '@/types';
 
 const NAMESPACES: any[] = [
@@ -139,8 +139,8 @@ function MailboxFolder(props: MailboxFolderProps) {
     }
     namespaces[0].children = namespaces[0]
       .children!.map((item: any) => {
-        const zindex = DEFAULT_MAILBOXES.findIndex((m) => m.id == item.name);
-        const details = DEFAULT_MAILBOXES[zindex];
+        const zindex = DEFAULT_MAILBOXES_ALL.findIndex((m) => m.id == item.name);
+        const details = DEFAULT_MAILBOXES_ALL[zindex];
         return {
           ...item,
           zindex,

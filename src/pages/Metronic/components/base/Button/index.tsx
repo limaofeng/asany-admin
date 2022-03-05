@@ -52,10 +52,10 @@ type ButtonColor =
 
 type ActiveColor = Variant | ACTIVE_LIGHT_STYLE;
 
-export interface ButtonProps<AsProps> {
+export interface ButtonProps<AsProps = any> {
   as?: 'button' | 'a' | 'span' | React.ComponentType<AsProps>;
   id?: string;
-  variant?: Variant | 'clean';
+  variant?: Variant | 'clean' | false;
   variantStyle?: VariantStyle;
   dashed?: boolean;
   type?: 'dashed' | 'link';
@@ -69,7 +69,7 @@ export interface ButtonProps<AsProps> {
   activeColor?: ActiveColor;
   flushed?: boolean;
   active?: boolean;
-  size?: 'lg' | 'sm';
+  size?: 'lg' | 'sm' | 'xs';
   className?: string;
   htmlType?: 'submit' | 'button' | 'reset';
   children?: React.ReactNode;
@@ -121,7 +121,8 @@ function Button(
           active,
           disabled: disabled && as != 'button',
           'btn-link': type == 'link',
-          [`btn-${variant}`]: !variantStyle,
+          [`btn-${variant}`]: !variantStyle && variant,
+          [`btn-${variantStyle}-${variant}`]: variantStyle && variant,
           [`btn-color-${color}`]: !!color,
           [`btn-color-text-${textColor}`]: !!textColor,
           [`btn-active-${activeColor}`]: !!activeColor,
