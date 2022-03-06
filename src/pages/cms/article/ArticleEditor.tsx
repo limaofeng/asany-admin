@@ -13,7 +13,6 @@ import {
   useUpdateArticleMutation,
 } from '../hooks';
 
-import { delayUpdate } from './utils';
 import type { EditorStyle } from './components/ArticleContentEditor';
 import ArticleContentEditor from './components/ArticleContentEditor';
 import NavigationPromptModal from './components/NavigationPromptModal';
@@ -23,6 +22,7 @@ import { Button, DatePicker, Form, Input, Select2, Spin } from '@/pages/Metronic
 import SettingsMenu from '@/components/SettingsMenu';
 import { delay } from '@/utils';
 import type { Article } from '@/types';
+import { useAutoSave } from '@/pages/Metronic/components/utils';
 
 import './style/ArticleEditor.scss';
 
@@ -46,21 +46,12 @@ const STATUS_MAPPINGS = {
 };
 
 function ArticleSettings({ isNew, onChange }: ArticleSettingsProps) {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleSave = useCallback(
-    delayUpdate(
-      {},
-      (_: any, diff: any) => {
-        onChange(diff);
-      },
-      { delay: 1000, onlyDiff: true },
-    ),
-    [],
+  const handleChange = useCallback(
+    (_, values) => {
+      onChange(values);
+    },
+    [onChange],
   );
-  const handleChange = useCallback((_, values) => {
-    handleSave(values);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="article-settings">
@@ -196,62 +187,54 @@ function ArticleEditor(props: ArticleEditorProps) {
     fetchPolicy: 'network-only',
   });
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleSave = useCallback(
-    delayUpdate(
-      {},
-      async (_: any, values: any) => {
-        const state = stateRef.current;
-        const contentWrap = values.content ? { type: 'HTML', text: values.content } : undefined;
-        state.saved = 'Saving';
-        forceRender();
-        try {
-          if (state.status == 'New') {
-            if (!values.title) {
-              state.saved = 'NotSaved';
-              forceRender();
-              return;
-            }
-            const { data } = await delay(
-              createArticle({
-                variables: {
-                  input: { ...state.temp, ...values, category: 'news', content: contentWrap },
-                },
-              }),
-              350,
-            );
-            state.data = {
-              ...data.article,
-              channels: data.article.channels.map((item: any) => item.id),
-            };
-            state.temp = {} as any;
-            state.status = STATUS_MAPPINGS[data.article.status];
-          } else {
-            const { data } = await delay(
-              updateArticle({
-                variables: {
-                  id: state.data!.id,
-                  input: { ...state.temp, ...values, content: contentWrap },
-                },
-              }),
-              350,
-            );
-            state.data = {
-              ...data.article,
-              channels: data.article.channels.map((item: any) => item.id),
-            };
-          }
-        } catch (e) {
-          state.temp = values;
-          console.error(e);
+  const [autoSave, saving] = useAutoSave(async (changedValues) => {
+    const state = stateRef.current;
+    const contentWrap = changedValues.content
+      ? { type: 'HTML', text: changedValues.content }
+      : undefined;
+    try {
+      if (state.status == 'New') {
+        if (!changedValues.title) {
+          state.saved = 'NotSaved';
+          forceRender();
+          return;
         }
-        state.saved = 'Saved';
-        forceRender();
-      },
-      { delay: 1000, onlyDiff: true },
-    ),
-    [],
-  );
+        const { data } = await delay(
+          createArticle({
+            variables: {
+              input: { ...state.temp, ...changedValues, category: 'news', content: contentWrap },
+            },
+          }),
+          350,
+        );
+        state.data = {
+          ...data.article,
+          channels: data.article.channels.map((item: any) => item.id),
+        };
+        state.temp = {} as any;
+        state.status = STATUS_MAPPINGS[data.article.status];
+      } else {
+        const { data } = await delay(
+          updateArticle({
+            variables: {
+              id: state.data!.id,
+              input: { ...state.temp, ...changedValues, content: contentWrap },
+            },
+          }),
+          350,
+        );
+        state.data = {
+          ...data.article,
+          channels: data.article.channels.map((item: any) => item.id),
+        };
+      }
+    } catch (e) {
+      state.temp = changedValues as any;
+      console.error(e);
+    }
+    state.saved = 'Saved';
+    forceRender();
+  }, {});
 
   const handleBack = useCallback(() => {
     if (!!history.length) {
@@ -260,19 +243,21 @@ function ArticleEditor(props: ArticleEditorProps) {
     history.push('/cms/channels');
   }, [history]);
 
-  const handleSettingsData = useCallback(async (values) => {
-    const state = stateRef.current;
-    if (state.status == 'New') {
-      state.saved = 'Saving';
-      forceRender();
-      state.temp = await delay(Promise.resolve({ ...state.temp, ...values }), 350);
-      state.saved = 'NotSaved';
-      forceRender();
-    } else {
-      handleSave(values);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleSettingsData = useCallback(
+    async (values) => {
+      const state = stateRef.current;
+      if (state.status == 'New') {
+        state.saved = 'Saving';
+        forceRender();
+        state.temp = await delay(Promise.resolve({ ...state.temp, ...values }), 350);
+        state.saved = 'NotSaved';
+        forceRender();
+      } else {
+        autoSave(values);
+      }
+    },
+    [autoSave],
+  );
 
   const handleSettingsMenuToggle = useCallback(() => {
     setSettingsMenuCollapsed((collapsed) => !collapsed);
@@ -314,13 +299,15 @@ function ArticleEditor(props: ArticleEditorProps) {
     }
   }, []);
 
-  const handleChange = useCallback((_, values) => {
-    const state = stateRef.current;
-    state.saved = 'NotSaved';
-    forceRender();
-    handleSave(values);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleChange = useCallback(
+    (_, values) => {
+      const state = stateRef.current;
+      state.saved = 'NotSaved';
+      forceRender();
+      autoSave(values);
+    },
+    [autoSave],
+  );
 
   const isHoveringCover = useHoverDirty(coverContainer);
   const isHoveringTitle = useHoverDirty(titleContainer);
@@ -345,7 +332,10 @@ function ArticleEditor(props: ArticleEditorProps) {
                 文章
               </Button>
               <div className="art-editor-status px-6">
-                <ArticleStatus value={stateRef.current.status} saved={stateRef.current.saved} />
+                <ArticleStatus
+                  value={stateRef.current.status}
+                  saved={saving ? 'Saving' : stateRef.current.saved}
+                />
               </div>
             </div>
             <div className="tw-flex">
@@ -386,6 +376,8 @@ function ArticleEditor(props: ArticleEditorProps) {
                   <Button
                     icon={<Icon name="Duotune/arr087" className="svg-icon-2" />}
                     type="link"
+                    variant={false}
+                    color="muted"
                     activeTextColor="gray-700"
                     flushed={true}
                   >
@@ -470,12 +462,24 @@ export function ArticleNew(props: ArticleNewProps) {
 export function ArticleEdit(props: ArticleEditProps) {
   const { id } = props.match.params;
 
+  const loaded = useRef<number>(0);
+
   const { data, loading } = useArticleQuery({
     variables: { id },
     fetchPolicy: 'cache-and-network',
   });
 
-  return <ArticleEditor {...props} loading={loading} data={data?.article as any} />;
+  const isLoading = useMemo(() => {
+    if (loading) {
+      if (loaded.current == 1) {
+        return false;
+      }
+      loaded.current++;
+    }
+    return loading;
+  }, [loading]);
+
+  return <ArticleEditor {...props} loading={isLoading} data={data?.article as any} />;
 }
 
 export default ArticleEditor;

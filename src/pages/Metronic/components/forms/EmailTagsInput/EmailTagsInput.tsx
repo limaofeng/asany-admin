@@ -231,7 +231,7 @@ function EmailTagsInput(props: EmailTagsInputProps) {
 
   const execChange = useCallback(() => {
     temp.current.intact = state.current.tags
-      .filter((item) => item != 'input')
+      .filter((item) => item != 'input' && !item.invalid)
       .map((item) => mailToString(item as any))
       .join(';');
 
@@ -347,8 +347,7 @@ function EmailTagsInput(props: EmailTagsInputProps) {
     }
     state.current = initialState(props.value || []);
     forceRender();
-    console.log('props.value', props.value, state.current);
-  }, [props.value]);
+  }, [execChange, props.value]);
 
   return (
     <div

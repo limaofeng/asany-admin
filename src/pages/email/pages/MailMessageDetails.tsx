@@ -538,7 +538,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
     if (!message || message.id != id) {
       return;
     }
-    if (temp.current.mailbox == 'drafts') {
+    if (message?.mailboxName != DEFAULT_MAILBOXES.INBOX.id) {
       return;
     }
     if (temp.current.autoReadExecuted || message.seen) {

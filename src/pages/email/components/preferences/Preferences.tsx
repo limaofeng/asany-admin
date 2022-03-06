@@ -55,6 +55,14 @@ function Preferences(props: PreferencesProps) {
                 </span>
               </Nav.Link>
             </Nav.Item>
+            <Nav.Item key="account" className="me-2 mb-md-0">
+              <Nav.Link className="btn d-flex flex-column btn-active-light-primary">
+                <Icon name="Duotune/cod001" className="svg-icon-2 me-0" />
+                <span className="d-flex flex-column align-items-start pt-2">
+                  <span className="fs-7">账号</span>
+                </span>
+              </Nav.Link>
+            </Nav.Item>
             <Nav.Item key="mailbox" className="me-2 mb-md-0">
               <Nav.Link className="btn d-flex flex-column btn-active-light-success">
                 <Icon name="Duotune/fil012" className="svg-icon-2  me-0" />

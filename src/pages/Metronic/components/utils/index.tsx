@@ -1,7 +1,13 @@
 import type React from 'react';
+import { useMemo, useReducer, useRef } from 'react';
 import { useCallback, useEffect } from 'react';
 
+import type { Dictionary } from 'lodash';
+import { clone, isEqual, uniq, zipObject } from 'lodash';
+
 import * as KTUtil from './KTUtil';
+
+import { sleep } from '@/utils';
 
 export function useScroll(
   scroll: React.RefObject<HTMLElement>,
@@ -10,7 +16,7 @@ export function useScroll(
 ) {
   const handleWindowResize = useCallback(() => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    let height = KTUtil.getViewPort().height;
+    let height = KTUtil.getViewPort().height!;
     const wrap = wrapper.current!;
     height = height - parseInt(KTUtil.css(wrap, 'margin-top')!, 10);
     height = height - parseInt(KTUtil.css(wrap, 'margin-bottom')!, 10);
@@ -70,4 +76,76 @@ export function isOverlap(node1: HTMLElement, node2: HTMLElement) {
     rect1.bottom < rect2.top ||
     rect1.top > rect2.bottom
   );
+}
+
+type AutoSaveOptions = {
+  equal?: (l: any, r: any) => boolean;
+  afterDelay?: number;
+};
+
+export type AutoSaveCallback<T> = (
+  changedValues: Dictionary<T>,
+  allValues: T,
+) => void | Promise<void>;
+
+export function diff<T>(lvalue: T, rvalue: T): Dictionary<T> {
+  if (isEqual(lvalue, rvalue)) {
+    return {};
+  }
+  const keys = uniq(Object.keys(lvalue).concat(Object.keys(rvalue))).filter(
+    (key) => !isEqual(lvalue[key], rvalue[key]),
+  );
+  const values = keys.map((key) => rvalue[key]);
+  return zipObject(keys, values);
+}
+
+export type AutoSaveFunc<T> = (value: T) => void;
+
+export type AutoSaveState = {
+  saving: boolean;
+  running: boolean;
+};
+
+export function useAutoSave<T>(
+  callback: AutoSaveCallback<T>,
+  ovalue: T,
+  options?: AutoSaveOptions,
+): [AutoSaveFunc<T>, boolean] {
+  const { equal = isEqual, afterDelay = 1000 } = options || {};
+
+  const state = useRef<AutoSaveState>({ saving: false, running: false });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
+
+  const autoSaveFunc = useMemo(() => {
+    let lvalue = clone(ovalue);
+    let lazy: NodeJS.Timeout;
+
+    return async (value: T) => {
+      while (state.current.running) {
+        await sleep(240);
+      }
+      clearTimeout(lazy);
+      if (equal(lvalue, value)) {
+        state.current.saving = false;
+        return;
+      }
+      // 开始保存
+      state.current.saving = true;
+      forceRender();
+      lazy = setTimeout(async () => {
+        try {
+          state.current.running = true;
+          await callback(diff<T>(lvalue, value), value);
+          lvalue = clone(value);
+        } finally {
+          state.current.running = false;
+          state.current.saving = false;
+          forceRender();
+        }
+      }, afterDelay);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return [autoSaveFunc, state.current.saving];
 }

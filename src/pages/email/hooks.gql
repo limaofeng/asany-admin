@@ -12,12 +12,28 @@ query mailUser {
 }
 
 mutation createMailboxMessage($input: MailboxMessageCreateInput!) {
-  createMailboxMessage(input: $input) {
+  message: createMailboxMessage(input: $input) {
     id
     subject
-    from
     to
-    seen
+    cc
+    bcc
+    mimeType
+    body
+    draft
+  }
+}
+
+mutation updateMailboxMessage($id: ID!, $input: MailboxMessageUpdateInput!) {
+  message: updateMailboxMessage(id: $id, input: $input) {
+    id
+    subject
+    to
+    cc
+    bcc
+    mimeType
+    body
+    draft
   }
 }
 

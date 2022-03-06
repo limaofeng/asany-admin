@@ -1,9 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import React from 'react';
 
 import ReactQuill, { Quill } from 'react-quill';
 import Icon from '@asany/icons';
 import type { ValidateErrorEntity } from 'rc-field-form/lib/interface';
+
+import { useCreateMailboxMessageMutation, useUpdateMailboxMessageMutation } from '../hooks';
 
 import type { QueueUploadRef } from '@/pages/Metronic/components';
 import { parseMail } from '@/pages/Metronic/components';
@@ -19,6 +21,8 @@ import {
   Tabs,
   Tooltip,
 } from '@/pages/Metronic/components';
+import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
+import { useAutoSave } from '@/pages/Metronic/components/utils';
 
 const { TabPane } = Tabs;
 
@@ -72,7 +76,7 @@ const RULE_VERIFY_MAIL = {
 };
 
 type ContentEditorProps = {
-  mode: 'html' | 'text';
+  mode: 'html' | 'plain';
   value?: string;
   onChange?: (value: string) => void;
 };
@@ -103,7 +107,7 @@ function ContentEditor(props: ContentEditorProps) {
   );
 
   useEffect(() => {
-    if (mode == 'text' && ref.current!.innerHTML !== props.value) {
+    if (mode == 'plain' && ref.current!.innerHTML !== props.value) {
       ref.current!.innerHTML = valueRef.current = props.value || '';
     }
   }, [mode, props.value]);
@@ -146,31 +150,24 @@ function ContentEditor(props: ContentEditorProps) {
   );
 }
 
-function MailEditor() {
-  const [mode, setMode] = useState<'text' | 'html'>('text');
+type MailEditorProps = {
+  message?: MailboxMessage;
+  saveState: 'default' | 'saving' | 'saved';
+  onAutoSave: (values: any) => void;
+};
+
+function MailEditor(props: MailEditorProps) {
+  const { message, saveState, onAutoSave } = props;
+
+  const [mode, setMode] = useState<'plain' | 'html'>('plain');
   const [recipients, setRecipients] = useState<('cc' | 'bcc')[]>([]);
+
+  const temp = useRef({ title: '' });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const form = Form.useForm();
 
   const queueUpload = useRef<QueueUploadRef>(null);
-  // const [attachments, setAttachments] = useState<FileObject[]>([]);
-
-  // const [upload, data, progress] = useUpload('email');
-
-  // console.log(data, progress);
-
-  // const onDrop = useCallback(
-  //   async (acceptedFiles) => {
-  //     console.log('开始上传', acceptedFiles);
-  //     // const fileObject = await upload(acceptedFiles[0]);
-  //     console.log('上传成功', fileObject);
-  //   },
-  //   [upload],
-  // );
-
-  // const { getRootProps, getInputProps } = useDropzone({ onDrop });
-
-  // console.log('getRootProps', getRootProps())
 
   const buildToggleRecipients = useCallback(
     (method: 'cc' | 'bcc') => () => {
@@ -185,11 +182,11 @@ function MailEditor() {
   );
 
   const toggleMode = useCallback(() => {
-    setMode((_mode) => (_mode == 'text' ? 'html' : 'text'));
+    setMode((_mode) => (_mode == 'plain' ? 'html' : 'plain'));
   }, []);
 
   useEffect(() => {
-    if (mode == 'text') {
+    if (mode == 'plain') {
       return;
     }
     const toolbar = document.querySelector('.ql-toolbar');
@@ -202,6 +199,17 @@ function MailEditor() {
   const handleUploadAttachment = useCallback((e: React.MouseEvent<HTMLElement>) => {
     queueUpload.current?.browse(e);
   }, []);
+
+  const handleValuesChange = useCallback(
+    (changedValues, allValues) => {
+      if (changedValues.subject) {
+        temp.current.title = changedValues.subject;
+        forceRender();
+      }
+      onAutoSave && onAutoSave({ ...allValues, mimeType: `text/${mode}` });
+    },
+    [onAutoSave, mode],
+  );
 
   const handleSubmit = useCallback(async () => {
     await queueUpload.current?.uploadAll();
@@ -235,15 +243,20 @@ function MailEditor() {
   return (
     <Card className="email-compose-editor">
       <Card.Header>
-        <Card.Title>新信息</Card.Title>
+        <Card.Title>{temp.current.title || '新信息'}</Card.Title>
+        <Card.Toolbar className="text-gray-600">
+          {saveState == 'saving' && '正在存储草稿...'}
+          {saveState == 'saved' && '已存储'}
+        </Card.Toolbar>
       </Card.Header>
       <Card.Body className="p-0">
         <Form
           form={form}
-          onFinish={handleSubmit}
           initialValues={{
-            to: ['玩玩<sxxx@msn.com>', 'limaofeng@msn.com;xxx@123.com;', 'xxx'],
+            to: ['玩玩<sxxx@msn.com>', 'limaofeng@msn.com', 'xxx@123.com'],
+            ...(message || {}),
           }}
+          onValuesChange={handleValuesChange}
           id="kt_inbox_compose_form"
         >
           <div className="email-compose-editor-body">
@@ -304,7 +317,7 @@ function MailEditor() {
                 <Input className="border-0 px-8 min-h-45px" placeholder="主题" transparent />
               </Form.Item>
             </div>
-            <Form.Item noStyle name="content">
+            <Form.Item noStyle name="body">
               <ContentEditor mode={mode} />
             </Form.Item>
             <Form.Item noStyle name="attachments">
@@ -351,7 +364,7 @@ function MailEditor() {
   );
 }
 
-function Tools() {
+const Tools = React.memo(function Tools() {
   return (
     <Card className="email-compose-tools">
       <Tabs className="nav-line-tabs-2x">
@@ -367,12 +380,68 @@ function Tools() {
       </Tabs>
     </Card>
   );
-}
+});
+
+type ComposeMailState = {
+  state: 'default' | 'saving' | 'saved';
+  message?: MailboxMessage;
+};
 
 function ComposeMail() {
+  const [createMessage] = useCreateMailboxMessageMutation();
+  const [updateMessage] = useUpdateMailboxMessageMutation();
+
+  const state = useRef<ComposeMailState>({
+    state: 'default',
+  });
+  const temp = useRef({ saving: false });
+
+  const [autoSave, saving] = useAutoSave<MailboxMessageCreateInput>(async (_, values) => {
+    console.log('执行保存', _, values);
+    const { message } = state.current;
+    if (!message) {
+      const { data } = await createMessage({
+        variables: {
+          input: values,
+        },
+      });
+      state.current.message = data?.message as any;
+    } else {
+      const { data } = await updateMessage({
+        variables: {
+          id: message.id,
+          input: values,
+        },
+      });
+      state.current.message = data?.message as any;
+    }
+    console.log('message', state.current.message);
+  }, {});
+
+  temp.current.saving = false;
+
+  const handleAutoSave = useCallback(
+    (values) => {
+      autoSave(values);
+    },
+    [autoSave],
+  );
+
+  const saveState = useMemo(() => {
+    if (saving) {
+      return (state.current.state = 'saving');
+    }
+    if (state.current.state != 'default') {
+      return (state.current.state = 'saved');
+    }
+    return state.current.state;
+  }, [saving]);
+
+  const { message } = state.current;
+
   return (
     <ContentWrapper className="apps-email-compose" footer={false}>
-      <MailEditor />
+      <MailEditor message={message} saveState={saveState} onAutoSave={handleAutoSave} />
       <Tools />
     </ContentWrapper>
   );

@@ -186,14 +186,24 @@ function MailMessageActions(props: MailMessageActionsProps) {
 function MailMessage(props: MailMessageProps) {
   const { style, forwardNextMessage, data, active, onClick, refresh } = props;
 
+  const history = useHistory();
+
   const handleClick = useCallback(() => {
     onClick(data.id);
   }, [data.id, onClick]);
+
+  const handleDoubleClick = useCallback(() => {
+    if (data.mailboxName != DEFAULT_MAILBOXES.Drafts.id) {
+      return;
+    }
+    history.push(`/email/compose`);
+  }, [data.mailboxName, history]);
 
   return (
     <div
       style={style}
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
       className={classnames('email-message d-flex flex-row', { active })}
     >
       <MailMessageActions forwardNextMessage={forwardNextMessage} refresh={refresh} data={data} />
