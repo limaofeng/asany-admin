@@ -60,12 +60,12 @@
         .editor_mode_text {
           flex: 1;
           padding: 12px 15px;
+          font-weight: 400;
+          font-size: 14px;
           &:focus-visible {
             border: none;
             outline: none;
           }
-          font-size: 14px;
-          font-weight: 400;
           // &[contenteditable][placeholder]:empty:before {
           //   position: absolute;
           //   color: #a1a5b7 !important;
@@ -547,6 +547,16 @@
       flex: 1;
       height: 100vh;
       background-color: #fff;
+
+      &.mailbox-message-is-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        img {
+          height: 60%;
+        }
+      }
 
       .mail-message-container {
         background-color: transparent;

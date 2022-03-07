@@ -203,7 +203,6 @@ export function MenuProvider(props: MenuProviderProps) {
   }, [store, openKeys]);
 
   useEffect(() => {
-    console.log('1 selectedKeys', selectedKeys);
     if (!selectedKeys) {
       return;
     }

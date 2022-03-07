@@ -23,10 +23,8 @@ function EmailTagEditing(
   props: EmailTagEditingProps,
   ref: React.ForwardedRef<EmailTagEditingRef | null>,
 ) {
-  const { value, onChange, onPrev, onNext, index, locationTo } = props;
+  const { value, onChange, onPrev, onNext, onDelete, index, locationTo } = props;
   const input = useRef<HTMLSpanElement>(null);
-
-  // console.log('onDelete', onDelete);
 
   const handleBlur = useCallback(async () => {
     const name = input.current!.textContent!;
@@ -42,14 +40,15 @@ function EmailTagEditing(
       // console.log('----=----', e.key, e.ctrlKey, e.metaKey);
       if (e.key == 'Backspace') {
         if (!input.current!.textContent) {
-          onPrev();
+          onDelete();
           e.preventDefault();
           e.stopPropagation();
         }
       } else if (e.key == 'ArrowLeft') {
-        const selection = window.getSelection();
+        const selection = document.getSelection()!;
+        const range = selection.getRangeAt(0);
         // console.log(e, selection);
-        if (selection?.focusOffset == 0) {
+        if (range.startOffset == range.endOffset && range.startOffset == 0) {
           e.preventDefault();
           e.stopPropagation();
           if (await handleBlur()) {
@@ -59,9 +58,13 @@ function EmailTagEditing(
           }
         }
       } else if (e.key == 'ArrowRight') {
-        const selection = window.getSelection();
-        // console.log(e, selection);
-        if (selection?.focusOffset == input.current?.textContent?.length) {
+        const selection = document.getSelection()!;
+        const range = selection.getRangeAt(0);
+        // console.log('range', range.startOffset, range.endOffset);
+        if (
+          range.startOffset == range.endOffset &&
+          range.endOffset == input.current?.textContent?.length
+        ) {
           e.preventDefault();
           e.stopPropagation();
           if (!(await handleBlur())) {
@@ -95,7 +98,7 @@ function EmailTagEditing(
         onChange(input.current!.textContent!);
       }
     },
-    [handleBlur, index, locationTo, onChange, onNext, onPrev],
+    [handleBlur, index, locationTo, onChange, onDelete, onNext, onPrev],
   );
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {

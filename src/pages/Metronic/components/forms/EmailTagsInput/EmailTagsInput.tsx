@@ -363,6 +363,7 @@ function EmailTagsInput(props: EmailTagsInputProps) {
             <EmailTagEditing
               onPrev={handlePrev}
               onNext={handleNext}
+              onDelete={handlePrev}
               ref={input}
               index={index}
               locationTo={handleLocationTo}

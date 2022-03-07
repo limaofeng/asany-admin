@@ -139,8 +139,6 @@ type MailEditorProps = {
 function MailEditor(props: MailEditorProps) {
   const { message, saveState, onAutoSave } = props;
 
-  // const [mode, setMode] = useState<'plain' | 'html'>('plain');
-  // const [recipients, setRecipients] = useState<('cc' | 'bcc')[]>([]);
   const state = useRef<{
     mode: 'plain' | 'html';
     recipients: ('cc' | 'bcc')[];
@@ -272,10 +270,7 @@ function MailEditor(props: MailEditorProps) {
       <Card.Body className="p-0">
         <Form
           form={form}
-          initialValues={{
-            to: ['玩玩<sxxx@msn.com>', 'limaofeng@msn.com', 'xxx@123.com'],
-            ...(message || {}),
-          }}
+          initialValues={{ ...(message || {}) }}
           onValuesChange={handleValuesChange}
           id="kt_inbox_compose_form"
         >

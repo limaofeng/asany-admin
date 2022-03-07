@@ -116,6 +116,7 @@ function EmailTag(props: EmailTagProps, ref: React.ForwardedRef<EmailTagEditingR
         index={props.index}
         locationTo={props.locationTo}
         onChange={handleChange}
+        onDelete={onDelete}
         onPrev={props.onPrev}
         onNext={props.onNext}
       />

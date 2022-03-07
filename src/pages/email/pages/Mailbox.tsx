@@ -631,13 +631,19 @@ function Mailbox(props: MailboxProps) {
         </div>
         <div className="flex-lg-row-fluid ms-lg-7 ms-xl-10" />
       </Resizer>
-      {React.cloneElement(children as any, {
-        pagination,
-        scrollTo: handleScrollTo,
-        goto: handleGoto,
-        refresh,
-        message: state.current.messages.find((item) => item && item.id == activeId),
-      })}
+      {activeId ? (
+        React.cloneElement(children as any, {
+          pagination,
+          scrollTo: handleScrollTo,
+          goto: handleGoto,
+          refresh,
+          message: state.current.messages.find((item) => item && item.id == activeId),
+        })
+      ) : (
+        <div className="mail-message-details mailbox-message-is-empty">
+          <img src="/assets/media/illustrations/sketchy-1/16.png" />
+        </div>
+      )}
     </ContentWrapper>
   );
 }

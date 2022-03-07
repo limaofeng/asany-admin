@@ -12,6 +12,7 @@ export type EmailTagEditingProps = {
   onChange: (value: string) => void;
   onPrev: () => void;
   onNext: () => void;
+  onDelete: () => void;
 };
 
 export type EmailTagEditingRef = {
