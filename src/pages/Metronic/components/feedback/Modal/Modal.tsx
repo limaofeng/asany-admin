@@ -40,15 +40,16 @@ type ModalProps = {
 
 type ModalHeaderProps = {
   closable?: boolean;
+  className?: string;
   children?: React.ReactNode;
   onCancel?: () => void;
 };
 
 function ModalHeader(props: ModalHeaderProps) {
-  const { closable, onCancel, children } = props;
+  const { closable, onCancel, children, className } = props;
   return (
     <div
-      className={classnames('modal-header align-items-start', {
+      className={classnames('modal-header align-items-start', className, {
         'pb-0 border-0 justify-content-end ': !React.Children.count(children),
       })}
     >

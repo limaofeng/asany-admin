@@ -101,7 +101,8 @@ export function diff<T>(lvalue: T, rvalue: T): Dictionary<T> {
 
 export type AutoSaveFunc<T> = (value: T) => void;
 
-export type AutoSaveState = {
+export type AutoSaveState<T> = {
+  values: T;
   saving: boolean;
   running: boolean;
 };
@@ -113,11 +114,16 @@ export function useAutoSave<T>(
 ): [AutoSaveFunc<T>, boolean] {
   const { equal = isEqual, afterDelay = 1000 } = options || {};
 
-  const state = useRef<AutoSaveState>({ saving: false, running: false });
+  const state = useRef<AutoSaveState<T>>({
+    values: clone(ovalue),
+    saving: false,
+    running: false,
+  });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
+  state.current.values = clone(ovalue);
+
   const autoSaveFunc = useMemo(() => {
-    let lvalue = clone(ovalue);
     let lazy: NodeJS.Timeout;
 
     return async (value: T) => {
@@ -125,7 +131,7 @@ export function useAutoSave<T>(
         await sleep(240);
       }
       clearTimeout(lazy);
-      if (equal(lvalue, value)) {
+      if (equal(state.current.values, value)) {
         state.current.saving = false;
         return;
       }
@@ -135,8 +141,8 @@ export function useAutoSave<T>(
       lazy = setTimeout(async () => {
         try {
           state.current.running = true;
-          await callback(diff<T>(lvalue, value), value);
-          lvalue = clone(value);
+          await callback(diff<T>(state.current.values, value), value);
+          state.current.values = clone(value);
         } finally {
           state.current.running = false;
           state.current.saving = false;

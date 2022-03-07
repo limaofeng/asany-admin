@@ -1,6 +1,12 @@
 import type { DOMAttributes } from 'react';
-import { useCallback, useState } from 'react';
-import { useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import classnames from 'classnames';
 import autosize from 'autosize';
@@ -18,7 +24,12 @@ interface TextAreaProps extends DOMAttributes<HTMLTextAreaElement> {
   bordered?: boolean;
   onPressEnter?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
-function TextArea(props: TextAreaProps) {
+
+type TextAreaRef = {
+  value: () => void;
+};
+
+function TextArea(props: TextAreaProps, eref: React.ForwardedRef<TextAreaRef | null>) {
   const {
     autoSize,
     solid,
@@ -31,6 +42,10 @@ function TextArea(props: TextAreaProps) {
 
   const ref = useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = useState(props.value || '');
+
+  useImperativeHandle(eref, () => ({
+    value() {},
+  }));
 
   useEffect(() => {
     if (!autoSize || typeof autoSize !== 'boolean') {
@@ -82,4 +97,4 @@ function TextArea(props: TextAreaProps) {
   );
 }
 
-export default TextArea;
+export default React.forwardRef(TextArea);

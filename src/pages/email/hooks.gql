@@ -112,6 +112,8 @@ fragment MailboxMessageParts on MailboxMessage {
   date
   from
   to
+  cc
+  bcc
   mimeType
   body
   mailboxName

@@ -25,6 +25,14 @@
     flex-direction: row;
     min-height: calc(100vh - 60px);
   }
+  .spin-nested-loading {
+    display: flex;
+    flex: 1;
+    .spin-container {
+      display: flex;
+      flex: 1;
+    }
+  }
   .email-compose-editor {
     flex: 1;
     // .card-body {
@@ -56,12 +64,20 @@
             border: none;
             outline: none;
           }
-          &[contenteditable][placeholder]:empty:before {
-            position: absolute;
-            color: #a1a5b7;
-            background-color: transparent;
-            content: attr(placeholder);
-          }
+          font-size: 14px;
+          font-weight: 400;
+          // &[contenteditable][placeholder]:empty:before {
+          //   position: absolute;
+          //   color: #a1a5b7 !important;
+          //   font-size: 1.1rem !important;
+          //   background-color: transparent;
+          //   content: attr(placeholder);
+          // }
+        }
+        .ql-editor.ql-blank::before {
+          color: #a1a5b7 !important;
+          font-weight: 500 !important;
+          font-size: 1.1rem !important;
         }
         .ql-picker-label {
           display: flex;

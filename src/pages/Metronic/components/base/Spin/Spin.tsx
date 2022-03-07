@@ -36,6 +36,7 @@ type SpinKitNames =
 type SpinProps = {
   tip?: React.ReactNode;
   size?: 'small' | 'default' | 'large';
+  className?: string;
   indicator?: SpinKitNames | React.ReactElement<IconProps>;
   spinning?: boolean;
   children?: React.ReactNode;
@@ -73,7 +74,14 @@ const spinkits: Record<SpinKitNames, React.ReactElement<any>> = {
 };
 
 function Spin(props: SpinProps) {
-  const { children, tip, size = 'default', spinning = true, indicator = 'Loading' } = props;
+  const {
+    className,
+    children,
+    tip,
+    size = 'default',
+    spinning = true,
+    indicator = 'Loading',
+  } = props;
   const indicatorNode =
     typeof indicator == 'string'
       ? React.cloneElement(spinkits[indicator], {
@@ -89,7 +97,7 @@ function Spin(props: SpinProps) {
         });
   if (React.Children.count(children)) {
     return (
-      <div className="spin-nested-loading">
+      <div className={classnames('spin-nested-loading', className)}>
         {spinning && (
           <div className="spin-spinning">
             <span className={classnames({ 'indicator-progress': !spinning })}>

@@ -196,8 +196,8 @@ function MailMessage(props: MailMessageProps) {
     if (data.mailboxName != DEFAULT_MAILBOXES.Drafts.id) {
       return;
     }
-    history.push(`/email/compose`);
-  }, [data.mailboxName, history]);
+    history.push(`/email/compose/${data.id}`, { message: data });
+  }, [data, history]);
 
   return (
     <div
@@ -318,8 +318,8 @@ function Mailbox(props: MailboxProps) {
   const handleMessageClick = useCallback(
     (id: string) => {
       const message = state.current.messages.find((item) => item && item.id == id);
-      console.log('handleMessageClick', message?.seen);
-      history.push(`/email/${state.current.folder}/${id}`, { message });
+      // console.log('handleMessageClick', message?.seen);
+      message && history.push(`/email/${message.mailboxName.toLowerCase()}/${id}`, { message });
     },
     [history],
   );
