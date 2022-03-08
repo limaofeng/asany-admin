@@ -1,20 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import NavigationPrompt from 'react-router-navigation-prompt';
 import type { RouteComponentProps } from 'react-router';
 
 import {
   MailboxesDocument,
-  useCreateMailboxMessageMutation,
   useDeleteMailboxMessageMutation,
   useMailboxMessageLazyQuery,
-  useUpdateMailboxMessageMutation,
 } from '../hooks';
-import MailEditor from '../components/MailEditor';
+import MessageEditor from '../components/MessageEditor';
 
 import { Button, Card, ContentWrapper, Modal, Spin, Tabs } from '@/pages/Metronic/components';
-import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
-import { useAutoSave } from '@/pages/Metronic/components/utils';
+import type { MailboxMessage } from '@/types';
 
 const { TabPane } = Tabs;
 
@@ -60,12 +57,6 @@ function ComposeMail(props: ComposeMailProps) {
     fetchPolicy: 'cache-and-network',
   });
 
-  const [createMessage] = useCreateMailboxMessageMutation({
-    refetchQueries: [MailboxesDocument],
-  });
-  const [updateMessage] = useUpdateMailboxMessageMutation({
-    refetchQueries: [MailboxesDocument],
-  });
   const [deleteMessage] = useDeleteMailboxMessageMutation({
     refetchQueries: [MailboxesDocument],
   });
@@ -75,37 +66,17 @@ function ComposeMail(props: ComposeMailProps) {
     state: 'default',
     message: (location.state as any)?.message,
   });
-  const temp = useRef({ saving: false });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const [autoSave, saving] = useAutoSave<MailboxMessageCreateInput>(async (_, values) => {
-    const { message } = state.current;
-    if (!message) {
-      const { data } = await createMessage({
-        variables: {
-          input: values,
-        },
-      });
-      state.current.message = data?.message as any;
-    } else {
-      const { data } = await updateMessage({
-        variables: {
-          id: message.id,
-          input: values,
-        },
-      });
-      state.current.message = data?.message as any;
+  const handleSend = useCallback(() => {}, []);
+
+  const handleAutoSave = useCallback((message: MailboxMessage) => {
+    state.current.message = message;
+    if (!state.current.isChanged) {
+      state.current.isChanged = true;
+      forceRender();
     }
-    state.current.isChanged = true;
-  }, state.current.message || {});
-
-  temp.current.saving = false;
-
-  const handleAutoSave = useCallback(
-    (values) => {
-      autoSave(values);
-    },
-    [autoSave],
-  );
+  }, []);
 
   const handleDoNotStore = useCallback(
     (onConfirm) => async () => {
@@ -114,16 +85,6 @@ function ComposeMail(props: ComposeMailProps) {
     },
     [deleteMessage],
   );
-
-  const saveState = useMemo(() => {
-    if (saving) {
-      return (state.current.state = 'saving');
-    }
-    if (state.current.state != 'default') {
-      return (state.current.state = 'saved');
-    }
-    return state.current.state;
-  }, [saving]);
 
   useEffect(() => {
     if (!messageId) {
@@ -182,7 +143,7 @@ function ComposeMail(props: ComposeMailProps) {
         )}
       </NavigationPrompt>
       <Spin spinning={loading && !isChanged}>
-        <MailEditor message={message} saveState={saveState} onAutoSave={handleAutoSave} />
+        <MessageEditor message={message} onAutoSave={handleAutoSave} onSend={handleSend} />
       </Spin>
       <Tools />
     </ContentWrapper>

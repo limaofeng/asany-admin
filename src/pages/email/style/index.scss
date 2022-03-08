@@ -18,6 +18,252 @@
   text-indent: 32px;
 }
 
+.email-compose-editor {
+  flex: 1;
+  // .card-body {
+  //   // display: flex;
+  //   // flex: 1;
+  //   // flex-direction: column;
+  //   height: 100%;
+  // }
+  #kt_inbox_compose_form {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
+
+    .email-compose-editor-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    #kt_inbox_form_editor {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      .editor_mode_text {
+        flex: 1;
+        padding: 12px 15px;
+        font-weight: 400;
+        font-size: 14px;
+        &:focus-visible {
+          border: none;
+          outline: none;
+        }
+        // &[contenteditable][placeholder]:empty:before {
+        //   position: absolute;
+        //   color: #a1a5b7 !important;
+        //   font-size: 1.1rem !important;
+        //   background-color: transparent;
+        //   content: attr(placeholder);
+        // }
+      }
+      .ql-editor.ql-blank::before {
+        color: #a1a5b7 !important;
+        font-weight: 500 !important;
+        font-size: 1.1rem !important;
+      }
+      .ql-picker-label {
+        display: flex;
+      }
+
+      .ql-snow .ql-formats {
+        position: relative;
+        &:last-child {
+          &:after {
+            display: none;
+          }
+        }
+        &:after {
+          position: absolute;
+          right: -10px;
+          display: table;
+          clear: both;
+          width: 1px;
+          height: 24px;
+          border-right: 1px solid #eff2f5;
+          content: '';
+        }
+      }
+    }
+
+    .quill-zh_hans {
+      .ql-picker.ql-header {
+        .ql-picker-label::before {
+          content: '普通' !important;
+        }
+        .ql-picker-label[data-value='1']::before {
+          content: '标题 1' !important;
+        }
+        .ql-picker-label[data-value='2']::before {
+          content: '标题 2' !important;
+        }
+      }
+      .ql-picker.ql-header {
+        .ql-picker-item::before {
+          content: '普通' !important;
+        }
+        .ql-picker-item[data-value='1']::before {
+          font-size: 1.5em;
+          content: '标题 1' !important;
+        }
+        .ql-picker-item[data-value='2']::before {
+          font-size: 1.25em;
+          content: '标题 2' !important;
+        }
+      }
+      .ql-container {
+        font-size: 14px;
+      }
+      .ql-picker.ql-size.ql-expanded .ql-picker-options .ql-picker-item {
+        padding: 2px 0;
+      }
+      .ql-font.ql-picker {
+        width: 96px;
+      }
+      .ql-picker.ql-size {
+        width: 56px;
+        .ql-picker-item[data-value='9px']::before,
+        .ql-picker-label[data-value='9px']::before {
+          content: '9';
+        }
+        .ql-picker-item[data-value='10px']::before,
+        .ql-picker-label[data-value='10px']::before {
+          content: '10';
+        }
+        .ql-picker-item[data-value='11px']::before,
+        .ql-picker-label[data-value='11px']::before {
+          content: '11';
+        }
+        .ql-picker-item[data-value='12px']::before,
+        .ql-picker-label[data-value='12px']::before {
+          content: '12';
+        }
+        .ql-picker-item[data-value='13px']::before,
+        .ql-picker-label[data-value='13px']::before {
+          content: '13';
+        }
+        .ql-picker-item::before,
+        .ql-picker-label::before {
+          content: '14';
+        }
+        .ql-picker-item[data-value='14px']::before,
+        .ql-picker-label[data-value='14px']::before {
+          content: '14';
+        }
+        .ql-picker-item[data-value='16px']::before,
+        .ql-picker-label[data-value='16px']::before {
+          content: '16';
+        }
+        .ql-picker-item[data-value='18px']::before,
+        .ql-picker-label[data-value='18px']::before {
+          content: '18';
+        }
+        .ql-picker-item[data-value='24px']::before,
+        .ql-picker-label[data-value='24px']::before {
+          content: '24';
+        }
+        .ql-picker-item[data-value='36px']::before,
+        .ql-picker-label[data-value='36px']::before {
+          content: '36';
+        }
+        .ql-picker-item[data-value='48px']::before,
+        .ql-picker-label[data-value='48px']::before {
+          content: '48';
+        }
+        .ql-picker-item[data-value='64px']::before,
+        .ql-picker-label[data-value='64px']::before {
+          content: '64';
+        }
+        .ql-picker-item[data-value='72px']::before,
+        .ql-picker-label[data-value='72px']::before {
+          content: '72';
+        }
+        .ql-picker-item[data-value='96px']::before,
+        .ql-picker-label[data-value='96px']::before {
+          content: '96';
+        }
+        .ql-picker-item[data-value='144px']::before,
+        .ql-picker-label[data-value='144px']::before {
+          content: '144';
+        }
+        .ql-picker-item[data-value='288px']::before,
+        .ql-picker-label[data-value='288px']::before {
+          content: '288';
+        }
+      }
+      .ql-picker.ql-font {
+        .ql-picker-label[data-value='SimSun']::before,
+        .ql-picker-item[data-value='SimSun']::before {
+          font-family: 'SimSun' !important;
+          content: '宋体';
+        }
+        .ql-picker-label[data-value='SimHei']::before,
+        .ql-picker-item[data-value='SimHei']::before {
+          font-family: 'SimHei';
+          content: '黑体';
+        }
+        .ql-picker-label[data-value='Microsoft-YaHei']::before,
+        .ql-picker-item[data-value='Microsoft-YaHei']::before {
+          font-family: '微软雅黑';
+          content: '微软雅黑';
+        }
+        .ql-picker-label[data-value='KaiTi']::before,
+        .ql-picker-item[data-value='KaiTi']::before {
+          font-family: 'KaiTi' !important;
+          content: '楷体';
+        }
+        .ql-picker-label[data-value='FangSong']::before,
+        .ql-picker-item[data-value='FangSong']::before {
+          font-family: 'FangSong';
+          content: '仿宋';
+        }
+        .ql-picker-label[data-value='Arial']::before,
+        .ql-picker-item[data-value='Arial']::before {
+          font-family: 'Arial';
+          content: 'Arial';
+        }
+        .ql-picker-label[data-value='pingfang']::before,
+        .ql-picker-item[data-value='pingfang']::before {
+          font-family: '苹方';
+          content: '苹方';
+        }
+      }
+      .ql-font-SimSun {
+        font-family: 'SimSun';
+      }
+      .ql-font-SimHei {
+        font-family: 'SimHei';
+      }
+      .ql-font-Microsoft-YaHei {
+        font-family: '微软雅黑';
+      }
+      .ql-font-KaiTi {
+        font-family: 'KaiTi';
+      }
+      .ql-font-FangSong {
+        font-family: 'FangSong';
+      }
+      .ql-font-Arial {
+        font-family: 'Arial';
+      }
+      .ql-font-pingfang {
+        font-family: '苹方';
+      }
+      .ql-tooltip[data-mode='link']::before {
+        content: 'Entrer le lien' !important;
+      }
+      .ql-tooltip[data-mode='video']::before {
+        content: 'Entrez la vidéo' !important;
+      }
+      .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
+        content: 'Sauvegarder' !important;
+      }
+    }
+  }
+}
+
 .apps-email-compose {
   padding-top: 30px;
   #kt_content_container {
@@ -31,251 +277,6 @@
     .spin-container {
       display: flex;
       flex: 1;
-    }
-  }
-  .email-compose-editor {
-    flex: 1;
-    // .card-body {
-    //   // display: flex;
-    //   // flex: 1;
-    //   // flex-direction: column;
-    //   height: 100%;
-    // }
-    #kt_inbox_compose_form {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      height: 100%;
-
-      .email-compose-editor-body {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-      }
-
-      #kt_inbox_form_editor {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-        .editor_mode_text {
-          flex: 1;
-          padding: 12px 15px;
-          font-weight: 400;
-          font-size: 14px;
-          &:focus-visible {
-            border: none;
-            outline: none;
-          }
-          // &[contenteditable][placeholder]:empty:before {
-          //   position: absolute;
-          //   color: #a1a5b7 !important;
-          //   font-size: 1.1rem !important;
-          //   background-color: transparent;
-          //   content: attr(placeholder);
-          // }
-        }
-        .ql-editor.ql-blank::before {
-          color: #a1a5b7 !important;
-          font-weight: 500 !important;
-          font-size: 1.1rem !important;
-        }
-        .ql-picker-label {
-          display: flex;
-        }
-
-        .ql-snow .ql-formats {
-          position: relative;
-          &:last-child {
-            &:after {
-              display: none;
-            }
-          }
-          &:after {
-            position: absolute;
-            right: -10px;
-            display: table;
-            clear: both;
-            width: 1px;
-            height: 24px;
-            border-right: 1px solid #eff2f5;
-            content: '';
-          }
-        }
-      }
-
-      .quill-zh_hans {
-        .ql-picker.ql-header {
-          .ql-picker-label::before {
-            content: '普通' !important;
-          }
-          .ql-picker-label[data-value='1']::before {
-            content: '标题 1' !important;
-          }
-          .ql-picker-label[data-value='2']::before {
-            content: '标题 2' !important;
-          }
-        }
-        .ql-picker.ql-header {
-          .ql-picker-item::before {
-            content: '普通' !important;
-          }
-          .ql-picker-item[data-value='1']::before {
-            font-size: 1.5em;
-            content: '标题 1' !important;
-          }
-          .ql-picker-item[data-value='2']::before {
-            font-size: 1.25em;
-            content: '标题 2' !important;
-          }
-        }
-        .ql-container {
-          font-size: 14px;
-        }
-        .ql-picker.ql-size.ql-expanded .ql-picker-options .ql-picker-item {
-          padding: 2px 0;
-        }
-        .ql-font.ql-picker {
-          width: 96px;
-        }
-        .ql-picker.ql-size {
-          width: 56px;
-          .ql-picker-item[data-value='9px']::before,
-          .ql-picker-label[data-value='9px']::before {
-            content: '9';
-          }
-          .ql-picker-item[data-value='10px']::before,
-          .ql-picker-label[data-value='10px']::before {
-            content: '10';
-          }
-          .ql-picker-item[data-value='11px']::before,
-          .ql-picker-label[data-value='11px']::before {
-            content: '11';
-          }
-          .ql-picker-item[data-value='12px']::before,
-          .ql-picker-label[data-value='12px']::before {
-            content: '12';
-          }
-          .ql-picker-item[data-value='13px']::before,
-          .ql-picker-label[data-value='13px']::before {
-            content: '13';
-          }
-          .ql-picker-item::before,
-          .ql-picker-label::before {
-            content: '14';
-          }
-          .ql-picker-item[data-value='14px']::before,
-          .ql-picker-label[data-value='14px']::before {
-            content: '14';
-          }
-          .ql-picker-item[data-value='16px']::before,
-          .ql-picker-label[data-value='16px']::before {
-            content: '16';
-          }
-          .ql-picker-item[data-value='18px']::before,
-          .ql-picker-label[data-value='18px']::before {
-            content: '18';
-          }
-          .ql-picker-item[data-value='24px']::before,
-          .ql-picker-label[data-value='24px']::before {
-            content: '24';
-          }
-          .ql-picker-item[data-value='36px']::before,
-          .ql-picker-label[data-value='36px']::before {
-            content: '36';
-          }
-          .ql-picker-item[data-value='48px']::before,
-          .ql-picker-label[data-value='48px']::before {
-            content: '48';
-          }
-          .ql-picker-item[data-value='64px']::before,
-          .ql-picker-label[data-value='64px']::before {
-            content: '64';
-          }
-          .ql-picker-item[data-value='72px']::before,
-          .ql-picker-label[data-value='72px']::before {
-            content: '72';
-          }
-          .ql-picker-item[data-value='96px']::before,
-          .ql-picker-label[data-value='96px']::before {
-            content: '96';
-          }
-          .ql-picker-item[data-value='144px']::before,
-          .ql-picker-label[data-value='144px']::before {
-            content: '144';
-          }
-          .ql-picker-item[data-value='288px']::before,
-          .ql-picker-label[data-value='288px']::before {
-            content: '288';
-          }
-        }
-        .ql-picker.ql-font {
-          .ql-picker-label[data-value='SimSun']::before,
-          .ql-picker-item[data-value='SimSun']::before {
-            font-family: 'SimSun' !important;
-            content: '宋体';
-          }
-          .ql-picker-label[data-value='SimHei']::before,
-          .ql-picker-item[data-value='SimHei']::before {
-            font-family: 'SimHei';
-            content: '黑体';
-          }
-          .ql-picker-label[data-value='Microsoft-YaHei']::before,
-          .ql-picker-item[data-value='Microsoft-YaHei']::before {
-            font-family: '微软雅黑';
-            content: '微软雅黑';
-          }
-          .ql-picker-label[data-value='KaiTi']::before,
-          .ql-picker-item[data-value='KaiTi']::before {
-            font-family: 'KaiTi' !important;
-            content: '楷体';
-          }
-          .ql-picker-label[data-value='FangSong']::before,
-          .ql-picker-item[data-value='FangSong']::before {
-            font-family: 'FangSong';
-            content: '仿宋';
-          }
-          .ql-picker-label[data-value='Arial']::before,
-          .ql-picker-item[data-value='Arial']::before {
-            font-family: 'Arial';
-            content: 'Arial';
-          }
-          .ql-picker-label[data-value='pingfang']::before,
-          .ql-picker-item[data-value='pingfang']::before {
-            font-family: '苹方';
-            content: '苹方';
-          }
-        }
-        .ql-font-SimSun {
-          font-family: 'SimSun';
-        }
-        .ql-font-SimHei {
-          font-family: 'SimHei';
-        }
-        .ql-font-Microsoft-YaHei {
-          font-family: '微软雅黑';
-        }
-        .ql-font-KaiTi {
-          font-family: 'KaiTi';
-        }
-        .ql-font-FangSong {
-          font-family: 'FangSong';
-        }
-        .ql-font-Arial {
-          font-family: 'Arial';
-        }
-        .ql-font-pingfang {
-          font-family: '苹方';
-        }
-        .ql-tooltip[data-mode='link']::before {
-          content: 'Entrer le lien' !important;
-        }
-        .ql-tooltip[data-mode='video']::before {
-          content: 'Entrez la vidéo' !important;
-        }
-        .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
-          content: 'Sauvegarder' !important;
-        }
-      }
     }
   }
   .email-compose-tools {
@@ -562,6 +563,15 @@
         background-color: transparent;
         border-radius: 0;
         box-shadow: none;
+
+        .mail-message-draft {
+          display: flex;
+          min-height: calc(100vh - 70px);
+        }
+
+        .email-compose-editor {
+          box-shadow: none;
+        }
       }
 
       .inbox-message-details {

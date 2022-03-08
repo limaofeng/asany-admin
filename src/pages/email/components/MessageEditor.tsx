@@ -1,8 +1,14 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import type { ValidateErrorEntity } from 'rc-field-form/lib/interface';
 import Icon from '@asany/icons';
 import ReactQuill, { Quill } from 'react-quill';
+
+import {
+  MailboxesDocument,
+  useCreateMailboxMessageMutation,
+  useUpdateMailboxMessageMutation,
+} from '../hooks';
 
 import {
   Button,
@@ -16,8 +22,9 @@ import {
   parseMail,
 } from '@/pages/Metronic/components';
 import type { QueueUploadRef } from '@/pages/Metronic/components';
-import type { MailboxMessage } from '@/types';
+import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
 import { toHtml, toPlainText } from '@/pages/Metronic/components/utils/format';
+import { useAutoSave } from '@/pages/Metronic/components/utils';
 
 const RULE_VERIFY_MAIL = {
   async validator(_: any, emails: string[]) {
@@ -130,27 +137,78 @@ function ContentEditor(props: ContentEditorProps) {
   );
 }
 
-type MailEditorProps = {
+type MessageEditorProps = {
   message?: MailboxMessage;
-  saveState: 'default' | 'saving' | 'saved';
-  onAutoSave: (values: any) => void;
+  onAutoSave: (message: MailboxMessage) => void;
+  onSend: (message?: MailboxMessage) => void;
 };
 
-function MailEditor(props: MailEditorProps) {
-  const { message, saveState, onAutoSave } = props;
+type MessageEditorState = {
+  message?: MailboxMessage;
+  mode: 'plain' | 'html';
+  autoSaveState: 'default' | 'saving' | 'saved';
+  recipients: ('cc' | 'bcc')[];
+  title: string;
+};
 
-  const state = useRef<{
-    mode: 'plain' | 'html';
-    recipients: ('cc' | 'bcc')[];
-    title: string;
-    isLoad: boolean;
-  }>({
-    mode: 'plain',
-    recipients: [],
-    title: '',
-    isLoad: false,
-  });
+function initState(message?: MailboxMessage): MessageEditorState {
+  if (!message) {
+    return {
+      mode: 'plain',
+      autoSaveState: 'default',
+      recipients: [],
+      title: '',
+    };
+  }
+  const recipients: ('cc' | 'bcc')[] = [];
+  if (message.cc.length) {
+    recipients.push('cc');
+  }
+  if (message.bcc.length) {
+    recipients.push('bcc');
+  }
+  return {
+    message,
+    autoSaveState: 'default',
+    title: message.subject!,
+    recipients,
+    mode: message.mimeType?.endsWith('html') ? 'html' : 'plain',
+  };
+}
+
+function MessageEditor(props: MessageEditorProps) {
+  const { onAutoSave } = props;
+
+  const state = useRef<MessageEditorState>(initState(props.message));
   const [, forceRender] = useReducer((s) => s + 1, 0);
+
+  const [createMessage] = useCreateMailboxMessageMutation({
+    refetchQueries: [MailboxesDocument],
+  });
+  const [updateMessage] = useUpdateMailboxMessageMutation({
+    refetchQueries: [MailboxesDocument],
+  });
+
+  const [autoSave, saving] = useAutoSave<MailboxMessageCreateInput>(async (_, values) => {
+    const { message } = state.current;
+    if (!message) {
+      const { data } = await createMessage({
+        variables: {
+          input: values,
+        },
+      });
+      state.current.message = data?.message as any;
+    } else {
+      const { data } = await updateMessage({
+        variables: {
+          id: message.id,
+          input: values,
+        },
+      });
+      state.current.message = data?.message as any;
+    }
+    onAutoSave(state.current.message!);
+  }, state.current.message || {});
 
   const form = Form.useForm();
 
@@ -181,8 +239,8 @@ function MailEditor(props: MailEditorProps) {
     }
     state.current.mode = newMode;
     const allValues = form.getFieldsValue();
-    onAutoSave && onAutoSave({ ...allValues, mimeType: `text/${state.current.mode}` });
-  }, [form, onAutoSave]);
+    autoSave({ ...allValues, mimeType: `text/${state.current.mode}` });
+  }, [form, autoSave]);
 
   useEffect(() => {
     if (state.current.mode == 'plain') {
@@ -205,9 +263,9 @@ function MailEditor(props: MailEditorProps) {
         state.current.title = changedValues.subject;
         forceRender();
       }
-      onAutoSave && onAutoSave({ ...allValues, mimeType: `text/${state.current.mode}` });
+      autoSave({ ...allValues, mimeType: `text/${state.current.mode}` });
     },
-    [onAutoSave],
+    [autoSave],
   );
 
   const handleSubmit = useCallback(async () => {
@@ -239,32 +297,34 @@ function MailEditor(props: MailEditorProps) {
     }
   }, [form]);
 
+  useMemo(() => {
+    if (saving) {
+      return (state.current.autoSaveState = 'saving');
+    }
+    if (state.current.autoSaveState != 'default') {
+      return (state.current.autoSaveState = 'saved');
+    }
+    return state.current.autoSaveState;
+  }, [saving]);
+
   useEffect(() => {
-    if (!message || state.current.isLoad) {
+    if (!props.message || props.message.id == state.current.message?.id) {
       return;
     }
-    state.current.title = message.subject!;
-    state.current.isLoad = true;
-    form.setFieldsValue({ ...message });
-    if (message.cc.length && !state.current.recipients.includes('cc')) {
-      state.current.recipients.push('cc');
-    }
-    if (message.bcc.length && !state.current.recipients.includes('bcc')) {
-      state.current.recipients.push('bcc');
-    }
-    state.current.mode = message.mimeType?.endsWith('html') ? 'html' : 'plain';
+    state.current = initState(props.message);
+    form.setFieldsValue({ ...props.message });
     forceRender();
-  }, [form, message]);
+  }, [form, props.message]);
 
-  const { recipients, mode } = state.current;
+  const { message, recipients, mode, autoSaveState } = state.current;
 
   return (
     <Card className="email-compose-editor">
       <Card.Header>
         <Card.Title>{state.current.title || '新信息'}</Card.Title>
         <Card.Toolbar className="text-gray-600">
-          {saveState == 'saving' && '正在存储草稿...'}
-          {saveState == 'saved' && '已存储'}
+          {autoSaveState == 'saving' && '正在存储草稿...'}
+          {autoSaveState == 'saved' && '已存储'}
         </Card.Toolbar>
       </Card.Header>
       <Card.Body className="p-0">
@@ -327,9 +387,10 @@ function MailEditor(props: MailEditorProps) {
                 </span>
               </div>
             )}
-            <div className="border-bottom">
+            <div className="d-flex align-items-center border-bottom px-8 min-h-45px">
+              <div className="text-dark fw-bolder w-75px">主题:</div>
               <Form.Item noStyle name="subject">
-                <Input className="border-0 px-8 min-h-45px" placeholder="主题" transparent />
+                <Input className="border-0 min-h-45px" placeholder="输入主题" transparent />
               </Form.Item>
             </div>
             <Form.Item noStyle name="body">
@@ -354,13 +415,15 @@ function MailEditor(props: MailEditorProps) {
               </div>
             </div>
             <div className="d-flex align-items-center">
-              <span
-                onClick={handleUploadAttachment}
-                className="btn btn-icon btn-sm btn-clean btn-active-light-primary me-2 dz-clickable"
-              >
-                <Icon className="svg-icon-2 m-0" name="Duotune/com008" />
-              </span>
-              <Tooltip title="切换编辑器" placement="bottom">
+              <Tooltip title="添加附件" placement="top">
+                <span
+                  onClick={handleUploadAttachment}
+                  className="btn btn-icon btn-sm btn-clean btn-active-light-primary me-2 dz-clickable"
+                >
+                  <Icon className="svg-icon-2 m-0" name="Duotune/com008" />
+                </span>
+              </Tooltip>
+              <Tooltip title="切换编辑器" placement="top">
                 <Button
                   as="span"
                   size="sm"
@@ -379,4 +442,4 @@ function MailEditor(props: MailEditorProps) {
   );
 }
 
-export default MailEditor;
+export default MessageEditor;

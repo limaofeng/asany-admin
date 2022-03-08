@@ -1,13 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
-import $ from 'jquery';
 import { Icon } from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import type { RouteComponentProps } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
-import classnames from 'classnames';
 import { useHistory } from 'umi';
+import classnames from 'classnames';
 
 import {
   CountUnreadDocument,
@@ -17,13 +15,13 @@ import {
   useMoveMailboxMessageToFolderMutation,
   useUpdateMailboxMessageFlagsMutation,
 } from '../hooks';
-import { DEFAULT_MAILBOXES, displayName } from '../utils';
+import { DEFAULT_MAILBOXES } from '../utils';
+import MessageDetails from '../components/MessageDetails';
+import MessageEditor from '../components/MessageEditor';
 
 import type { MailboxMessage } from '@/types';
-import { Button, Modal, Popover, Tooltip } from '@/pages/Metronic/components';
-import Avatar from '@/pages/Metronic/components/base/Symbol/Avatar';
+import { Button, Card, Modal, Tooltip } from '@/pages/Metronic/components';
 import { sleep } from '@/utils';
-import { toPlainText } from '@/pages/Metronic/components/utils/format';
 
 export type MailboxRouteParams = {
   folder: string;
@@ -420,6 +418,20 @@ function Pagination(props: PaginationProps) {
 //   );
 // }
 
+export interface MessageParentProps {
+  pagination: {
+    current: number;
+    totalCount: number;
+    pageSize: number;
+    totalPage: number;
+    currentPage: number;
+  };
+  message: MailboxMessage;
+  goto: (index: number) => void;
+  scrollTo?: (index: number) => void;
+  refresh?: (index: number, message: MailboxMessage) => void;
+}
+
 type MailMessageDetailsProps = RouteComponentProps<MailboxRouteParams, any, MailboxLocationState> &
   MessageParentProps;
 
@@ -437,7 +449,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
 
   const history = useHistory();
 
-  const { data } = useMailboxMessageQuery({
+  const { data, loading } = useMailboxMessageQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
       id,
@@ -549,257 +561,42 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
     handleAction('read');
   }, [handleAction, id, message]);
 
+  const handleAutoSave = useCallback((_message: MailboxMessage) => {
+    temp.current.message = _message;
+  }, []);
+
   useEffect(() => {
-    if (!data?.message) {
+    if (!data?.message || loading) {
       return;
     }
     const p = temp.current.pagination;
     if (data?.message.index && p.current != data?.message.index) {
       scrollTo && scrollTo(data.message.index);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.message]);
+  }, [data?.message, loading, scrollTo]);
 
   return (
     <OverlayScrollbarsComponent
       className="mail-message-details flex-lg-row-fluid custom-scrollbar"
       options={{ scrollbars: { autoHide: 'scroll' } }}
     >
-      <div className="card mail-message-container">
-        <div className="card-header align-items-center py-5 gap-5">
+      <Card className="mail-message-container">
+        <Card.Header className="align-items-center py-5 gap-5">
           {message && <MailMessageActions message={message} onAction={handleAction} />}
           <Pagination
             pagination={{ ...pagination, current: message?.index || pagination.current }}
             goto={goto}
           />
-        </div>
-        <div className="card-body">
-          <div className="d-flex flex-wrap gap-2 justify-content-between mb-8">
-            <div className="d-flex align-items-center flex-wrap gap-2">
-              {/*--begin::Heading--*/}
-              <h2 className="fw-bold me-3 my-1">{message?.subject || '(无主题)'}</h2>
-              {/*--begin::Heading--*/}
-              {/*--begin::Badges-
-              <Badge className="my-1 me-2" lightStyle="primary">
-                inbox
-              </Badge>
-              <Badge className="my-1" lightStyle="danger">
-                important
-              </Badge>
-              -*/}
-            </div>
-            <div className="d-flex">
-              <Tooltip placement="bottom" title="打印">
-                <a className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2">
-                  <i className="bi bi-printer-fill fs-2" />
-                </a>
-              </Tooltip>
-            </div>
-          </div>
-          <MessageWrapper message={message} mailbox={mailbox} />
-          <div className="separator my-6" />
-        </div>
-      </div>
+        </Card.Header>
+        <Card.Body className={classnames({ 'px-5 py-0 mail-message-draft': message?.draft })}>
+          {message?.draft ? (
+            <MessageEditor message={message} onAutoSave={handleAutoSave} onSend={() => {}} />
+          ) : (
+            <MessageDetails message={message} mailbox={mailbox} />
+          )}
+        </Card.Body>
+      </Card>
     </OverlayScrollbarsComponent>
-  );
-}
-
-interface MessageParentProps {
-  pagination: {
-    current: number;
-    totalCount: number;
-    pageSize: number;
-    totalPage: number;
-    currentPage: number;
-  };
-  message: MailboxMessage;
-  goto: (index: number) => void;
-  scrollTo?: (index: number) => void;
-  refresh?: (index: number, message: MailboxMessage) => void;
-}
-
-interface MessageWrapperProps {
-  mailbox: string;
-  message?: MailboxMessage;
-}
-
-function MessageWrapper(props: MessageWrapperProps) {
-  const { message, mailbox } = props;
-  const [expand, setExpand] = useState(true);
-
-  const handleHandover = useCallback(
-    (e) => {
-      if (!$(e.target).hasClass('message-handover')) {
-        return;
-      }
-      setExpand((_expand) => !_expand);
-    },
-    [setExpand],
-  );
-
-  return (
-    <div className={classnames('message_wrapper', { shrink: !expand })}>
-      {/*--begin::Message header--*/}
-      <div
-        className="d-flex flex-wrap gap-2 cursor-pointer message-handover"
-        onClick={handleHandover}
-      >
-        {/*--begin::Author--*/}
-        <div className="d-flex align-items-center message-handover">
-          {/*--begin::Avatar--*/}
-          <Avatar
-            alt={message?.from.map(displayName).join('、')}
-            src="assets/media/avatars/300-6.jpg"
-            size={50}
-            className="me-4"
-          />
-          {/* <div className="symbol symbol-50 me-4">
-            <span
-              className="symbol-label"
-              style={{ backgroundImage: 'url("assets/media/avatars/300-6.jpg")' }}
-            />
-          </div>*/}
-          {/*--end::Avatar--*/}
-          <div className="pe-5">
-            {/*--begin::Author details--*/}
-            <div className="d-flex align-items-center flex-wrap gap-1">
-              <a className="fw-bolder text-dark text-hover-primary">
-                {message?.from.map(displayName).join('、')}
-              </a>
-              <Icon className="svg-icon-7 svg-icon-success mx-3" name="Duotune/abs050" />
-              <span className="text-muted fw-bolder">
-                {message && moment(message!.date).fromNow()}
-              </span>
-            </div>
-            <Popover
-              stopPropagation
-              content={
-                <div
-                  className="menu menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7"
-                  data-kt-menu="true"
-                >
-                  <table className="table mb-0">
-                    <tbody>
-                      {mailbox != 'sent' && (
-                        <tr>
-                          <td className="w-75px text-muted">发件人</td>
-                          <td>{message?.from.join('、')}</td>
-                        </tr>
-                      )}
-                      {mailbox != 'inbox' && (
-                        <tr>
-                          <td className="w-75px text-muted">收件人</td>
-                          <td>{message?.to.join('、')}</td>
-                        </tr>
-                      )}
-                      <tr>
-                        <td className="text-muted">时间</td>
-                        <td>{message && moment(message.date).format('lll')}</td>
-                      </tr>
-                      {/* <tr>
-                        <td className="text-muted">主题</td>
-                        <td>{message?.subject}</td>
-                      </tr> */}
-                      {message?.replyTo && (
-                        <tr>
-                          <td className="text-muted">回复</td>
-                          <td>{message.replyTo.map(displayName).join('、')}</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              }
-              placement="bottom-start"
-            >
-              <div className={classnames('inbox-message-details', { 'd-none': !expand })}>
-                <span className="text-muted fw-bold">
-                  发送给 {mailbox == 'inbox' ? '我' : message?.to.map(displayName).join('、')}
-                </span>
-                {/*--begin::Menu toggle--*/}
-                <a
-                  className="me-1"
-                  data-kt-menu-trigger="click"
-                  data-kt-menu-placement="bottom-start"
-                >
-                  <Icon className="svg-icon-5 m-0" name="Duotune/arr072" />
-                </a>
-              </div>
-            </Popover>
-            <div
-              className={classnames(
-                'message_wrapper_preview-message message-handover text-muted fw-bold',
-                {
-                  'd-none': expand,
-                },
-              )}
-            >
-              {message?.mimeType == 'text/html' ? toPlainText(message.body || '') : message?.body}
-            </div>
-          </div>
-        </div>
-        {/*--end::Author--*/}
-        {/*--begin::Actions--*/}
-        <div className="message_wrapper_actions d-flex align-items-center flex-wrap gap-2">
-          {/*--begin::Date--*/}
-          <span className="mail-message-date fw-bold text-muted me-3">
-            {message && moment(message!.date).format('YYYY-MM-DD A HH:mm')}
-          </span>
-          {/*--end::Date--*/}
-          <div className="mail-message-actions d-flex">
-            <Tooltip placement="bottom" title="收藏">
-              <a className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3">
-                <Icon name="Duotune/gen029" className="svg-icon-2 m-0" />
-              </a>
-            </Tooltip>
-            <Tooltip placement="bottom" title="设置为重要">
-              <a className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3">
-                <Icon name="Duotune/gen056" className="svg-icon-2 m-0" />
-              </a>
-            </Tooltip>
-            <Tooltip placement="bottom" title="回复">
-              <a className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3">
-                <Icon name="Duotune/gen055" className="svg-icon-2 m-0" />
-              </a>
-            </Tooltip>
-            {/*--begin::Settings--*/}
-            <a
-              className="btn btn-sm btn-icon btn-clear btn-active-light-primary"
-              data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              title="Settings"
-            >
-              {/*--begin::Svg Icon | path: icons/duotune/general/gen053.svg--*/}
-              <span className="svg-icon svg-icon-2 m-0">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
-                  <rect x="10" y="10" width="4" height="4" rx="2" fill="black" />
-                  <rect x="10" y="3" width="4" height="4" rx="2" fill="black" />
-                  <rect x="10" y="17" width="4" height="4" rx="2" fill="black" />
-                </svg>
-              </span>
-              {/*--end::Svg Icon--*/}
-            </a>
-            {/*--end::Settings--*/}
-          </div>
-        </div>
-        {/*--end::Actions--*/}
-      </div>
-      {/*--end::Message header--*/}
-      {/*--begin::Message content--*/}
-      <div
-        className={classnames('collapse fade', { show: expand })}
-        data-kt-inbox-message="message"
-      >
-        <div className="py-5" dangerouslySetInnerHTML={{ __html: message?.body || '' }} />
-      </div>
-      {/*--end::Message content--*/}
-    </div>
   );
 }
 
