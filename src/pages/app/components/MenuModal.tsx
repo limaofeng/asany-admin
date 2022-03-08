@@ -132,7 +132,7 @@ export function EditMenuModal(props: EditMenuModalProps) {
       Modal.success({
         title: '更新成功',
         content: `菜单 <strong>${input.name}</strong> 保存成功`,
-        timer: 2000,
+        timer: 3000,
         timerProgressBar: true,
       });
       onSuccess && onSuccess();
@@ -194,7 +194,7 @@ export function NewMenuModal(props: NewMenuModalProps) {
       Modal.success({
         title: '保存成功',
         content: `菜单 <strong>${input.name}</strong> 保存成功`,
-        timer: 2000,
+        timer: 3000,
         timerProgressBar: true,
       });
       onSuccess && onSuccess();

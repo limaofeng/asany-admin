@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'reac
 
 import NavigationPrompt from 'react-router-navigation-prompt';
 import type { RouteComponentProps } from 'react-router';
+import { useHistory } from 'umi';
 
 import {
   MailboxesDocument,
@@ -12,6 +13,7 @@ import MessageEditor from '../components/MessageEditor';
 
 import { Button, Card, ContentWrapper, Modal, Spin, Tabs } from '@/pages/Metronic/components';
 import type { MailboxMessage } from '@/types';
+import { sleep } from '@/utils';
 
 const { TabPane } = Tabs;
 
@@ -53,6 +55,8 @@ function ComposeMail(props: ComposeMailProps) {
     location,
   } = props;
 
+  const history = useHistory();
+
   const [loadMessage, { data: messageResult, loading }] = useMailboxMessageLazyQuery({
     fetchPolicy: 'cache-and-network',
   });
@@ -68,7 +72,15 @@ function ComposeMail(props: ComposeMailProps) {
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const handleSend = useCallback(() => {}, []);
+  const handleSend = useCallback(
+    async (message: MailboxMessage) => {
+      state.current.isChanged = false;
+      forceRender();
+      await sleep(120);
+      history.push(`/email/sent/${message.id}`);
+    },
+    [history],
+  );
 
   const handleAutoSave = useCallback((message: MailboxMessage) => {
     state.current.message = message;

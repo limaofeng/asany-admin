@@ -13,6 +13,7 @@ import moment from 'moment';
 import {
   CountUnreadDocument,
   MailboxesDocument,
+  useClearTrashMailboxMutation,
   useDeleteMailboxMessageMutation,
   useMailboxMessagesQuery,
   useMoveMailboxMessageToFolderMutation,
@@ -33,7 +34,7 @@ import {
   NProgress,
 } from '@/pages/Metronic/components';
 import type { MailboxMessage, MailboxMessageConnection } from '@/types';
-import { sleep } from '@/utils';
+import { delay, sleep } from '@/utils';
 import { toPlainText } from '@/pages/Metronic/components/utils/format';
 
 interface MailboxState {
@@ -55,7 +56,7 @@ const MIN_WIDTH = 320;
 const MAX_WIDTH = 500;
 
 type MailMessageProps = {
-  refresh: () => void;
+  refresh: (e: RefreshEvent) => void;
   forwardNextMessage: () => void;
   style?: CSSProperties;
   mailbox: string;
@@ -64,8 +65,17 @@ type MailMessageProps = {
   active: boolean;
 };
 
+export type RefreshType = 'toFolder' | 'updateFlags' | 'delete';
+
+export type RefreshEvent = {
+  type: RefreshType;
+  page?: number;
+  index?: number;
+  key: string;
+};
+
 type MailMessageActionsProps = {
-  refresh: () => void;
+  refresh: (e: RefreshEvent) => void;
   forwardNextMessage: () => void;
   data: MailboxMessage;
 };
@@ -74,24 +84,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
   const { data, refresh, forwardNextMessage } = props;
 
   const [toFolder] = useMoveMailboxMessageToFolderMutation({
-    updateQueries: {
-      mailboxMessages: (prev, { mutationResult }) => {
-        const updateId = mutationResult!.data!.moveMailboxMessageToFolder.id;
-        if (!prev.mailboxMessages.edges.some((item: any) => item.node.id == updateId)) {
-          return prev;
-        }
-        return {
-          ...prev,
-          mailboxMessages: {
-            ...prev.mailboxMessages,
-            totalCount: prev.mailboxMessages.totalCount - 1,
-            edges: prev.mailboxMessages.edges.filter(
-              (item: any) => item.node.id != mutationResult!.data!.moveMailboxMessageToFolder.id,
-            ),
-          },
-        };
-      },
-    },
+    refetchQueries: [CountUnreadDocument, MailboxesDocument],
   });
   const [updateFlags] = useUpdateMailboxMessageFlagsMutation({
     refetchQueries: [CountUnreadDocument],
@@ -108,7 +101,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
         mode: data.seen ? 'REMOVE' : 'ADD',
       },
     });
-    refresh();
+    refresh({ type: 'updateFlags', key: data.id });
   }, [data.id, data.seen, refresh, updateFlags]);
 
   const handleArchive = useCallback(async () => {
@@ -119,7 +112,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
       },
     });
     forwardNextMessage();
-    refresh();
+    refresh({ type: 'toFolder', key: data.id });
   }, [data.id, forwardNextMessage, refresh, toFolder]);
 
   const handleTrash = useCallback(async () => {
@@ -142,6 +135,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
           id: data.id,
         },
       });
+      refresh({ type: 'delete', key: data.id });
     } else {
       await toFolder({
         variables: {
@@ -149,9 +143,9 @@ function MailMessageActions(props: MailMessageActionsProps) {
           mailbox: 'trash',
         },
       });
+      refresh({ type: 'toFolder', key: data.id });
     }
     forwardNextMessage();
-    refresh();
   }, [data.mailboxName, data.id, forwardNextMessage, refresh, deleteMailboxMessage, toFolder]);
 
   return (
@@ -306,6 +300,9 @@ function Mailbox(props: MailboxProps) {
       },
     },
   });
+  const [clearTrash] = useClearTrashMailboxMutation({
+    refetchQueries: [MailboxesDocument],
+  });
 
   const forceResize = useMemo(
     () =>
@@ -368,8 +365,8 @@ function Mailbox(props: MailboxProps) {
         let message = _messages[newIndex];
         while (!message) {
           await sleep(600);
+          message = _messages[newIndex];
         }
-        message = _messages[newIndex];
         handleMessageClick(message.id);
       } else if (action == 'PREVIOUS') {
         let newIndex;
@@ -382,8 +379,8 @@ function Mailbox(props: MailboxProps) {
         let message = _messages[newIndex];
         while (!message) {
           await sleep(600);
+          message = _messages[newIndex];
         }
-        message = _messages[newIndex];
         handleMessageClick(message.id);
         if (newIndex * LIST_ITEM < e.viewport.start) {
           e.scrollbar.scroll(newIndex * LIST_ITEM);
@@ -403,8 +400,9 @@ function Mailbox(props: MailboxProps) {
       }
       while (!message) {
         await sleep(600);
+        message = _messages[index];
       }
-      message = _messages[index];
+
       handleMessageClick(message.id);
     },
     [handleMessageClick],
@@ -419,8 +417,12 @@ function Mailbox(props: MailboxProps) {
   }, []);
 
   const refresh = useCallback(
-    (page: number) => {
-      refetch({
+    async (e: RefreshEvent) => {
+      const { page, type } = e;
+      if (['toFolder', 'delete'].includes(type)) {
+        state.current.messages.splice(e.index!, 1);
+      }
+      await refetch({
         filter: {
           mailbox: state.current.folder,
         },
@@ -431,25 +433,41 @@ function Mailbox(props: MailboxProps) {
   );
 
   const handleTrashClear = useCallback(async () => {
+    let _count = 0;
     const result = await Modal.confirm({
       title: '清空&nbsp;&nbsp;回收站',
       content: '确定永久删除 回收站 文件夹内的全部邮件？',
-      // showLoaderOnConfirm: true,
-      // preConfirm: (ok) => {
-      //   console.log(ok);
-      //   //TODO:  JS 修改按钮 Loading 样式， 默认样式有点差强人意
-      //   return sleep(20000);
-      // },
+      preConfirm: async () => {
+        const okButton = document.querySelector('.swal2-confirm')!;
+        okButton.textContent = '清理中...';
+        const spinner = document.createElement('span');
+        spinner.classList.add('spinner-border-sm', 'ms-2', 'spinner-border', 'align-middle');
+        okButton.appendChild(spinner);
+        const _result = await delay(clearTrash(), 350);
+        _count = _result.data.clearMailboxMessagesInTrashMailbox;
+      },
     });
-    if (result.isConfirmed) {
-      await Modal.success({
-        title: '操作成功',
-        content: '回收站已被清空',
-        timer: 1000,
-      });
+    if (!result.isConfirmed) {
       return;
     }
-  }, []);
+    state.current.messages.length = 0;
+    state.current.activeId = undefined;
+    state.current.pages.clear();
+    state.current.pageIndex = [];
+    forceRender();
+    refetch({
+      filter: {
+        mailbox: state.current.folder,
+      },
+      page: 1,
+    });
+    await Modal.success({
+      title: '操作成功',
+      content: `回收站已被清空, 共删除 ${_count} 封邮件`,
+      timer: 3000,
+    });
+    history.push(`/email/${state.current.folder}`);
+  }, [clearTrash, history, refetch]);
 
   const mailbox = useMemo(() => {
     const _mailbox = DEFAULT_MAILBOXES_ALL.find((item) => item.id.toLowerCase() == folder);
@@ -556,7 +574,7 @@ function Mailbox(props: MailboxProps) {
                   <Icon className="svg-icon-5 svg-icon-success" name={mailbox.icon} />
                 )}
                 <span className="box-name">{mailbox.name}</span>
-                {mailbox.id == DEFAULT_MAILBOXES.Trash.id && (
+                {mailbox.id == DEFAULT_MAILBOXES.Trash.id && !!pagination.totalCount && (
                   <div className="box-actions">
                     <Button
                       className="trash-clear"
@@ -601,8 +619,12 @@ function Mailbox(props: MailboxProps) {
                         style={{ top: (startIndex + index) * e.itemHeight + 1 }}
                         onClick={handleMessageClick}
                         key={item.id}
-                        refresh={() =>
-                          refresh(Math.ceil((startIndex + index) / e.pagination.pageSize))
+                        refresh={(re: RefreshEvent) =>
+                          refresh({
+                            ...re,
+                            page: Math.ceil((startIndex + index + 1) / pagination.pageSize),
+                            index: startIndex + index,
+                          })
                         }
                         forwardNextMessage={() => {
                           if (item.id != activeId) {

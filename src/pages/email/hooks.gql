@@ -41,6 +41,16 @@ mutation deleteMailboxMessage($id: ID!) {
   deleteMailboxMessage(id: $id)
 }
 
+mutation sendMailboxMessage($id: ID!) {
+  message: sendMailboxMessage(id: $id) {
+    id
+  }
+}
+
+mutation clearTrashMailbox {
+  clearMailboxMessagesInTrashMailbox
+}
+
 query countUnread {
   inbox: mailbox(id: "inbox") {
     id

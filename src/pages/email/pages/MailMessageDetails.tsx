@@ -19,6 +19,8 @@ import { DEFAULT_MAILBOXES } from '../utils';
 import MessageDetails from '../components/MessageDetails';
 import MessageEditor from '../components/MessageEditor';
 
+import type { RefreshEvent, RefreshType } from './Mailbox';
+
 import type { MailboxMessage } from '@/types';
 import { Button, Card, Modal, Tooltip } from '@/pages/Metronic/components';
 import { sleep } from '@/utils';
@@ -429,7 +431,7 @@ export interface MessageParentProps {
   message: MailboxMessage;
   goto: (index: number) => void;
   scrollTo?: (index: number) => void;
-  refresh?: (index: number, message: MailboxMessage) => void;
+  refresh: (e: RefreshEvent) => void;
 }
 
 type MailMessageDetailsProps = RouteComponentProps<MailboxRouteParams, any, MailboxLocationState> &
@@ -449,7 +451,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
 
   const history = useHistory();
 
-  const { data, loading } = useMailboxMessageQuery({
+  const { data, loading, error } = useMailboxMessageQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
       id,
@@ -481,6 +483,20 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
   temp.current.message = message;
   temp.current.pagination = pagination;
 
+  const nextMessage = useCallback(() => {
+    const _mailbox = temp.current.mailbox;
+    const _pagination = temp.current.pagination;
+    if (_pagination.current == _pagination.totalCount) {
+      if (_pagination.totalCount > 1) {
+        goto(_pagination.totalCount - 2);
+      } else {
+        history.push(`/email/${_mailbox}`);
+      }
+    } else {
+      goto(Math.min(_pagination.totalCount - 1, _pagination.current));
+    }
+  }, [goto, history]);
+
   const handleAction = useCallback(
     async (action: ActionType) => {
       let _message = temp.current.message;
@@ -489,6 +505,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
         _message = temp.current.message;
       }
       const _pagination = temp.current.pagination;
+      let refreshType: RefreshType;
       if (action == 'read' || action == 'unread') {
         await updateFlags({
           variables: {
@@ -497,6 +514,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
             mode: action == 'unread' ? 'REMOVE' : 'ADD',
           },
         });
+        refreshType = 'updateFlags';
       } else if (action == 'deleted') {
         if (mailbox == 'drafts' || mailbox == 'trash') {
           const result = await Modal.confirm({
@@ -511,6 +529,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
               id,
             },
           });
+          refreshType = 'delete';
         } else {
           await toFolder({
             variables: {
@@ -518,16 +537,9 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
               mailbox: 'trash',
             },
           });
+          refreshType = 'toFolder';
         }
-        if (_pagination.current == _pagination.totalCount) {
-          if (_pagination.totalCount > 1) {
-            goto(_pagination.totalCount - 2);
-          } else {
-            history.push(`/email/${mailbox}`);
-          }
-        } else {
-          goto(Math.min(_pagination.totalCount - 1, _pagination.current));
-        }
+        nextMessage();
       } else if (['archive', 'spam', 'inbox', 'sent'].includes(action)) {
         await toFolder({
           variables: {
@@ -535,11 +547,17 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
             mailbox: action,
           },
         });
-        goto(Math.min(_pagination.totalCount - 1, _pagination.current));
+        refreshType = 'toFolder';
+        nextMessage();
       }
-      refresh && refresh(Math.ceil(_message!.index! / _pagination.pageSize), _message!);
+      refresh({
+        type: refreshType!,
+        key: _message.id,
+        index: _message!.index - 1,
+        page: Math.ceil(_message!.index! / _pagination.pageSize),
+      });
     },
-    [deleteMailboxMessage, goto, history, id, mailbox, refresh, toFolder, updateFlags],
+    [deleteMailboxMessage, id, mailbox, nextMessage, refresh, toFolder, updateFlags],
   );
 
   useEffect(() => {
@@ -565,6 +583,17 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
     temp.current.message = _message;
   }, []);
 
+  const handleSend = useCallback(async () => {
+    const { pagination: _pagination, message: _message } = temp.current;
+    await refresh({
+      type: 'toFolder',
+      key: _message!.id,
+      index: _message!.index!,
+      page: Math.ceil(_message!.index! / _pagination.pageSize),
+    });
+    nextMessage();
+  }, [nextMessage, refresh]);
+
   useEffect(() => {
     if (!data?.message || loading) {
       return;
@@ -574,6 +603,20 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
       scrollTo && scrollTo(data.message.index);
     }
   }, [data?.message, loading, scrollTo]);
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+    Modal.error({
+      title: '错误',
+      content: error.message,
+      timer: 3000,
+      timerProgressBar: true,
+    }).then(() => {
+      history.push(`/email/${temp.current.mailbox}`);
+    });
+  }, [error, history]);
 
   return (
     <OverlayScrollbarsComponent
@@ -590,7 +633,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
         </Card.Header>
         <Card.Body className={classnames({ 'px-5 py-0 mail-message-draft': message?.draft })}>
           {message?.draft ? (
-            <MessageEditor message={message} onAutoSave={handleAutoSave} onSend={() => {}} />
+            <MessageEditor message={message} onAutoSave={handleAutoSave} onSend={handleSend} />
           ) : (
             <MessageDetails message={message} mailbox={mailbox} />
           )}

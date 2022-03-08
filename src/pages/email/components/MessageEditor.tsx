@@ -7,6 +7,7 @@ import ReactQuill, { Quill } from 'react-quill';
 import {
   MailboxesDocument,
   useCreateMailboxMessageMutation,
+  useSendMailboxMessageMutation,
   useUpdateMailboxMessageMutation,
 } from '../hooks';
 
@@ -25,6 +26,7 @@ import type { QueueUploadRef } from '@/pages/Metronic/components';
 import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
 import { toHtml, toPlainText } from '@/pages/Metronic/components/utils/format';
 import { useAutoSave } from '@/pages/Metronic/components/utils';
+import { delay } from '@/utils';
 
 const RULE_VERIFY_MAIL = {
   async validator(_: any, emails: string[]) {
@@ -140,21 +142,25 @@ function ContentEditor(props: ContentEditorProps) {
 type MessageEditorProps = {
   message?: MailboxMessage;
   onAutoSave: (message: MailboxMessage) => void;
-  onSend: (message?: MailboxMessage) => void;
+  onSend: (message: MailboxMessage) => void;
 };
 
 type MessageEditorState = {
   message?: MailboxMessage;
+  disabled: boolean;
   mode: 'plain' | 'html';
   autoSaveState: 'default' | 'saving' | 'saved';
   recipients: ('cc' | 'bcc')[];
+  sending: boolean;
   title: string;
 };
 
 function initState(message?: MailboxMessage): MessageEditorState {
   if (!message) {
     return {
+      sending: false,
       mode: 'plain',
+      disabled: true,
       autoSaveState: 'default',
       recipients: [],
       title: '',
@@ -169,6 +175,8 @@ function initState(message?: MailboxMessage): MessageEditorState {
   }
   return {
     message,
+    sending: false,
+    disabled: !message.to || !message.to.length,
     autoSaveState: 'default',
     title: message.subject!,
     recipients,
@@ -177,7 +185,7 @@ function initState(message?: MailboxMessage): MessageEditorState {
 }
 
 function MessageEditor(props: MessageEditorProps) {
-  const { onAutoSave } = props;
+  const { onAutoSave, onSend } = props;
 
   const state = useRef<MessageEditorState>(initState(props.message));
   const [, forceRender] = useReducer((s) => s + 1, 0);
@@ -186,6 +194,9 @@ function MessageEditor(props: MessageEditorProps) {
     refetchQueries: [MailboxesDocument],
   });
   const [updateMessage] = useUpdateMailboxMessageMutation({
+    refetchQueries: [MailboxesDocument],
+  });
+  const [sendMessage] = useSendMailboxMessageMutation({
     refetchQueries: [MailboxesDocument],
   });
 
@@ -259,9 +270,21 @@ function MessageEditor(props: MessageEditorProps) {
 
   const handleValuesChange = useCallback(
     (changedValues, allValues) => {
-      if (changedValues.subject) {
+      console.log('changedValues', changedValues);
+      if (changedValues.hasOwnProperty('subject')) {
         state.current.title = changedValues.subject;
         forceRender();
+      }
+      if (changedValues.hasOwnProperty('to')) {
+        if (!changedValues.to || !changedValues.to.length) {
+          if (!state.current.disabled) {
+            state.current.disabled = true;
+            forceRender();
+          }
+        } else if (state.current.disabled) {
+          state.current.disabled = false;
+          forceRender();
+        }
       }
       autoSave({ ...allValues, mimeType: `text/${state.current.mode}` });
     },
@@ -272,12 +295,51 @@ function MessageEditor(props: MessageEditorProps) {
     await queueUpload.current?.uploadAll();
     try {
       const values = await form.validateFields();
-      console.log('handleSubmit', values);
+
+      if (!values.subject || !values.body) {
+        const fieldNames = [];
+        if (!values.subject) {
+          fieldNames.push('主题');
+        }
+        if (!values.body) {
+          fieldNames.push('正文');
+        }
+        const result = await Modal.confirm({
+          title: '此邮件没有' + fieldNames.join('和'),
+          content: '是否仍要发送邮件？',
+          okText: '仍然发送',
+        });
+
+        if (!result.isConfirmed) {
+          return;
+        }
+      }
+      state.current.sending = true;
+      forceRender();
+      try {
+        const result = await delay(
+          sendMessage({
+            variables: { id: state.current.message!.id },
+          }),
+          350,
+        );
+        Modal.success({
+          title: '操作成功',
+          content: '邮件已成功发送',
+          timer: 3000,
+        });
+        onSend(result.data!.message as any);
+      } catch (se: any) {
+        state.current.sending = false;
+        forceRender();
+        Modal.error({
+          title: '错误',
+          content: se.message,
+        });
+      }
     } catch (e) {
       const error = e as ValidateErrorEntity;
       const firstError = error.errorFields[0];
-
-      console.log('error', error);
 
       let content;
       if (firstError.name.includes('to')) {
@@ -295,7 +357,7 @@ function MessageEditor(props: MessageEditorProps) {
         content,
       });
     }
-  }, [form]);
+  }, [form, onSend, sendMessage]);
 
   useMemo(() => {
     if (saving) {
@@ -316,7 +378,7 @@ function MessageEditor(props: MessageEditorProps) {
     forceRender();
   }, [form, props.message]);
 
-  const { message, recipients, mode, autoSaveState } = state.current;
+  const { message, recipients, mode, autoSaveState, disabled, sending } = state.current;
 
   return (
     <Card className="email-compose-editor">
@@ -397,7 +459,7 @@ function MessageEditor(props: MessageEditorProps) {
               <ContentEditor mode={mode} />
             </Form.Item>
             <Form.Item noStyle name="attachments">
-              <QueueUpload ref={queueUpload} namespace="email" />
+              <QueueUpload auto ref={queueUpload} namespace="email" />
             </Form.Item>
           </div>
           <div className="d-flex flex-stack flex-wrap gap-2 py-5 ps-8 pe-5 border-top">
@@ -405,12 +467,14 @@ function MessageEditor(props: MessageEditorProps) {
               <div className="btn-group me-4">
                 <Button
                   htmlType="button"
-                  loading={false}
-                  className="fs-bold px-8"
+                  loading={sending}
+                  className="fs-bold px-10"
                   variant="primary"
+                  icon={<Icon name="Duotune/gen016" className="svg-icon-1 ms-n4 me-4" />}
+                  disabled={saving || disabled}
                   onClick={handleSubmit}
                 >
-                  发送
+                  {sending ? '发送中...' : '发送'}
                 </Button>
               </div>
             </div>

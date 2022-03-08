@@ -157,6 +157,8 @@ export type ModalOptions = {
   cancelClassName?: string;
   timer?: number;
   timerProgressBar?: boolean;
+  showLoaderOnConfirm?: boolean;
+  preConfirm?: (inputValue: any) => any;
 };
 
 export type MessageOptions = ModalOptions & SweetAlertOptions;
