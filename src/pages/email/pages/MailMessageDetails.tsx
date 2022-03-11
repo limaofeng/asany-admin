@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Icon } from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
@@ -6,20 +6,20 @@ import type { RouteComponentProps } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'umi';
 import classnames from 'classnames';
+import ContentLoader from 'react-content-loader';
 
 import {
   CountUnreadDocument,
   MailboxesDocument,
   useDeleteMailboxMessageMutation,
-  useMailboxMessageQuery,
+  useMailboxMessageLazyQuery,
   useMoveMailboxMessageToFolderMutation,
   useUpdateMailboxMessageFlagsMutation,
 } from '../hooks';
 import { DEFAULT_MAILBOXES } from '../utils';
 import MessageDetails from '../components/MessageDetails';
 import MessageEditor from '../components/MessageEditor';
-
-import type { RefreshEvent, RefreshType } from './Mailbox';
+import type { RefreshEvent, RefreshType } from '../typings';
 
 import type { MailboxMessage } from '@/types';
 import { Button, Card, Modal, Tooltip } from '@/pages/Metronic/components';
@@ -55,91 +55,101 @@ function MailMessageActions(props: MailMessageActionsProps) {
   );
   return (
     <div className="d-flex">
-      <Tooltip placement="bottom" title="返回">
-        <Link
-          className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3"
-          to={`/email/${message.mailboxName.toLowerCase()}`}
-        >
-          <Icon name="Duotune/arr063" className="svg-icon-1 m-0" />
-        </Link>
-      </Tooltip>
-      {![DEFAULT_MAILBOXES.INBOX.id, DEFAULT_MAILBOXES.Drafts.id].includes(message.mailboxName) &&
-        DEFAULT_MAILBOXES.INBOX.id == message.originalMailboxName && (
-          <Tooltip placement="bottom" title="收件箱">
+      {message && (
+        <>
+          <Tooltip placement="bottom" title="返回">
+            <Link
+              className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3"
+              to={`/email/${message.mailboxName.toLowerCase()}`}
+            >
+              <Icon name="Duotune/arr063" className="svg-icon-1 m-0" />
+            </Link>
+          </Tooltip>
+          {![DEFAULT_MAILBOXES.INBOX.id, DEFAULT_MAILBOXES.Drafts.id].includes(
+            message.mailboxName,
+          ) &&
+            DEFAULT_MAILBOXES.INBOX.id == message.originalMailboxName && (
+              <Tooltip placement="bottom" title="收件箱">
+                <a
+                  onClick={buildClick('inbox')}
+                  className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+                >
+                  <Icon name={DEFAULT_MAILBOXES.INBOX.icon} className="svg-icon-2 m-0" />
+                </a>
+              </Tooltip>
+            )}
+          {![DEFAULT_MAILBOXES.Sent.id, DEFAULT_MAILBOXES.Drafts.id].includes(
+            message.mailboxName,
+          ) &&
+            DEFAULT_MAILBOXES.Sent.id == message.originalMailboxName && (
+              <Tooltip placement="bottom" title="已发送">
+                <a
+                  onClick={buildClick('sent')}
+                  className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+                >
+                  <Icon name={DEFAULT_MAILBOXES.Sent.icon} className="svg-icon-2 m-0" />
+                </a>
+              </Tooltip>
+            )}
+          {![
+            DEFAULT_MAILBOXES.Archive.id,
+            DEFAULT_MAILBOXES.Drafts.id,
+            DEFAULT_MAILBOXES.Trash.id,
+          ].includes(message.mailboxName) && (
+            <Tooltip placement="bottom" title="存档">
+              <a
+                onClick={buildClick('archive')}
+                className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+              >
+                <Icon name={DEFAULT_MAILBOXES.Archive.icon} className="svg-icon-2 m-0" />
+              </a>
+            </Tooltip>
+          )}
+          {![DEFAULT_MAILBOXES.Spam.id, DEFAULT_MAILBOXES.Drafts.id].includes(
+            message.mailboxName,
+          ) && (
+            <Tooltip placement="bottom" title="垃圾邮件">
+              <a
+                onClick={buildClick('spam')}
+                className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+              >
+                <Icon name={DEFAULT_MAILBOXES.Spam.icon} className="svg-icon-2 m-0" />
+              </a>
+            </Tooltip>
+          )}
+          <Tooltip placement="bottom" title="删除邮件">
             <a
-              onClick={buildClick('inbox')}
+              onClick={buildClick('deleted')}
               className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
             >
-              <Icon name={DEFAULT_MAILBOXES.INBOX.icon} className="svg-icon-2 m-0" />
+              <Icon name="Duotune/gen027" className="svg-icon-2 m-0" />
             </a>
           </Tooltip>
-        )}
-      {![DEFAULT_MAILBOXES.Sent.id, DEFAULT_MAILBOXES.Drafts.id].includes(message.mailboxName) &&
-        DEFAULT_MAILBOXES.Sent.id == message.originalMailboxName && (
-          <Tooltip placement="bottom" title="已发送">
+          <Tooltip placement="bottom" title={message.seen ? '标记为未读' : '标记为已读'}>
             <a
-              onClick={buildClick('sent')}
+              onClick={buildClick(message.seen ? 'unread' : 'read')}
               className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
             >
-              <Icon name={DEFAULT_MAILBOXES.Sent.icon} className="svg-icon-2 m-0" />
+              <Icon
+                name={message.seen ? 'Duotune/gen028' : 'Duotune/gen054'}
+                className="svg-icon-2 m-0"
+              />
             </a>
           </Tooltip>
-        )}
-      {![
-        DEFAULT_MAILBOXES.Archive.id,
-        DEFAULT_MAILBOXES.Drafts.id,
-        DEFAULT_MAILBOXES.Trash.id,
-      ].includes(message.mailboxName) && (
-        <Tooltip placement="bottom" title="存档">
-          <a
-            onClick={buildClick('archive')}
-            className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
-          >
-            <Icon name={DEFAULT_MAILBOXES.Archive.icon} className="svg-icon-2 m-0" />
-          </a>
-        </Tooltip>
-      )}
-      {![DEFAULT_MAILBOXES.Spam.id, DEFAULT_MAILBOXES.Drafts.id].includes(message.mailboxName) && (
-        <Tooltip placement="bottom" title="垃圾邮件">
-          <a
-            onClick={buildClick('spam')}
-            className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
-          >
-            <Icon name={DEFAULT_MAILBOXES.Spam.icon} className="svg-icon-2 m-0" />
-          </a>
-        </Tooltip>
-      )}
-      <Tooltip placement="bottom" title="删除邮件">
-        <a
-          onClick={buildClick('deleted')}
-          className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
-        >
-          <Icon name="Duotune/gen027" className="svg-icon-2 m-0" />
-        </a>
-      </Tooltip>
-      <Tooltip placement="bottom" title={message.seen ? '标记为未读' : '标记为已读'}>
-        <a
-          onClick={buildClick(message.seen ? 'unread' : 'read')}
-          className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
-        >
-          <Icon
-            name={message.seen ? 'Duotune/gen028' : 'Duotune/gen054'}
-            className="svg-icon-2 m-0"
-          />
-        </a>
-      </Tooltip>
-      {/* <Tooltip placement="bottom" title="移动到">
+          {/* <Tooltip placement="bottom" title="移动到">
         <a className="btn btn-sm btn-icon btn-light btn-active-light-primary">
           <Icon name="Duotune/arr076" className="svg-icon-2 m-0" />
         </a>
       </Tooltip> */}
+        </>
+      )}
     </div>
   );
 }
 
 type PaginationProps = {
+  current: number;
   pagination: {
-    current: number;
     totalCount: number;
     pageSize: number;
     totalPage: number;
@@ -149,17 +159,17 @@ type PaginationProps = {
 };
 
 function Pagination(props: PaginationProps) {
-  const { pagination, goto } = props;
+  const { current, pagination, goto } = props;
   const handlePrev = useCallback(() => {
-    goto(Math.max(0, pagination.current - 2));
-  }, [goto, pagination]);
+    goto(Math.max(0, current - 2));
+  }, [goto, current]);
   const handleNext = useCallback(() => {
-    goto(Math.min(pagination.totalCount - 1, pagination.current));
-  }, [goto, pagination]);
+    goto(Math.min(pagination.totalCount - 1, current));
+  }, [current, goto, pagination.totalCount]);
   return (
     <div className="d-flex align-items-center">
       <span className="fw-bold text-muted me-2">
-        {pagination.current} / {pagination.totalCount}
+        {current == 0 ? 'loading...' : current} / {pagination.totalCount}
       </span>
       <Tooltip placement="bottom" title="上一封邮件">
         <Button
@@ -169,7 +179,7 @@ function Pagination(props: PaginationProps) {
           variant="light"
           activeColor="light-primary"
           className="me-3"
-          disabled={pagination.current == 1}
+          disabled={current == 1}
         />
       </Tooltip>
       <Tooltip placement="bottom" title="下一封邮件">
@@ -180,7 +190,7 @@ function Pagination(props: PaginationProps) {
           variant="light"
           activeColor="light-primary"
           className="me-2"
-          disabled={pagination.current == pagination.totalCount}
+          disabled={current == pagination.totalCount}
         />
       </Tooltip>
     </div>
@@ -420,9 +430,36 @@ function Pagination(props: PaginationProps) {
 //   );
 // }
 
+function MessageLoading() {
+  return (
+    <div>
+      <ContentLoader
+        speed={2}
+        width="100%"
+        height={500}
+        viewBox="0 0 926 500"
+        backgroundColor="#f3f3f3"
+        foregroundColor="#ecebeb"
+      >
+        <rect x="0" y="0" rx="3" ry="3" width="230" height="34" />
+        <rect x="48" y="26" rx="3" ry="3" width="52" height="6" />
+        <rect x="0" y="60" rx="3" ry="3" width="50" height="50" />
+        <rect x="2" y="126" rx="4" ry="4" width="178" height="20" />
+        <rect x="60" y="65" rx="0" ry="0" width="228" height="13" />
+        <rect x="62" y="88" rx="0" ry="0" width="226" height="18" />
+        <rect x="826" y="83" rx="0" ry="0" width="100" height="23" />
+        <rect x="6" y="158" rx="0" ry="0" width="242" height="17" />
+        <rect x="6" y="190" rx="0" ry="0" width="325" height="14" />
+        <rect x="6" y="220" rx="0" ry="0" width="427" height="20" />
+        <rect x="6" y="255" rx="0" ry="0" width="513" height="15" />
+      </ContentLoader>
+    </div>
+  );
+}
+
 export interface MessageParentProps {
+  activeIndex: number;
   pagination: {
-    current: number;
     totalCount: number;
     pageSize: number;
     totalPage: number;
@@ -430,7 +467,6 @@ export interface MessageParentProps {
   };
   message: MailboxMessage;
   goto: (index: number) => void;
-  scrollTo?: (index: number) => void;
   refresh: (e: RefreshEvent) => void;
 }
 
@@ -445,17 +481,14 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
     message: passthrough,
     pagination,
     goto,
-    scrollTo,
+    activeIndex,
     refresh,
   } = props;
 
   const history = useHistory();
 
-  const { data, loading, error } = useMailboxMessageQuery({
+  const [loadMailboxMessage, { data, loading, error }] = useMailboxMessageLazyQuery({
     fetchPolicy: 'cache-and-network',
-    variables: {
-      id,
-    },
   });
   const [toFolder] = useMoveMailboxMessageToFolderMutation({
     refetchQueries: [CountUnreadDocument, MailboxesDocument],
@@ -471,29 +504,35 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
     mailbox: string;
     message?: MailboxMessage;
     autoReadExecuted?: boolean;
+    activeIndex: number;
     pagination: any;
   }>({
     pagination,
     mailbox,
+    activeIndex,
   });
 
-  const message = (data?.message as MailboxMessage | undefined) || passthrough;
+  const message = useMemo(() => {
+    if (data?.message?.id == id) {
+      return data?.message as MailboxMessage;
+    }
+    if (passthrough?.id == id) {
+      return passthrough as MailboxMessage;
+    }
+    return temp.current.message as MailboxMessage;
+  }, [id, data?.message, passthrough]);
 
   temp.current.mailbox = mailbox;
   temp.current.message = message;
   temp.current.pagination = pagination;
+  temp.current.activeIndex = activeIndex;
 
   const nextMessage = useCallback(() => {
-    const _mailbox = temp.current.mailbox;
-    const _pagination = temp.current.pagination;
-    if (_pagination.current == _pagination.totalCount) {
-      if (_pagination.totalCount > 1) {
-        goto(_pagination.totalCount - 2);
-      } else {
-        history.push(`/email/${_mailbox}`);
-      }
+    const { mailbox: _mailbox, pagination: _pagination, activeIndex: _activeIndex } = temp.current;
+    if (_pagination.totalCount == 0) {
+      history.push(`/email/${_mailbox}`);
     } else {
-      goto(Math.min(_pagination.totalCount - 1, _pagination.current));
+      goto(Math.min(_activeIndex, _pagination.totalCount - 1));
     }
   }, [goto, history]);
 
@@ -504,8 +543,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
         await sleep(60);
         _message = temp.current.message;
       }
-      const _pagination = temp.current.pagination;
-      let refreshType: RefreshType;
+      let refreshType: RefreshType | undefined;
       if (action == 'read' || action == 'unread') {
         await updateFlags({
           variables: {
@@ -539,7 +577,6 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
           });
           refreshType = 'toFolder';
         }
-        nextMessage();
       } else if (['archive', 'spam', 'inbox', 'sent'].includes(action)) {
         await toFolder({
           variables: {
@@ -548,21 +585,30 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
           },
         });
         refreshType = 'toFolder';
-        nextMessage();
       }
       refresh({
         type: refreshType!,
         key: _message.id,
         index: _message!.index - 1,
-        page: Math.ceil(_message!.index! / _pagination.pageSize),
       });
+      refreshType != 'updateFlags' && nextMessage();
     },
     [deleteMailboxMessage, id, mailbox, nextMessage, refresh, toFolder, updateFlags],
   );
 
   useEffect(() => {
     temp.current.autoReadExecuted = false;
-  }, [id]);
+    const timer = setTimeout(() => {
+      loadMailboxMessage({
+        variables: {
+          id: id!,
+        },
+      });
+    }, 600);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [loadMailboxMessage, id]);
 
   useEffect(() => {
     if (!message || message.id != id) {
@@ -584,25 +630,25 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
   }, []);
 
   const handleSend = useCallback(async () => {
-    const { pagination: _pagination, message: _message } = temp.current;
-    await refresh({
+    const { message: _message } = temp.current;
+    refresh({
       type: 'toFolder',
       key: _message!.id,
-      index: _message!.index!,
-      page: Math.ceil(_message!.index! / _pagination.pageSize),
+      index: _message!.index! - 1,
     });
     nextMessage();
   }, [nextMessage, refresh]);
 
   useEffect(() => {
-    if (!data?.message || loading) {
+    if (!message || loading || message.index == undefined || message.id != id) {
       return;
     }
-    const p = temp.current.pagination;
-    if (data?.message.index && p.current != data?.message.index) {
-      scrollTo && scrollTo(data.message.index);
+    const _activeIndex = temp.current.activeIndex;
+    if (_activeIndex != message.index! - 1) {
+      // console.log('goto', message.index! - 1);
+      goto(message.index! - 1);
     }
-  }, [data?.message, loading, scrollTo]);
+  }, [message, goto, loading, id]);
 
   useEffect(() => {
     if (!error) {
@@ -625,14 +671,17 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
     >
       <Card className="mail-message-container">
         <Card.Header className="align-items-center py-5 gap-5">
-          {message && <MailMessageActions message={message} onAction={handleAction} />}
+          <MailMessageActions message={message} onAction={handleAction} />
           <Pagination
-            pagination={{ ...pagination, current: message?.index || pagination.current }}
+            pagination={pagination}
+            current={message?.index || activeIndex + 1}
             goto={goto}
           />
         </Card.Header>
         <Card.Body className={classnames({ 'px-5 py-0 mail-message-draft': message?.draft })}>
-          {message?.draft ? (
+          {!message ? (
+            <MessageLoading />
+          ) : message.draft ? (
             <MessageEditor message={message} onAutoSave={handleAutoSave} onSend={handleSend} />
           ) : (
             <MessageDetails message={message} mailbox={mailbox} />

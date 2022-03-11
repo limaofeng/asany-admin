@@ -1,6 +1,7 @@
-import type { CSSProperties } from 'react';
-import { useEffect } from 'react';
 import React, { useCallback, useMemo, useReducer, useRef } from 'react';
+import { useEffect } from 'react';
+
+import EventEmitter from 'events';
 
 import { useRouteMatch } from 'react-router-dom';
 import { Resizer } from '@asany/editor';
@@ -8,22 +9,19 @@ import classnames from 'classnames';
 import Icon from '@asany/icons';
 import { debounce } from 'lodash';
 import { useHistory } from 'umi';
-import moment from 'moment';
 
 import {
-  CountUnreadDocument,
   MailboxesDocument,
   useClearTrashMailboxMutation,
-  useDeleteMailboxMessageMutation,
-  useMailboxMessagesQuery,
-  useMoveMailboxMessageToFolderMutation,
-  useUpdateMailboxMessageFlagsMutation,
+  useMailboxMessagesLazyQuery,
 } from '../hooks';
-import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL, displayName } from '../utils';
+import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL } from '../utils';
+import MessageItem from '../components/MessageItem';
+import type { RefreshEvent, UseMessage } from '../typings';
 
 import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
 
-import type { InfiniteScrollRef, ShortcutEvent } from '@/pages/Metronic/components';
+import type { InfiniteScrollRef, RowRendererParams } from '@/pages/Metronic/components';
 import { Button } from '@/pages/Metronic/components';
 import { Modal } from '@/pages/Metronic/components';
 import {
@@ -33,220 +31,23 @@ import {
   Input,
   NProgress,
 } from '@/pages/Metronic/components';
-import type { MailboxMessage, MailboxMessageConnection } from '@/types';
 import { delay, sleep } from '@/utils';
-import { toPlainText } from '@/pages/Metronic/components/utils/format';
+import type { MailboxMessage, MailboxMessageConnection } from '@/types';
 
 interface MailboxState {
   width: number;
   folder: string;
+  activeIndex: number;
   activeId?: string;
-  pageIndex: number[];
-  viewport: {
-    startIndex: number;
-    endIndex: number;
-    size: number;
-  };
-  messages: MailboxMessage[];
-  pages: Map<number, MailboxMessageConnection>;
+  loading: boolean;
+  message?: MailboxMessage;
   pagination: typeof DEFAULT_PAGINATION;
 }
 
 const MIN_WIDTH = 320;
 const MAX_WIDTH = 500;
 
-type MailMessageProps = {
-  refresh: (e: RefreshEvent) => void;
-  forwardNextMessage: () => void;
-  style?: CSSProperties;
-  mailbox: string;
-  data: MailboxMessage;
-  onClick: (id: string) => void;
-  active: boolean;
-};
-
-export type RefreshType = 'toFolder' | 'updateFlags' | 'delete';
-
-export type RefreshEvent = {
-  type: RefreshType;
-  page?: number;
-  index?: number;
-  key: string;
-};
-
-type MailMessageActionsProps = {
-  refresh: (e: RefreshEvent) => void;
-  forwardNextMessage: () => void;
-  data: MailboxMessage;
-};
-
-function MailMessageActions(props: MailMessageActionsProps) {
-  const { data, refresh, forwardNextMessage } = props;
-
-  const [toFolder] = useMoveMailboxMessageToFolderMutation({
-    refetchQueries: [CountUnreadDocument, MailboxesDocument],
-  });
-  const [updateFlags] = useUpdateMailboxMessageFlagsMutation({
-    refetchQueries: [CountUnreadDocument],
-  });
-  const [deleteMailboxMessage] = useDeleteMailboxMessageMutation({
-    refetchQueries: [MailboxesDocument],
-  });
-
-  const toggleReadState = useCallback(async () => {
-    await updateFlags({
-      variables: {
-        id: data.id,
-        flags: ['seen'],
-        mode: data.seen ? 'REMOVE' : 'ADD',
-      },
-    });
-    refresh({ type: 'updateFlags', key: data.id });
-  }, [data.id, data.seen, refresh, updateFlags]);
-
-  const handleArchive = useCallback(async () => {
-    await toFolder({
-      variables: {
-        id: data.id,
-        mailbox: 'archive',
-      },
-    });
-    forwardNextMessage();
-    refresh({ type: 'toFolder', key: data.id });
-  }, [data.id, forwardNextMessage, refresh, toFolder]);
-
-  const handleTrash = useCallback(async () => {
-    if (
-      data.mailboxName == DEFAULT_MAILBOXES.Drafts.id ||
-      data.mailboxName == DEFAULT_MAILBOXES.Trash.id
-    ) {
-      const result = await Modal.confirm({
-        title: '警告',
-        content:
-          data.mailboxName == DEFAULT_MAILBOXES.Trash.id
-            ? '确定永久删除信息？'
-            : '确定永久删除草稿？',
-      });
-      if (!result.isConfirmed) {
-        return;
-      }
-      await deleteMailboxMessage({
-        variables: {
-          id: data.id,
-        },
-      });
-      refresh({ type: 'delete', key: data.id });
-    } else {
-      await toFolder({
-        variables: {
-          id: data.id,
-          mailbox: 'trash',
-        },
-      });
-      refresh({ type: 'toFolder', key: data.id });
-    }
-    forwardNextMessage();
-  }, [data.mailboxName, data.id, forwardNextMessage, refresh, deleteMailboxMessage, toFolder]);
-
-  return (
-    <div
-      className={classnames('d-flex flex-column email-message-actions', {
-        'message-unread': !data.seen,
-      })}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <a onClick={toggleReadState} className="flags-read">
-        <Icon
-          className="svg-icon-7 svg-icon-success"
-          name={data.seen ? 'Duotune/abs009' : 'Duotune/abs050'}
-        />
-      </a>
-      {![
-        DEFAULT_MAILBOXES.Archive.id,
-        DEFAULT_MAILBOXES.Drafts.id,
-        DEFAULT_MAILBOXES.Trash.id,
-      ].includes(data.mailboxName) && (
-        <a onClick={handleArchive}>
-          <Icon className="svg-icon-6" name={DEFAULT_MAILBOXES.Archive.icon} />
-        </a>
-      )}
-      <a onClick={handleTrash}>
-        <Icon className="svg-icon-5" name="Duotune/gen027" />
-      </a>
-    </div>
-  );
-}
-
-function MailMessage(props: MailMessageProps) {
-  const { style, forwardNextMessage, data, active, onClick, refresh } = props;
-
-  const history = useHistory();
-
-  const handleClick = useCallback(() => {
-    onClick(data.id);
-  }, [data.id, onClick]);
-
-  const handleDoubleClick = useCallback(() => {
-    if (data.mailboxName != DEFAULT_MAILBOXES.Drafts.id) {
-      return;
-    }
-    history.push(`/email/compose/${data.id}`, { message: data });
-  }, [data, history]);
-
-  return (
-    <div
-      style={style}
-      onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
-      className={classnames('email-message d-flex flex-row', { active })}
-    >
-      <MailMessageActions forwardNextMessage={forwardNextMessage} refresh={refresh} data={data} />
-      <div className="email-message-body d-flex flex-column">
-        <div className="email-message-attrs">
-          <Icon className="svg-icon-4 smart-type" name="Duotune/abs018" />
-          <span className="email-user">{renderWhose(data) || '(无收件人)'}</span>
-          <span className="inbox-time">{renderDataTime(data)}</span>
-        </div>
-        <div className="email-message-title">{data.subject || '(无主题)'}</div>
-        <div className="email-message-summary">
-          {renderSummary(data) || '此邮件中没有文本内容。'}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function renderSummary(data: MailboxMessage) {
-  if (data.mimeType == 'text/html') {
-    return toPlainText(data.body || '');
-  }
-  return data.body;
-}
-
-function renderDataTime(data: MailboxMessage) {
-  const mdate = moment(data.date);
-  const days = moment().diff(mdate, 'days');
-  if (days == 0) {
-    return mdate.format('A HH:mm');
-  }
-  if (days == 1) {
-    return mdate.fromNow();
-  }
-  return mdate.format('YYYY-MM-DD');
-}
-
-function renderWhose(data: MailboxMessage) {
-  if (data.mailboxName == DEFAULT_MAILBOXES.INBOX.id) {
-    return data.from.map(displayName).join('、');
-  }
-  if (data.mailboxName == DEFAULT_MAILBOXES.Sent.id) {
-    return data.to.map(displayName).join('、');
-  }
-  return data.to.map(displayName).join('、');
-}
-
 const DEFAULT_PAGINATION = {
-  current: 0,
   totalCount: 0,
   pageSize: 0,
   totalPage: 0,
@@ -254,6 +55,228 @@ const DEFAULT_PAGINATION = {
 };
 
 const LIST_ITEM = 80;
+
+type PaginationType = typeof DEFAULT_PAGINATION;
+
+type LoadMessageUtils = {
+  refetch: (page: number) => Promise<void>;
+  refetchWithRemove: (index: number) => Promise<void>;
+  loadMessage: (index: number) => Promise<MailboxMessage>;
+};
+
+type UseMailboxMessagesMagicQuery = [PaginationType, boolean, UseMessage, LoadMessageUtils];
+
+function useMailboxMessagesMagicQuery(mailbox: string): UseMailboxMessagesMagicQuery {
+  const emitter = useRef(new EventEmitter());
+  const state = useRef<{
+    page: number;
+    mailbox: string;
+    loading: boolean;
+    messages: MailboxMessage[];
+    pagination: PaginationType;
+  }>({
+    page: 1,
+    mailbox,
+    loading: false,
+    messages: [],
+    pagination: { ...DEFAULT_PAGINATION },
+  });
+
+  const [, forceRender] = useReducer((s) => s + 1, 0);
+
+  const [_loadMailboxMessages, { data, loading, refetch }] = useMailboxMessagesLazyQuery({
+    fetchPolicy: 'cache-and-network',
+  });
+
+  state.current.loading = loading;
+
+  const parseData = useCallback((pagination: MailboxMessageConnection) => {
+    pagination.edges
+      .map((item) => item.node)
+      .forEach((msg, _index) => {
+        const index = pagination.pageSize * (pagination.currentPage - 1) + _index;
+        state.current.messages[index] = msg as any;
+      });
+    emitter.current.emit('messages');
+    // console.log('messages', state.current.messages);
+  }, []);
+
+  const handleRefetch = useCallback(
+    async (page: number) => {
+      if (state.current.loading && state.current.page == page) {
+        return;
+      }
+      while (state.current.loading) {
+        await sleep(120);
+      }
+      state.current.page = page;
+      refetch({
+        filter: {
+          mailbox: state.current.mailbox,
+        },
+        page: state.current.page,
+      });
+    },
+    [refetch],
+  );
+
+  const handleRefetchWithRemove = useCallback(
+    async (index: number) => {
+      const pageSize = state.current.pagination.pageSize;
+      if (state.current.pagination.totalCount % state.current.pagination.pageSize == 1) {
+        state.current.pagination.totalPage--;
+      }
+      state.current.pagination.totalCount--;
+      state.current.messages.splice(index, 1);
+      const page = Math.ceil((index + 1) / pageSize);
+      handleRefetch(page);
+    },
+    [handleRefetch],
+  );
+
+  const loadMailboxMessages = useCallback(
+    async (page: number) => {
+      while (state.current.loading) {
+        await sleep(120);
+      }
+      if (state.current.page == page || page > state.current.pagination.totalPage) {
+        return;
+      }
+      state.current.page = page;
+      _loadMailboxMessages({
+        variables: {
+          filter: {
+            mailbox: state.current.mailbox,
+          },
+          page: state.current.page,
+        },
+      });
+    },
+    [_loadMailboxMessages],
+  );
+
+  const loadMessage = useCallback(
+    async (index: number) => {
+      let message = state.current.messages[index];
+
+      if (!message) {
+        do {
+          message = state.current.messages[index];
+          if (!message) {
+            await loadMailboxMessages(Math.ceil((index + 1) / state.current.pagination.pageSize));
+            await sleep(30);
+          }
+          if (index >= state.current.messages.length) {
+            console.log(`索引超出最大长度 [${index}/${state.current.messages.length}]`);
+            return state.current.messages[index - 1];
+          }
+        } while (!message);
+      }
+
+      return message;
+    },
+    [loadMailboxMessages],
+  );
+
+  useEffect(() => {
+    emitter.current.setMaxListeners(1000);
+  }, []);
+
+  useEffect(() => {
+    if (state.current.mailbox != mailbox) {
+      state.current.mailbox = mailbox;
+      state.current.pagination = { ...DEFAULT_PAGINATION };
+      state.current.messages.length = 0;
+      state.current.page = 1;
+    }
+    _loadMailboxMessages({
+      variables: {
+        filter: {
+          mailbox,
+        },
+        page: state.current.page,
+      },
+    });
+  }, [_loadMailboxMessages, mailbox]);
+
+  useEffect(() => {
+    if (loading || !data?.mailboxMessages) {
+      return;
+    }
+    state.current.pagination = { ...data.mailboxMessages } || state.current.pagination;
+    parseData(data.mailboxMessages as any);
+    forceRender();
+  }, [parseData, data?.mailboxMessages, loading]);
+
+  const useMessage = (index: number): MailboxMessage | undefined => {
+    const [, _forceRender] = useReducer((s) => s + 1, 0);
+    const latestSelectedState = useRef<{
+      message?: MailboxMessage;
+      index: number;
+      timer?: NodeJS.Timer;
+    }>({ index });
+
+    latestSelectedState.current.index = index;
+
+    latestSelectedState.current.message = state.current.messages[index];
+
+    useEffect(() => {
+      if (index == -1) {
+        return;
+      }
+      const _index = index + 1;
+
+      let _timer: NodeJS.Timer;
+      const checkResult = async () => {
+        while (state.current.loading) {
+          await sleep(300);
+        }
+        if (!!latestSelectedState.current.message) {
+          latestSelectedState.current.timer && clearTimeout(latestSelectedState.current.timer);
+          return;
+        }
+        loadMailboxMessages(Math.ceil(_index / state.current.pagination.pageSize));
+        _timer = setTimeout(checkResult, 300);
+      };
+
+      _timer = setTimeout(checkResult, 300);
+      return () => {
+        _timer && clearTimeout(_timer);
+      };
+    }, [index]);
+
+    const checkForUpdates = useCallback(() => {
+      const newSelectedState = state.current.messages[latestSelectedState.current.index];
+      if (newSelectedState == latestSelectedState.current.message) {
+        return;
+      }
+      latestSelectedState.current.message = newSelectedState;
+      _forceRender();
+    }, []);
+
+    useEffect(() => {
+      emitter.current.addListener('messages', checkForUpdates);
+      return () => {
+        emitter.current.removeListener('messages', checkForUpdates);
+      };
+    }, [checkForUpdates]);
+
+    return latestSelectedState.current.message;
+  };
+
+  // console.log('pagination 1', state.current.pagination);
+
+  return [
+    state.current.pagination,
+    loading,
+    useMessage,
+    {
+      loadMessage,
+      refetch: handleRefetch,
+      refetchWithRemove: handleRefetchWithRemove,
+    },
+  ];
+}
 
 function Mailbox(props: MailboxProps) {
   const {
@@ -277,32 +300,24 @@ function Mailbox(props: MailboxProps) {
   const state = useRef<MailboxState>({
     width: MIN_WIDTH,
     folder,
-    messages: [],
-    pageIndex: [1],
-    pages: new Map(),
+    activeIndex: -1,
+    loading: false,
     pagination: DEFAULT_PAGINATION,
-    viewport: {
-      startIndex: 0,
-      endIndex: 15,
-      size: 15,
-    },
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
   state.current.folder = folder;
   state.current.activeId = activeId;
 
-  const { data, loading, refetch } = useMailboxMessagesQuery({
-    fetchPolicy: 'cache-and-network',
-    variables: {
-      filter: {
-        mailbox: folder,
-      },
-    },
-  });
   const [clearTrash] = useClearTrashMailboxMutation({
     refetchQueries: [MailboxesDocument],
   });
+
+  const [pagination, loading, useMessage, { loadMessage, refetch, refetchWithRemove }] =
+    useMailboxMessagesMagicQuery(folder);
+
+  state.current.loading = loading;
+  state.current.pagination = pagination;
 
   const forceResize = useMemo(
     () =>
@@ -313,12 +328,29 @@ function Mailbox(props: MailboxProps) {
   );
 
   const handleMessageClick = useCallback(
-    (id: string) => {
-      const message = state.current.messages.find((item) => item && item.id == id);
-      // console.log('handleMessageClick', message?.seen);
-      message && history.push(`/email/${message.mailboxName.toLowerCase()}/${id}`, { message });
+    (message: MailboxMessage) => {
+      state.current.activeIndex = message.index!;
+      history.push(`/email/${message.mailboxName.toLowerCase()}/${message.id}`);
     },
     [history],
+  );
+
+  state.current.message = useMessage(state.current.activeIndex);
+
+  const handleScrollToIndex = useCallback(
+    async (e) => {
+      if (state.current.activeIndex == e.index) {
+        return;
+      }
+      const _message = await loadMessage(e.index);
+      state.current.activeIndex = e.index;
+      if (state.current.activeId == _message.id) {
+        forceRender();
+        return;
+      }
+      history.push(`/email/${_message.mailboxName.toLowerCase()}/${_message.id}`);
+    },
+    [history, loadMessage],
   );
 
   const handleResize = useCallback(
@@ -337,99 +369,29 @@ function Mailbox(props: MailboxProps) {
 
   useMemo(() => {
     state.current.pagination = { ...DEFAULT_PAGINATION };
-    state.current.messages = [];
-    state.current.pages.clear();
+    state.current.activeIndex = -1;
     state.current.folder = folder;
   }, [folder]);
 
-  // state.current.pagination = pagination;
-
-  // state.current.messages = messages;
-  // state.current.pages.set(pagination.currentPage, messages);
-
-  const handleShortcut = useCallback(
-    async (action, e: ShortcutEvent) => {
-      const { messages: _messages, activeId: _activeId } = state.current;
-      const index = _messages.findIndex((item) => item && item.id == _activeId);
-      if (action == 'NEXT') {
-        let newIndex;
-        if ((index + 1) * LIST_ITEM < e.viewport.start || index * LIST_ITEM > e.viewport.end) {
-          newIndex = Math.floor(e.viewport.start / LIST_ITEM);
-          e.scrollbar.scroll(newIndex * LIST_ITEM);
-        } else {
-          newIndex = Math.min(_messages.length - 1, index == -1 ? 0 : index + 1);
-          if ((index + 2) * LIST_ITEM > e.viewport.end) {
-            e.scrollbar.scroll((index + 2) * LIST_ITEM - e.viewport.height);
-          }
-        }
-        let message = _messages[newIndex];
-        while (!message) {
-          await sleep(600);
-          message = _messages[newIndex];
-        }
-        handleMessageClick(message.id);
-      } else if (action == 'PREVIOUS') {
-        let newIndex;
-        if ((index + 1) * LIST_ITEM < e.viewport.start || index * LIST_ITEM > e.viewport.end) {
-          newIndex = Math.floor(e.viewport.end / LIST_ITEM);
-          e.scrollbar.scroll((newIndex + 1) * LIST_ITEM - e.viewport.height);
-        } else {
-          newIndex = Math.max(0, index == -1 ? _messages.length - 1 : index - 1);
-        }
-        let message = _messages[newIndex];
-        while (!message) {
-          await sleep(600);
-          message = _messages[newIndex];
-        }
-        handleMessageClick(message.id);
-        if (newIndex * LIST_ITEM < e.viewport.start) {
-          e.scrollbar.scroll(newIndex * LIST_ITEM);
-        }
-      }
-    },
-    [handleMessageClick],
-  );
-
   const handleGoto = useCallback(
     async (index: number) => {
-      const { messages: _messages } = state.current;
-      let message = _messages[index];
-      const viewport = scrollbar.current!.viewport;
-      if (index * LIST_ITEM < viewport.start || index * LIST_ITEM > viewport.end) {
-        scrollbar.current!.scrollTo(index * LIST_ITEM);
-      }
-      while (!message) {
-        await sleep(600);
-        message = _messages[index];
-      }
-
-      handleMessageClick(message.id);
+      const _message = await loadMessage(index);
+      state.current.activeIndex = index;
+      history.push(`/email/${_message.mailboxName.toLowerCase()}/${_message.id}`);
     },
-    [handleMessageClick],
+    [history, loadMessage],
   );
-
-  const handleScrollTo = useCallback(async (index: number) => {
-    while (!state.current.pagination?.totalCount) {
-      await sleep(300);
-    }
-    state.current.pagination.current = index;
-    scrollbar.current?.scrollTo((index - 1) * LIST_ITEM);
-  }, []);
 
   const refresh = useCallback(
     async (e: RefreshEvent) => {
-      const { page, type } = e;
-      if (['toFolder', 'delete'].includes(type)) {
-        state.current.messages.splice(e.index!, 1);
+      const page = Math.ceil((e.index + 1) / state.current.pagination.pageSize);
+      if (['toFolder', 'delete'].includes(e.type)) {
+        await refetchWithRemove(e.index);
+      } else {
+        await refetch(page!);
       }
-      await refetch({
-        filter: {
-          mailbox: state.current.folder,
-        },
-        page,
-      });
     },
-    [refetch],
+    [refetch, refetchWithRemove],
   );
 
   const handleTrashClear = useCallback(async () => {
@@ -450,23 +412,15 @@ function Mailbox(props: MailboxProps) {
     if (!result.isConfirmed) {
       return;
     }
-    state.current.messages.length = 0;
-    state.current.activeId = undefined;
-    state.current.pages.clear();
-    state.current.pageIndex = [];
+    state.current.activeIndex = -1;
     forceRender();
-    refetch({
-      filter: {
-        mailbox: state.current.folder,
-      },
-      page: 1,
-    });
-    await Modal.success({
+    refetch(1);
+    history.push(`/email/${state.current.folder}`);
+    Modal.success({
       title: '操作成功',
       content: `回收站已被清空, 共删除 ${_count} 封邮件`,
       timer: 3000,
     });
-    history.push(`/email/${state.current.folder}`);
   }, [clearTrash, history, refetch]);
 
   const mailbox = useMemo(() => {
@@ -481,70 +435,60 @@ function Mailbox(props: MailboxProps) {
     return _mailbox;
   }, [folder]);
 
-  const reset = useCallback(function (mailboxMessages: MailboxMessageConnection) {
-    const { messages } = state.current;
-    if (!mailboxMessages) {
-      messages.length = 0;
-      return;
-    }
-    const { currentPage, edges, totalCount, totalPage, pageSize } = mailboxMessages;
-    messages.length = totalCount;
+  const handleScroll = useCallback(() => {}, []);
 
-    const startIndex = (currentPage - 1) * pageSize;
-    const items = edges.map((item) => item.node) as MailboxMessage[];
+  const noRowsRenderer = useCallback(
+    () => (
+      <div
+        className="mailbox-is-empty"
+        style={{
+          height: '100%',
+        }}
+      >
+        <img src="/assets/media/illustrations/dozzy-1/4.png" />
+        <span className="empty-title">{loading ? '加载中...' : '此文件夹为空'}</span>
+        <span className="empty-subtitle">
+          {loading ? '稍等一会,正在获取数据' : '请查看其他文件夹'}
+        </span>
+      </div>
+    ),
+    [loading],
+  );
 
-    items.forEach((item, i) => {
-      messages[startIndex + i] = item;
-    });
+  const messageRowRenderer = useCallback(
+    ({ key, style, index, isActive }: RowRendererParams) => {
+      const { folder: _folder, pagination: _pagination } = state.current;
+      return (
+        <MessageItem
+          index={index}
+          style={{ ...style }}
+          onClick={handleMessageClick}
+          useMessage={useMessage}
+          key={key}
+          refresh={refresh}
+          forwardNextMessage={async () => {
+            if (state.current.activeIndex == -1) {
+              return;
+            }
+            if (_pagination.totalCount == 0) {
+              history.push(`/email/${state.current.folder}`);
+            } else if (index < state.current.activeIndex) {
+              state.current.activeIndex -= 1;
+              forceRender();
+            } else {
+              const message = await loadMessage(state.current.activeIndex);
+              history.push(`/email/${state.current.folder}/${message.id}`);
+            }
+          }}
+          mailbox={_folder}
+          active={!!isActive}
+        />
+      );
+    },
+    [handleMessageClick, history, loadMessage, refresh, useMessage],
+  );
 
-    // console.log('更新', mailboxMessages.currentPage);
-    state.current.pages.set(currentPage, mailboxMessages);
-
-    state.current.pagination = {
-      totalPage,
-      currentPage,
-      totalCount,
-      pageSize,
-      current: state.current.pagination.current,
-    };
-  }, []);
-
-  const { current: handleLoader } = useRef(async (page: number) => {
-    const {
-      data: { mailboxMessages },
-    } = await refetch({
-      filter: {
-        mailbox: state.current.folder,
-      },
-      page,
-    });
-    reset(mailboxMessages as any);
-  });
-
-  useEffect(() => {
-    if (!data?.mailboxMessages) {
-      return;
-    }
-    if (data.mailboxMessages == state.current.pages.get(data.mailboxMessages.currentPage)) {
-      // console.log('已缓存，忽略更新', data.mailboxMessages.currentPage);
-      return;
-    }
-    reset(data.mailboxMessages as any);
-    forceRender();
-  }, [data?.mailboxMessages, reset]);
-
-  useMemo(() => {
-    if (!activeId) {
-      state.current.pagination.current = -1;
-    }
-    const index = state.current.messages.findIndex((item) => item && item.id == activeId);
-    if (index == -1) {
-      return;
-    }
-    state.current.pagination.current = index + 1;
-  }, [activeId]);
-
-  const { messages, pagination } = state.current;
+  const { activeIndex, message } = state.current;
 
   return (
     <ContentWrapper className="apps-email-mailbox" header={false} footer={false}>
@@ -593,60 +537,15 @@ function Mailbox(props: MailboxProps) {
                 <NProgress isAnimating={!!loading} position="top" />
                 <InfiniteScroll
                   ref={scrollbar}
-                  pagination={pagination}
-                  itemHeight={LIST_ITEM}
-                  onShortcut={handleShortcut}
-                  loader={handleLoader}
+                  rowCount={pagination.totalCount}
+                  rowHeight={LIST_ITEM}
+                  scrollToIndex={state.current.activeIndex}
+                  onScrollToIndex={handleScrollToIndex}
+                  onScroll={handleScroll}
+                  rowRenderer={messageRowRenderer}
+                  noRowsRenderer={noRowsRenderer}
                   className="mailbox-list"
-                >
-                  {(startIndex, endIndex, e) => {
-                    if (e.isEmpty) {
-                      return (
-                        <div
-                          className="mailbox-is-empty"
-                          style={{
-                            height: '100%',
-                          }}
-                        >
-                          <img src="/assets/media/illustrations/dozzy-1/4.png" />
-                          <span className="empty-title">此文件夹为空</span>
-                          <span className="empty-subtitle">请查看其他文件夹</span>
-                        </div>
-                      );
-                    }
-                    return messages.slice(startIndex, endIndex).map((item, index) => (
-                      <MailMessage
-                        style={{ top: (startIndex + index) * e.itemHeight + 1 }}
-                        onClick={handleMessageClick}
-                        key={item.id}
-                        refresh={(re: RefreshEvent) =>
-                          refresh({
-                            ...re,
-                            page: Math.ceil((startIndex + index + 1) / pagination.pageSize),
-                            index: startIndex + index,
-                          })
-                        }
-                        forwardNextMessage={() => {
-                          if (item.id != activeId) {
-                            return;
-                          }
-                          if (index == pagination.totalCount - 1) {
-                            if (pagination.totalCount > 1) {
-                              handleGoto(pagination.totalCount - 2);
-                            } else {
-                              history.push(`/email/${state.current.folder}`);
-                            }
-                            return;
-                          }
-                          handleGoto(Math.min(pagination.totalCount - 1, startIndex + index));
-                        }}
-                        data={item as any}
-                        mailbox={folder}
-                        active={item.id == activeId}
-                      />
-                    ));
-                  }}
-                </InfiniteScroll>
+                />
               </div>
             </Card.Body>
           </Card>
@@ -656,10 +555,10 @@ function Mailbox(props: MailboxProps) {
       {activeId ? (
         React.cloneElement(children as any, {
           pagination,
-          scrollTo: handleScrollTo,
+          activeIndex,
           goto: handleGoto,
           refresh,
-          message: state.current.messages.find((item) => item && item.id == activeId),
+          message,
         })
       ) : (
         <div className="mail-message-details mailbox-message-is-empty">

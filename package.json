@@ -81,6 +81,7 @@
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.2",
     "react-color": "^2.19.3",
+    "react-content-loader": "^6.2.0",
     "react-countup": "^6.1.0",
     "react-dev-inspector": "^1.7.1",
     "react-dnd": "^14.0.5",

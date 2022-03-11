@@ -463,6 +463,10 @@
               background-color: #e4e4e5;
             }
           }
+          &-loading {
+            padding-left: 32.25px;
+            overflow: hidden;
+          }
           &-actions {
             flex-shrink: 0;
             align-items: center;
