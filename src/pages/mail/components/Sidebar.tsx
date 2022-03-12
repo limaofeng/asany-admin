@@ -111,7 +111,7 @@ function Sidebar() {
   // console.log('mailboxes', mailboxes, 'selectedKeys', selectedKeys);
 
   return (
-    <AsideWorkspace width={275} collapsible={false} className="email-sidebar-aside" padding={false}>
+    <AsideWorkspace width={280} collapsible={false} className="email-sidebar-aside">
       <div className="email-sidebar">
         <Button as={Link} to="/mail/compose" className="email-compose text-uppercase">
           写信

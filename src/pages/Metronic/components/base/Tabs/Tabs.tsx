@@ -5,13 +5,15 @@ import classnames from 'classnames';
 import TabPane from './TabPane';
 
 interface TabsProps {
-  defaultActiveKey?: string;
   className?: string;
+  activeKey?: string;
+  defaultActiveKey?: string;
   children: React.ReactElement[];
+  onChange?: (activeKey: string) => void;
 }
 
 function Tabs(props: TabsProps) {
-  const { children, defaultActiveKey, className } = props;
+  const { children, className, onChange } = props;
 
   const panes = useMemo(() => {
     return React.Children.map(children, (item) => ({
@@ -21,21 +23,22 @@ function Tabs(props: TabsProps) {
     }));
   }, [children]);
 
-  console.log('panes', panes);
-
-  const [activeKey, setActiveKey] = useState<string>(defaultActiveKey || panes[0].id);
+  const [activeKey, setActiveKey] = useState<string>(
+    props.activeKey || props.defaultActiveKey || panes[0].id,
+  );
 
   const handleSelect = useCallback(
     (key: string) => (e: React.MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
       setActiveKey(key);
+      onChange && onChange(key);
     },
-    [],
+    [onChange],
   );
 
   return (
-    <div>
+    <div className="tabs-container">
       <ul className={classnames('nav nav-tabs nav-line-tabs mb-5 fs-6', className)}>
         {panes.map((item) => (
           <li key={item.id} className="nav-item">

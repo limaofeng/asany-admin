@@ -99,7 +99,7 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
   );
 });
 
-const DEFAULT_APP_PATHS = ['/storage', '/calendar', '/mail'];
+const DEFAULT_APP_PATHS = ['/storage', '/calendar', '/contacts', '/mail'];
 
 const MIN_WIDTH = 300;
 const MAX_WIDTH = 500;
@@ -158,7 +158,14 @@ function Aside(props: AsideProps) {
   // const handleResizeEnd = useCallback(() => {}, []);
 
   const bottomMenus = useMemo(
-    () => menus.filter((item) => DEFAULT_APP_PATHS.includes(item.path!)),
+    () =>
+      menus
+        .filter((item) => DEFAULT_APP_PATHS.includes(item.path!))
+        .sort(
+          (l, r) =>
+            DEFAULT_APP_PATHS.findIndex((p) => p == l.path!) -
+            DEFAULT_APP_PATHS.findIndex((p) => p == r.path!),
+        ),
     [menus],
   );
 

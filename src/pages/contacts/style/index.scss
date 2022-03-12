@@ -1,22 +1,72 @@
-.contacts-sidebar {
-  .nav-tabs {
-    padding-right: 1.25rem;
-    padding-left: 1.25rem;
-  }
-  &-groups {
-    .asany-treeview-node {
-      .monaco-icon-label {
-        .svg-icon svg {
-          width: 1.75rem;
-          height: 1.75rem;
+.app-contacts-sidebar {
+  .tabs-container {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+
+    .tab-content {
+      display: flex;
+      flex: 1 0 auto;
+      flex-direction: column;
+      .tab-pane {
+        &.active {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        .custom-scrollbar {
+          flex: 1 0 auto;
         }
       }
     }
   }
+  .asany-treeview-node {
+    .monaco-icon-label {
+      .svg-icon svg {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+    }
+  }
+  .nav-tabs {
+    padding-right: 1.25rem;
+    padding-left: 1.25rem;
+  }
 }
-.main-contacts {
-  .aside-workspace {
-    padding-right: 0 !important;
-    padding-left: 0 !important;
+.app-contacts-main {
+  #kt_content_container {
+    padding-right: 0;
+  }
+  #kt_contacts_list {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 60px);
+    margin-top: 30px;
+
+    .card-body {
+      display: flex;
+      flex: 1 0 auto;
+      flex-direction: column;
+      padding: 2rem 0.25rem;
+
+      .custom-scrollbar {
+        flex: 1 0 auto;
+        padding: 0 2rem;
+      }
+    }
+  }
+  .content-body {
+    padding-right: 10px;
+    .content-view-details {
+      height: 100vh;
+      padding-top: 30px;
+      padding-right: 20px;
+      padding-bottom: 30px;
+
+      .card {
+        box-shadow: none;
+      }
+    }
   }
 }

@@ -1,6 +1,6 @@
 function NoContacts() {
   return (
-    <div className="card card-flush h-lg-100" id="kt_contacts_main">
+    <div className="card card-flush h-100" id="kt_contacts_main">
       {/*--begin::Card body--*/}
       <div className="card-body p-0">
         {/*--begin::Wrapper--*/}

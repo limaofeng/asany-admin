@@ -441,7 +441,6 @@ function Sidebar() {
       collapsible={false}
       resizeable={true}
       className={classnames('calendar-sidebar-bg', { 'state-new-event': isNew })}
-      padding={false}
     >
       <div className="calendar-sidebar">
         <CalendarSidebarHeader />

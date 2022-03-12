@@ -1,0 +1,31 @@
+query books {
+  books: contactBooks {
+    id
+    name
+    type
+    namespaces {
+      id
+      name
+    }
+  }
+}
+
+query book($id: ID!, $namespace: String) {
+  book: contactBook(id: $id) {
+    id
+    name
+    type
+    namespaces {
+      id
+      name
+    }
+    groups(namespace: $namespace) {
+      id
+      name
+      namespace
+      path
+      index
+      parentId
+    }
+  }
+}

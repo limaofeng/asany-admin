@@ -1,3 +1,5 @@
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+
 function UserList() {
   return (
     <div className="card card-flush" id="kt_contacts_list">
@@ -38,7 +40,7 @@ function UserList() {
             type="text"
             className="form-control form-control-solid ps-13"
             name="search"
-            value=""
+            // value=""
             placeholder="Search contacts"
           />
           {/*--end::Input--*/}
@@ -49,15 +51,11 @@ function UserList() {
       {/*--begin::Card body--*/}
       <div className="card-body pt-5" id="kt_contacts_list_body">
         {/*--begin::List--*/}
-        <div
-          className="scroll-y me-n5 pe-5 h-300px h-xl-auto"
-          data-kt-scroll="true"
-          data-kt-scroll-activate="{default: false, lg: true}"
-          data-kt-scroll-max-height="auto"
-          data-kt-scroll-dependencies="#kt_header, #kt_toolbar, #kt_footer, #kt_contacts_list_header"
-          data-kt-scroll-wrappers="#kt_content, #kt_contacts_list_body"
-          data-kt-scroll-stretch="#kt_contacts_list, #kt_contacts_main"
-          data-kt-scroll-offset="5px"
+        <OverlayScrollbarsComponent
+          className="custom-scrollbar"
+          options={{
+            scrollbars: { autoHide: 'scroll' },
+          }}
         >
           {/*--begin::User--*/}
           <div className="d-flex flex-stack py-4">
@@ -491,7 +489,7 @@ function UserList() {
             {/*--end::Details--*/}
           </div>
           {/*--end::User--*/}
-        </div>
+        </OverlayScrollbarsComponent>
         {/*--end::List--*/}
       </div>
       {/*--end::Card body--*/}
