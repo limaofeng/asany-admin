@@ -2,6 +2,7 @@ import { component, library } from 'sunmao';
 
 import Sidebar from './components/Sidebar';
 import MainContacts from './pages/MainContacts';
+import ViewContact from './pages/ViewContact';
 
 import './style/index.scss';
 
@@ -15,6 +16,8 @@ class Contacts {
   Sidebar = Sidebar;
   @component()
   MainContacts = MainContacts;
+  @component()
+  ViewContact = ViewContact;
 }
 
 export default new Contacts();

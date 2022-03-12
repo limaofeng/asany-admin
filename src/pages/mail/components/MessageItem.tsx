@@ -188,7 +188,7 @@ function MessageItem(props: MessageItemProps) {
     if (data!.mailboxName != DEFAULT_MAILBOXES.Drafts.id) {
       return;
     }
-    history.push(`/email/compose/${data!.id}`, { message: data });
+    history.push(`/mail/compose/${data!.id}`, { message: data });
   }, [data, history]);
 
   return (

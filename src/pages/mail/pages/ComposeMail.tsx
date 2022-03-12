@@ -77,7 +77,7 @@ function ComposeMail(props: ComposeMailProps) {
       state.current.isChanged = false;
       forceRender();
       await sleep(120);
-      history.push(`/email/sent/${message.id}`);
+      history.push(`/mail/sent/${message.id}`);
     },
     [history],
   );

@@ -60,7 +60,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
           <Tooltip placement="bottom" title="返回">
             <Link
               className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3"
-              to={`/email/${message.mailboxName.toLowerCase()}`}
+              to={`/mail/${message.mailboxName.toLowerCase()}`}
             >
               <Icon name="Duotune/arr063" className="svg-icon-1 m-0" />
             </Link>
@@ -530,7 +530,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
   const nextMessage = useCallback(() => {
     const { mailbox: _mailbox, pagination: _pagination, activeIndex: _activeIndex } = temp.current;
     if (_pagination.totalCount == 0) {
-      history.push(`/email/${_mailbox}`);
+      history.push(`/mail/${_mailbox}`);
     } else {
       goto(Math.min(_activeIndex, _pagination.totalCount - 1));
     }
@@ -660,7 +660,7 @@ function MailMessageDetails(props: MailMessageDetailsProps) {
       timer: 3000,
       timerProgressBar: true,
     }).then(() => {
-      history.push(`/email/${temp.current.mailbox}`);
+      history.push(`/mail/${temp.current.mailbox}`);
     });
   }, [error, history]);
 

@@ -8,8 +8,8 @@ import { cloneDeep } from 'lodash';
 import MailboxFooter from './MailboxFooter';
 
 import { Checkbox, TreeList } from '@/pages/Metronic/components';
-import { useMailboxesQuery, useUpdateMyFavoriteMailboxesMutation } from '@/pages/email/hooks';
-import { DEFAULT_MAILBOXES_ALL } from '@/pages/email/utils';
+import { useMailboxesQuery, useUpdateMyFavoriteMailboxesMutation } from '@/pages/mail/hooks';
+import { DEFAULT_MAILBOXES_ALL } from '@/pages/mail/utils';
 import type { Mailbox } from '@/types';
 
 const NAMESPACES: any[] = [

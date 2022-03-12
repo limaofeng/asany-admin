@@ -4,7 +4,7 @@ import { Icon } from '@asany/icons';
 
 import type { InputRef } from '@/pages/Metronic/components';
 import { Form, Input, Modal } from '@/pages/Metronic/components';
-import { useCreateMailboxMutation } from '@/pages/email/hooks';
+import { useCreateMailboxMutation } from '@/pages/mail/hooks';
 
 type CreateMailboxModalProps = {
   mode: 'create' | 'update';

@@ -287,7 +287,7 @@ function Mailbox(props: MailboxProps) {
   } = props;
 
   const match = useRouteMatch<MailboxRouteParams>({
-    path: '/email/:folder/:id',
+    path: '/mail/:folder/:id',
     strict: true,
     sensitive: true,
   });
@@ -330,7 +330,7 @@ function Mailbox(props: MailboxProps) {
   const handleMessageClick = useCallback(
     (message: MailboxMessage) => {
       state.current.activeIndex = message.index!;
-      history.push(`/email/${message.mailboxName.toLowerCase()}/${message.id}`);
+      history.push(`/mail/${message.mailboxName.toLowerCase()}/${message.id}`);
     },
     [history],
   );
@@ -348,7 +348,7 @@ function Mailbox(props: MailboxProps) {
         forceRender();
         return;
       }
-      history.push(`/email/${_message.mailboxName.toLowerCase()}/${_message.id}`);
+      history.push(`/mail/${_message.mailboxName.toLowerCase()}/${_message.id}`);
     },
     [history, loadMessage],
   );
@@ -377,7 +377,7 @@ function Mailbox(props: MailboxProps) {
     async (index: number) => {
       const _message = await loadMessage(index);
       state.current.activeIndex = index;
-      history.push(`/email/${_message.mailboxName.toLowerCase()}/${_message.id}`);
+      history.push(`/mail/${_message.mailboxName.toLowerCase()}/${_message.id}`);
     },
     [history, loadMessage],
   );
@@ -415,7 +415,7 @@ function Mailbox(props: MailboxProps) {
     state.current.activeIndex = -1;
     forceRender();
     refetch(1);
-    history.push(`/email/${state.current.folder}`);
+    history.push(`/mail/${state.current.folder}`);
     Modal.success({
       title: '操作成功',
       content: `回收站已被清空, 共删除 ${_count} 封邮件`,
@@ -471,13 +471,13 @@ function Mailbox(props: MailboxProps) {
               return;
             }
             if (_pagination.totalCount == 0) {
-              history.push(`/email/${state.current.folder}`);
+              history.push(`/mail/${state.current.folder}`);
             } else if (index < state.current.activeIndex) {
               state.current.activeIndex -= 1;
               forceRender();
             } else {
               const message = await loadMessage(state.current.activeIndex);
-              history.push(`/email/${state.current.folder}/${message.id}`);
+              history.push(`/mail/${state.current.folder}/${message.id}`);
             }
           }}
           mailbox={_folder}

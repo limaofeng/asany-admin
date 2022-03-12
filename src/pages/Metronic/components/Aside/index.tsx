@@ -99,7 +99,7 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
   );
 });
 
-const DEFAULT_APP_PATHS = ['/storage', '/calendar', '/email'];
+const DEFAULT_APP_PATHS = ['/storage', '/calendar', '/mail'];
 
 const MIN_WIDTH = 300;
 const MAX_WIDTH = 500;

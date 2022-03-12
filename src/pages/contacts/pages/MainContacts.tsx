@@ -1,17 +1,20 @@
-import Sidebar from '../components/Sidebar';
+import UserList from '../components/UserList';
+import NoContacts from '../components/NoContacts';
 
 import { ContentWrapper } from '@/pages/Metronic/components';
-import AsideSecondary from '@/pages/Metronic/components/Aside/AsideSecondary';
 
 function MainContacts() {
   return (
-    <ContentWrapper className="page-full-content main-contacts" header={{ title: '通讯录' }}>
-      <div className="aside">
-        <AsideSecondary>
-          <Sidebar />
-        </AsideSecondary>
+    <ContentWrapper className="main-contacts" header={{ title: '通讯录' }}>
+      <div className="content-body row g-7">
+        <div className="col-lg-6 col-xl-3">
+          <UserList />
+        </div>
+        <div className="col-xl-6">
+          <NoContacts />
+        </div>
+        <div className="col-lg-6 col-xl-3">sdfsdfsdf111</div>
       </div>
-      <div className="content-body">123123</div>
     </ContentWrapper>
   );
 }

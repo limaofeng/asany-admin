@@ -10,7 +10,7 @@ import './style/index.scss';
 @library({
   name: 'email',
   description: '邮箱',
-  namespace: 'cn.asany.ui.admin.email',
+  namespace: 'cn.asany.ui.admin.mail',
 })
 class Contacts {
   @component()

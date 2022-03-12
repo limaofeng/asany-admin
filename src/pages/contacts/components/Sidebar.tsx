@@ -1,4 +1,5 @@
 import Tree from '@asany/tree';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { AsideWorkspace, Tabs } from '@/pages/Metronic/components';
 
@@ -35,28 +36,53 @@ const data = [
   },
 ];
 
+type SidebarFooterProps = {
+  onAction: () => void;
+};
+
+function SidebarFooter(props: SidebarFooterProps) {
+  const { onAction } = props;
+  return (
+    <div className="app-sidebar-footer">
+      <span className="mail-settings" onClick={onAction}>
+        偏好设置
+      </span>
+    </div>
+  );
+}
+
 function Sidebar() {
   return (
-    <AsideWorkspace>
-      <div className="m-0 px-5">
+    <AsideWorkspace className="app-sidebar">
+      {/* <div className="app-sidebar-body"> */}
+      <div className="mt-5 px-5 pt-5">
         <h1 className="text-gray-800 fw-bold mb-6 mx-5">通讯录</h1>
       </div>
-      <div className="contacts-sidebar">
-        <Tabs>
-          <TabPane tab="组织架构" key="org">
-            <div className="contacts-sidebar-groups">
-              <Tree treeData={data} />
-            </div>
-          </TabPane>
-          <TabPane tab="角色" key="role" className="px-5">
-            2
-          </TabPane>
-          <TabPane tab="职务" key="position" className="px-5">
-            3
-          </TabPane>
-        </Tabs>
-        <div className="contacts-sidebar-tags" />
-      </div>
+      <OverlayScrollbarsComponent
+        className="custom-scrollbar flex-column-fluid px-5"
+        options={{
+          scrollbars: { autoHide: 'scroll' },
+        }}
+      >
+        <div className="contacts-sidebar">
+          <Tabs className="nav-line-tabs-2x">
+            <TabPane tab="组织架构" key="org">
+              <div className="contacts-sidebar-groups">
+                <Tree treeData={data} />
+              </div>
+            </TabPane>
+            <TabPane tab="角色" key="role" className="px-5">
+              2
+            </TabPane>
+            <TabPane tab="职务" key="position" className="px-5">
+              3
+            </TabPane>
+          </Tabs>
+          <div className="contacts-sidebar-tags" />
+        </div>
+      </OverlayScrollbarsComponent>
+      {/* </div> */}
+      <SidebarFooter onAction={() => {}} />
     </AsideWorkspace>
   );
 }

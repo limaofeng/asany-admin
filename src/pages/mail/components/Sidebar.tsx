@@ -30,7 +30,7 @@ function Sidebar() {
   const [visiblePreferences, setVisiblePreferences] = useState<boolean>(false);
 
   const match = useRouteMatch<{ folder?: string }>({
-    path: '/email/:folder',
+    path: '/mail/:folder',
     strict: true,
     sensitive: true,
   });
@@ -113,7 +113,7 @@ function Sidebar() {
   return (
     <AsideWorkspace width={275} collapsible={false} className="email-sidebar-aside" padding={false}>
       <div className="email-sidebar">
-        <Button as={Link} to="/email/compose" className="email-compose text-uppercase">
+        <Button as={Link} to="/mail/compose" className="email-compose text-uppercase">
           写信
         </Button>
         <OverlayScrollbarsComponent
@@ -131,7 +131,7 @@ function Sidebar() {
           >
             <Menu.Item
               className="mb-3"
-              url="/email/inbox"
+              url="/mail/inbox"
               titleClassName="fw-bolder"
               icon={<Icon className="svg-icon-2 me-3" name="Duotune/com010" />}
               badge={
@@ -151,7 +151,7 @@ function Sidebar() {
               return (
                 <Menu.Item
                   className="mb-3"
-                  url={`/email/${item.key}`}
+                  url={`/mail/${item.key}`}
                   titleClassName="fw-bolder"
                   icon={<Icon className="svg-icon-2 me-3" name={item.icon!} />}
                   badge={
@@ -174,7 +174,7 @@ function Sidebar() {
                 {mailboxes.custom.map((item) => (
                   <Menu.Item
                     className="mb-3"
-                    url={`/email/${item.key}`}
+                    url={`/mail/${item.key}`}
                     titleClassName="fw-bolder"
                     key={item.key}
                   >
