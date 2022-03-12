@@ -165,7 +165,11 @@ function InfiniteScroll(props: InfiniteScrollProps, ref: React.ForwardedRef<Infi
   }, [rowHeight, rowCount]);
 
   const setupItems = useCallback(() => {
-    const scroll = scrollbar.current!.osInstance()!.scroll();
+    const scroll = scrollbar.current?.osInstance()?.scroll();
+
+    if (!scroll) {
+      return;
+    }
 
     if (!state.current.rowCount) {
       return;
