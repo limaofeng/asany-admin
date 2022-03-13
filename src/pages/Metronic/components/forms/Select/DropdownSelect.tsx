@@ -24,7 +24,7 @@ function renderMenus(options: OptionData[], itemRender?: OptionItemRender) {
       return <Menu.Separator key={option.type + '-' + uuid()} className="mx-1" />;
     }
     return (
-      <Menu.Item icon="Duotune/arr085" className="px-3" key={option.value}>
+      <Menu.Item icon="Duotune/arr085" data-key={option.value} className="px-3" key={option.value}>
         {itemRender ? itemRender(option) : option.label}
       </Menu.Item>
     );

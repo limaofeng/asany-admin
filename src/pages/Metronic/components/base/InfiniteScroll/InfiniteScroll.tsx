@@ -45,7 +45,7 @@ export type ScrollEvent = {
   index: number;
 };
 
-type SelectEvent = RowData;
+export type ScrollRowDataEvent = RowData;
 
 type InfiniteScrollProps = {
   className?: string;
@@ -56,8 +56,8 @@ type InfiniteScrollProps = {
   noRowsRenderer?: NoContentRenderer;
   rowRenderer: RowRenderer;
   scrollToIndex?: number;
-  onScroll: (e: ScrollEvent) => void;
-  onScrollToIndex?: (e: SelectEvent) => Promise<void>;
+  onScroll?: (e: ScrollEvent) => void;
+  onScrollToIndex?: (e: ScrollRowDataEvent) => Promise<void>;
   onShortcut?: (action: string, e: ShortcutEvent) => void;
 };
 
@@ -333,7 +333,7 @@ function InfiniteScroll(props: InfiniteScrollProps, ref: React.ForwardedRef<Infi
     <OverlayScrollbarsComponent
       ref={scrollbar}
       style={{ height: props.height }}
-      className={classnames(className, 'custom-scrollbar')}
+      className={classnames(className, 'custom-scrollbar infinite-scroll')}
       options={{
         scrollbars: { autoHide: 'scroll' },
         callbacks: {
@@ -344,8 +344,8 @@ function InfiniteScroll(props: InfiniteScrollProps, ref: React.ForwardedRef<Infi
       <Shortcuts
         tag={
           <div
-            style={{ height: innerHeight }}
-            className={classnames('infinite-scroll-inner', { empty: false })}
+            style={{ height: rowCount ? innerHeight : undefined }}
+            className={classnames('infinite-scroll-inner')}
           />
         }
         name="GENERAL"

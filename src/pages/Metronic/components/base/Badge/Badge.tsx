@@ -1,6 +1,9 @@
+import React from 'react';
+
 import classnames from 'classnames';
 
 export type BadgeProps = {
+  tag?: 'span' | 'div';
   color?:
     | 'white'
     | 'primary'
@@ -15,24 +18,24 @@ export type BadgeProps = {
   shape?: 'square' | 'circle';
   size?: 'sm' | 'lg';
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 function Badge(props: BadgeProps) {
-  const { size, className, children, shape, lightStyle } = props;
+  const { size, className, children, shape, lightStyle, tag = 'span' } = props;
   const color = !props.color && !lightStyle ? 'light' : props.color;
-  return (
-    <span
-      className={classnames('badge', className, {
+  return React.createElement(
+    tag,
+    {
+      className: classnames('badge', className, {
         'badge-square': shape == 'square',
         'badge-circle': shape == 'circle',
         [`badge-${size}`]: !!size,
         [`badge-${color}`]: !!color,
         [`badge-light-${lightStyle}`]: !!lightStyle,
-      })}
-    >
-      {children}
-    </span>
+      }),
+    },
+    children,
   );
 }
 

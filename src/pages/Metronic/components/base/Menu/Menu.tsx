@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import classnames from 'classnames';
 
-import { uuid } from '../../utils';
+import { unpack, uuid } from '../../utils';
 
 import type { SelectableType } from './MenuContext';
 import { MenuProvider } from './MenuContext';
@@ -29,22 +29,6 @@ export type MenuProps = {
   onOpenChange?: OpenCallback;
 };
 
-function unpack(node: any): any[] {
-  const newChildren = [];
-  const originalChildren: any[] = React.Children.toArray(node.props.children);
-  for (const child of originalChildren) {
-    if (!child) {
-      continue;
-    }
-    if (child.type === React.Fragment) {
-      newChildren.push(...unpack(child));
-    } else {
-      newChildren.push(child);
-    }
-  }
-  return newChildren;
-}
-
 const InternalMenu = React.forwardRef(function (props: any, ref: any) {
   const { children, className, mode = 'vertical', rounded = true, fit } = props;
 
@@ -57,8 +41,8 @@ const InternalMenu = React.forwardRef(function (props: any, ref: any) {
       }
       if (child.type === React.Fragment) {
         newChildren.push(
-          ...unpack(child).map((x) => {
-            const key = x.key.replace(/^[^$]+[$]/, '');
+          ...unpack(child.props.children).map((x) => {
+            const key = x.props['data-key'] || x.key.replace(/^[^$]+[$]/, '');
             return React.cloneElement(x, {
               menuKey: key || uuid(),
               path: key + '/',
@@ -66,7 +50,7 @@ const InternalMenu = React.forwardRef(function (props: any, ref: any) {
           }),
         );
       } else {
-        const key = child.key.replace(/^[^$]+[$]/, '');
+        const key = child.props['data-key'] || child.key.replace(/^[^$]+[$]/, '');
         newChildren.push(
           React.cloneElement(child, {
             menuKey: key || uuid(),

@@ -17,6 +17,8 @@
 
         .custom-scrollbar {
           flex: 1 0 auto;
+          padding-right: 1.25rem;
+          padding-left: 1.25rem;
         }
       }
     }
@@ -38,7 +40,7 @@
   #kt_content_container {
     padding-right: 0;
   }
-  #kt_contacts_list {
+  .kt_contacts_list {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 60px);
@@ -52,7 +54,29 @@
 
       .custom-scrollbar {
         flex: 1 0 auto;
-        padding: 0 2rem;
+        padding: 0 1rem;
+        &:focus-within {
+          .contact-item.active {
+            background-color: #e7f2fb;
+          }
+        }
+      }
+    }
+
+    .contact-item {
+      width: 100%;
+      padding: 0 1rem;
+      border-radius: 16px;
+      &:hover {
+        background-color: #f4f6f8;
+      }
+
+      &.active {
+        background-color: #ecedee;
+        &::after,
+        &::before {
+          background-color: #e4e4e5;
+        }
       }
     }
   }
@@ -62,9 +86,10 @@
       height: 100vh;
       padding-top: 30px;
       padding-right: 20px;
-      padding-bottom: 30px;
 
-      .card {
+      .os-content > .card {
+        min-height: calc(100% - 30px);
+        padding-bottom: 30px;
         box-shadow: none;
       }
     }

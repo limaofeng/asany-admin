@@ -3,6 +3,7 @@ import React from 'react';
 import classnames from 'classnames';
 
 import { Spin } from '../Spin';
+import { unpack } from '../../utils';
 
 type Variant =
   | 'white'
@@ -107,6 +108,8 @@ function Button(
     props['data-kt-indicator'] = loading ? 'on' : 'off';
   }
 
+  const isEmpty = unpack(children).length == 0;
+
   return React.createElement(
     htmlType ? 'button' : as,
     {
@@ -133,8 +136,8 @@ function Button(
             type == 'dashed',
           'btn-flush': flushed,
           [`btn-${size}`]: !!size,
-          'btn-icon': !!icon && React.Children.count(children) == 0,
-          ['d-inline-flex align-items-center']: !!icon && React.Children.count(children) > 0,
+          'btn-icon': !!icon && isEmpty,
+          ['d-inline-flex align-items-center']: !!icon && !isEmpty,
         },
         className,
       ),

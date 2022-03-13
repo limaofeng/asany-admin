@@ -2,49 +2,74 @@ import { useCallback, useMemo, useState } from 'react';
 
 import Tree from '@asany/tree';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import { useModel } from 'umi';
 
 import { useBookQuery, useBooksQuery } from '../hooks';
 
-import { AsideWorkspace, Tabs } from '@/pages/Metronic/components';
+import { AsideWorkspace, OptionData, Select, Tabs } from '@/pages/Metronic/components';
 import type { ContactBook } from '@/types';
 import * as utils from '@/utils';
 
 const { TabPane } = Tabs;
 
 type SidebarFooterProps = {
+  books: ContactBook[];
   onAction: () => void;
 };
 
 function SidebarFooter(props: SidebarFooterProps) {
-  const { onAction } = props;
+  const { books, onAction } = props;
+
+  const currentBook = useModel('contacts', ({ state }) => state.book);
+
+  const handleSelect = useCallback(
+    (key) => {
+      if (key.startsWith('contacts-')) {
+        console.log(key);
+        // setCalendarSet(key.substring('contacts-'.length));
+      } else {
+        // onAction(key);
+        return false;
+      }
+      return true;
+    },
+    [onAction],
+  );
+
+  const options = useMemo(() => {
+    return [
+      ...books.map((item) => ({ value: `contacts-${item.id}`, label: item.name })),
+      { type: 'separator' },
+      { value: 'manage-contacts', label: '偏好设置' },
+    ] as OptionData[];
+  }, [books]);
+
   return (
     <div className="app-sidebar-footer">
-      <span className="mail-settings" onClick={onAction}>
-        偏好设置
-      </span>
+      <Select
+        onChange={handleSelect}
+        placement="topCenter"
+        value={currentBook ? `contacts-${currentBook}` : undefined}
+        options={options}
+      />
     </div>
   );
 }
 
-function EnterpriseContactGroups(props: ContactGroupsProps) {
-  const { book } = props;
+type GroupsOfTreeProps = {
+  book: ContactBook;
+  namespace: string;
+};
 
-  const [state, setState] = useState({ namespace: book.namespaces[0].id });
-
+function GroupsOfTree(props: GroupsOfTreeProps) {
+  const { book, namespace } = props;
   const { data } = useBookQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
       id: book.id,
-      namespace: state.namespace,
+      namespace,
     },
   });
-
-  const handleChangeNamespace = useCallback((activeKey: string) => {
-    console.log('activeKey', activeKey);
-    setState({ namespace: activeKey });
-  }, []);
-
-  console.log(state.namespace, data?.book?.groups);
 
   const treeData = useMemo(() => {
     const groups = data?.book?.groups;
@@ -66,21 +91,30 @@ function EnterpriseContactGroups(props: ContactGroupsProps) {
     return _treeData;
   }, [data?.book?.groups]);
 
+  return <Tree treeData={treeData} />;
+}
+
+function EnterpriseContactGroups(props: ContactGroupsProps) {
+  const { book } = props;
+
+  const [activeKey, setActiveKey] = useState(book.namespaces[0].id);
+
+  const handleChangeNamespace = useCallback((_activeKey: string) => {
+    console.log('activeKey', _activeKey);
+    setActiveKey(_activeKey);
+  }, []);
+
   return (
-    <Tabs
-      activeKey={state.namespace}
-      onChange={handleChangeNamespace}
-      className="nav-line-tabs-2x mx-5"
-    >
+    <Tabs activeKey={activeKey} onChange={handleChangeNamespace} className="nav-line-tabs-2x mx-5">
       {book.namespaces.map((item) => (
         <TabPane tab={item.name} key={item.id}>
           <OverlayScrollbarsComponent
-            className="custom-scrollbar px-5"
+            className="custom-scrollbar"
             options={{
               scrollbars: { autoHide: 'scroll' },
             }}
           >
-            <Tree treeData={treeData} />
+            <GroupsOfTree book={book} namespace={item.id} />
           </OverlayScrollbarsComponent>
         </TabPane>
       ))}
@@ -107,11 +141,31 @@ function ContactGroupsAdapter(props: ContactGroupsProps) {
 function Sidebar() {
   const { data } = useBooksQuery({ fetchPolicy: 'cache-and-network' });
 
-  const books = data?.books || [];
+  const bookId = useModel('contacts', ({ state }) => state.book);
+  const setBook = useModel('contacts', (model) => model.setBook);
+
+  // const books = data?.books || [];
 
   const book = useMemo(() => {
+    if (!data?.books) {
+      return;
+    }
+    const books = data?.books;
+    if (books.some((item) => item.id == bookId)) {
+      return books.find((item) => item.id == bookId)!;
+    }
+    setBook(books[0].id);
     return books[0];
-  }, [books]);
+  }, [data?.books, bookId, setBook]);
+
+  console.log('books', data?.books, book, bookId);
+
+  // useEffect(() => {
+  //   if(defaultBookId == null || ) {
+
+  //   }
+
+  // }, [defaultBookId]);
 
   return (
     <AsideWorkspace width={280} className="app-sidebar app-contacts-sidebar">
@@ -122,7 +176,7 @@ function Sidebar() {
       <div className="app-sidebar-body flex-column-fluid d-flex flex-column">
         {book && <ContactGroupsAdapter book={book as ContactBook} />}
       </div>
-      <SidebarFooter books={books} onAction={() => {}} />
+      <SidebarFooter books={(data?.books || []) as any} onAction={() => {}} />
     </AsideWorkspace>
   );
 }

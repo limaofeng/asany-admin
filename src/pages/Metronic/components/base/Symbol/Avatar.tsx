@@ -23,7 +23,7 @@ export type AvatarProps = {
 };
 
 function Avatar(props: AvatarProps) {
-  const { title, onClick, shape, className, src, gap, alt = 'unknown' } = props;
+  const { title, onClick, shape, className, src, gap, alt = 'unknown', badge } = props;
 
   const [loadFailed, setLoadFailed] = useState(false);
 
@@ -57,6 +57,7 @@ function Avatar(props: AvatarProps) {
         ) : (
           renderImg(src, alt, gap, handleError)
         )}
+        {badge}
       </div>
     </Tooltip>
   );

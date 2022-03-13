@@ -29,3 +29,26 @@ query book($id: ID!, $namespace: String) {
     }
   }
 }
+
+query contacts($filter: ContactFilter, $page: Int = 1) {
+  contacts(filter: $filter, page: $page) {
+    currentPage
+    pageSize
+    totalPage
+    totalCount
+    edges {
+      cursor
+      node {
+        id
+        name
+        title
+        sex
+        avatar
+      }
+    }
+  }
+}
+
+fragment ContactParts on Contact {
+  title
+}

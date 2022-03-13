@@ -1,35 +1,23 @@
+import { Card } from '@/pages/Metronic/components';
+
 function NoContacts() {
   return (
-    <div className="card card-flush h-100" id="kt_contacts_main">
-      {/*--begin::Card body--*/}
-      <div className="card-body p-0">
-        {/*--begin::Wrapper--*/}
+    <Card flush>
+      <Card.Body className="p-0">
         <div className="card-px text-center py-20 my-10">
-          {/*--begin::Title--*/}
-          <h2 className="fs-2x fw-bolder mb-10">Welcome to the Contacts App</h2>
-          {/*--end::Title--*/}
-          {/*--begin::Description--*/}
+          <h2 className="fs-2x fw-bolder mb-10">欢迎使用联系人应用程序</h2>
           <p className="text-gray-400 fs-4 fw-bold mb-10">
-            Its time to expand our contacts.
+            是时候扩大我们的联系了。
             <br />
-            Kickstart your contacts growth by adding a your next contact.
+            通过添加您的下一个联系人，来启动您的联系人。
           </p>
-          {/*--end::Description--*/}
-          {/*--begin::Action--*/}
-          <a href="../../demo7/dist/apps/contacts/add-contact.html" className="btn btn-primary">
-            Add New Contact
-          </a>
-          {/*--end::Action--*/}
+          <a className="btn btn-primary">添加新联系人</a>
         </div>
-        {/*--end::Wrapper--*/}
-        {/*--begin::Illustration--*/}
         <div className="text-center px-4">
           <img className="mw-100 mh-300px" alt="" src="/assets/media/illustrations/sigma-1/5.png" />
         </div>
-        {/*--end::Illustration--*/}
-      </div>
-      {/*--end::Card body--*/}
-    </div>
+      </Card.Body>
+    </Card>
   );
 }
 

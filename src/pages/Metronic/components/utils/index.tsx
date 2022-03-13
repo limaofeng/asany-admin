@@ -1,4 +1,4 @@
-import type React from 'react';
+import React from 'react';
 import { useMemo, useReducer, useRef } from 'react';
 import { useCallback, useEffect } from 'react';
 
@@ -154,4 +154,23 @@ export function useAutoSave<T>(
   }, []);
 
   return [autoSaveFunc, state.current.saving];
+}
+
+export function unpack(children: any): any[] {
+  if (!children) {
+    return [];
+  }
+  const newChildren = [];
+  const originalChildren: any[] = React.Children.toArray(children);
+  for (const child of originalChildren) {
+    if (!child) {
+      continue;
+    }
+    if (child.type === React.Fragment) {
+      newChildren.push(...unpack(child.props.children));
+    } else {
+      newChildren.push(child);
+    }
+  }
+  return newChildren;
 }

@@ -37,5 +37,18 @@
     justify-content: center;
     height: 34px;
     border-top: #f7f7f7 1px solid;
+
+    .form-select {
+      flex: none;
+      width: auto;
+      padding: 0;
+      background-color: transparent;
+      background-size: 21px 9px;
+      border: none;
+      .current-option {
+        padding-right: 36px;
+        font-size: 13px;
+      }
+    }
   }
 }
