@@ -50,7 +50,7 @@
     "@ant-design/icons": "^4.7.0",
     "@asany/ckeditor5": "^31.1.0-3",
     "@asany/editor": "^0.2.23",
-    "@asany/icons": "^0.2.8",
+    "@asany/icons": "^0.2.10",
     "@asany/shortcuts": "^0.1.3",
     "@asany/sortable": "^0.1.30",
     "@asany/tree": "^0.1.21",

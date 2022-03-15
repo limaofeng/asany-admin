@@ -3,7 +3,7 @@ import React from 'react';
 import classnames from 'classnames';
 
 interface TabPaneProps {
-  tab: string;
+  tab: string | React.ReactNode;
   children: React.ReactNode;
   className?: string;
   active?: boolean;

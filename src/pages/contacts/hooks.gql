@@ -44,11 +44,79 @@ query contacts($filter: ContactFilter, $page: Int = 1) {
         title
         sex
         avatar
+        email {
+          ...EmailParts
+        }
+        phone {
+          ...PhoneParts
+        }
       }
     }
   }
 }
 
+query contact($id: ID!) {
+  contact(id: $id) {
+    id
+    ...ContactParts
+  }
+}
+
 fragment ContactParts on Contact {
+  name
   title
+  sex
+  avatar
+  phone {
+    ...PhoneParts
+  }
+  email {
+    ...EmailParts
+  }
+  address {
+    ...AddressParts
+  }
+  phones {
+    id
+    primary
+    label
+    phone {
+      ...PhoneParts
+    }
+  }
+  emails {
+    id
+    primary
+    label
+    email {
+      ...EmailParts
+    }
+  }
+  addresses {
+    id
+    primary
+    label
+    address {
+      ...AddressParts
+    }
+  }
+}
+
+fragment EmailParts on Email {
+  status
+  address
+}
+
+fragment PhoneParts on Phone {
+  status
+  number
+}
+
+fragment AddressParts on Address {
+  country
+  province
+  city
+  district
+  street
+  postalCode
 }

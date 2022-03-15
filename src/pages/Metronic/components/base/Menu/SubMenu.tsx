@@ -26,7 +26,7 @@ const defaultOptions = {
 
 interface SubMenuProps {
   url?: string;
-  icon?: string;
+  icon?: string | React.ReactNode;
   title: string;
   className?: string;
   bodyClassName?: string;
@@ -152,7 +152,7 @@ function SubMenu(props: SubMenuProps) {
     >
       {icon ? (
         <span className="menu-icon">
-          <Icon className="svg-icon-2" name={icon} />
+          {typeof icon == 'string' ? <Icon className="svg-icon-2" name={icon} /> : icon}
         </span>
       ) : (
         bullet && (

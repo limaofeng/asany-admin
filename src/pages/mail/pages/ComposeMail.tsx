@@ -20,7 +20,7 @@ const { TabPane } = Tabs;
 const Tools = React.memo(function Tools() {
   return (
     <Card className="email-compose-tools">
-      <Tabs className="nav-line-tabs-2x">
+      <Tabs className="nav-line-tabs-2x mb-5 fs-6">
         <TabPane tab="通讯录" key="contacts">
           11111
         </TabPane>

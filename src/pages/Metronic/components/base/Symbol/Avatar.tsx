@@ -19,11 +19,22 @@ export type AvatarProps = {
   title?: string;
   alt?: string;
   gap?: number;
+  labelClassName?: string;
   badge?: React.ReactElement<typeof Badge>;
 };
 
 function Avatar(props: AvatarProps) {
-  const { title, onClick, shape, className, src, gap, alt = 'unknown', badge } = props;
+  const {
+    title,
+    onClick,
+    shape,
+    className,
+    labelClassName,
+    src,
+    gap,
+    alt = 'unknown',
+    badge,
+  } = props;
 
   const [loadFailed, setLoadFailed] = useState(false);
 
@@ -51,7 +62,10 @@ function Avatar(props: AvatarProps) {
         )}
       >
         {loadFailed ? (
-          <div style={{ backgroundColor, color }} className="symbol-label fs-2 fw-bold">
+          <div
+            style={{ backgroundColor, color }}
+            className={classnames(labelClassName, 'symbol-label fw-bold')}
+          >
             {isChinese(alt) ? alt.substring(0, 1) : alt.substring(0, 2).toUpperCase()}
           </div>
         ) : (

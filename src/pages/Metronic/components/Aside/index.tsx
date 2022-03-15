@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 import classnames from 'classnames';
 import { Button, Nav, OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -99,7 +99,7 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
   );
 });
 
-const DEFAULT_APP_PATHS = ['/storage', '/calendar', '/contacts', '/mail'];
+const DEFAULT_APP_PATHS = ['/drive', '/calendar', '/contacts', '/mail'];
 
 const MIN_WIDTH = 300;
 const MAX_WIDTH = 500;
@@ -112,7 +112,6 @@ function Aside(props: AsideProps) {
   const logoRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   useScroll(scrollRef, wrapperRef, [logoRef, footerRef]);
 
@@ -174,12 +173,13 @@ function Aside(props: AsideProps) {
     [menus],
   );
 
-  useEffect(() => {
+  const width = useMemo(() => {
+    if (minimize) {
+      return undefined;
+    }
     resizeWidth.current.width = asideWidth;
-    forceRender();
-  }, [asideWidth]);
-
-  const width = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, resizeWidth.current.width));
+    return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, asideWidth));
+  }, [minimize, asideWidth]);
 
   const hideAside = menuRender == false;
 

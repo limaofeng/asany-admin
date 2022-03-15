@@ -44,6 +44,7 @@ function MessageWrapper(props: MessageWrapperProps) {
             alt={message?.from.map(displayName).join('、')}
             src="assets/media/avatars/300-6.jpg"
             size={50}
+            labelClassName="fs-2"
             className="me-4"
           />
           {/* <div className="symbol symbol-50 me-4">

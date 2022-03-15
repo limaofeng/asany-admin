@@ -1,0 +1,49 @@
+query cloudDrive($id: ID!) {
+  cloudDrive(id: $id) {
+    id
+    name
+    type
+    rootFolder
+  }
+}
+
+query cloudDrives {
+  cloudDrives {
+    id
+    name
+    type
+    quota {
+      id
+      count
+      usage
+      size
+    }
+    rootFolder
+  }
+}
+
+query listFiles($folder: ID!) {
+  currentFile: file(id: $folder) {
+    id
+    name
+    path
+    isDirectory
+    isRootFolder
+    parents {
+      id
+      isDirectory
+      isRootFolder
+      name
+      path
+    }
+  }
+  files: listFiles(folder: $folder) {
+    id
+    name
+    path
+    size(format: true)
+    mimeType
+    isDirectory
+    lastModified(format: "yyyy-MM-dd HH:mm")
+  }
+}

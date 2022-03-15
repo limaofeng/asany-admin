@@ -4,6 +4,8 @@ import classnames from 'classnames';
 
 import TabPane from './TabPane';
 
+import './style.scss';
+
 interface TabsProps {
   className?: string;
   activeKey?: string;
@@ -39,16 +41,25 @@ function Tabs(props: TabsProps) {
 
   return (
     <div className="tabs-container">
-      <ul className={classnames('nav nav-tabs nav-line-tabs mb-5 fs-6', className)}>
+      <ul className={classnames('nav nav-tabs nav-line-tabs', className)}>
         {panes.map((item) => (
           <li key={item.id} className="nav-item">
-            <a
-              onClick={handleSelect(item.id)}
-              href={`#${item.id}`}
-              className={classnames('nav-link', { active: activeKey == item.id })}
-            >
-              {item.name}
-            </a>
+            {React.isValidElement(item.name) ? (
+              React.cloneElement(item.name as any, {
+                onClick: handleSelect(item.id),
+                className: classnames((item.name as any).props.className, {
+                  active: activeKey == item.id,
+                }),
+              })
+            ) : (
+              <a
+                onClick={handleSelect(item.id)}
+                href={`#${item.id}`}
+                className={classnames('nav-link', { active: activeKey == item.id })}
+              >
+                {item.name}
+              </a>
+            )}
           </li>
         ))}
       </ul>

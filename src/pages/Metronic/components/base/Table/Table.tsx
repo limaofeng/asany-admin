@@ -45,6 +45,8 @@ export type RowSelection = {
   getCheckboxProps?: (record: any) => any;
 };
 
+type NoContentRenderer = () => React.ReactNode;
+
 export interface TableProps<T> {
   responsive?: boolean;
   hover?: boolean;
@@ -53,6 +55,7 @@ export interface TableProps<T> {
   dataSource?: T[];
   columns: TableColumn<T>[];
   pagination?: PaginationProps;
+  noRowsRenderer?: NoContentRenderer;
 }
 
 function buildRenderCol<T>(data: T) {
@@ -142,6 +145,7 @@ function Table<T>(props: TableProps<T>) {
     columns,
     dataSource,
     pagination,
+    noRowsRenderer,
     rowKey = 'key',
   } = props;
 
@@ -254,13 +258,14 @@ function Table<T>(props: TableProps<T>) {
             {rowSelection && (
               <th className="w-10px pe-2">
                 <Checkbox
+                  solid
                   checked={
                     !!selectedKeys.size &&
                     (dataSource || []).every((data) => selectedKeys.has(getRowKey(data)))
                   }
                   onChange={handleChange}
                   size="sm"
-                  className="me-3"
+                  className="me-3 p-0"
                 />
               </th>
             )}
@@ -287,26 +292,40 @@ function Table<T>(props: TableProps<T>) {
           </tr>
         </thead>
         <tbody className="fw-bold text-gray-600">
-          {(dataSource || []).map((data: any, index) => {
-            const randerCol = buildRenderCol(data);
-            return (
-              // eslint-disable-next-line react/no-array-index-key
-              <tr key={`${getRowKey(data)}-${index}`}>
-                {rowSelection && (
-                  <td key="row-select">
-                    <Checkbox
-                      {...handleCheckboxProps(data)}
-                      checked={selectedKeys.has(getRowKey(data))}
-                      size="sm"
-                      value={getRowKey(data)}
-                      onChange={handleSelect(data)}
-                    />
+          {!(dataSource || []).length
+            ? noRowsRenderer && (
+                <tr>
+                  <td
+                    valign="top"
+                    colSpan={columns.length + (rowSelection ? 1 : 0)}
+                    className="dataTables_empty"
+                  >
+                    {noRowsRenderer()}
                   </td>
-                )}
-                {columns.map(randerCol)}
-              </tr>
-            );
-          })}
+                </tr>
+              )
+            : (dataSource || []).map((data: any, index) => {
+                const randerCol = buildRenderCol(data);
+                return (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <tr key={`${getRowKey(data)}-${index}`}>
+                    {rowSelection && (
+                      <td key="row-select">
+                        <Checkbox
+                          {...handleCheckboxProps(data)}
+                          checked={selectedKeys.has(getRowKey(data))}
+                          size="sm"
+                          solid
+                          className="p-0"
+                          value={getRowKey(data)}
+                          onChange={handleSelect(data)}
+                        />
+                      </td>
+                    )}
+                    {columns.map(randerCol)}
+                  </tr>
+                );
+              })}
         </tbody>
       </BsTable>
       {pagination && <Pagination {...pagination} />}

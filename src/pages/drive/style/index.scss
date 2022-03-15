@@ -1,0 +1,43 @@
+.drive-quota {
+  padding: 0.65rem 1rem;
+}
+.app-drive-sidebar {
+  .app-sidebar-body {
+    height: calc(100vh - 114px);
+  }
+  .app-sidebar-footer {
+    height: 34px;
+  }
+}
+.app-drive-main {
+  .container-xxl {
+    min-height: 100vh !important;
+    padding: 0;
+    & > .card {
+      min-height: 100%;
+      border-radius: 0;
+      box-shadow: none;
+      & > .card-body {
+        height: 100%;
+        padding-bottom: 0;
+
+        .clouddrive-listfiles-no-rows {
+          min-height: calc(100vh - 147px);
+        }
+
+        .file-details-quick-preview {
+          display: flex;
+          padding-left: 16px;
+
+          .preview-container {
+            flex: 1;
+            padding: 16px;
+            background-color: #f5f6fa;
+            border-radius: 8px;
+            min-height: calc(100vh - 138px);
+          }
+        }
+      }
+    }
+  }
+}

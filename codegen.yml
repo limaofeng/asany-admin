@@ -1,5 +1,6 @@
 overwrite: true
-schema: "https://api.asany.cn/graphql"
+# schema: "https://api.asany.cn/graphql"
+schema: "http://localhost:8080/graphql"
 generates:
   src/types.ts:
     plugins:
@@ -21,8 +22,30 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
-  src/pages/email/hooks.ts:
-    documents: ["src/pages/email/**/*.gql"]
+  src/pages/drive/hooks.ts:
+    documents: ["src/pages/drive/**/*.gql"]
+    plugins:
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+        - eslint --fix
+  src/pages/contacts/hooks.ts:
+    documents: ["src/pages/contacts/**/*.gql"]
+    plugins:
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+        - eslint --fix
+  src/pages/mail/hooks.ts:
+    documents: ["src/pages/mail/**/*.gql"]
     plugins:
       - "typescript-operations"
       - "typescript-react-apollo"
@@ -43,17 +66,17 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
-  src/pages/storage/hooks.ts:
-    documents: ["src/pages/storage/**/*.gql"]
-    plugins:
-      - "typescript-operations"
-      - "typescript-react-apollo"
-    config:
-      withHooks: true
-    hooks:
-      afterAllFileWrite:
-        - prettier --write
-        - eslint --fix
+  # src/pages/storage/hooks.ts:
+  #   documents: ["src/pages/storage/**/*.gql"]
+  #   plugins:
+  #     - "typescript-operations"
+  #     - "typescript-react-apollo"
+  #   config:
+  #     withHooks: true
+  #   hooks:
+  #     afterAllFileWrite:
+  #       - prettier --write
+  #       - eslint --fix
   src/pages/app/hooks.ts:
     documents: ["src/pages/app/**/*.gql"]
     plugins:

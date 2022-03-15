@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Tree from '@asany/tree';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
@@ -6,7 +6,8 @@ import { useModel } from 'umi';
 
 import { useBookQuery, useBooksQuery } from '../hooks';
 
-import { AsideWorkspace, OptionData, Select, Tabs } from '@/pages/Metronic/components';
+import type { OptionData } from '@/pages/Metronic/components';
+import { AsideWorkspace, Select, Tabs } from '@/pages/Metronic/components';
 import type { ContactBook } from '@/types';
 import * as utils from '@/utils';
 
@@ -105,7 +106,11 @@ function EnterpriseContactGroups(props: ContactGroupsProps) {
   }, []);
 
   return (
-    <Tabs activeKey={activeKey} onChange={handleChangeNamespace} className="nav-line-tabs-2x mx-5">
+    <Tabs
+      activeKey={activeKey}
+      onChange={handleChangeNamespace}
+      className="nav-line-tabs-2x mx-5 mb-5 fs-6"
+    >
       {book.namespaces.map((item) => (
         <TabPane tab={item.name} key={item.id}>
           <OverlayScrollbarsComponent
@@ -144,28 +149,24 @@ function Sidebar() {
   const bookId = useModel('contacts', ({ state }) => state.book);
   const setBook = useModel('contacts', (model) => model.setBook);
 
-  // const books = data?.books || [];
-
-  const book = useMemo(() => {
+  useEffect(() => {
     if (!data?.books) {
       return;
     }
     const books = data?.books;
-    if (books.some((item) => item.id == bookId)) {
-      return books.find((item) => item.id == bookId)!;
+    if (!books.some((item) => item.id == bookId)) {
+      setBook(books[0].id);
     }
-    setBook(books[0].id);
-    return books[0];
   }, [data?.books, bookId, setBook]);
 
+  const book = useMemo(() => {
+    if (!data?.books || !bookId) {
+      return;
+    }
+    return data.books.find((item) => item.id == bookId);
+  }, [data?.books, bookId]);
+
   console.log('books', data?.books, book, bookId);
-
-  // useEffect(() => {
-  //   if(defaultBookId == null || ) {
-
-  //   }
-
-  // }, [defaultBookId]);
 
   return (
     <AsideWorkspace width={280} className="app-sidebar app-contacts-sidebar">

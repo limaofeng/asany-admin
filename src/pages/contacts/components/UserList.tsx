@@ -52,6 +52,7 @@ function ContactItem(props: ContactItemProps) {
             alt={contact.name!}
             src="assets/media/avatars/300-6.jpg"
             size={40}
+            labelClassName="fs-2"
             shape="circle"
             // badge={
             //   <div className="symbol-badge bg-success start-100 top-100 border-4 h-15px w-15px ms-n2 mt-n2" />

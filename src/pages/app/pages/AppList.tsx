@@ -23,6 +23,7 @@ function AppList() {
                 <Card.Title className="m-0">
                   <Symbol.Avatar
                     size={50}
+                    labelClassName="fs-2"
                     className="bg-light"
                     src="/assets/media/svg/brand-logos/plurk.svg"
                     gap={3}
@@ -53,9 +54,24 @@ function AppList() {
                   </div>
                 </Tooltip>
                 <Symbol.Group maxCount={5}>
-                  <Symbol.Avatar size={35} shape="circle" src="/assets/media/avatars/150-1.jpg" />
-                  <Symbol.Avatar size={35} shape="circle" src="/assets/media/avatars/150-2.jpg" />
-                  <Symbol.Avatar size={35} shape="circle" alt="Susan Redwood" />
+                  <Symbol.Avatar
+                    labelClassName="fs-2"
+                    size={35}
+                    shape="circle"
+                    src="/assets/media/avatars/150-1.jpg"
+                  />
+                  <Symbol.Avatar
+                    labelClassName="fs-2"
+                    size={35}
+                    shape="circle"
+                    src="/assets/media/avatars/150-2.jpg"
+                  />
+                  <Symbol.Avatar
+                    labelClassName="fs-2"
+                    size={35}
+                    shape="circle"
+                    alt="Susan Redwood"
+                  />
                 </Symbol.Group>
               </Card.Body>
             </Card>
