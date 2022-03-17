@@ -21,3 +21,4 @@ export * from './Separator';
 export * from './Popover';
 export * from './NProgress';
 export * from './InfiniteScroll';
+export * from './BlockUI';

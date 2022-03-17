@@ -15,7 +15,7 @@ export type AvatarProps = {
   className?: string;
   shape?: 'circle' | 'square';
   size?: SymbolSize;
-  src?: string;
+  src?: string | React.ReactNode;
   title?: string;
   alt?: string;
   gap?: number;

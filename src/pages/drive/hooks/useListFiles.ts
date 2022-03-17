@@ -2,9 +2,9 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import EventEmitter from 'events';
 
-import { useContactsLazyQuery } from './hooks';
+import { useListFilesLazyQuery } from './api';
 
-import type { Contact, ContactConnection } from '@/types';
+import type { FileFilter, FileObject, FileObjectConnection } from '@/types';
 import { sleep } from '@/utils';
 
 const DEFAULT_PAGINATION = {
@@ -16,51 +16,54 @@ const DEFAULT_PAGINATION = {
 
 export type PaginationType = typeof DEFAULT_PAGINATION;
 
-export type UseContact = (index: number) => Contact | undefined;
+export type UseFileObject = (index: number) => FileObject | undefined;
 
-export type LoadContact = (index: number) => Promise<Contact>;
+export type LoadFileObject = (index: number) => Promise<FileObject>;
 
-type LoadContactUtils = {
+type LoadFileObjectUtils = {
+  loadedCount: number;
   refetch: (page: number) => Promise<void>;
   refetchWithRemove: (index: number) => Promise<void>;
-  loadContact: LoadContact;
+  loadFileObject: LoadFileObject;
 };
 
-type UseContactsQuery = [PaginationType, boolean, UseContact, LoadContactUtils];
+type UseFileObjectsQuery = [PaginationType, boolean, UseFileObject, LoadFileObjectUtils];
 
-export function useContactsQuery(token?: string): UseContactsQuery {
+export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjectsQuery {
   const emitter = useRef(new EventEmitter());
   const state = useRef<{
     page: number;
-    token?: string;
+    folder?: string;
     loading: boolean;
-    contacts: Contact[];
+    files: FileObject[];
     pagination: PaginationType;
+    filter?: FileFilter;
   }>({
     page: 1,
-    token,
+    folder,
     loading: false,
-    contacts: [],
+    files: [],
+    filter,
     pagination: { ...DEFAULT_PAGINATION },
   });
 
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const [_loadContacts, { data, loading, refetch }] = useContactsLazyQuery({
+  const [_loadFileObjects, { data, loading, refetch }] = useListFilesLazyQuery({
     fetchPolicy: 'cache-and-network',
   });
 
   state.current.loading = loading;
 
-  const parseData = useCallback((pagination: ContactConnection) => {
+  const parseData = useCallback((pagination: FileObjectConnection) => {
     pagination.edges
       .map((item) => item.node)
       .forEach((msg, _index) => {
         const index = pagination.pageSize * (pagination.currentPage - 1) + _index;
-        state.current.contacts[index] = msg as any;
+        state.current.files[index] = msg as any;
       });
     emitter.current.emit('updates');
-    // console.log('updates', state.current.contacts);
+    // console.log('updates', state.current.files);
   }, []);
 
   const handleRefetch = useCallback(
@@ -72,11 +75,10 @@ export function useContactsQuery(token?: string): UseContactsQuery {
         await sleep(120);
       }
       state.current.page = page;
-      debugger;
+      // debugger;
       refetch({
-        filter: {
-          token: state.current.token,
-        },
+        folder: state.current.folder,
+        filter: state.current.filter,
         page: state.current.page,
       });
     },
@@ -90,14 +92,14 @@ export function useContactsQuery(token?: string): UseContactsQuery {
         state.current.pagination.totalPage--;
       }
       state.current.pagination.totalCount--;
-      state.current.contacts.splice(index, 1);
+      state.current.files.splice(index, 1);
       const page = Math.ceil((index + 1) / pageSize);
       handleRefetch(page);
     },
     [handleRefetch],
   );
 
-  const loadContacts = useCallback(
+  const loadFileObjects = useCallback(
     async (page: number) => {
       while (state.current.loading) {
         await sleep(120);
@@ -106,39 +108,39 @@ export function useContactsQuery(token?: string): UseContactsQuery {
         return;
       }
       state.current.page = page;
-      _loadContacts({
+      // debugger;
+      _loadFileObjects({
         variables: {
-          filter: {
-            token: state.current.token,
-          },
+          folder: state.current.folder,
+          filter: state.current.filter,
           page: state.current.page,
         },
       });
     },
-    [_loadContacts],
+    [_loadFileObjects],
   );
 
-  const loadContact = useCallback(
+  const loadFileObject = useCallback(
     async (index: number) => {
-      let contact = state.current.contacts[index];
+      let contact = state.current.files[index];
 
       if (!contact) {
         do {
-          contact = state.current.contacts[index];
+          contact = state.current.files[index];
           if (!contact) {
-            await loadContacts(Math.ceil((index + 1) / state.current.pagination.pageSize));
+            await loadFileObjects(Math.ceil((index + 1) / state.current.pagination.pageSize));
             await sleep(30);
           }
-          if (index >= state.current.contacts.length) {
-            console.log(`索引超出最大长度 [${index}/${state.current.contacts.length}]`);
-            return state.current.contacts[index - 1];
+          if (index >= state.current.files.length) {
+            console.log(`索引超出最大长度 [${index}/${state.current.files.length}]`);
+            return state.current.files[index - 1];
           }
         } while (!contact);
       }
 
       return contact;
     },
-    [loadContacts],
+    [loadFileObjects],
   );
 
   useEffect(() => {
@@ -146,45 +148,45 @@ export function useContactsQuery(token?: string): UseContactsQuery {
   }, []);
 
   useEffect(() => {
-    if (state.current.token != token) {
-      state.current.token = token;
+    if (state.current.folder != folder || state.current.filter != filter) {
+      state.current.folder = folder;
+      state.current.filter = filter;
       state.current.pagination = { ...DEFAULT_PAGINATION };
-      state.current.contacts.length = 0;
+      state.current.files.length = 0;
       state.current.page = 1;
     }
-    if (!token) {
+    if (!folder) {
       return forceRender();
     }
-    _loadContacts({
+    _loadFileObjects({
       variables: {
-        filter: {
-          token,
-        },
+        folder: state.current.folder,
+        filter: state.current.filter,
         page: state.current.page,
       },
     });
-  }, [_loadContacts, token]);
+  }, [_loadFileObjects, folder, filter]);
 
   useEffect(() => {
-    if (loading || !data?.contacts) {
+    if (loading || !data?.listFiles) {
       return;
     }
-    state.current.pagination = { ...data.contacts } || state.current.pagination;
-    parseData(data.contacts as any);
+    state.current.pagination = { ...data.listFiles } || state.current.pagination;
+    parseData(data.listFiles as any);
     forceRender();
-  }, [parseData, data?.contacts, loading]);
+  }, [parseData, data?.listFiles, loading]);
 
-  const UseContact = (index: number): Contact | undefined => {
+  const useFileObject = (index: number): FileObject | undefined => {
     const [, _forceRender] = useReducer((s) => s + 1, 0);
     const latestSelectedState = useRef<{
-      contact?: Contact;
+      contact?: FileObject;
       index: number;
       timer?: NodeJS.Timer;
     }>({ index });
 
     latestSelectedState.current.index = index;
 
-    latestSelectedState.current.contact = state.current.contacts[index];
+    latestSelectedState.current.contact = state.current.files[index];
 
     useEffect(() => {
       if (index == -1) {
@@ -201,7 +203,8 @@ export function useContactsQuery(token?: string): UseContactsQuery {
           latestSelectedState.current.timer && clearTimeout(latestSelectedState.current.timer);
           return;
         }
-        loadContacts(Math.ceil(_index / state.current.pagination.pageSize));
+        // debugger;
+        loadFileObjects(Math.ceil(_index / state.current.pagination.pageSize));
         _timer = setTimeout(checkResult, 300);
       };
 
@@ -212,7 +215,7 @@ export function useContactsQuery(token?: string): UseContactsQuery {
     }, [index]);
 
     const checkForUpdates = useCallback(() => {
-      const newSelectedState = state.current.contacts[latestSelectedState.current.index];
+      const newSelectedState = state.current.files[latestSelectedState.current.index];
       if (newSelectedState == latestSelectedState.current.contact) {
         return;
       }
@@ -235,9 +238,10 @@ export function useContactsQuery(token?: string): UseContactsQuery {
   return [
     state.current.pagination,
     loading,
-    UseContact,
+    useFileObject,
     {
-      loadContact,
+      loadedCount: state.current.files.filter((item) => !!item).length,
+      loadFileObject,
       refetch: handleRefetch,
       refetchWithRemove: handleRefetchWithRemove,
     },

@@ -1,3 +1,43 @@
+.dataTables_wrapper {
+  .table.dataTable > thead > tr > th:not(.sorting_disabled) {
+    padding: 0;
+  }
+  .table > :not(caption) > * > * {
+    padding: 0;
+  }
+  .table td:first-child {
+    padding-left: 0;
+  }
+  .table {
+    border-collapse: collapse !important;
+    border-spacing: 0;
+    tr {
+      th,
+      td {
+        height: initial;
+        vertical-align: middle;
+        border-bottom: none;
+      }
+    }
+  }
+  .row-selection {
+    text-align: center;
+    vertical-align: middle;
+    .form-check.form-check-custom {
+      display: inline-block;
+    }
+  }
+}
+.table-header > .table {
+  margin-bottom: 0 !important;
+  padding: 0;
+  tr {
+    height: 50px;
+  }
+}
+table.dataTable.table-list-body {
+  margin-top: 0 !important;
+}
 .table td:first-child,
 .table th:first-child,
 .table tr:first-child {

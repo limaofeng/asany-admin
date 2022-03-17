@@ -90,7 +90,7 @@ function FileActions(props: FileActionsProps) {
     [data, onRename],
   );
   return (
-    <div className="d-flex justify-content-end">
+    <div className="d-flex justify-content-start">
       {!data.isDirectory && (
         <div className="ms-2" data-kt-filemanger-table="copy_link">
           <ShareLink>

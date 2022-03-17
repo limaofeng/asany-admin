@@ -3,13 +3,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Icon from '@asany/icons';
 import { useHistory } from 'umi';
 
-import FileActions from '../components/FileActions';
+// import FileActions from '../components/FileActions';
 import FolderPath from '../components/FolderPath';
-import { useListFilesQuery } from '../hooks';
+import { useFolderQuery, useListFiles } from '../hooks';
 
-import { Badge, Button, Card, Input, Table } from '@/pages/Metronic/components';
-import type { CloudDrive, FileObject } from '@/types';
+import FileDetails from './FileDetails';
+
+import { Badge, BlockUI, Button, Card, Input, Table } from '@/pages/Metronic/components';
+import type { CloudDrive, FileFilter, FileObject } from '@/types';
 import { sleep } from '@/utils';
+import type { DataSource } from '@/pages/Metronic/components/base/Table';
 
 type FileNameProps = {
   storageId: string;
@@ -103,9 +106,10 @@ function FileName(props: FileNameProps) {
 
 type ListFilesProps = {
   files?: FileObject[];
+  filter?: FileFilter;
   cloudDrive?: CloudDrive;
   currentFolder?: FileObject;
-  folder: string;
+  folder?: string;
 };
 
 function generatePaths(cloudDrive?: CloudDrive, currentFolder?: FileObject) {
@@ -130,7 +134,7 @@ function generatePaths(cloudDrive?: CloudDrive, currentFolder?: FileObject) {
 }
 
 function ListFiles(props: ListFilesProps) {
-  const { folder, cloudDrive } = props;
+  const { folder, cloudDrive, filter } = props;
 
   const history = useHistory();
 
@@ -143,30 +147,32 @@ function ListFiles(props: ListFilesProps) {
     currentFolder: props.currentFolder,
   });
 
-  const { data, loading, previousData } = useListFilesQuery({
+  const { data: loadFolderResult } = useFolderQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
       folder: folder,
     },
   });
 
-  const [renameFile, setRenameFile] = useState<FileObject>();
+  const [pagination, loading, useFileObject, { loadedCount }] = useListFiles(folder, filter);
+
+  const [, setRenameFile] = useState<FileObject>();
   const [selectedRows, setSelectedRows] = useState<FileObject[]>([]);
 
   const currentFolder = useMemo(() => {
     if (
       props.currentFolder &&
-      data?.currentFile &&
-      props.currentFolder.id != data.currentFile.id &&
-      props.currentFolder.path.startsWith(data?.currentFile.path)
+      loadFolderResult?.currentFolder &&
+      props.currentFolder.id != loadFolderResult.currentFolder.id &&
+      props.currentFolder.path.startsWith(loadFolderResult.currentFolder.path)
     ) {
       return (temp.current.currentFolder = props.currentFolder);
     }
-    if (!data?.currentFile) {
+    if (!loadFolderResult?.currentFolder) {
       return temp.current.currentFolder;
     }
-    return (temp.current.currentFolder = data?.currentFile as FileObject);
-  }, [data?.currentFile, props.currentFolder]);
+    return (temp.current.currentFolder = loadFolderResult?.currentFolder as FileObject);
+  }, [loadFolderResult?.currentFolder, props.currentFolder]);
 
   const handleSelectedRows = useCallback(
     (_, _selectedRows) => {
@@ -187,27 +193,30 @@ function ListFiles(props: ListFilesProps) {
     return generatePaths(cloudDrive, currentFolder);
   }, [cloudDrive, currentFolder]);
 
-  const files = useMemo(
-    () => (data?.files || previousData?.files || props.files || []) as FileObject[],
-    [data?.files, previousData?.files, props.files],
-  );
+  // const pagination = useMemo(
+  //   () => (data?.listFiles || previousData?.listFiles || {}) as FileObjectConnection,
+  //   [data?.listFiles, previousData?.listFiles],
+  // );
 
-  temp.current.files = files;
+  // temp.current.files = files;
 
   const handleClick = useCallback(
     (item: FileObject) => {
       if (item.isDirectory) {
         const _currentFolder = { ...item };
-        const _paths: FileObject[] = [
-          ...(generatePaths(temp.current.cloudDrive, temp.current.currentFolder) as any),
-          _currentFolder,
-        ];
 
-        _currentFolder.parents = _paths.slice(1, _paths.length - 1);
-        const _index = _currentFolder.parents.findIndex((_item) => _item.path == item.path);
+        if (!item.isRootFolder) {
+          const _paths: FileObject[] = [
+            ...(generatePaths(temp.current.cloudDrive, temp.current.currentFolder) as any),
+            _currentFolder,
+          ];
 
-        if (_index != -1) {
-          _currentFolder.parents = _currentFolder.parents.slice(0, _index);
+          _currentFolder.parents = _paths.slice(1, _paths.length - 1);
+          const _index = _currentFolder.parents.findIndex((_item) => _item.path == item.path);
+
+          if (_index != -1) {
+            _currentFolder.parents = _currentFolder.parents.slice(0, _index);
+          }
         }
 
         if (item.isRootFolder) {
@@ -242,7 +251,17 @@ function ListFiles(props: ListFilesProps) {
     );
   }, []);
 
-  console.log('ListFiles', loading, paths);
+  const renderStats = useCallback(() => {
+    if (pagination.totalCount == loadedCount && loadedCount == 0) {
+      return loading ? <>加载中....</> : <></>;
+    }
+    return (
+      <>
+        {pagination.totalCount == loadedCount ? <>已全部加载</> : <>已加载 {loadedCount} 个</>}
+        ，共 {pagination.totalCount} 个
+      </>
+    );
+  }, [loadedCount, loading, pagination.totalCount]);
 
   return (
     <Card flush>
@@ -289,71 +308,78 @@ function ListFiles(props: ListFilesProps) {
             <div className="d-flex flex-stack">
               <FolderPath onClick={handleClick} paths={paths as any} />
               <Badge size="lg" color="white">
-                {loading ? '加载中...' : `已完成加载，共${files.length}个`}
+                {renderStats()}
               </Badge>
             </div>
-            {!!files.length ? (
-              <Table
-                rowKey="id"
-                rowSelection={{
-                  type: 'checkbox',
-                  renderTitle: (size) => (
-                    <>
-                      已选中<span className="mx-2">{size}</span>个文件/文件夹
-                    </>
-                  ),
-                  onChange: handleSelectedRows,
-                }}
-                columns={[
-                  {
-                    key: 'name',
-                    title: '文件名',
-                    className: 'min-w-250px',
-                    render: (_, record) => {
-                      return (
-                        <FileName
-                          onClick={handleClick}
-                          onCancelRename={handleCancelRename}
-                          data={record}
-                          editable={record.id == renameFile?.id}
-                          storageId={''}
-                        />
-                      );
+            <BlockUI overlayClassName="bg-white bg-opacity-25" loading={loading}>
+              {!pagination.totalCount && !loading ? (
+                noRowsRenderer()
+              ) : (
+                <Table
+                  rowKey="id"
+                  rowSelection={{
+                    type: 'checkbox',
+                    renderTitle: (size) => (
+                      <>
+                        已选中<span className="mx-2">{size}</span>个文件/文件夹
+                      </>
+                    ),
+                    onChange: handleSelectedRows,
+                  }}
+                  scroll={{
+                    rowHeight: 50,
+                    rowCount: pagination.totalCount,
+                  }}
+                  columns={[
+                    {
+                      key: 'name',
+                      title: '文件名',
+                      className: 'min-w-250px',
+                      render: (_, record) => {
+                        return (
+                          <FileName
+                            onClick={handleClick}
+                            onCancelRename={handleCancelRename}
+                            data={record}
+                            editable={false} //record && record.id == renameFile?.id
+                            storageId={''}
+                          />
+                        );
+                      },
                     },
-                  },
-                  {
-                    key: 'size',
-                    title: '文件大小',
-                    className: 'min-w-10px',
-                    render(value, record) {
-                      return record.isDirectory ? '-' : value;
+                    {
+                      key: 'lastModified',
+                      title: '更新时间',
+                      className: 'min-w-125px',
                     },
-                  },
-                  {
-                    key: 'lastModified',
-                    title: '更新时间',
-                    className: 'min-w-125px',
-                    render(value, record) {
-                      return record.isDirectory ? '-' : value;
+                    {
+                      key: 'size',
+                      title: '文件大小',
+                      className: 'min-w-100px',
+                      render(value, record) {
+                        return record.isDirectory ? '-' : value;
+                      },
                     },
-                  },
-                  {
-                    key: 'actions',
-                    title: '',
-                    className: 'w-125px',
-                    render: (_, record) => {
-                      return <FileActions data={record} onRename={handleRename} />;
-                    },
-                  },
-                ]}
-                dataSource={files}
-              />
-            ) : (
-              noRowsRenderer()
-            )}
+                    // {
+                    //   key: 'actions',
+                    //   title: '',
+                    //   className: 'w-125px',
+                    //   render: (_, record) => {
+                    //     return <FileActions data={record} onRename={handleRename} />;
+                    //   },
+                    // },
+                  ]}
+                  dataSource={
+                    {
+                      useItem: useFileObject,
+                    } as DataSource<FileObject>
+                  }
+                />
+              )}
+            </BlockUI>
           </div>
-          <div className="col-xl-3 file-details-quick-preview">
-            <div className="preview-container">文件详情</div>
+          <div className="col-xl-3 file-details-quick-preview pb-7">
+            <FileDetails />
           </div>
         </div>
       </Card.Body>

@@ -29,6 +29,7 @@ interface SubMenuProps {
   icon?: string | React.ReactNode;
   title: string;
   className?: string;
+  titleClassName?: string;
   bodyClassName?: string;
   offset?: [number, number];
   bullet?: boolean | BulletProps;
@@ -74,7 +75,7 @@ async function hide(item: HTMLElement, sub: HTMLElement) {
 }
 
 function SubMenu(props: SubMenuProps) {
-  const { url, menuKey, path, bullet, className, bodyClassName } = props as any;
+  const { url, menuKey, path, bullet, className, bodyClassName, titleClassName } = props as any;
   const { icon, title, children, offset } = props;
   const itemRef = useRef<HTMLDivElement>(null);
   const linkRef = useRef<HTMLDivElement>(null);
@@ -161,7 +162,7 @@ function SubMenu(props: SubMenuProps) {
           </span>
         )
       )}
-      <span className="menu-title">{title}</span>
+      <span className={classnames('menu-title', titleClassName)}>{title}</span>
       <span onClick={!dropdown && selectable ? handleClick : undefined} className="menu-arrow" />
     </span>
   );

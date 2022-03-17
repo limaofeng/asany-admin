@@ -22,7 +22,7 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
-  src/pages/drive/hooks.ts:
+  src/pages/drive/hooks/api.ts:
     documents: ["src/pages/drive/**/*.gql"]
     plugins:
       - "typescript-operations"
@@ -33,7 +33,7 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
-  src/pages/contacts/hooks.ts:
+  src/pages/contacts/hooks/api.ts:
     documents: ["src/pages/contacts/**/*.gql"]
     plugins:
       - "typescript-operations"

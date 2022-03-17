@@ -5,7 +5,7 @@ import Icon from '@asany/icons';
 import classnames from 'classnames';
 import ContentLoader from 'react-content-loader';
 
-import type { PaginationType, UseContact } from '../useContactsQuery';
+import type { PaginationType, UseContact } from '../hooks/useContacts';
 
 import type { RowRendererParams, ScrollRowDataEvent } from '@/pages/Metronic/components';
 import { Card, InfiniteScroll, Input, Symbol } from '@/pages/Metronic/components';

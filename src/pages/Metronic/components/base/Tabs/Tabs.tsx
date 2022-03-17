@@ -10,7 +10,7 @@ interface TabsProps {
   className?: string;
   activeKey?: string;
   defaultActiveKey?: string;
-  children: React.ReactElement[];
+  children: React.ReactElement | React.ReactElement[];
   onChange?: (activeKey: string) => void;
 }
 

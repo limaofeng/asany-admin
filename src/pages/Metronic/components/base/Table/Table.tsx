@@ -1,131 +1,39 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import classnames from 'classnames';
 import { Table as BsTable } from 'react-bootstrap';
 import { useMeasure } from 'react-use';
 
-import { Checkbox } from '../../forms/Checkbox';
-
 import type { PaginationProps } from './Pagination';
 import Pagination from './Pagination';
+import TableHeader, { Colgroup } from './TableHeader';
+import type { NoContentRenderer, RowHeightFunc, RowSelection, TableColumn } from './typings';
+import VirtualList from './VirtualList';
+import TableRow from './TableRow';
+import { getRowKey } from './utils';
 
 import './Table.scss';
 
-type RenderResult = {
-  children: React.ReactNode | string;
-  props?: {
-    rowSpan?: number;
-    colSpan?: number;
-  };
-};
+export type UseDataSourceItem<T> = (index: number) => T;
 
-export type TableColumn<T> = {
-  title: string;
-  dataIndex?: string;
-  key?: string;
-  width?: string | number;
-  className?: string;
-  align?: 'left' | 'right' | 'center';
-  render?: (value: string, record: T, index: number) => React.ReactNode | string | RenderResult;
-  sorter?: (a: T, b: T) => boolean;
-  sortOrder?: 'ascend' | 'descend' | 'false';
-  sortDirections?: 'ascend' | 'descend';
+export type DataSource<T> = {
+  useItem: UseDataSourceItem<T>;
 };
-
-export type RowSelection = {
-  type?: 'checkbox' | 'radio';
-  renderTitle?: (size: number) => React.ReactNode;
-  columnTitle?: React.ReactNode;
-  columnWidth?: string | number;
-  selectedRowKeys?: string[];
-  toolbar?: ((selectedRowKeys: string[], selectedRows: any[]) => React.ReactNode) | boolean;
-  onChange?: (selectedRowKeys: string[], selectedRows: any[]) => void;
-  onSelect?: (record: any, selected: boolean, selectedRows: any[], nativeEvent: any) => void;
-  onSelectAll?: (selected: boolean, selectedRows: any[]) => void;
-  getCheckboxProps?: (record: any) => any;
-};
-
-type NoContentRenderer = () => React.ReactNode;
 
 export interface TableProps<T> {
   responsive?: boolean;
   hover?: boolean;
   rowKey?: string | ((record: T) => string);
   rowSelection?: RowSelection;
-  dataSource?: T[];
+  dataSource?: T[] | DataSource<T>;
   columns: TableColumn<T>[];
   pagination?: PaginationProps;
-  noRowsRenderer?: NoContentRenderer;
-}
-
-function buildRenderCol<T>(data: T) {
-  return function (col: TableColumn<T>, index: number) {
-    const { align } = col;
-    const value = data[(col.dataIndex || col.key) as any];
-    const renderResult = col.render ? col.render(value, data, index) : value;
-    const isProps = renderResult && !React.isValidElement(renderResult) && renderResult.props;
-    const props = isProps ? renderResult.props : {};
-    const children = isProps ? renderResult.children : renderResult;
-    return (
-      <td
-        key={`${col.key}-${value}`}
-        className={classnames(
-          {
-            'text-start': align == 'left',
-            'text-center': align == 'center',
-            'text-end': align == 'right',
-          },
-          col.className,
-        )}
-        {...props}
-      >
-        {children}
-      </td>
-    );
+  scroll?: {
+    height?: number;
+    rowCount: number;
+    overscanRowCount?: number;
+    rowHeight: number | RowHeightFunc;
   };
-}
-
-type ColgroupProps<T> = {
-  columns: TableColumn<T>[];
-  width: number;
-};
-
-function Colgroup<T>({ columns }: ColgroupProps<T>) {
-  const cols = useMemo(() => {
-    const _cols = [];
-    for (let i = columns.length - 1; i >= 0; i--) {
-      if (!_cols.length && !columns[i].width) {
-        continue;
-      }
-      const key = columns[i].key || columns[i].dataIndex;
-      _cols.push(<col key={`colgroup-cols-${key}`} style={{ width: columns[i].width }} />);
-    }
-    return _cols.reverse();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [columns.map((item) => item.width).join('-')]);
-
-  if (!cols.length) {
-    return <></>;
-  }
-
-  return <colgroup>{cols}</colgroup>;
-}
-
-function randerTableHeaderCol<T>(col: TableColumn<T>) {
-  const sortable = col.sorter || col.sortDirections || col.sortOrder;
-  const sortOrder = col.sortOrder;
-  const key = col.key || col.dataIndex;
-  return (
-    <th
-      key={`th-${key}`}
-      className={classnames(col.className, {
-        sorting: sortable,
-        sorting_desc: sortable && sortOrder == 'descend',
-      })}
-    >
-      {col.title}
-    </th>
-  );
+  noRowsRenderer?: NoContentRenderer;
 }
 
 function defaultSelectRenderTitle(size: number) {
@@ -155,31 +63,25 @@ function Table<T>(props: TableProps<T>) {
     onChange,
     onSelect,
     onSelectAll,
-    getCheckboxProps,
   } = rowSelection || {};
 
-  const getRowKey = useCallback((record: any) => {
-    if (typeof rowKey == 'function') {
-      return rowKey(record);
-    }
-    return record[rowKey];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const state = useRef<{ colgroups: Map<string, number> }>({ colgroups: new Map() });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const temp = useRef(new Map<string, any>());
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
 
-  const [tableRef, { width }] = useMeasure<HTMLTableElement>();
+  const [tableRef] = useMeasure<HTMLTableElement>();
 
   const handleChange = useCallback(
     (e) => {
       if (e.target.checked) {
-        (dataSource || []).forEach((data) => {
-          selectedKeys.add(getRowKey(data));
+        ((dataSource as T[]) || []).forEach((data) => {
+          selectedKeys.add(getRowKey(data, rowKey));
         });
       } else {
-        (dataSource || []).forEach((data) => {
-          selectedKeys.delete(getRowKey(data));
+        ((dataSource as T[]) || []).forEach((data) => {
+          selectedKeys.delete(getRowKey(data, rowKey));
         });
       }
       const _selectedKeys = [...selectedKeys];
@@ -195,7 +97,7 @@ function Table<T>(props: TableProps<T>) {
 
   const handleSelect = useCallback(
     (data: any) => (e: React.ChangeEvent<any>) => {
-      const _rowKey = getRowKey(data);
+      const _rowKey = getRowKey(data, rowKey);
       if (selectedKeys.has(_rowKey)) {
         selectedKeys.delete(_rowKey);
       } else {
@@ -212,122 +114,107 @@ function Table<T>(props: TableProps<T>) {
     [selectedKeys],
   );
 
+  console.log('还有未完成的任务', handleSelect, handleChange);
+
   useEffect(() => {
     if (!dataSource) {
       return;
     }
-    temp.current.clear();
-    for (const item of dataSource) {
-      temp.current.set(getRowKey(item), item);
-    }
-    setSelectedKeys((keys) => {
-      Array.from(keys.keys()).forEach((key) => {
-        if (!temp.current.has(key)) {
-          keys.delete(key);
-        }
-      });
-      return new Set(keys);
-    });
+    // temp.current.clear();
+    // for (const item of dataSource as T[]) {
+    //   temp.current.set(getRowKey(item, rowKey), item);
+    // }
+    // setSelectedKeys((keys) => {
+    //   Array.from(keys.keys()).forEach((key) => {
+    //     if (!temp.current.has(key)) {
+    //       keys.delete(key);
+    //     }
+    //   });
+    //   return new Set(keys);
+    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSource]);
 
-  const handleCheckboxProps = useCallback(
-    (data: any) => {
-      if (!getCheckboxProps) {
-        return {};
-      }
-      return getCheckboxProps(data);
-    },
-    [getCheckboxProps],
+  const handleColgroup = useCallback((numbers: Map<string, number>) => {
+    state.current.colgroups = new Map(numbers);
+    forceRender();
+  }, []);
+
+  const { colgroups } = state.current;
+
+  const newColumns = useMemo(
+    () =>
+      rowSelection
+        ? [
+            { title: '', key: '__rowSelection', width: colgroups.get('__rowSelection') },
+            ...columns.map((col) => ({ ...col, width: colgroups.get(col.key!)! })),
+          ]
+        : columns,
+    [rowSelection, columns, colgroups],
   );
 
   return (
     <div className="dataTables_wrapper dt-bootstrap4 no-footer">
-      <BsTable
-        ref={tableRef}
-        hover={hover}
-        responsive={responsive}
-        className="table-row-bordered table-row-dashed gy-4 align-middle fw-bolder dataTable no-footer"
-      >
-        <Colgroup<T>
-          columns={rowSelection ? [{ title: '', key: 'row_selection' }, ...columns] : columns}
-          width={width}
+      <TableHeader
+        toolbar={toolbar}
+        renderTitle={renderTitle}
+        selectedKeys={selectedKeys}
+        rowSelection={rowSelection}
+        columns={columns}
+        onColgroup={handleColgroup}
+      />
+      {props.scroll ? (
+        <VirtualList<T>
+          rowKey={rowKey}
+          rowSelection={rowSelection}
+          selectedKeys={selectedKeys}
+          dataSource={dataSource as DataSource<T>}
+          height={props.scroll.height}
+          rowCount={props.scroll.rowCount!}
+          rowHeight={props.scroll.rowHeight!}
+          overscanRowCount={props.scroll.overscanRowCount!}
+          columns={newColumns}
+          hover={hover}
+          responsive={responsive}
         />
-        <thead>
-          <tr className="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0">
-            {rowSelection && (
-              <th className="w-10px pe-2">
-                <Checkbox
-                  solid
-                  checked={
-                    !!selectedKeys.size &&
-                    (dataSource || []).every((data) => selectedKeys.has(getRowKey(data)))
-                  }
-                  onChange={handleChange}
-                  size="sm"
-                  className="me-3 p-0"
-                />
-              </th>
-            )}
-            {toolbar && !!selectedKeys.size ? (
-              <th
-                className="px-0 py-0"
-                style={{ verticalAlign: 'middle' }}
-                colSpan={columns.length}
-              >
-                <div className="d-flex justify-content-start align-items-center">
-                  <div className="fw-bolder me-5 text-gray-800">
-                    {renderTitle(selectedKeys.size)}
-                  </div>
-                  {typeof toolbar == 'function' &&
-                    toolbar(
-                      [...selectedKeys],
-                      [...selectedKeys].map((key) => temp.current.get(key)),
-                    )}
-                </div>
-              </th>
-            ) : (
-              columns.map(randerTableHeaderCol)
-            )}
-          </tr>
-        </thead>
-        <tbody className="fw-bold text-gray-600">
-          {!(dataSource || []).length
-            ? noRowsRenderer && (
-                <tr>
-                  <td
-                    valign="top"
-                    colSpan={columns.length + (rowSelection ? 1 : 0)}
-                    className="dataTables_empty"
-                  >
-                    {noRowsRenderer()}
-                  </td>
-                </tr>
-              )
-            : (dataSource || []).map((data: any, index) => {
-                const randerCol = buildRenderCol(data);
-                return (
-                  // eslint-disable-next-line react/no-array-index-key
-                  <tr key={`${getRowKey(data)}-${index}`}>
-                    {rowSelection && (
-                      <td key="row-select">
-                        <Checkbox
-                          {...handleCheckboxProps(data)}
-                          checked={selectedKeys.has(getRowKey(data))}
-                          size="sm"
-                          solid
-                          className="p-0"
-                          value={getRowKey(data)}
-                          onChange={handleSelect(data)}
-                        />
-                      </td>
-                    )}
-                    {columns.map(randerCol)}
+      ) : (
+        <BsTable
+          ref={tableRef}
+          hover={hover}
+          responsive={responsive}
+          className="table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
+        >
+          <Colgroup<T> columns={newColumns} />
+          <tbody className="fw-bold text-gray-600">
+            {!((dataSource as T[]) || []).length
+              ? noRowsRenderer && (
+                  <tr>
+                    <td
+                      valign="top"
+                      colSpan={columns.length + (rowSelection ? 1 : 0)}
+                      className="dataTables_empty"
+                    >
+                      {noRowsRenderer()}
+                    </td>
                   </tr>
-                );
-              })}
-        </tbody>
-      </BsTable>
+                )
+              : ((dataSource as T[]) || []).map((data: any, index) => {
+                  const key = `${getRowKey(data, rowKey)}-${data[getRowKey(data, rowKey)]}`;
+                  return (
+                    <TableRow<T>
+                      rowKey={rowKey}
+                      rowSelection={rowSelection}
+                      key={key}
+                      index={index}
+                      data={data}
+                      columns={newColumns}
+                      checked={selectedKeys.has(getRowKey(data, rowKey))}
+                    />
+                  );
+                })}
+          </tbody>
+        </BsTable>
+      )}
       {pagination && <Pagination {...pagination} />}
     </div>
   );

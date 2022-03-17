@@ -162,7 +162,7 @@ function ViewContact(props: ViewContactProps) {
                       className="fas fa-exclamation-circle ms-1 fs-7"
                       data-bs-toggle="tooltip"
                       title="Phone number must be active"
-                    ></i>
+                    />
                   </label>
                   {/*--end::Label--*/}
                   {/*--begin::Col--*/}

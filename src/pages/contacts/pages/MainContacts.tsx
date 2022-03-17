@@ -6,7 +6,7 @@ import type { RouteComponentProps } from 'react-router-dom';
 
 import UserList from '../components/UserList';
 import NoContacts from '../components/NoContacts';
-import { useContactsQuery } from '../useContactsQuery';
+import { useContacts } from '../hooks';
 import type { ContactListState, ContactRouteParams } from '../typings';
 
 import { ContentWrapper } from '@/pages/Metronic/components';
@@ -33,7 +33,7 @@ function MainContacts(props: MainContactsProps) {
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const [pagination, loading, useContact, { loadContact }] = useContactsQuery(book);
+  const [pagination, loading, useContact, { loadContact }] = useContacts(book);
 
   const token = useMemo(() => book, [book]);
 

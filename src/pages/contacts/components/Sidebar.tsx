@@ -19,23 +19,20 @@ type SidebarFooterProps = {
 };
 
 function SidebarFooter(props: SidebarFooterProps) {
-  const { books, onAction } = props;
+  const { books } = props;
 
   const currentBook = useModel('contacts', ({ state }) => state.book);
 
-  const handleSelect = useCallback(
-    (key) => {
-      if (key.startsWith('contacts-')) {
-        console.log(key);
-        // setCalendarSet(key.substring('contacts-'.length));
-      } else {
-        // onAction(key);
-        return false;
-      }
-      return true;
-    },
-    [onAction],
-  );
+  const handleSelect = useCallback((key) => {
+    if (key.startsWith('contacts-')) {
+      console.log(key);
+      // setCalendarSet(key.substring('contacts-'.length));
+    } else {
+      // onAction(key);
+      return false;
+    }
+    return true;
+  }, []);
 
   const options = useMemo(() => {
     return [

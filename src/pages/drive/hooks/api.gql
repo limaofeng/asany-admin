@@ -1,0 +1,62 @@
+query cloudDrive($id: ID!) {
+  cloudDrive(id: $id) {
+    id
+    name
+    type
+    rootFolder
+  }
+}
+
+query cloudDrives {
+  cloudDrives {
+    id
+    name
+    type
+    quota {
+      id
+      count
+      usage
+      size
+      usageStr: usage(format: true)
+      sizeStr: size(format: true)
+    }
+    rootFolder
+  }
+}
+
+query folder($folder: ID!) {
+  currentFolder: file(id: $folder) {
+    id
+    name
+    path
+    isDirectory
+    isRootFolder
+    parents {
+      id
+      isDirectory
+      isRootFolder
+      name
+      path
+    }
+  }
+}
+
+query listFiles($folder: ID!, $filter: FileFilter, $page: Int = 1) {
+  listFiles(folder: $folder, filter: $filter, page: $page, pageSize: 30) {
+    pageSize
+    currentPage
+    totalPage
+    totalCount
+    edges {
+      node {
+        id
+        name
+        path
+        size(format: true)
+        mimeType
+        isDirectory
+        lastModified(format: "yyyy-MM-dd HH:mm")
+      }
+    }
+  }
+}

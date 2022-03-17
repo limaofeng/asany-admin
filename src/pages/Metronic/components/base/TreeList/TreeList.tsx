@@ -8,7 +8,7 @@ import type { IconRender, TreeNode } from '@asany/tree/dist/typings';
 import classnames from 'classnames';
 import { useMeasure } from 'react-use';
 
-import type { RowSelection, TableColumn } from '../Table';
+import type { RowSelection, TableColumn } from '../Table/typings';
 
 import { getFieldValue } from '@/utils';
 

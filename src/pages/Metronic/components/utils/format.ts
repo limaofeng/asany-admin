@@ -41,16 +41,26 @@ export function toHtml(text: string) {
     .join('');
 }
 
+const FILE_UNITS = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+
+type FILE_UNIT_OF_TYPE = 'bytes' | 'KB' | 'MB' | 'GB' | 'TB';
+
+export function fileSizeToBytes(size: number, unit: FILE_UNIT_OF_TYPE) {
+  const index = FILE_UNITS.findIndex((item) => item == unit);
+  return size * Math.pow(1024, index);
+}
+
 /**
  * 对文件大小进行简单的格式化（xxx bytes、xxx KB、xxx MB）
  * @param {Number/String} size 要格式化的数值
  * @return {String} 已格式化的值
  */
-export function fileSize(size: number) {
-  if (size < 1024) {
-    return `${size} bytes`;
-  } else if (size < 1048576) {
-    return `${Math.round((size * 10) / 1024) / 10} KB`;
+export function fileSize(length: number) {
+  let i = 0,
+    size = length;
+  while (size >= 1024 && i < 4) {
+    size /= 1024;
+    i++;
   }
-  return `${Math.round((size * 10) / 1048576) / 10} MB`;
+  return Math.ceil(size) + ' ' + FILE_UNITS[i];
 }
