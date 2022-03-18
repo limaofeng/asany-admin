@@ -29,7 +29,11 @@ type LoadFileObjectUtils = {
 
 type UseFileObjectsQuery = [PaginationType, boolean, UseFileObject, LoadFileObjectUtils];
 
-export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjectsQuery {
+export function useListFiles(
+  folder?: string,
+  filter?: FileFilter,
+  orderBy?: string,
+): UseFileObjectsQuery {
   const emitter = useRef(new EventEmitter());
   const state = useRef<{
     page: number;
@@ -38,12 +42,14 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
     files: FileObject[];
     pagination: PaginationType;
     filter?: FileFilter;
+    orderBy?: string;
   }>({
     page: 1,
     folder,
     loading: false,
     files: [],
     filter,
+    orderBy,
     pagination: { ...DEFAULT_PAGINATION },
   });
 
@@ -80,6 +86,7 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
         folder: state.current.folder,
         filter: state.current.filter,
         page: state.current.page,
+        orderBy: state.current.orderBy,
       });
     },
     [refetch],
@@ -114,6 +121,7 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
           folder: state.current.folder,
           filter: state.current.filter,
           page: state.current.page,
+          orderBy: state.current.orderBy,
         },
       });
     },
@@ -122,12 +130,12 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
 
   const loadFileObject = useCallback(
     async (index: number) => {
-      let contact = state.current.files[index];
+      let file = state.current.files[index];
 
-      if (!contact) {
+      if (!file) {
         do {
-          contact = state.current.files[index];
-          if (!contact) {
+          file = state.current.files[index];
+          if (!file) {
             await loadFileObjects(Math.ceil((index + 1) / state.current.pagination.pageSize));
             await sleep(30);
           }
@@ -135,10 +143,10 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
             console.log(`索引超出最大长度 [${index}/${state.current.files.length}]`);
             return state.current.files[index - 1];
           }
-        } while (!contact);
+        } while (!file);
       }
 
-      return contact;
+      return file;
     },
     [loadFileObjects],
   );
@@ -148,9 +156,14 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
   }, []);
 
   useEffect(() => {
-    if (state.current.folder != folder || state.current.filter != filter) {
+    if (
+      state.current.folder != folder ||
+      state.current.filter != filter ||
+      state.current.orderBy != orderBy
+    ) {
       state.current.folder = folder;
       state.current.filter = filter;
+      state.current.orderBy = orderBy;
       state.current.pagination = { ...DEFAULT_PAGINATION };
       state.current.files.length = 0;
       state.current.page = 1;
@@ -163,9 +176,10 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
         folder: state.current.folder,
         filter: state.current.filter,
         page: state.current.page,
+        orderBy: state.current.orderBy,
       },
     });
-  }, [_loadFileObjects, folder, filter]);
+  }, [_loadFileObjects, folder, filter, orderBy]);
 
   useEffect(() => {
     if (loading || !data?.listFiles) {
@@ -179,14 +193,14 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
   const useFileObject = (index: number): FileObject | undefined => {
     const [, _forceRender] = useReducer((s) => s + 1, 0);
     const latestSelectedState = useRef<{
-      contact?: FileObject;
+      file?: FileObject;
       index: number;
       timer?: NodeJS.Timer;
     }>({ index });
 
     latestSelectedState.current.index = index;
 
-    latestSelectedState.current.contact = state.current.files[index];
+    latestSelectedState.current.file = state.current.files[index];
 
     useEffect(() => {
       if (index == -1) {
@@ -199,7 +213,7 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
         while (state.current.loading) {
           await sleep(300);
         }
-        if (!!latestSelectedState.current.contact) {
+        if (!!latestSelectedState.current.file) {
           latestSelectedState.current.timer && clearTimeout(latestSelectedState.current.timer);
           return;
         }
@@ -216,10 +230,10 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
 
     const checkForUpdates = useCallback(() => {
       const newSelectedState = state.current.files[latestSelectedState.current.index];
-      if (newSelectedState == latestSelectedState.current.contact) {
+      if (newSelectedState == latestSelectedState.current.file) {
         return;
       }
-      latestSelectedState.current.contact = newSelectedState;
+      latestSelectedState.current.file = newSelectedState;
       _forceRender();
     }, []);
 
@@ -230,10 +244,14 @@ export function useListFiles(folder?: string, filter?: FileFilter): UseFileObjec
       };
     }, [checkForUpdates]);
 
-    return latestSelectedState.current.contact;
+    return latestSelectedState.current.file;
   };
 
-  // console.log('pagination 1', state.current.pagination);
+  // console.log('useListFiles', {
+  //   page: state.current.page,
+  //   filter: state.current.filter,
+  //   orderBy: state.current.orderBy,
+  // });
 
   return [
     state.current.pagination,

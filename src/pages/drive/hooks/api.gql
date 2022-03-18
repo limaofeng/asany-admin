@@ -41,8 +41,8 @@ query folder($folder: ID!) {
   }
 }
 
-query listFiles($folder: ID!, $filter: FileFilter, $page: Int = 1) {
-  listFiles(folder: $folder, filter: $filter, page: $page, pageSize: 30) {
+query listFiles($folder: ID!, $filter: FileFilter, $page: Int = 1, $orderBy: OrderBy) {
+  listFiles(folder: $folder, filter: $filter, page: $page, pageSize: 30, orderBy: $orderBy) {
     pageSize
     currentPage
     totalPage

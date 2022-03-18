@@ -9,13 +9,14 @@ import ListFiles from '../components/ListFiles';
 
 import { ContentWrapper } from '@/pages/Metronic/components';
 import type { CloudDrive, FileObject } from '@/types';
+import type { Sorter } from '@/pages/Metronic/components/base/Table/typings';
 
 type FileListRouteParams = {
   id: string;
 };
 
 type FileListRouteLocationState = {
-  files?: FileObject[];
+  orderBy?: Sorter;
   cloudDrive?: CloudDrive;
   currentFolder?: FileObject;
 };
@@ -131,9 +132,8 @@ function FileList(props: FileListProps) {
           key="list-files"
           folder={folder}
           filter={fileFilter}
-          // mimeType={params.mimeType}
+          orderBy={location.state?.orderBy}
           cloudDrive={cloudDrive as any}
-          files={location.state?.files}
           currentFolder={location.state?.currentFolder}
         />
       )}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
 import { useHistory } from 'umi';
@@ -13,6 +13,7 @@ import { Badge, BlockUI, Button, Card, Input, Table } from '@/pages/Metronic/com
 import type { CloudDrive, FileFilter, FileObject } from '@/types';
 import { sleep } from '@/utils';
 import type { DataSource } from '@/pages/Metronic/components/base/Table';
+import type { Sorter } from '@/pages/Metronic/components/base/Table/typings';
 
 type FileNameProps = {
   storageId: string;
@@ -105,7 +106,7 @@ function FileName(props: FileNameProps) {
 }
 
 type ListFilesProps = {
-  files?: FileObject[];
+  orderBy?: Sorter;
   filter?: FileFilter;
   cloudDrive?: CloudDrive;
   currentFolder?: FileObject;
@@ -139,13 +140,15 @@ function ListFiles(props: ListFilesProps) {
   const history = useHistory();
 
   const temp = useRef<{
-    files?: FileObject[];
     cloudDrive?: CloudDrive;
     currentFolder?: FileObject;
+    sorter: Sorter;
   }>({
+    sorter: props.orderBy || { field: 'name', order: 'ascend' },
     cloudDrive,
     currentFolder: props.currentFolder,
   });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const { data: loadFolderResult } = useFolderQuery({
     fetchPolicy: 'cache-and-network',
@@ -154,7 +157,20 @@ function ListFiles(props: ListFilesProps) {
     },
   });
 
-  const [pagination, loading, useFileObject, { loadedCount }] = useListFiles(folder, filter);
+  const { sorter } = temp.current;
+
+  const orderBy = useMemo(() => {
+    if (!sorter) {
+      return 'isDirectory_desc,name_asc';
+    }
+    return 'isDirectory_desc,' + sorter.field + '_' + (sorter.order == 'ascend' ? 'asc' : 'desc');
+  }, [sorter]);
+
+  const [pagination, loading, useFileObject, { loadedCount }] = useListFiles(
+    folder,
+    filter,
+    orderBy,
+  );
 
   const [, setRenameFile] = useState<FileObject>();
   const [selectedRows, setSelectedRows] = useState<FileObject[]>([]);
@@ -176,6 +192,7 @@ function ListFiles(props: ListFilesProps) {
 
   const handleSelectedRows = useCallback(
     (_, _selectedRows) => {
+      console.log('selectedRows', _selectedRows);
       setSelectedRows(_selectedRows);
     },
     [setSelectedRows],
@@ -192,13 +209,6 @@ function ListFiles(props: ListFilesProps) {
   const paths = useMemo(() => {
     return generatePaths(cloudDrive, currentFolder);
   }, [cloudDrive, currentFolder]);
-
-  // const pagination = useMemo(
-  //   () => (data?.listFiles || previousData?.listFiles || {}) as FileObjectConnection,
-  //   [data?.listFiles, previousData?.listFiles],
-  // );
-
-  // temp.current.files = files;
 
   const handleClick = useCallback(
     (item: FileObject) => {
@@ -223,13 +233,13 @@ function ListFiles(props: ListFilesProps) {
           history.push(`/drive/my-drive`, {
             cloudDrive,
             currentFolder: _currentFolder,
-            files: temp.current.files,
+            orderBy: temp.current.sorter,
           });
         } else {
           history.push(`/drive/folders/${item.id}`, {
             cloudDrive,
             currentFolder: _currentFolder,
-            files: temp.current.files,
+            orderBy: temp.current.sorter,
           });
         }
 
@@ -262,6 +272,12 @@ function ListFiles(props: ListFilesProps) {
       </>
     );
   }, [loadedCount, loading, pagination.totalCount]);
+
+  const handleChange = useCallback((_pagination, _filters, _sorter) => {
+    temp.current.sorter = _sorter;
+    console.log('handleChange', temp.current.sorter);
+    forceRender();
+  }, []);
 
   return (
     <Card flush>
@@ -317,6 +333,7 @@ function ListFiles(props: ListFilesProps) {
               ) : (
                 <Table
                   rowKey="id"
+                  hover
                   rowSelection={{
                     type: 'checkbox',
                     renderTitle: (size) => (
@@ -335,6 +352,8 @@ function ListFiles(props: ListFilesProps) {
                       key: 'name',
                       title: '文件名',
                       className: 'min-w-250px',
+                      sorter: true,
+                      sortOrder: sorter.field == 'name' ? sorter.order : undefined,
                       render: (_, record) => {
                         return (
                           <FileName
@@ -350,12 +369,16 @@ function ListFiles(props: ListFilesProps) {
                     {
                       key: 'lastModified',
                       title: '更新时间',
+                      sorter: true,
                       className: 'min-w-125px',
+                      sortOrder: sorter.field == 'lastModified' ? sorter.order : undefined,
                     },
                     {
                       key: 'size',
                       title: '文件大小',
+                      sorter: true,
                       className: 'min-w-100px',
+                      sortOrder: sorter.field == 'size' ? sorter.order : undefined,
                       render(value, record) {
                         return record.isDirectory ? '-' : value;
                       },
@@ -374,6 +397,7 @@ function ListFiles(props: ListFilesProps) {
                       useItem: useFileObject,
                     } as DataSource<FileObject>
                   }
+                  onChange={handleChange}
                 />
               )}
             </BlockUI>

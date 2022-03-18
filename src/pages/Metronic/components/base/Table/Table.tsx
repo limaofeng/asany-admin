@@ -1,12 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useReducer, useRef } from 'react';
 
 import { Table as BsTable } from 'react-bootstrap';
-import { useMeasure } from 'react-use';
+import classnames from 'classnames';
+import type { OnSelect } from 'react-selecto';
+import Selecto from 'react-selecto';
 
 import type { PaginationProps } from './Pagination';
 import Pagination from './Pagination';
 import TableHeader, { Colgroup } from './TableHeader';
-import type { NoContentRenderer, RowHeightFunc, RowSelection, TableColumn } from './typings';
+import type {
+  NoContentRenderer,
+  RowHeightFunc,
+  RowSelection,
+  Sorter,
+  TableColumn,
+} from './typings';
 import VirtualList from './VirtualList';
 import TableRow from './TableRow';
 import { getRowKey } from './utils';
@@ -19,12 +27,21 @@ export type DataSource<T> = {
   useItem: UseDataSourceItem<T>;
 };
 
+type OnChange = (
+  pagination: PaginationProps | undefined,
+  filters: any | undefined,
+  sorter: Sorter | undefined,
+  extra: { action: 'paginate' | 'sort' | 'filter' },
+) => void;
+
 export interface TableProps<T> {
   responsive?: boolean;
   hover?: boolean;
+  striped?: boolean;
   rowKey?: string | ((record: T) => string);
   rowSelection?: RowSelection;
   dataSource?: T[] | DataSource<T>;
+  onChange?: OnChange;
   columns: TableColumn<T>[];
   pagination?: PaginationProps;
   scroll?: {
@@ -54,6 +71,7 @@ function Table<T>(props: TableProps<T>) {
     dataSource,
     pagination,
     noRowsRenderer,
+    onChange: tableOnChange,
     rowKey = 'key',
   } = props;
 
@@ -65,80 +83,107 @@ function Table<T>(props: TableProps<T>) {
     onSelectAll,
   } = rowSelection || {};
 
-  const state = useRef<{ colgroups: Map<string, number> }>({ colgroups: new Map() });
+  const selecto = useRef<Selecto>(null);
+  const tableBodyContainer = useRef<HTMLTableSectionElement>(null);
+
+  const state = useRef<{
+    colgroups: Map<string, number>;
+    selectedKeys: Set<string>;
+    selectedAll: boolean;
+    totalCount: number;
+  }>({
+    totalCount: 0,
+    selectedAll: false,
+    colgroups: new Map(),
+    selectedKeys: new Set<string>(),
+  });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const temp = useRef(new Map<string, any>());
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
+  state.current.totalCount = useMemo(() => {
+    if (props.scroll) {
+      return props.scroll.rowCount;
+    }
+    if (Array.isArray(dataSource)) {
+      return dataSource.length;
+    }
+    return 0;
+  }, [props.scroll, dataSource]);
 
-  const [tableRef] = useMeasure<HTMLTableElement>();
-
-  const handleChange = useCallback(
-    (e) => {
-      if (e.target.checked) {
-        ((dataSource as T[]) || []).forEach((data) => {
-          selectedKeys.add(getRowKey(data, rowKey));
-        });
-      } else {
-        ((dataSource as T[]) || []).forEach((data) => {
-          selectedKeys.delete(getRowKey(data, rowKey));
-        });
-      }
-      const _selectedKeys = [...selectedKeys];
-      const selectedRows = _selectedKeys.map((key) => temp.current.get(key));
-
-      setSelectedKeys(new Set<string>(_selectedKeys));
-      onChange && onChange(_selectedKeys, selectedRows);
-      onSelectAll && onSelectAll(e.target.checked, selectedRows);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dataSource, selectedKeys],
-  );
+  const temp = useRef<{ rowKey: string | ((record: T) => string); items: Map<string, any> }>({
+    items: new Map<string, any>(),
+    rowKey,
+  });
 
   const handleSelect = useCallback(
-    (data: any) => (e: React.ChangeEvent<any>) => {
-      const _rowKey = getRowKey(data, rowKey);
-      if (selectedKeys.has(_rowKey)) {
-        selectedKeys.delete(_rowKey);
-      } else {
-        selectedKeys.add(_rowKey);
-      }
-      const _selectedKeys = [...selectedKeys];
-      const selectedRows = _selectedKeys.map((key) => temp.current.get(key));
-      onChange && onChange(_selectedKeys, selectedRows);
-      onSelect && onSelect(temp.current.get(_rowKey), selectedKeys.has(_rowKey), selectedRows, e);
+    (data: T, checked: boolean, e: React.ChangeEvent | React.ChangeEvent) => {
+      const { selectedKeys, totalCount } = state.current;
+      const key = getRowKey(data, rowKey);
 
-      setSelectedKeys(new Set<string>(selectedKeys));
+      let _checked = checked;
+      if (e.type == 'click') {
+        if (!checked && selectedKeys.size > 1) {
+          _checked = true;
+        }
+        if (selectedKeys.size) {
+          selectedKeys.clear();
+        }
+      }
+
+      if (_checked) {
+        selectedKeys.add(key);
+      } else {
+        selectedKeys.delete(key);
+      }
+
+      const _selectedKeys = [...selectedKeys];
+      const selectedRows = _selectedKeys.map((_key) => temp.current.items.get(_key));
+
+      state.current.selectedAll = selectedKeys.size == totalCount;
+      forceRender();
+
+      onSelect && onSelect(temp.current.items.get(key), _checked, selectedRows, e);
+      onChange && onChange(_selectedKeys, selectedRows);
+      onSelectAll && onSelectAll(_checked, selectedRows);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selectedKeys],
+    [onChange, onSelect, onSelectAll, rowKey],
   );
 
-  console.log('还有未完成的任务', handleSelect, handleChange);
-
-  useEffect(() => {
-    if (!dataSource) {
-      return;
+  const handleSelectAll = useCallback((selected: boolean) => {
+    const { items } = temp.current;
+    const { selectedKeys } = state.current;
+    if (selected) {
+      Array.from(items.keys()).forEach(selectedKeys.add.bind(selectedKeys));
+    } else {
+      selectedKeys.clear();
     }
-    // temp.current.clear();
-    // for (const item of dataSource as T[]) {
-    //   temp.current.set(getRowKey(item, rowKey), item);
-    // }
-    // setSelectedKeys((keys) => {
-    //   Array.from(keys.keys()).forEach((key) => {
-    //     if (!temp.current.has(key)) {
-    //       keys.delete(key);
-    //     }
-    //   });
-    //   return new Set(keys);
-    // });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataSource]);
+    state.current.selectedAll = selected;
+    forceRender();
+  }, []);
+
+  const useCheck = useMemo(() => {
+    return (data: T) => {
+      const _key = getRowKey(data, temp.current.rowKey);
+      return state.current.selectedKeys.has(_key);
+    };
+  }, []);
+
+  const recoverer = useCallback((data: T) => {
+    const key = getRowKey(data, temp.current.rowKey);
+    temp.current.items.set(key, data);
+    return () => temp.current.items.delete(key);
+  }, []);
 
   const handleColgroup = useCallback((numbers: Map<string, number>) => {
     state.current.colgroups = new Map(numbers);
     forceRender();
   }, []);
+
+  const handleSort = useCallback(
+    (sorter: Sorter) => {
+      tableOnChange && tableOnChange(props.pagination, null, sorter, { action: 'sort' });
+    },
+    [props.pagination, tableOnChange],
+  );
 
   const { colgroups } = state.current;
 
@@ -147,74 +192,124 @@ function Table<T>(props: TableProps<T>) {
       rowSelection
         ? [
             { title: '', key: '__rowSelection', width: colgroups.get('__rowSelection') },
-            ...columns.map((col) => ({ ...col, width: colgroups.get(col.key!)! })),
+            ...columns.map((col) => ({
+              ...col,
+              key: col.key || col.dataIndex,
+              width: colgroups.get(col.key!)!,
+            })),
           ]
         : columns,
     [rowSelection, columns, colgroups],
   );
+
+  const handleSelectoDragCondition = useCallback((...args) => {
+    console.log('handleSelectoDragCondition', args);
+    return true;
+  }, []);
+
+  const handleSelectoSelectEnd = useCallback(() => {
+    selecto.current && selecto.current.setSelectedTargets([]);
+  }, []);
+
+  const handleSelectoSelect = useCallback((e: OnSelect) => {
+    const { selectedKeys: _selectedKeys, totalCount } = state.current;
+    e.added.map((item) => item.dataset.key!).forEach(_selectedKeys.add.bind(_selectedKeys));
+    e.removed.map((item) => item.dataset.key!).forEach(_selectedKeys.delete.bind(_selectedKeys));
+    state.current.selectedAll = _selectedKeys.size == totalCount;
+    forceRender();
+  }, []);
+
+  // console.log('selectedKeys', state.current.selectedKeys);
 
   return (
     <div className="dataTables_wrapper dt-bootstrap4 no-footer">
       <TableHeader
         toolbar={toolbar}
         renderTitle={renderTitle}
-        selectedKeys={selectedKeys}
-        rowSelection={rowSelection}
-        columns={columns}
+        selectedAll={state.current.selectedAll}
+        selectedKeys={state.current.selectedKeys}
+        onSelectAll={handleSelectAll}
+        onSort={handleSort}
+        columns={newColumns}
         onColgroup={handleColgroup}
       />
-      {props.scroll ? (
-        <VirtualList<T>
-          rowKey={rowKey}
-          rowSelection={rowSelection}
-          selectedKeys={selectedKeys}
-          dataSource={dataSource as DataSource<T>}
-          height={props.scroll.height}
-          rowCount={props.scroll.rowCount!}
-          rowHeight={props.scroll.rowHeight!}
-          overscanRowCount={props.scroll.overscanRowCount!}
-          columns={newColumns}
-          hover={hover}
-          responsive={responsive}
-        />
-      ) : (
-        <BsTable
-          ref={tableRef}
-          hover={hover}
-          responsive={responsive}
-          className="table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
-        >
-          <Colgroup<T> columns={newColumns} />
-          <tbody className="fw-bold text-gray-600">
-            {!((dataSource as T[]) || []).length
-              ? noRowsRenderer && (
-                  <tr>
-                    <td
-                      valign="top"
-                      colSpan={columns.length + (rowSelection ? 1 : 0)}
-                      className="dataTables_empty"
-                    >
-                      {noRowsRenderer()}
-                    </td>
-                  </tr>
-                )
-              : ((dataSource as T[]) || []).map((data: any, index) => {
-                  const key = `${getRowKey(data, rowKey)}-${data[getRowKey(data, rowKey)]}`;
-                  return (
-                    <TableRow<T>
-                      rowKey={rowKey}
-                      rowSelection={rowSelection}
-                      key={key}
-                      index={index}
-                      data={data}
-                      columns={newColumns}
-                      checked={selectedKeys.has(getRowKey(data, rowKey))}
-                    />
-                  );
-                })}
-          </tbody>
-        </BsTable>
-      )}
+      <div className="dataTable-body">
+        {props.scroll ? (
+          <VirtualList<T>
+            tableBodyRef={tableBodyContainer}
+            rowKey={rowKey}
+            recoverer={recoverer}
+            rowSelection={rowSelection}
+            dataSource={dataSource as DataSource<T>}
+            height={props.scroll.height}
+            rowCount={props.scroll.rowCount!}
+            rowHeight={props.scroll.rowHeight!}
+            overscanRowCount={props.scroll.overscanRowCount!}
+            onSelect={handleSelect}
+            columns={newColumns}
+            useCheck={useCheck}
+            hover={hover}
+            responsive={responsive}
+          />
+        ) : (
+          <BsTable
+            hover={hover}
+            striped
+            responsive={responsive}
+            className="table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
+          >
+            <Colgroup<T> columns={newColumns} />
+            <tbody ref={tableBodyContainer} className="fw-bold text-gray-600">
+              {!((dataSource as T[]) || []).length
+                ? noRowsRenderer && (
+                    <tr>
+                      <td
+                        valign="top"
+                        colSpan={columns.length + (rowSelection ? 1 : 0)}
+                        className="dataTables_empty"
+                      >
+                        {noRowsRenderer()}
+                      </td>
+                    </tr>
+                  )
+                : ((dataSource as T[]) || []).map((data: any, index) => {
+                    const key = getRowKey(data, rowKey);
+                    return (
+                      <TableRow<T>
+                        rowKey={rowKey}
+                        recoverer={recoverer}
+                        className={classnames({ odd: index % 2, even: !(index % 2) })}
+                        rowSelection={rowSelection}
+                        onSelect={handleSelect}
+                        key={key}
+                        index={index}
+                        data={data}
+                        columns={newColumns}
+                        useCheck={useCheck}
+                      />
+                    );
+                  })}
+            </tbody>
+          </BsTable>
+        )}
+        {rowSelection && (
+          <Selecto
+            ref={selecto}
+            container={tableBodyContainer.current}
+            dragContainer={tableBodyContainer.current!}
+            selectableTargets={['.table-list-item']}
+            selectByClick={false}
+            selectFromInside={true}
+            continueSelect={false}
+            toggleContinueSelect={'shift'}
+            keyContainer={window}
+            dragCondition={handleSelectoDragCondition}
+            hitRate={0}
+            onSelectEnd={handleSelectoSelectEnd}
+            onSelect={handleSelectoSelect}
+          />
+        )}
+      </div>
       {pagination && <Pagination {...pagination} />}
     </div>
   );

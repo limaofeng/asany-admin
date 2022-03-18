@@ -1,5 +1,14 @@
 import type { CSSProperties } from 'react';
 
+export type SortDirection = 'descend' | 'ascend';
+
+export type DataRecoverer<T> = (data: T) => () => void;
+
+export type Sorter = {
+  order: SortDirection;
+  field: string;
+};
+
 type RenderResult = {
   children: React.ReactNode | string;
   props?: {
@@ -33,9 +42,9 @@ export type TableColumn<T> = {
   className?: string;
   align?: 'left' | 'right' | 'center';
   render?: (value: string, record: T, index: number) => React.ReactNode | string | RenderResult;
-  sorter?: (a: T, b: T) => boolean;
-  sortOrder?: 'ascend' | 'descend' | 'false';
-  sortDirections?: 'ascend' | 'descend';
+  sorter?: ((a: T, b: T) => boolean) | true;
+  sortOrder?: SortDirection | false;
+  sortDirections?: SortDirection[];
 };
 
 export type TableHeadToolbar =

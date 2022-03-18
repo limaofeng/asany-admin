@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, RefObject } from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
@@ -9,6 +9,7 @@ import ContentLoader from 'react-content-loader';
 import { uuid } from '../../utils';
 
 import type {
+  DataRecoverer,
   RowData,
   RowHeightFunc,
   RowRendererParams,
@@ -20,10 +21,12 @@ import TableRow from './TableRow';
 import type { DataSource } from './Table';
 
 type VirtualListProps<T> = {
+  tableBodyRef: RefObject<HTMLTableSectionElement>;
   responsive?: boolean;
   hover?: boolean;
   height?: number;
-  selectedKeys: Set<string>;
+  striped?: boolean;
+  useCheck: (record: T) => boolean;
   rowHeight: number | RowHeightFunc;
   rowCount: number;
   overscanRowCount: number;
@@ -31,10 +34,21 @@ type VirtualListProps<T> = {
   rowSelection?: RowSelection;
   dataSource: DataSource<T>;
   rowKey: string | ((record: T) => string);
+  recoverer: DataRecoverer<T>;
+  onSelect: (record: T, selected: boolean, e: any) => void;
 };
 
 function VirtualList<T>(props: VirtualListProps<T>) {
-  const { columns, rowHeight, rowCount, rowKey, dataSource, rowSelection } = props;
+  const {
+    columns,
+    rowHeight,
+    rowCount,
+    rowKey,
+    dataSource,
+    recoverer,
+    rowSelection,
+    tableBodyRef,
+  } = props;
 
   const scrollbar = useRef<OverlayScrollbarsComponent>(null);
 
@@ -196,18 +210,7 @@ function VirtualList<T>(props: VirtualListProps<T>) {
     return _height;
   }, [endIndex, rowCount, rowHeight]);
 
-  console.log('VirtualList', startIndex, endIndex, beforeTr, afterTr);
-
-  const xxx = Array.from(
-    items.reduce((map, it) => {
-      map.set(it.key, (map.get(it.key) || 0) + 1);
-      return map;
-    }, new Map<string, number>()),
-  ).filter((arr) => arr[1] != 1);
-  if (xxx.length) {
-    debugger;
-  }
-  console.log('keys', xxx);
+  // console.log('VirtualList', startIndex, endIndex, beforeTr, afterTr);
 
   return (
     <OverlayScrollbarsComponent
@@ -223,20 +226,23 @@ function VirtualList<T>(props: VirtualListProps<T>) {
     >
       <BsTable
         hover={props.hover}
+        striped={props.striped}
         responsive={props.responsive}
-        className="table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
+        className="dataTable table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
       >
         <Colgroup<T> columns={columns} />
-        <tbody className="fw-bold text-gray-600">
+        <tbody ref={tableBodyRef} className="fw-bold text-gray-600">
           {!!beforeTr && <tr style={{ height: beforeTr }} />}
           {items.map((item) => (
             <VirtualListItem<T>
               rowKey={rowKey}
+              recoverer={recoverer}
               rowSelection={rowSelection}
               key={item.key}
-              checked={false}
+              useCheck={props.useCheck}
               style={item.style}
               columns={columns}
+              onSelect={props.onSelect}
               dataSource={dataSource}
               index={item.index}
             />
@@ -250,16 +256,18 @@ function VirtualList<T>(props: VirtualListProps<T>) {
 
 type VirtualListItemProps<T> = {
   index: number;
-  checked: boolean;
   dataSource: DataSource<T>;
   rowSelection?: RowSelection;
   columns: TableColumn<T>[];
   style: CSSProperties;
+  useCheck: (record: T) => boolean;
   rowKey: string | ((record: T) => string);
+  onSelect: (record: T, selected: boolean, e: any) => void;
+  recoverer: DataRecoverer<T>;
 };
 
 function VirtualListItem<T>(props: VirtualListItemProps<T>) {
-  const { style, rowKey, rowSelection, dataSource, columns, index, checked } = props;
+  const { style, rowKey, rowSelection, dataSource, columns, index, useCheck, recoverer } = props;
 
   const data = dataSource.useItem(index);
 
@@ -318,11 +326,14 @@ function VirtualListItem<T>(props: VirtualListItemProps<T>) {
     <TableRow<T>
       style={style}
       rowKey={rowKey}
+      onSelect={props.onSelect}
+      className={classnames({ odd: index % 2, even: !(index % 2) })}
       rowSelection={rowSelection}
+      recoverer={recoverer}
       data={data}
       index={index}
       columns={columns}
-      checked={checked}
+      useCheck={useCheck}
     />
   );
 }
