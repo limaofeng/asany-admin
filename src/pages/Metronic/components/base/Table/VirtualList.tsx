@@ -28,10 +28,9 @@ type VirtualListProps<T> = {
   striped?: boolean;
   useCheck: (record: T) => boolean;
   rowHeight: number | RowHeightFunc;
-  rowCount: number;
   overscanRowCount: number;
   columns: TableColumn<T>[];
-  rowSelection?: RowSelection;
+  rowSelection?: RowSelection<T>;
   dataSource: DataSource<T>;
   rowKey: string | ((record: T) => string);
   recoverer: DataRecoverer<T>;
@@ -39,16 +38,7 @@ type VirtualListProps<T> = {
 };
 
 function VirtualList<T>(props: VirtualListProps<T>) {
-  const {
-    columns,
-    rowHeight,
-    rowCount,
-    rowKey,
-    dataSource,
-    recoverer,
-    rowSelection,
-    tableBodyRef,
-  } = props;
+  const { columns, rowHeight, rowKey, dataSource, recoverer, rowSelection, tableBodyRef } = props;
 
   const scrollbar = useRef<OverlayScrollbarsComponent>(null);
 
@@ -60,7 +50,7 @@ function VirtualList<T>(props: VirtualListProps<T>) {
     items: Map<number, RowData>;
     colgroups: Map<string, number>;
   }>({
-    rowCount: props.rowCount,
+    rowCount: dataSource.rowCount,
     rowHeight: props.rowHeight,
     items: new Map(),
     colgroups: new Map(),
@@ -76,22 +66,22 @@ function VirtualList<T>(props: VirtualListProps<T>) {
     innerHeight: number;
   }>({ items: [], startIndex: 0, endIndex: 0, innerHeight: 0 });
 
-  state.current.rowCount = rowCount;
+  state.current.rowCount = dataSource.rowCount;
 
   const innerHeight = useMemo(() => {
-    if (!rowCount) {
+    if (!dataSource.rowCount) {
       temp.current.startIndex = 0;
       temp.current.endIndex = 0;
       temp.current.items.length = 0;
       state.current.items.clear();
     } else if (state.current.items.size) {
-      while (state.current.items.size > rowCount) {
+      while (state.current.items.size > dataSource.rowCount) {
         state.current.items.delete(state.current.items.size - 1);
       }
     }
     const items = state.current.items;
     if (typeof rowHeight == 'number') {
-      for (let i = 0; i < rowCount; i++) {
+      for (let i = 0; i < dataSource.rowCount; i++) {
         const key = items.has(i) ? items.get(i)!.key : 'row_' + i;
         items.set(i, {
           key,
@@ -101,10 +91,10 @@ function VirtualList<T>(props: VirtualListProps<T>) {
           bottom: rowHeight * (i + 1),
         });
       }
-      return rowHeight * rowCount;
+      return rowHeight * dataSource.rowCount;
     }
     let _innerHeight = 0;
-    for (let i = 0; i < rowCount; i++) {
+    for (let i = 0; i < dataSource.rowCount; i++) {
       const _height = rowHeight({ index: i });
       items.set(i, {
         key: uuid(),
@@ -116,7 +106,7 @@ function VirtualList<T>(props: VirtualListProps<T>) {
       _innerHeight += _height;
     }
     return _innerHeight;
-  }, [rowHeight, rowCount]);
+  }, [rowHeight, dataSource.rowCount]);
 
   temp.current.innerHeight = innerHeight;
 
@@ -178,7 +168,7 @@ function VirtualList<T>(props: VirtualListProps<T>) {
 
   useEffect(() => {
     setupItems();
-  }, [setupItems, props.height, innerHeight, rowCount]);
+  }, [setupItems, props.height, innerHeight, dataSource.rowCount]);
 
   const handleScroll = useCallback(() => {
     setupItems();
@@ -201,14 +191,14 @@ function VirtualList<T>(props: VirtualListProps<T>) {
   const afterTr = useMemo(() => {
     let _height = 0;
     if (typeof rowHeight == 'number') {
-      _height = (rowCount - endIndex) * rowHeight;
+      _height = (dataSource.rowCount - endIndex) * rowHeight;
     } else {
-      for (let i = endIndex; i < rowCount; i++) {
+      for (let i = endIndex; i < dataSource.rowCount; i++) {
         _height += state.current.items.get(i)!.height;
       }
     }
     return _height;
-  }, [endIndex, rowCount, rowHeight]);
+  }, [endIndex, dataSource.rowCount, rowHeight]);
 
   // console.log('VirtualList', startIndex, endIndex, beforeTr, afterTr);
 
@@ -257,7 +247,7 @@ function VirtualList<T>(props: VirtualListProps<T>) {
 type VirtualListItemProps<T> = {
   index: number;
   dataSource: DataSource<T>;
-  rowSelection?: RowSelection;
+  rowSelection?: RowSelection<T>;
   columns: TableColumn<T>[];
   style: CSSProperties;
   useCheck: (record: T) => boolean;

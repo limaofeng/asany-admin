@@ -1,4 +1,6 @@
-import React, { useCallback, useMemo, useReducer, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+
+import EventEmitter from 'events';
 
 import { Table as BsTable } from 'react-bootstrap';
 import classnames from 'classnames';
@@ -21,9 +23,13 @@ import { getRowKey } from './utils';
 
 import './Table.scss';
 
-export type UseDataSourceItem<T> = (index: number) => T;
+export type UseDataSourceItem<T> = (index: number) => T | undefined;
 
 export type DataSource<T> = {
+  type?: 'array' | 'lazy';
+  items: T[];
+  loadedCount: number;
+  rowCount: number;
   useItem: UseDataSourceItem<T>;
 };
 
@@ -39,17 +45,14 @@ export interface TableProps<T> {
   hover?: boolean;
   striped?: boolean;
   rowKey?: string | ((record: T) => string);
-  rowSelection?: RowSelection;
-  dataSource?: T[] | DataSource<T>;
+  rowSelection?: RowSelection<T>;
+  dataSource: T[] | DataSource<T>;
   onChange?: OnChange;
   columns: TableColumn<T>[];
   pagination?: PaginationProps;
-  scroll?: {
-    height?: number;
-    rowCount: number;
-    overscanRowCount?: number;
-    rowHeight: number | RowHeightFunc;
-  };
+  height?: number;
+  overscanRowCount?: number;
+  rowHeight?: number | RowHeightFunc;
   noRowsRenderer?: NoContentRenderer;
 }
 
@@ -62,13 +65,30 @@ function defaultSelectRenderTitle(size: number) {
   );
 }
 
+function useDataSourceWrapper<T>(dataSource: T[] | DataSource<T>): DataSource<T> {
+  const type = useMemo(() => (Array.isArray(dataSource) ? 'array' : 'lazy'), [dataSource]);
+
+  if (Array.isArray(dataSource)) {
+    return {
+      type,
+      items: dataSource,
+      loadedCount: dataSource.length,
+      rowCount: dataSource.length,
+      useItem: (index: number) => {
+        return dataSource[index];
+      },
+    };
+  }
+  dataSource.type = type;
+  return dataSource;
+}
+
 function Table<T>(props: TableProps<T>) {
   const {
     responsive = true,
     hover,
     rowSelection,
     columns,
-    dataSource,
     pagination,
     noRowsRenderer,
     onChange: tableOnChange,
@@ -99,20 +119,56 @@ function Table<T>(props: TableProps<T>) {
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  state.current.totalCount = useMemo(() => {
-    if (props.scroll) {
-      return props.scroll.rowCount;
-    }
-    if (Array.isArray(dataSource)) {
-      return dataSource.length;
-    }
-    return 0;
-  }, [props.scroll, dataSource]);
+  const dataSource = useDataSourceWrapper(props.dataSource);
 
-  const temp = useRef<{ rowKey: string | ((record: T) => string); items: Map<string, any> }>({
-    items: new Map<string, any>(),
+  state.current.totalCount = useMemo(() => {
+    return dataSource.rowCount;
+  }, [dataSource]);
+
+  const temp = useRef<{
+    rowKey: string | ((record: T) => string);
+    items: Map<string, T>;
+    REPAIR_OF_SELECTEDALL_RUNNING: boolean;
+    dataSource: DataSource<T>;
+    emitter: EventEmitter;
+  }>({
+    dataSource,
+    items: new Map<string, T>(),
     rowKey,
+    REPAIR_OF_SELECTEDALL_RUNNING: false,
+    emitter: new EventEmitter(),
   });
+
+  useEffect(() => {
+    temp.current.emitter.setMaxListeners(1000);
+
+    if (!onChange) {
+      return;
+    }
+
+    const handleChange = () => {
+      const items = temp.current.dataSource.items;
+      onChange(
+        Array.from(state.current.selectedKeys.keys()),
+        items.filter((item) =>
+          state.current.selectedKeys.has(getRowKey(item, temp.current.rowKey)),
+        ),
+      );
+    };
+
+    const _emitter = temp.current.emitter;
+    _emitter.on('CHANGE_SELECTEDKEYS', handleChange);
+    return () => {
+      _emitter.off('CHANGE_SELECTEDKEYS', handleChange);
+    };
+  }, [onChange]);
+
+  const subscribeChangeSelectedKeys = useCallback((callback: () => void) => {
+    temp.current.emitter.on('CHANGE_SELECTEDKEYS', callback);
+    return () => {
+      temp.current.emitter.off('CHANGE_SELECTEDKEYS', callback);
+    };
+  }, []);
 
   const handleSelect = useCallback(
     (data: T, checked: boolean, e: React.ChangeEvent | React.ChangeEvent) => {
@@ -135,37 +191,94 @@ function Table<T>(props: TableProps<T>) {
         selectedKeys.delete(key);
       }
 
-      const _selectedKeys = [...selectedKeys];
-      const selectedRows = _selectedKeys.map((_key) => temp.current.items.get(_key));
+      const selectedRows = temp.current.dataSource.items.filter((item) =>
+        selectedKeys.has(getRowKey(item, temp.current.rowKey)),
+      );
 
       state.current.selectedAll = selectedKeys.size == totalCount;
       forceRender();
 
-      onSelect && onSelect(temp.current.items.get(key), _checked, selectedRows, e);
-      onChange && onChange(_selectedKeys, selectedRows);
-      onSelectAll && onSelectAll(_checked, selectedRows);
+      temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
+
+      onSelect && onSelect(temp.current.items.get(key)!, _checked, selectedRows, e);
     },
-    [onChange, onSelect, onSelectAll, rowKey],
+    [onSelect, rowKey],
   );
 
-  const handleSelectAll = useCallback((selected: boolean) => {
-    const { items } = temp.current;
-    const { selectedKeys } = state.current;
-    if (selected) {
-      Array.from(items.keys()).forEach(selectedKeys.add.bind(selectedKeys));
-    } else {
-      selectedKeys.clear();
+  const handleSelectAll = useCallback(
+    (selected: boolean) => {
+      const items = temp.current.dataSource.items;
+      const { selectedKeys } = state.current;
+      let selectedRows: T[] = [];
+      let changeRows: T[] = [];
+      if (selected) {
+        selectedRows = items;
+        changeRows = items.filter(
+          (item) => !selectedKeys.has(getRowKey(item, temp.current.rowKey)),
+        );
+        changeRows.forEach((item) => {
+          selectedKeys.add(getRowKey(item, temp.current.rowKey));
+        });
+      } else {
+        changeRows = items.filter((item) => selectedKeys.has(getRowKey(item, temp.current.rowKey)));
+        selectedKeys.clear();
+      }
+      state.current.selectedAll = selected;
+      onSelectAll && onSelectAll(selected, selectedRows, changeRows);
+      temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
+      forceRender();
+    },
+    [onSelectAll],
+  );
+
+  const repairOfSelectedAll = useCallback(() => {
+    if (temp.current.REPAIR_OF_SELECTEDALL_RUNNING) {
+      return;
     }
-    state.current.selectedAll = selected;
-    forceRender();
+    try {
+      temp.current.REPAIR_OF_SELECTEDALL_RUNNING = true;
+      const items = temp.current.dataSource.items;
+      const { selectedKeys } = state.current;
+      const changeRows = items.filter(
+        (item) => !selectedKeys.has(getRowKey(item, temp.current.rowKey)),
+      );
+      changeRows.forEach((item) => {
+        selectedKeys.add(getRowKey(item, temp.current.rowKey));
+      });
+      temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
+      forceRender();
+    } finally {
+      temp.current.REPAIR_OF_SELECTEDALL_RUNNING = false;
+    }
   }, []);
+
+  useEffect(() => {
+    if (dataSource.loadedCount == state.current.selectedKeys.size || !state.current.selectedAll) {
+      return;
+    }
+    repairOfSelectedAll();
+  }, [dataSource.loadedCount, repairOfSelectedAll]);
 
   const useCheck = useMemo(() => {
     return (data: T) => {
       const _key = getRowKey(data, temp.current.rowKey);
-      return state.current.selectedKeys.has(_key);
+      const { selectedKeys } = state.current;
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [checked, setChecked] = useState(selectedKeys.has(_key));
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useEffect(
+        () =>
+          subscribeChangeSelectedKeys(() => {
+            setChecked(state.current.selectedKeys.has(_key));
+          }),
+        [_key],
+      );
+
+      return checked;
     };
-  }, []);
+  }, [subscribeChangeSelectedKeys]);
 
   const recoverer = useCallback((data: T) => {
     const key = getRowKey(data, temp.current.rowKey);
@@ -216,6 +329,7 @@ function Table<T>(props: TableProps<T>) {
     e.added.map((item) => item.dataset.key!).forEach(_selectedKeys.add.bind(_selectedKeys));
     e.removed.map((item) => item.dataset.key!).forEach(_selectedKeys.delete.bind(_selectedKeys));
     state.current.selectedAll = _selectedKeys.size == totalCount;
+    temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
     forceRender();
   }, []);
 
@@ -234,17 +348,16 @@ function Table<T>(props: TableProps<T>) {
         onColgroup={handleColgroup}
       />
       <div className="dataTable-body">
-        {props.scroll ? (
+        {dataSource.type == 'lazy' ? (
           <VirtualList<T>
             tableBodyRef={tableBodyContainer}
             rowKey={rowKey}
             recoverer={recoverer}
             rowSelection={rowSelection}
-            dataSource={dataSource as DataSource<T>}
-            height={props.scroll.height}
-            rowCount={props.scroll.rowCount!}
-            rowHeight={props.scroll.rowHeight!}
-            overscanRowCount={props.scroll.overscanRowCount!}
+            dataSource={dataSource}
+            height={props.height}
+            rowHeight={props.rowHeight || 50}
+            overscanRowCount={props.overscanRowCount || 5}
             onSelect={handleSelect}
             columns={newColumns}
             useCheck={useCheck}
@@ -260,7 +373,7 @@ function Table<T>(props: TableProps<T>) {
           >
             <Colgroup<T> columns={newColumns} />
             <tbody ref={tableBodyContainer} className="fw-bold text-gray-600">
-              {!((dataSource as T[]) || []).length
+              {!dataSource.items.length
                 ? noRowsRenderer && (
                     <tr>
                       <td
@@ -272,7 +385,7 @@ function Table<T>(props: TableProps<T>) {
                       </td>
                     </tr>
                   )
-                : ((dataSource as T[]) || []).map((data: any, index) => {
+                : dataSource.items.map((data: any, index) => {
                     const key = getRowKey(data, rowKey);
                     return (
                       <TableRow<T>

@@ -117,7 +117,7 @@ function TreeHeaderColumn(props: TreeHeaderColumnProps) {
 type TableHeaderProps<T> = {
   selectedAll: boolean;
   selectedKeys: Set<string>;
-  rowSelection?: RowSelection;
+  rowSelection?: RowSelection<T>;
   dataSource?: T[];
   columns: TableColumn<T>[];
   onSelectAll: (selected: boolean) => void;
@@ -209,10 +209,10 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
                       {renderTitle(selectedKeys.size)}
                     </div>
                     {/* {typeof toolbar == 'function' &&
-                    toolbar(
-                      [...selectedKeys],
-                      [...selectedKeys].map((key) => temp.current.get(key)),
-                    )} */}
+                      toolbar(
+                        [...selectedKeys],
+                        [...selectedKeys].map((key) => temp.current.get(key)),
+                      )} */}
                   </div>
                 </th>
               </>

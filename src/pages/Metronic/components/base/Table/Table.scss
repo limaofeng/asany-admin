@@ -37,6 +37,13 @@
 }
 table.dataTable.table-list-body {
   margin-top: 0 !important;
+
+  tr.table-list-item.selected {
+    background-color: rgba(220, 253, 253, 0.35) !important;
+    td {
+      color: #7e8299 !important;
+    }
+  }
 }
 .table td:first-child,
 .table th:first-child,

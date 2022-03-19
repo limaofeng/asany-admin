@@ -18,7 +18,7 @@ type TableRowProps<T> = {
   recoverer: DataRecoverer<T>;
   className: string;
   onSelect: (record: T, selected: boolean, e: any) => void;
-  rowSelection?: RowSelection;
+  rowSelection?: RowSelection<T>;
   useCheck: (record: T) => boolean;
   rowKey: string | ((record: T) => string);
   style?: CSSProperties;
@@ -60,6 +60,9 @@ function TableRow<T>(props: TableRowProps<T>) {
         e.stopPropagation();
         return;
       }
+      if (e.target.tagName == 'INPUT' && e.type == 'click') {
+        return;
+      }
       onSelect(data, !checked, e);
     },
     [data, checked, onSelect],
@@ -72,7 +75,7 @@ function TableRow<T>(props: TableRowProps<T>) {
   return (
     <tr
       style={style}
-      className={classnames(className, 'table-list-item')}
+      className={classnames(className, 'table-list-item', { selected: checked })}
       data-key={keyValue}
       onClick={selectable ? handleSelect : undefined}
     >

@@ -51,17 +51,17 @@ export type TableHeadToolbar =
   | ((selectedRowKeys: string[], selectedRows: any[]) => React.ReactNode)
   | boolean;
 
-export type RowSelection = {
+export type RowSelection<T> = {
   type?: 'checkbox' | 'radio';
   renderTitle?: (size: number) => React.ReactNode;
   columnTitle?: React.ReactNode;
   columnWidth?: string | number;
   selectedRowKeys?: string[];
   toolbar?: TableHeadToolbar;
-  onChange?: (selectedRowKeys: string[], selectedRows: any[]) => void;
-  onSelect?: (record: any, selected: boolean, selectedRows: any[], nativeEvent: any) => void;
-  onSelectAll?: (selected: boolean, selectedRows: any[]) => void;
-  getCheckboxProps?: (record: any) => any;
+  onChange?: (selectedRowKeys: string[], selectedRows: T[]) => void;
+  onSelect?: (record: T, selected: boolean, selectedRows: T[], nativeEvent: any) => void;
+  onSelectAll?: (selected: boolean, selectedRows: T[], changeRows: T[]) => void;
+  getCheckboxProps?: (record: T) => any;
 };
 
 export type NoContentRenderer = () => React.ReactNode;

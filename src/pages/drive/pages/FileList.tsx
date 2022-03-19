@@ -46,7 +46,7 @@ function FileList(props: FileListProps) {
     return data?.cloudDrive || location.state?.cloudDrive;
   }, [data?.cloudDrive, location.state?.cloudDrive]);
 
-  console.log('paths', cloudDrive, location.state?.currentFolder);
+  // console.log('paths', cloudDrive, location.state?.currentFolder);
 
   const folder = useMemo(() => {
     if (location.pathname.startsWith('/drive/mime-types')) {
@@ -123,7 +123,7 @@ function FileList(props: FileListProps) {
     return undefined;
   }, [location.pathname]);
 
-  console.log('fileFilter', fileFilter);
+  // console.log('fileFilter', fileFilter);
 
   return (
     <ContentWrapper className="app-drive-main" header={false} footer={false}>

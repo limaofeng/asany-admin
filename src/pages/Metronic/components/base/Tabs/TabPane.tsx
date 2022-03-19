@@ -23,7 +23,7 @@ function TabPane(props: TabPaneProps) {
     }
   }, [active]);
 
-  console.log(props.tab, isRender, active);
+  // console.log(props.tab, isRender, active);
 
   return (
     <div

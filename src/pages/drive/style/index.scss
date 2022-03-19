@@ -16,6 +16,36 @@
   }
 }
 .app-drive-main {
+  .file-action-group {
+    color: #04c8c8;
+    background-color: #dcfdfd;
+    border-radius: 0.475rem;
+    .btn {
+      &:not(:last-child) {
+        position: relative;
+        &::after {
+          position: absolute;
+          top: 20%;
+          right: -0.25rem;
+          width: 1px;
+          height: 60%;
+          background-color: rgba(4, 200, 200, 0.5);
+          content: '';
+        }
+      }
+    }
+    .btn.btn-light-primary {
+      &:hover:not(.btn-active),
+      &:active,
+      &:focus {
+        color: #00afaf;
+        background-color: inherit !important;
+        .svg-icon svg [fill]:not(.permanent):not(g) {
+          fill: #00afaf;
+        }
+      }
+    }
+  }
   .container-xxl {
     min-height: 100vh !important;
     padding: 0;
@@ -37,12 +67,13 @@
 
         .file-details-quick-preview {
           display: flex;
+          width: 320px;
           padding-left: 16px;
 
           .preview-container {
             display: flex;
-            flex: 1 0 auto;
             flex-direction: column;
+            width: 100%;
             min-height: calc(100vh - 138px);
             padding: 16px 2px 16px 16px;
             background-color: #f5f6fa;
