@@ -1,13 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
+import classnames from 'classnames';
 
+import { useRenameFileMutation } from '../hooks';
+
+import type { InputRef } from '@/pages/Metronic/components';
 import { Button, Input } from '@/pages/Metronic/components';
 import type { FileObject } from '@/types';
-import { sleep } from '@/utils';
+import { delay, sleep } from '@/utils';
 
 type FileNameProps = {
-  storageId: string;
   onClick: (file: FileObject) => void;
   onCancelRename: () => void;
   editable: boolean;
@@ -15,10 +18,14 @@ type FileNameProps = {
 };
 
 function FileName(props: FileNameProps) {
-  const { storageId, data, editable, onClick, onCancelRename } = props;
+  const { data, editable, onClick, onCancelRename } = props;
+
+  const inputRef = useRef<InputRef>(null);
 
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState(data.name);
+
+  const [rename] = useRenameFileMutation();
 
   const handleChange = useCallback((e) => {
     setName(e.target.value);
@@ -28,11 +35,28 @@ function FileName(props: FileNameProps) {
     async (e: React.MouseEvent) => {
       e.stopPropagation();
       setSaving(true);
-      await sleep(2000);
+      await delay(
+        rename({
+          variables: {
+            id: data.id,
+            name: name,
+          },
+        }),
+        350,
+      );
+      await sleep(350);
       setSaving(false);
       onCancelRename();
     },
-    [onCancelRename],
+    [data.id, name, onCancelRename, rename],
+  );
+
+  const handlePressEnter = useCallback(
+    (e: React.KeyboardEvent) => {
+      e.preventDefault();
+      handleSaveNewName(e as any);
+    },
+    [handleSaveNewName],
   );
 
   const handleCancel = useCallback(
@@ -55,7 +79,14 @@ function FileName(props: FileNameProps) {
 
   useEffect(() => {
     setName(() => data.name);
-  }, [data.name, editable]);
+    if (!editable) {
+      return;
+    }
+    inputRef.current?.select(
+      0,
+      data.name.length - (data.extension ? data.extension.length + 1 : 0),
+    );
+  }, [data.extension, data.name, editable]);
 
   const handleBlocking = useCallback(
     (e: React.MouseEvent) => {
@@ -68,7 +99,10 @@ function FileName(props: FileNameProps) {
   );
 
   return (
-    <div onClick={handleBlocking} className="d-flex align-items-center">
+    <div
+      onClick={handleBlocking}
+      className={classnames('d-flex align-items-center', { 'no-selecto-drag': editable })}
+    >
       <Icon
         name={`Duotune/${data.isDirectory ? 'fil012' : 'fil003'}`}
         className="svg-icon-2x svg-icon-primary me-4"
@@ -76,8 +110,10 @@ function FileName(props: FileNameProps) {
       {editable ? (
         <>
           <Input
+            ref={inputRef}
             value={name}
             onChange={handleChange}
+            onPressEnter={handlePressEnter}
             placeholder="输入新文件夹名称"
             size="sm"
             className="mw-250px me-3"
@@ -104,13 +140,9 @@ function FileName(props: FileNameProps) {
         </>
       ) : (
         <a
-          className="text-gray-800 text-hover-primary"
+          className="text-gray-800 text-hover-primary no-selecto-drag"
           onClick={handleClick}
-          href={
-            data.isDirectory
-              ? `/drive/folders/${data.id}`
-              : `/preview?url=${encodeURIComponent(`/storages/${storageId}${data.path}`)}`
-          }
+          href={data.isDirectory ? `/drive/folders/${data.id}` : `/preview/${data.id}`}
         >
           {data.name}
         </a>

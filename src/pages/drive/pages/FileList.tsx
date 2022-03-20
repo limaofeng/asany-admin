@@ -55,7 +55,7 @@ function FileList(props: FileListProps) {
     return _folder || cloudDrive?.rootFolder;
   }, [_folder, cloudDrive?.rootFolder, location.pathname]);
 
-  const fileFilter = useMemo(() => {
+  const menuKey = useMemo(() => {
     const oneMatch = matchPath<{ type: string; value: string }>(location.pathname, {
       path: '/drive/:type/:value',
       exact: true,
@@ -71,59 +71,81 @@ function FileList(props: FileListProps) {
     const value = oneMatch?.params.value;
 
     if (type == 'mime-types') {
-      if (value == 'image') {
-        return { recursive: true, mimeType_startsWith: 'image/' };
-      }
-      if (value == 'document') {
-        return {
-          recursive: true,
-          mimeType_in: [
-            'application/msword',
-            'application/pdf',
-            'application/vnd.ms-powerpoint',
-            'text/plain',
-            'text/html',
-            'text/xml',
-          ],
-        };
-      }
-      if (value == 'video') {
-        return {
-          recursive: true,
-          mimeType_startsWith: 'video/',
-        };
-      }
-      if (value == 'audio') {
-        return {
-          recursive: true,
-          mimeType_startsWith: 'audio/',
-        };
-      }
-      if (value == 'other') {
-        return {
-          recursive: true,
-          AND: [
-            { mimeType_notStartsWith: 'image/' },
-            { mimeType_notStartsWith: 'video/' },
-            { mimeType_notStartsWith: 'audio/' },
-            {
-              mimeType_notIn: [
-                'application/msword',
-                'application/pdf',
-                'application/vnd.ms-powerpoint',
-                'text/plain',
-                'text/html',
-                'text/xml',
-              ],
-            },
-          ],
-        };
-      }
+      return value;
     }
-    return undefined;
+    return 'my-drive';
   }, [location.pathname]);
 
-  // console.log('fileFilter', fileFilter);
+  const fileFilter = useMemo(() => {
+    if (menuKey == 'image') {
+      return { recursive: true, mimeType_startsWith: 'image/' };
+    }
+    if (menuKey == 'document') {
+      return {
+        recursive: true,
+        mimeType_in: [
+          'application/msword',
+          'application/pdf',
+          'application/vnd.ms-powerpoint',
+          'text/plain',
+          'text/html',
+          'text/xml',
+        ],
+      };
+    }
+    if (menuKey == 'video') {
+      return {
+        recursive: true,
+        mimeType_startsWith: 'video/',
+      };
+    }
+    if (menuKey == 'audio') {
+      return {
+        recursive: true,
+        mimeType_startsWith: 'audio/',
+      };
+    }
+    if (menuKey == 'other') {
+      return {
+        recursive: true,
+        AND: [
+          { mimeType_notStartsWith: 'image/' },
+          { mimeType_notStartsWith: 'video/' },
+          { mimeType_notStartsWith: 'audio/' },
+          {
+            mimeType_notIn: [
+              'application/msword',
+              'application/pdf',
+              'application/vnd.ms-powerpoint',
+              'text/plain',
+              'text/html',
+              'text/xml',
+            ],
+          },
+        ],
+      };
+    }
+    return undefined;
+  }, [menuKey]);
+
+  const rootFolder = useMemo(() => {
+    if (menuKey == 'image') {
+      return { ...cloudDrive, name: '全部图片' } as any;
+    }
+    if (menuKey == 'document') {
+      return { ...cloudDrive, name: '全部文档' } as any;
+    }
+    if (menuKey == 'video') {
+      return { ...cloudDrive, name: '全部视频' } as any;
+    }
+    if (menuKey == 'audio') {
+      return { ...cloudDrive, name: '全部音频' } as any;
+    }
+    if (menuKey == 'other') {
+      return { ...cloudDrive, name: '其他文件' } as any;
+    }
+    return { ...cloudDrive, name: '全部文件' } as any;
+  }, [cloudDrive, menuKey]);
 
   return (
     <ContentWrapper className="app-drive-main" header={false} footer={false}>
@@ -133,7 +155,7 @@ function FileList(props: FileListProps) {
           folder={folder}
           filter={fileFilter}
           orderBy={location.state?.orderBy}
-          cloudDrive={cloudDrive as any}
+          cloudDrive={rootFolder}
           currentFolder={location.state?.currentFolder}
         />
       )}

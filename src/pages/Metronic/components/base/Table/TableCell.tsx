@@ -18,6 +18,7 @@ function TableCell<T>(props: TableCellProps<T>) {
   const isProps = renderResult && !React.isValidElement(renderResult) && renderResult.props;
   const _props = isProps ? renderResult.props : {};
   const children = isProps ? renderResult.children : renderResult;
+
   return (
     <td
       key={`${col.key}-${value}`}
@@ -31,7 +32,11 @@ function TableCell<T>(props: TableCellProps<T>) {
       )}
       {..._props}
     >
-      {children}
+      {React.isValidElement(children) ? (
+        children
+      ) : (
+        <span className="no-selecto-drag">{children}</span>
+      )}
     </td>
   );
 }

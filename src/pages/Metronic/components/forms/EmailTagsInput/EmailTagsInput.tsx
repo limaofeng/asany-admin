@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import classnames from 'classnames';
 import { useClickAway } from 'react-use';
@@ -331,15 +331,6 @@ function EmailTagsInput(props: EmailTagsInputProps) {
   });
 
   const { tags, selectedKey, status } = state.current;
-
-  const intact = useMemo(() => {
-    return tags
-      .filter((item) => item != 'input')
-      .map((item) => mailToString(item as any))
-      .join(';');
-  }, [tags]);
-
-  temp.current.intact = intact;
 
   useEffect(() => {
     if (!props.value || temp.current.intact == props.value.join(';')) {

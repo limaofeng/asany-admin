@@ -7,6 +7,14 @@ query cloudDrive($id: ID!) {
   }
 }
 
+mutation renameFile($id: ID!, $name: String!) {
+  file: renameFile(id: $id, name: $name) {
+    id
+    name
+    lastModified(format: "yyyy-MM-dd HH:mm")
+  }
+}
+
 query cloudDrives {
   cloudDrives {
     id
@@ -31,6 +39,7 @@ query file($id: ID!) {
     path
     size(format: true)
     mimeType
+    extension
     isDirectory
     isRootFolder
     lastModified(format: "yyyy-MM-dd HH:mm")
@@ -76,6 +85,7 @@ query listFiles($folder: ID!, $filter: FileFilter, $page: Int = 1, $orderBy: Ord
         path
         size(format: true)
         mimeType
+        extension
         isDirectory
         lastModified(format: "yyyy-MM-dd HH:mm")
       }

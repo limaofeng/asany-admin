@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 
 import Icon from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import classnames from 'classnames';
+import { Link } from 'umi';
 
 import { useFileQuery } from '../hooks';
 
-import { Symbol, Tabs } from '@/pages/Metronic/components';
+import { BlockUI, Symbol, Tabs } from '@/pages/Metronic/components';
 import type { FileObject } from '@/types';
 
 type FileDetailsProps = {
@@ -26,12 +28,11 @@ type ViewFileDetailsProps = {
   file: FileObject;
 };
 
-// 'image/'
-
 function ViewFileDetails(props: ViewFileDetailsProps) {
   const [file, setFile] = useState<FileObject>(props.file);
 
   const { data, loading } = useFileQuery({
+    fetchPolicy: 'cache-and-network',
     variables: {
       id: props.file.id,
     },
@@ -44,89 +45,101 @@ function ViewFileDetails(props: ViewFileDetailsProps) {
   console.log('ViewFileDetails', loading, data?.file);
 
   return (
-    <>
-      <div className="file-preview mb-6 mt-5">
+    <BlockUI overlayClassName="bg-white bg-opacity-25" className="pt-5" loading={loading}>
+      <div className="file-preview mb-6">
         <img />
       </div>
-      <div className="fs-6 text-gray-800 mb-4">有权使用的人</div>
-      <div className="row mb-6">
-        <div className="col-lg-12 persons-with-authority">
-          <ul className="d-flex flex-row gap-5">
-            <li>
-              <Symbol.Avatar shape="circle" size={40} alt="李茂峰" />
-            </li>
-            <li>
-              <Symbol.Avatar
-                size={40}
-                shape="circle"
-                src={
-                  <Icon
-                    style={{ backgroundColor: '#689f38' }}
-                    className="symbol-label svg-icon-white"
-                    name="Duotune/cod007"
+      {false && (
+        <>
+          <div className="fs-6 text-gray-800 mb-4">有权使用的人</div>
+          <div className="row mb-6">
+            <div className="col-lg-12 persons-with-authority">
+              <ul className="d-flex flex-row gap-5">
+                <li>
+                  <Symbol.Avatar shape="circle" size={40} alt="李茂峰" />
+                </li>
+                <li>
+                  <Symbol.Avatar
+                    size={40}
+                    shape="circle"
+                    src={
+                      <Icon
+                        style={{ backgroundColor: '#689f38' }}
+                        className="symbol-label svg-icon-white"
+                        name="Duotune/cod007"
+                      />
+                    }
                   />
-                }
-              />
-            </li>
-          </ul>
-        </div>
-      </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </>
+      )}
       <div className="fs-6 text-gray-800 mb-4">系统属性</div>
       <div className="row mb-4">
-        <label className="col-lg-4 fw-bold text-muted">类型</label>
-        <div className="col-lg-8">
-          <span className="fs-7 text-gray-800">{file.mimeType}</span>
+        <label className="col-lg-3 fw-bold text-muted">类型</label>
+        <div className="col-lg-9">
+          <span className="fs-7 text-gray-800">{file.isDirectory ? '文件夹' : file.mimeType}</span>
         </div>
       </div>
-      <div className="row mb-4">
-        <label className="col-lg-4 fw-bold text-muted">大小</label>
-        <div className="col-lg-8 fv-row">
-          <span className="fs-7 text-gray-800">{file.size}</span>
+      {!file.isDirectory && (
+        <div className="row mb-4">
+          <label className="col-lg-3 fw-bold text-muted">大小</label>
+          <div className="col-lg-9 fv-row">
+            <span className="fs-7 text-gray-800">{file.size}</span>
+          </div>
         </div>
-      </div>
+      )}
       <div className="row mb-4">
-        <label className="col-lg-4 fw-bold text-muted">位置</label>
-        <div className="col-lg-8 d-flex align-items-center">
+        <label className="col-lg-3 fw-bold text-muted">位置</label>
+        <div className="col-lg-9 d-flex align-items-center flex-wrap">
+          <Link className="tw-truncate mw-90px" to="/drive/my-drive">
+            全部文件
+          </Link>
           {(file.parents || []).map((item) => (
-            <span key={item.id} className="fs-7 text-gray-800 me-2">
-              {item.name}
-            </span>
+            <React.Fragment key={item.id}>
+              <Icon name={'Duotune/arr071'} className={classnames('svg-icon-5 svg-icon-primary')} />
+              <Link className="tw-truncate mw-90px" to={`/drive/folders/${item.id}`}>
+                {item.name}
+              </Link>
+            </React.Fragment>
           ))}
         </div>
       </div>
       {/* <div className="row mb-4">
-        <label className="col-lg-4 fw-bold text-muted">所有者</label>
-        <div className="col-lg-8">
+        <label className="col-lg-3 fw-bold text-muted">所有者</label>
+        <div className="col-lg-9">
           <a href="#" className="fs-7 text-gray-800 text-hover-primary">
             keenthemes.com
           </a>
         </div>
       </div> */}
       <div className="row mb-4">
-        <label className="col-lg-4 fw-bold text-muted">修改时间</label>
-        <div className="col-lg-8">
+        <label className="col-lg-3 fw-bold text-muted">修改时间</label>
+        <div className="col-lg-9">
           <span className="fs-7 text-gray-800">{file.lastModified}</span>
         </div>
       </div>
       {/* <div className="row mb-4">
-        <label className="col-lg-4 fw-bold text-muted">上次打开时间</label>
-        <div className="col-lg-8">
+        <label className="col-lg-3 fw-bold text-muted">上次打开时间</label>
+        <div className="col-lg-9">
           <span className="fs-7 text-gray-800">Email, Phone</span>
         </div>
       </div> */}
       <div className="row mb-4">
-        <label className="col-lg-4 fw-bold text-muted">创建时间</label>
-        <div className="col-lg-8">
+        <label className="col-lg-3 fw-bold text-muted">创建时间</label>
+        <div className="col-lg-9">
           <span className="fs-7 text-gray-800">{file.createdAt}</span>
         </div>
       </div>
       <div className="row mb-4">
-        <label className="col-lg-4 fw-bold text-muted">说明</label>
-        <div className="col-lg-8">
+        <label className="col-lg-3 fw-bold text-muted">说明</label>
+        <div className="col-lg-9">
           <span className="fs-7 text-gray-800">{file.description}</span>
         </div>
       </div>
-    </>
+    </BlockUI>
   );
 }
 
@@ -176,7 +189,7 @@ function FileDetails(props: FileDetailsProps) {
       return files[0].name;
     }
     if (type === 'many_file_details') {
-      return files[0].name;
+      return '多个文件';
     }
     return currentFolder?.name || '';
   }, [currentFolder?.name, files, type]);

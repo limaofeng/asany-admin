@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 
 import { Table as BsTable } from 'react-bootstrap';
 import classnames from 'classnames';
-import type { OnSelect } from 'react-selecto';
+import type { OnSelect, OnSelectEnd } from 'react-selecto';
 import Selecto from 'react-selecto';
 
 import type { PaginationProps } from './Pagination';
@@ -97,6 +97,7 @@ function Table<T>(props: TableProps<T>) {
 
   const {
     toolbar = true,
+    continueSelect = true,
     renderTitle = defaultSelectRenderTitle,
     onChange,
     onSelect,
@@ -315,12 +316,33 @@ function Table<T>(props: TableProps<T>) {
     [rowSelection, columns, colgroups],
   );
 
-  const handleSelectoDragCondition = useCallback((...args) => {
-    console.log('handleSelectoDragCondition', args);
-    return true;
+  const handleSelectoDragCondition = useCallback((e) => {
+    const documents = Array.from(e.inputEvent.path).slice(0, -3);
+    const lastIndex = documents.lastIndexOf(tableBodyContainer.current);
+    const isOff = (lastIndex == -1 ? documents : documents.slice(0, lastIndex)).some((item: any) =>
+      Array.from(item.classList).includes('no-selecto-drag'),
+    );
+    return !isOff;
   }, []);
 
-  const handleSelectoSelectEnd = useCallback(() => {
+  const handleSelectoSelectStart = useCallback(() => {
+    const selectedTargets = tableBodyContainer.current?.querySelectorAll<HTMLElement>(
+      '.table-list-item.selected',
+    );
+    if (selectedTargets && selecto.current && !continueSelect) {
+      selecto.current.setSelectedTargets(Array.from(selectedTargets));
+    }
+  }, [continueSelect]);
+
+  const handleSelectoSelectEnd = useCallback((e: OnSelectEnd) => {
+    console.log('row select', e.isClick, e.isDragStart, e.inputEvent, e);
+    if (e.added.length == 1 && e.afterAdded.length == 1 && e.selected.length == 1) {
+      const dom = e.selected[0];
+      dom.dataset.ignore_click = 'on';
+      setTimeout(() => {
+        delete dom.dataset.ignore_click;
+      }, 60);
+    }
     selecto.current && selecto.current.setSelectedTargets([]);
   }, []);
 
@@ -413,11 +435,12 @@ function Table<T>(props: TableProps<T>) {
             selectableTargets={['.table-list-item']}
             selectByClick={false}
             selectFromInside={true}
-            continueSelect={false}
+            continueSelect={true}
             toggleContinueSelect={'shift'}
             keyContainer={window}
             dragCondition={handleSelectoDragCondition}
             hitRate={0}
+            onSelectStart={handleSelectoSelectStart}
             onSelectEnd={handleSelectoSelectEnd}
             onSelect={handleSelectoSelect}
           />

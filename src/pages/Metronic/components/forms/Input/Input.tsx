@@ -27,7 +27,7 @@ export type InputRef = {
   setValue: (v: string) => void;
   input: React.MutableRefObject<HTMLInputElement | null>;
   blur: () => void;
-  select: () => void;
+  select: (start: number, end: number) => void;
   focus: () => void;
   element: HTMLInputElement | null;
 };
@@ -40,6 +40,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     bordered = true,
     autoComplete = false,
     transparent,
+    onKeyDown,
     onPressEnter,
     size,
     onChange,
@@ -61,12 +62,13 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
+      onKeyDown && onKeyDown(e);
       if (e.key !== 'Enter') {
         return;
       }
       onPressEnter && onPressEnter(e);
     },
-    [onPressEnter],
+    [onPressEnter, onKeyDown],
   );
 
   const newValue = useMemo(() => {
@@ -97,8 +99,15 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
       focus: () => {
         inputRef.current?.focus();
       },
-      select: () => {
-        inputRef.current?.select();
+      select: (start?: number, end?: number) => {
+        if (start != undefined && end != undefined) {
+          inputRef.current?.focus();
+          process.nextTick(() => {
+            inputRef.current!.setSelectionRange(start, end);
+          });
+        } else {
+          inputRef.current?.select();
+        }
       },
     }),
     [],

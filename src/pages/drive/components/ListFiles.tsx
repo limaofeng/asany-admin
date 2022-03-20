@@ -29,7 +29,7 @@ function generatePaths(cloudDrive?: CloudDrive, currentFolder?: FileObject) {
     ? [
         {
           id: cloudDrive.rootFolder,
-          name: '我的云盘',
+          name: cloudDrive.name,
           isDirectory: true,
           isRootFolder: true,
           path: '/',
@@ -350,7 +350,6 @@ function ListFiles(props: ListFilesProps) {
                           onCancelRename={handleCancelRename}
                           data={record}
                           editable={record && record.id == renameFile?.id}
-                          storageId={''}
                         />
                       );
                     },

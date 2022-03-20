@@ -57,6 +57,12 @@
         height: 100%;
         padding-bottom: 0;
 
+        .folder-path {
+          & > div {
+            height: 32px;
+          }
+        }
+
         .table-virtualized-scroll {
           height: calc(100vh - 204px);
         }
@@ -75,12 +81,12 @@
             flex-direction: column;
             width: 100%;
             min-height: calc(100vh - 138px);
-            padding: 16px 2px 16px 16px;
+            padding: 18px 2px 18px 18px;
             background-color: #f5f6fa;
             border-radius: 8px;
 
             .preview-header {
-              padding-right: 14px;
+              padding-right: 16px;
             }
 
             .preview-body {
@@ -106,6 +112,7 @@
                     flex: 1;
                   }
                   .custom-scrollbar {
+                    width: 270px;
                     padding-right: 14px;
                   }
                 }

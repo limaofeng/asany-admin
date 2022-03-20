@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 
-import { toPlainText } from '../../utils/format';
-
 import type { EmailTagEditingProps, EmailTagEditingRef } from './typings';
 
 import { sleep } from '@/utils';
@@ -104,7 +102,7 @@ function EmailTagEditing(
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     e.preventDefault();
 
-    const text = toPlainText(e.clipboardData.getData('text/plain'));
+    const text = e.clipboardData.getData('text/plain');
 
     const selection = document.getSelection()!;
     const range = selection.getRangeAt(0);
@@ -123,8 +121,8 @@ function EmailTagEditing(
       const _index = startOffset + text.length;
       const _range = new Range();
       // console.log('2', input.current!.textContent);
-      range.setStart(input.current!.firstChild!, _index);
-      range.setEnd(input.current!.firstChild!, _index);
+      _range.setStart(input.current!.firstChild!, _index);
+      _range.setEnd(input.current!.firstChild!, _index);
       selection.addRange(_range);
     });
   }, []);

@@ -24,20 +24,22 @@ function FolderPath(props: FolderPathProps) {
   );
 
   return (
-    <div className="badge badge-lg badge-light-primary">
+    <div className="folder-path badge badge-lg badge-white">
       <div className="d-flex align-items-center flex-wrap">
         {paths.map((item, i) => {
           const isFirst = i == 0;
           const isLast = i == paths.length - 1;
           return (
             <React.Fragment key={item.id}>
-              <Icon
-                name={isFirst ? 'Duotune/abs039' : 'Duotune/arr071'}
-                className={classnames('svg-icon-2 svg-icon-primary', {
-                  'mx-1': isFirst,
-                  'me-3': !isFirst,
-                })}
-              />
+              {!isFirst && (
+                <Icon
+                  name={isFirst ? 'Duotune/abs039' : 'Duotune/arr071'}
+                  className={classnames('svg-icon-2 svg-icon-primary', {
+                    'mx-1': !isFirst,
+                    'me-3': isFirst,
+                  })}
+                />
+              )}
               {isLast ? (
                 item.name
               ) : (

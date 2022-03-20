@@ -1,5 +1,6 @@
 import type { EmailTagData } from './typings';
 
+// TODO: 这个正则存在问题， 不能识别  qq.cn 的邮箱，不识别 只有两位的用户名
 const EMAIL = /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/;
 
 const HAS_DETAILS = /<([^<>]+)>$/;

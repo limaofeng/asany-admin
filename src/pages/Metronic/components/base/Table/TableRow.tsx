@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { useRef } from 'react';
 import { useMemo } from 'react';
 import { useEffect } from 'react';
 import { useCallback } from 'react';
@@ -38,6 +39,8 @@ function TableRow<T>(props: TableRowProps<T>) {
     onSelect,
   } = props;
 
+  const ref = useRef<HTMLTableRowElement>(null);
+
   const { getCheckboxProps } = rowSelection || {};
 
   const checked = useCheck(data);
@@ -56,6 +59,9 @@ function TableRow<T>(props: TableRowProps<T>) {
 
   const handleSelect = useCallback(
     (e) => {
+      if (ref.current?.dataset.ignore_click == 'on') {
+        return;
+      }
       if (e.target.type == 'checkbox' && e.type == 'click') {
         e.stopPropagation();
         return;
@@ -63,6 +69,7 @@ function TableRow<T>(props: TableRowProps<T>) {
       if (e.target.tagName == 'INPUT' && e.type == 'click') {
         return;
       }
+      console.log('row select', e.isPropagationStopped());
       onSelect(data, !checked, e);
     },
     [data, checked, onSelect],
@@ -74,6 +81,7 @@ function TableRow<T>(props: TableRowProps<T>) {
 
   return (
     <tr
+      ref={ref}
       style={style}
       className={classnames(className, 'table-list-item', { selected: checked })}
       data-key={keyValue}

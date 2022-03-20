@@ -58,6 +58,7 @@ export type RowSelection<T> = {
   columnWidth?: string | number;
   selectedRowKeys?: string[];
   toolbar?: TableHeadToolbar;
+  continueSelect?: boolean;
   onChange?: (selectedRowKeys: string[], selectedRows: T[]) => void;
   onSelect?: (record: T, selected: boolean, selectedRows: T[], nativeEvent: any) => void;
   onSelectAll?: (selected: boolean, selectedRows: T[], changeRows: T[]) => void;
