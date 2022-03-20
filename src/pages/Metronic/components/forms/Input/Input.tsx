@@ -103,7 +103,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
         if (start != undefined && end != undefined) {
           inputRef.current?.focus();
           process.nextTick(() => {
-            inputRef.current!.setSelectionRange(start, end);
+            inputRef.current?.setSelectionRange(start, end);
           });
         } else {
           inputRef.current?.select();

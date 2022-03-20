@@ -276,7 +276,7 @@ function ListFiles(props: ListFilesProps) {
                 下载
               </Button>
             )}
-            {row_selection_state == 'row' && (
+            {['row', 'multi-row'].includes(row_selection_state) && (
               <Button
                 size="sm"
                 variantStyle="light"
