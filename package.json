@@ -51,7 +51,7 @@
     "@asany/ckeditor5": "^31.1.0-3",
     "@asany/editor": "^0.2.23",
     "@asany/icons": "^0.2.10",
-    "@asany/shortcuts": "^0.1.4",
+    "@asany/shortcuts": "^0.1.5",
     "@asany/sortable": "^0.1.30",
     "@asany/tree": "^0.1.21",
     "@ckeditor/ckeditor5-react": "^3.0.3",

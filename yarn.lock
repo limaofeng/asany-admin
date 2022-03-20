@@ -130,10 +130,10 @@
     fonteditor-core "^2.1.8"
     lodash "^4.17.21"
 
-"@asany/shortcuts@^0.1.4":
-  version "0.1.4"
-  resolved "https://registry.npmjs.org/@asany/shortcuts/-/shortcuts-0.1.4.tgz#edb58288b0ca4fcbb9695f0aff5e9b82f6e87e10"
-  integrity sha512-Rc13Bpmrdv9x/fHkY1bSuC7QDTqd14PtJxTAXhG3eFbFMtEpIq8FAlAfA/sGJXYmFHme5z+6WR9aZTGxp2ZIuw==
+"@asany/shortcuts@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.npmjs.org/@asany/shortcuts/-/shortcuts-0.1.5.tgz#3c397cb5ad5de2ca06f36466be2062e4b6b75754"
+  integrity sha512-Y1gWuJBN26rA1WgEJTl5ZMinofojqHWvUvKmJtBBFzKDHQAtEeaRZdGckItcRfdJyEtN1nIHakYCXtKuvAi7tA==
   dependencies:
     classnames "^2.3.1"
     combokeys "^3.0.1"
