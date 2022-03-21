@@ -7,6 +7,13 @@ query cloudDrive($id: ID!) {
   }
 }
 
+mutation createFolder($name: String!, $parentFolder: ID!) {
+  folder: createFolder(name: $name, parentFolder: $parentFolder) {
+    id
+    name
+  }
+}
+
 mutation renameFile($id: ID!, $name: String!) {
   file: renameFile(id: $id, name: $name) {
     id

@@ -1,6 +1,3 @@
-import Avatar from './Avatar';
-import SymbolGroup from './SymbolGroup';
-
-const Symbol = { Avatar, Group: SymbolGroup };
+import Symbol from './Symbol';
 
 export { Symbol };

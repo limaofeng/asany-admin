@@ -36,7 +36,7 @@ const useLazyQuery: UseLazyQuery<FileObject, QueryCondition> = function () {
       items: (data?.listFiles.edges.map((item) => item.node) || []) as unknown as FileObject[],
       loading: _loading,
       refetch: (params: QueryCondition, page: number) => {
-        refetch({ variables: { ...(params as any), page } });
+        return refetch({ variables: { ...(params as any), page } });
       },
     },
   ];

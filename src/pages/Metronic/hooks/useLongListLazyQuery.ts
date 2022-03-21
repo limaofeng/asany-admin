@@ -34,7 +34,7 @@ export type UseLazyQuery<T, P> = () => [
   {
     items: T[];
     loading: boolean;
-    refetch: (params: P, page: number) => void;
+    refetch: (params: P, page: number) => Promise<any>;
     pagination: PaginationType;
   },
 ];
@@ -91,8 +91,9 @@ export function useLongListLazyQuery<T, P>(
       }
       state.current.page = page;
       // debugger;
-      console.log('loadFileObjects 3');
-      refetch(state.current.conditions, state.current.page);
+      // console.log('loadFileObjects 3');
+      await refetch(state.current.conditions, state.current.page);
+      await sleep(300);
     },
     [refetch],
   );
@@ -167,6 +168,9 @@ export function useLongListLazyQuery<T, P>(
   useDeepCompareEffect(() => {
     if (loading) {
       return;
+    }
+    if (state.current.pagination.totalCount != _pagination.totalCount) {
+      state.current.files.length = 0;
     }
     state.current.pagination = _pagination;
     parseData(items);

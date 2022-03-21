@@ -42,13 +42,15 @@ function ViewFileDetails(props: ViewFileDetailsProps) {
     data?.file && setFile(data?.file);
   }, [data?.file]);
 
-  console.log('ViewFileDetails', loading, data?.file);
+  // console.log('ViewFileDetails', loading, data?.file);
 
   return (
     <BlockUI overlayClassName="bg-white bg-opacity-25" className="pt-5" loading={loading}>
-      <div className="file-preview mb-6">
-        <img />
-      </div>
+      {!file.isDirectory && (
+        <div className="file-preview mb-6">
+          <Symbol src={`http://localhost:8080${file.path}`} />
+        </div>
+      )}
       {false && (
         <>
           <div className="fs-6 text-gray-800 mb-4">有权使用的人</div>
@@ -202,7 +204,7 @@ function FileDetails(props: FileDetailsProps) {
     return [titleFull.substring(0, index), titleFull.substring(index + 1)];
   }, [titleFull]);
 
-  console.log(title, suffix);
+  // console.log(title, suffix);
 
   return (
     <div className="preview-container">

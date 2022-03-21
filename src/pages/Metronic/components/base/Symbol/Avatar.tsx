@@ -4,24 +4,10 @@ import React from 'react';
 import classnames from 'classnames';
 
 import { contrastTextColor, generateBackgroundColor } from '../../utils/color';
-import type { Badge } from '../Badge';
 import Tooltip from '../../feedback/Tooltip';
 
-import type { SymbolSize } from './utils';
 import { useSymbolSize } from './utils';
-
-export type AvatarProps = {
-  onClick?: (e: React.MouseEvent) => void;
-  className?: string;
-  shape?: 'circle' | 'square';
-  size?: SymbolSize;
-  src?: string | React.ReactNode;
-  title?: string;
-  alt?: string;
-  gap?: number;
-  labelClassName?: string;
-  badge?: React.ReactElement<typeof Badge>;
-};
+import type { AvatarProps } from './typings';
 
 function Avatar(props: AvatarProps) {
   const {
@@ -41,9 +27,13 @@ function Avatar(props: AvatarProps) {
   const backgroundColor = useMemo(() => generateBackgroundColor(alt), [alt]);
   const color = useMemo(() => contrastTextColor(backgroundColor), [backgroundColor]);
 
-  const handleError = useCallback(() => {
-    setLoadFailed(true);
-  }, []);
+  const handleError = useCallback(
+    (e) => {
+      console.log(e, src);
+      setLoadFailed(true);
+    },
+    [src],
+  );
 
   const sizeClass = useSymbolSize(props.size);
 
@@ -85,10 +75,10 @@ function renderImg(
   src: string | React.ReactNode,
   alt: string,
   gap: number | undefined,
-  onError: () => void,
+  onError: (e: any) => void,
 ) {
   if (!src) {
-    onError();
+    onError(new Error('SRC 为空'));
     return;
   }
   if (React.isValidElement(src)) {

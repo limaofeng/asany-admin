@@ -87,11 +87,12 @@ function TreeHeaderColumn(props: TreeHeaderColumnProps) {
     return ['ascend', 'descend'];
   }, [col.sortDirections, sortable]);
 
-  const [ref, { right, left }] = useMeasure<HTMLTableCellElement>();
+  const [ref, { width, x, y }] = useMeasure<HTMLTableCellElement>();
 
   useEffect(() => {
-    onWidthResize(col.key!, right + left);
-  }, [col.key, left, onWidthResize, right]);
+    // console.log('TreeHeaderColumn', col.key, width, x, y);
+    onWidthResize(col.key!, width + x);
+  }, [col.key, onWidthResize, width, x, y]);
 
   const handleSort = useCallback(() => {
     const _index = sortDirections.findIndex((item) => item == sortOrder) + 1;

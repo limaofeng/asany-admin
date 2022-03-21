@@ -10,26 +10,27 @@ import { useFolderQuery, useListFiles } from '../hooks';
 
 import FileDetails from './FileDetails';
 import FileName from './FileName';
+import NewFolderModal from './NewFolderModal';
 
 import { Badge, BlockUI, Button, Card, Input, Table } from '@/pages/Metronic/components';
-import type { CloudDrive, FileFilter, FileObject } from '@/types';
+import type { FileFilter, FileObject } from '@/types';
 import type { DataSource } from '@/pages/Metronic/components/base/Table';
 import type { Sorter } from '@/pages/Metronic/components/base/Table/typings';
 
 type ListFilesProps = {
   orderBy?: Sorter;
   filter?: FileFilter;
-  cloudDrive?: CloudDrive;
+  rootFolder?: FileObject;
   currentFolder?: FileObject;
   folder?: string;
 };
 
-function generatePaths(cloudDrive?: CloudDrive, currentFolder?: FileObject) {
-  const _paths = cloudDrive
+function generatePaths(rootFolder?: FileObject, currentFolder?: FileObject) {
+  const _paths = rootFolder
     ? [
         {
-          id: cloudDrive.rootFolder,
-          name: cloudDrive.name,
+          id: rootFolder.id,
+          name: rootFolder.name,
           isDirectory: true,
           isRootFolder: true,
           path: '/',
@@ -46,20 +47,32 @@ function generatePaths(cloudDrive?: CloudDrive, currentFolder?: FileObject) {
 }
 
 function ListFiles(props: ListFilesProps) {
-  const { folder, cloudDrive, filter } = props;
+  const { folder, rootFolder, filter } = props;
 
   const history = useHistory();
 
   const temp = useRef<{
-    cloudDrive?: CloudDrive;
+    rootFolder?: FileObject;
     currentFolder?: FileObject;
+    newFolderVisible: boolean;
     sorter: Sorter;
   }>({
     sorter: props.orderBy || { field: 'name', order: 'ascend' },
-    cloudDrive,
+    rootFolder,
+    newFolderVisible: false,
     currentFolder: props.currentFolder,
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
+
+  const handleOpenNewFolderModal = useCallback(() => {
+    temp.current.newFolderVisible = true;
+    forceRender();
+  }, []);
+
+  const handleCloseNewFolderModal = useCallback(() => {
+    temp.current.newFolderVisible = false;
+    forceRender();
+  }, []);
 
   const { data: loadFolderResult } = useFolderQuery({
     fetchPolicy: 'cache-and-network',
@@ -77,7 +90,7 @@ function ListFiles(props: ListFilesProps) {
     return 'isDirectory_desc,' + sorter.field + '_' + (sorter.order == 'ascend' ? 'asc' : 'desc');
   }, [sorter]);
 
-  const [pagination, loading, useFileObject, { loadedCount, allItems }] = useListFiles(
+  const [pagination, loading, useFileObject, { loadedCount, allItems, refetch }] = useListFiles(
     folder,
     filter,
     orderBy,
@@ -132,8 +145,8 @@ function ListFiles(props: ListFilesProps) {
   }, []);
 
   const paths = useMemo(() => {
-    return generatePaths(cloudDrive, currentFolder);
-  }, [cloudDrive, currentFolder]);
+    return generatePaths(rootFolder, currentFolder);
+  }, [rootFolder, currentFolder]);
 
   const handleClick = useCallback(
     (item: FileObject) => {
@@ -142,7 +155,7 @@ function ListFiles(props: ListFilesProps) {
 
         if (!item.isRootFolder) {
           const _paths: FileObject[] = [
-            ...(generatePaths(temp.current.cloudDrive, temp.current.currentFolder) as any),
+            ...(generatePaths(temp.current.rootFolder, temp.current.currentFolder) as any),
             _currentFolder,
           ];
 
@@ -156,13 +169,13 @@ function ListFiles(props: ListFilesProps) {
 
         if (item.isRootFolder) {
           history.push(`/drive/my-drive`, {
-            cloudDrive,
+            rootFolder,
             currentFolder: _currentFolder,
             orderBy: temp.current.sorter,
           });
         } else {
           history.push(`/drive/folders/${item.id}`, {
-            cloudDrive,
+            rootFolder,
             currentFolder: _currentFolder,
             orderBy: temp.current.sorter,
           });
@@ -171,7 +184,7 @@ function ListFiles(props: ListFilesProps) {
         return;
       }
     },
-    [cloudDrive, history],
+    [rootFolder, history],
   );
 
   const noRowsRenderer = useCallback(() => {
@@ -218,6 +231,25 @@ function ListFiles(props: ListFilesProps) {
     return dataSource.items.filter((item) => selectedKeys.some((key) => key == item.id));
   }, [dataSource.items, selectedKeys]);
 
+  const handleNewFolderSuccess = useCallback(
+    async (_folder: FileObject) => {
+      await refetch(1);
+      const items = allItems();
+      console.log(
+        'xxxx',
+        items.some((item) => item.id == _folder.id),
+      );
+      if (items.some((item) => item.id == _folder.id)) {
+        setSelectedKeys([_folder.id]);
+      }
+    },
+    [refetch, allItems],
+  );
+
+  // console.log('rootFolder', rootFolder);
+
+  const currentFolderId = currentFolder?.id || rootFolder?.id;
+
   return (
     <Card flush>
       <Card.Header className="pt-8 flex-row-reverse">
@@ -240,14 +272,17 @@ function ListFiles(props: ListFilesProps) {
                 >
                   上传文件
                 </Button>
-                <Button
-                  variantStyle="light"
-                  variant="primary"
-                  size="sm"
-                  icon={<Icon className="svg-icon-2" name="Duotune/fil013" />}
-                >
-                  新建文件夹
-                </Button>
+                {rootFolder?.isRootFolder && (
+                  <Button
+                    variantStyle="light"
+                    variant="primary"
+                    size="sm"
+                    icon={<Icon className="svg-icon-2" name="Duotune/fil013" />}
+                    onClick={handleOpenNewFolderModal}
+                  >
+                    新建文件夹
+                  </Button>
+                )}
               </>
             )}
             {['row', 'multi-row'].includes(row_selection_state) && (
@@ -328,6 +363,7 @@ function ListFiles(props: ListFilesProps) {
                 hover
                 rowSelection={{
                   type: 'checkbox',
+                  selectedRowKeys: selectedKeys,
                   renderTitle: (size) => (
                     <>
                       已选中<span className="mx-2">{size}</span>个文件/文件夹
@@ -339,7 +375,7 @@ function ListFiles(props: ListFilesProps) {
                 columns={[
                   {
                     key: 'name',
-                    title: '文件名',
+                    title: <span className="ps-2">文件名</span>,
                     className: 'min-w-250px',
                     sorter: true,
                     sortOrder: sorter.field == 'name' ? sorter.order : undefined,
@@ -389,6 +425,12 @@ function ListFiles(props: ListFilesProps) {
         <div className="file-details-quick-preview pb-7">
           <FileDetails files={selectedFiles} currentFolder={currentFolder} />
         </div>
+        <NewFolderModal
+          onCancel={handleCloseNewFolderModal}
+          visible={temp.current.newFolderVisible}
+          parentFolder={currentFolderId!}
+          onSuccess={handleNewFolderSuccess}
+        />
       </Card.Body>
     </Card>
   );

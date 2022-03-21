@@ -35,7 +35,7 @@ export type RowData = {
 };
 
 export type TableColumn<T> = {
-  title: string;
+  title: string | React.ReactNode;
   dataIndex?: string;
   key?: string;
   width?: string | number;

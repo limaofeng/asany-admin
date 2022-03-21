@@ -32,7 +32,9 @@ type ModalProps = {
   header?: React.ReactNode;
   footer?: React.ReactNode;
   bodyClassName?: string;
+  headerClassName?: string;
   dialogClassName?: string;
+  footerClassName?: string;
   mask?: boolean;
   maskClosable?: boolean;
   children: React.ReactNode;
@@ -67,6 +69,7 @@ function ModalHeader(props: ModalHeaderProps) {
 }
 
 type ModalFooterProps = {
+  className?: string;
   cancelText?: string;
   cancelButtonProps?: ButtonProps;
   onCancel?: ClickCallback;
@@ -77,6 +80,7 @@ type ModalFooterProps = {
 };
 
 function ModalFooter(props: ModalFooterProps) {
+  const { className } = props;
   const {
     cancelText = '取 消',
     cancelButtonProps,
@@ -87,7 +91,7 @@ function ModalFooter(props: ModalFooterProps) {
     onOk,
   } = props;
   return (
-    <BsModal.Footer>
+    <BsModal.Footer className={className}>
       <Button variant="light" size="sm" {...cancelButtonProps} onClick={onCancel}>
         {cancelText}
       </Button>
@@ -117,8 +121,14 @@ function Modal(props: ModalProps) {
     onCancel,
     mask = true,
     maskClosable = true,
-    header = <ModalHeader>{title && <h5 className="modal-title">{title}</h5>}</ModalHeader>,
-    footer = <ModalFooter />,
+    headerClassName,
+    footerClassName,
+    header = (
+      <ModalHeader className={headerClassName}>
+        {title && <h5 className="modal-title">{title}</h5>}
+      </ModalHeader>
+    ),
+    footer = <ModalFooter className={footerClassName} />,
     ...footerProps
   } = props;
 
@@ -134,9 +144,11 @@ function Modal(props: ModalProps) {
       dialogClassName={dialogClassName}
       onHide={onCancel as any}
     >
-      {header && React.cloneElement(header as React.ReactElement, { closable, onCancel })}
+      {header &&
+        React.isValidElement(header) &&
+        React.cloneElement(header as React.ReactElement, { closable, onCancel })}
       <BsModal.Body className={classnames({ 'scroll-y': scroll?.y }, bodyClassName)}>
-        {React.Children.count(children) == 1
+        {React.Children.count(children) == 1 && React.isValidElement(children)
           ? React.cloneElement(children as any, { visible: `${show}` })
           : children}
       </BsModal.Body>

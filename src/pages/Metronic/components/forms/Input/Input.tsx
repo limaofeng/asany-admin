@@ -27,7 +27,7 @@ export type InputRef = {
   setValue: (v: string) => void;
   input: React.MutableRefObject<HTMLInputElement | null>;
   blur: () => void;
-  select: (start: number, end: number) => void;
+  select: (start?: number, end?: number) => void;
   focus: () => void;
   element: HTMLInputElement | null;
 };
@@ -100,14 +100,14 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
         inputRef.current?.focus();
       },
       select: (start?: number, end?: number) => {
-        if (start != undefined && end != undefined) {
-          inputRef.current?.focus();
-          process.nextTick(() => {
+        inputRef.current?.focus();
+        process.nextTick(() => {
+          if (start != undefined && end != undefined) {
             inputRef.current?.setSelectionRange(start, end);
-          });
-        } else {
-          inputRef.current?.select();
-        }
+          } else {
+            inputRef.current?.select();
+          }
+        });
       },
     }),
     [],

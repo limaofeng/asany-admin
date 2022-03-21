@@ -99,6 +99,7 @@ function Table<T>(props: TableProps<T>) {
     toolbar = true,
     continueSelect = true,
     renderTitle = defaultSelectRenderTitle,
+    selectedRowKeys,
     onChange,
     onSelect,
     onSelectAll,
@@ -335,7 +336,7 @@ function Table<T>(props: TableProps<T>) {
   }, [continueSelect]);
 
   const handleSelectoSelectEnd = useCallback((e: OnSelectEnd) => {
-    console.log('row select', e.isClick, e.isDragStart, e.inputEvent, e);
+    // console.log('row select', e.isClick, e.isDragStart, e.inputEvent, e);
     if (e.added.length == 1 && e.afterAdded.length == 1 && e.selected.length == 1) {
       const dom = e.selected[0];
       dom.dataset.ignore_click = 'on';
@@ -354,6 +355,25 @@ function Table<T>(props: TableProps<T>) {
     temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
     forceRender();
   }, []);
+
+  useEffect(() => {
+    if (!selectedRowKeys) {
+      return;
+    }
+
+    const _size = state.current.selectedKeys.size;
+    const selectedKeyLength = selectedRowKeys.filter((key) =>
+      state.current.selectedKeys.has(key),
+    ).length;
+
+    if (selectedKeyLength == _size && selectedKeyLength == selectedRowKeys.length) {
+      return;
+    }
+
+    state.current.selectedKeys.clear();
+    selectedRowKeys.forEach(state.current.selectedKeys.add.bind(state.current.selectedKeys));
+    temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
+  }, [selectedRowKeys]);
 
   // console.log('selectedKeys', state.current.selectedKeys);
 

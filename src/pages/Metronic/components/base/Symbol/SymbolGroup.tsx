@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCallback, useMemo } from 'react';
 
-import type { SymbolProps } from './Symbol';
+import type { SymbolProps } from './typings';
 
 type SymbolGroupProps = {
   maxCount?: number;

@@ -129,33 +129,37 @@ function FileList(props: FileListProps) {
   }, [menuKey]);
 
   const rootFolder = useMemo(() => {
+    if (!cloudDrive) {
+      return undefined;
+    }
+    const _rootFolder = { ...cloudDrive, id: cloudDrive.rootFolder, isRootFolder: false };
     if (menuKey == 'image') {
-      return { ...cloudDrive, name: '全部图片' } as any;
+      return { ..._rootFolder, name: '全部图片' } as any;
     }
     if (menuKey == 'document') {
-      return { ...cloudDrive, name: '全部文档' } as any;
+      return { ..._rootFolder, name: '全部文档' } as any;
     }
     if (menuKey == 'video') {
-      return { ...cloudDrive, name: '全部视频' } as any;
+      return { ..._rootFolder, name: '全部视频' } as any;
     }
     if (menuKey == 'audio') {
-      return { ...cloudDrive, name: '全部音频' } as any;
+      return { ..._rootFolder, name: '全部音频' } as any;
     }
     if (menuKey == 'other') {
-      return { ...cloudDrive, name: '其他文件' } as any;
+      return { ..._rootFolder, name: '其他文件' } as any;
     }
-    return { ...cloudDrive, name: '全部文件' } as any;
+    return { ..._rootFolder, isRootFolder: true, name: '全部文件' } as any;
   }, [cloudDrive, menuKey]);
 
   return (
     <ContentWrapper className="app-drive-main" header={false} footer={false}>
-      {cloudDrive && (
+      {rootFolder && (
         <ListFiles
           key="list-files"
           folder={folder}
           filter={fileFilter}
           orderBy={location.state?.orderBy}
-          cloudDrive={rootFolder}
+          rootFolder={rootFolder}
           currentFolder={location.state?.currentFolder}
         />
       )}

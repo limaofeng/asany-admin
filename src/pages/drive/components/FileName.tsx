@@ -4,9 +4,11 @@ import Icon from '@asany/icons';
 import classnames from 'classnames';
 
 import { useRenameFileMutation } from '../hooks';
+import { image_formats } from '../utils';
 
 import type { InputRef } from '@/pages/Metronic/components';
-import { Button, Input } from '@/pages/Metronic/components';
+import { Modal } from '@/pages/Metronic/components';
+import { Button, Input, Symbol } from '@/pages/Metronic/components';
 import type { FileObject } from '@/types';
 import { delay, sleep } from '@/utils';
 
@@ -34,19 +36,30 @@ function FileName(props: FileNameProps) {
   const handleSaveNewName = useCallback(
     async (e: React.MouseEvent) => {
       e.stopPropagation();
-      setSaving(true);
-      await delay(
-        rename({
-          variables: {
-            id: data.id,
-            name: name,
-          },
-        }),
-        350,
-      );
-      await sleep(350);
-      setSaving(false);
-      onCancelRename();
+      try {
+        setSaving(true);
+        await delay(
+          rename({
+            variables: {
+              id: data.id,
+              name: name,
+            },
+          }),
+          350,
+        );
+        await sleep(350);
+        setSaving(false);
+        onCancelRename();
+      } catch (_e: any) {
+        setSaving(false);
+        await Modal.error({
+          content: _e.message,
+          timer: 2000,
+          timerProgressBar: true,
+        });
+        await sleep(300);
+        inputRef.current?.select();
+      }
     },
     [data.id, name, onCancelRename, rename],
   );
@@ -103,10 +116,16 @@ function FileName(props: FileNameProps) {
       onClick={handleBlocking}
       className={classnames('d-flex align-items-center', { 'no-selecto-drag': editable })}
     >
-      <Icon
-        name={`Duotune/${data.isDirectory ? 'fil012' : 'fil003'}`}
-        className="svg-icon-2x svg-icon-primary me-4"
-      />
+      <div className="title-icon-container me-1 d-flex align-items-center justify-content-center">
+        {image_formats.includes(data.extension!) ? (
+          <Symbol src={`http://localhost:8080${data.path}`} />
+        ) : (
+          <Icon
+            name={`Duotune/${data.isDirectory ? 'fil012' : 'fil003'}`}
+            className="svg-icon-2x svg-icon-primary"
+          />
+        )}
+      </div>
       {editable ? (
         <>
           <Input
