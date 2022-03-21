@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import React from 'react';
 
 import classnames from 'classnames';
@@ -30,6 +30,10 @@ function Avatar(props: AvatarProps) {
     },
     [src],
   );
+
+  useEffect(() => {
+    src && setLoadFailed(false);
+  }, [src]);
 
   const sizeClass = useSymbolSize(props.size);
 
