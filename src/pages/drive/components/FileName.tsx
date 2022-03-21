@@ -118,7 +118,15 @@ function FileName(props: FileNameProps) {
     >
       <div className="title-icon-container me-1 d-flex align-items-center justify-content-center">
         {image_formats.includes(data.extension!) ? (
-          <Symbol src={`http://localhost:8080${data.path}`} />
+          <Symbol
+            alt={
+              <Icon
+                name={`Duotune/${data.isDirectory ? 'fil012' : 'fil003'}`}
+                className="svg-icon-2x svg-icon-primary"
+              />
+            }
+            src={`http://localhost:8080${data.path}`}
+          />
         ) : (
           <Icon
             name={`Duotune/${data.isDirectory ? 'fil012' : 'fil003'}`}

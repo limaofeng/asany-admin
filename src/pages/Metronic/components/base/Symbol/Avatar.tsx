@@ -10,22 +10,18 @@ import { useSymbolSize } from './utils';
 import type { AvatarProps } from './typings';
 
 function Avatar(props: AvatarProps) {
-  const {
-    title,
-    onClick,
-    shape,
-    className,
-    labelClassName,
-    src,
-    gap,
-    alt = 'unknown',
-    badge,
-  } = props;
+  const { title, onClick, shape, className, labelClassName, src, gap, alt, badge } = props;
 
   const [loadFailed, setLoadFailed] = useState(false);
 
-  const backgroundColor = useMemo(() => generateBackgroundColor(alt), [alt]);
-  const color = useMemo(() => contrastTextColor(backgroundColor), [backgroundColor]);
+  const backgroundColor = useMemo(
+    () => (typeof alt == 'string' ? generateBackgroundColor(alt) : undefined),
+    [alt],
+  );
+  const color = useMemo(
+    () => (backgroundColor ? contrastTextColor(backgroundColor) : undefined),
+    [backgroundColor],
+  );
 
   const handleError = useCallback(
     (e) => {
@@ -52,14 +48,19 @@ function Avatar(props: AvatarProps) {
         )}
       >
         {loadFailed ? (
-          <div
-            style={{ backgroundColor, color }}
-            className={classnames(labelClassName, 'symbol-label fw-bold')}
-          >
-            {isChinese(alt) ? alt.substring(0, 1) : alt.substring(0, 2).toUpperCase()}
-          </div>
+          React.isValidElement(alt) ? (
+            alt
+          ) : (
+            <div
+              style={{ backgroundColor, color }}
+              className={classnames(labelClassName, 'symbol-label fw-bold')}
+            >
+              {typeof alt === 'string' &&
+                (isChinese(alt) ? alt.substring(0, 1) : alt.substring(0, 2).toUpperCase())}
+            </div>
+          )
         ) : (
-          renderImg(src, alt, gap, handleError)
+          renderImg(src, gap, handleError)
         )}
         {badge}
       </div>
@@ -73,7 +74,6 @@ function isChinese(word: string) {
 
 function renderImg(
   src: string | React.ReactNode,
-  alt: string,
   gap: number | undefined,
   onError: (e: any) => void,
 ) {
@@ -84,14 +84,7 @@ function renderImg(
   if (React.isValidElement(src)) {
     return src;
   }
-  return (
-    <img
-      src={src as any}
-      alt={alt}
-      className={classnames({ [`p-${gap}`]: !!gap })}
-      onError={onError}
-    />
-  );
+  return <img src={src as any} className={classnames({ [`p-${gap}`]: !!gap })} onError={onError} />;
 }
 
 export default Avatar;

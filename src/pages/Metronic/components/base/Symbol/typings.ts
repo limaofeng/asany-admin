@@ -31,7 +31,7 @@ export type AvatarProps = {
   size?: SymbolSize;
   src?: string | React.ReactNode;
   title?: string;
-  alt?: string;
+  alt?: string | React.ReactNode;
   gap?: number;
   labelClassName?: string;
   badge?: React.ReactElement<typeof Badge>;
