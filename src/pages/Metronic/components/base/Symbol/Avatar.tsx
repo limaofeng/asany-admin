@@ -32,7 +32,7 @@ function Avatar(props: AvatarProps) {
   );
 
   useEffect(() => {
-    src && setLoadFailed(false);
+    setLoadFailed(false);
   }, [src]);
 
   const sizeClass = useSymbolSize(props.size);
