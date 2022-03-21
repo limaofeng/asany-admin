@@ -357,7 +357,7 @@ function Table<T>(props: TableProps<T>) {
   }, []);
 
   useEffect(() => {
-    if (!selectedRowKeys) {
+    if (!selectedRowKeys || state.current.selectedAll) {
       return;
     }
 

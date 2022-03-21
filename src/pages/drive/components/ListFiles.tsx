@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
 import { useHistory } from 'umi';
@@ -246,9 +246,11 @@ function ListFiles(props: ListFilesProps) {
     [refetch, allItems],
   );
 
-  // console.log('rootFolder', rootFolder);
-
   const currentFolderId = currentFolder?.id || rootFolder?.id;
+
+  useEffect(() => {
+    setSelectedKeys([]);
+  }, [currentFolderId, rootFolder?.name]);
 
   return (
     <Card flush>
