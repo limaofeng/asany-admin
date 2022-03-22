@@ -18,7 +18,7 @@ type TreeListProps<T> = {
   className?: string;
   expandedKeys?: string[];
   rowKey?: string | ((record: T & TreeNode) => string);
-  rowSelection?: RowSelection;
+  rowSelection?: RowSelection<T>;
   dataSource?: (T & TreeNode)[];
   draggable?: boolean;
   columns: TableColumn<T & TreeNode>[];

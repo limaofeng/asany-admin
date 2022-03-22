@@ -12,7 +12,9 @@ function RanderSunmaoEditor() {
       <SunmaoEditor
         id="0"
         name="测试"
+        onSave={() => {}}
         data={{
+          id: '',
           template: 'cn.asany.ui.theme.startp.BasicLayout',
           blocks: [
             {

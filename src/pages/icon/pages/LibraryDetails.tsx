@@ -187,7 +187,7 @@ function LibraryDetails() {
                   style={{ listStyle: 'none', padding: 0 }}
                   items={icons}
                   onChange={handleChange}
-                  dragCondition={handleMoveDragCondition}
+                  draggable={handleMoveDragCondition}
                   itemRender={(props: any, ref) => (
                     <IconMosaic
                       {...props}

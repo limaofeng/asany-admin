@@ -88,6 +88,7 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
           md5: await getMD5(item),
           status: 'waiting',
           source: item,
+          isRootFolder: false,
         })),
       );
       setAttachments((_attachments) => {
@@ -135,7 +136,7 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
       const index = files.findIndex((item) => item.id == id);
       const file = files[index];
       const result = await handleUpload(file);
-      files[index] = { ...result, status: 'success', isDirectory: true };
+      files[index] = { ...result, status: 'success', isDirectory: false, isRootFolder: false };
       handleChange();
       forceRender();
     },
@@ -157,7 +158,7 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
       forceRender();
       try {
         const result = await handleUpload(file);
-        files[i] = { ...result, status: 'success', isDirectory: true };
+        files[i] = { ...result, status: 'success', isDirectory: false, isRootFolder: false };
         updated = true;
       } catch (e: any) {
         files[i].status = 'failure';

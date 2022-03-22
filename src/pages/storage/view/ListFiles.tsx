@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 import FileActions from '../components/FileActions';
 import FolderPath from '../components/FolderPath';
-import { useListFilesQuery } from '../hooks';
+// import { useListFilesQuery } from '../hooks';
 
 import { Badge, Button, Card, Input, Table } from '@/pages/Metronic/components';
 import type { FileObject, Storage } from '@/types';
@@ -100,20 +100,21 @@ function ListFiles(props: ListFilesProps) {
     storage,
     match: { params },
   } = props;
-  const path = params[0];
+  // const path = params[0];
 
-  const { data, loading } = useListFilesQuery({
-    variables: {
-      storage: 'Global',
-      path: path ? '/' + path + (path.endsWith('/') ? '' : '/') : undefined,
-    },
-  });
+  // const { data, loading } = useListFilesQuery({
+  //   variables: {
+  //     storage: 'Global',
+  //     path: path ? '/' + path + (path.endsWith('/') ? '' : '/') : undefined,
+  //   },
+  // });
 
   const [renameFile, setRenameFile] = useState<FileObject>();
   const [selectedRows, setSelectedRows] = useState<FileObject[]>([]);
 
-  const currentFile = data?.currentFile;
-  const files = data?.files || [];
+  const loading = false;
+  const currentFile: FileObject | undefined = undefined; // data?.currentFile;
+  const files: FileObject[] = []; // data?.files || [];
 
   /*   const handleClick = useCallback(
     (item) => {
@@ -143,9 +144,9 @@ function ListFiles(props: ListFilesProps) {
     if (currentFile == null || storage == null) {
       return [];
     }
-    const [...objects] = currentFile!.parents!;
+    const [...objects] = (currentFile as any).parents!;
     const _paths = [{ id: '', name: storage.id, path: '/' }, ...objects];
-    if (currentFile.path !== '/') {
+    if ((currentFile as any).path !== '/') {
       _paths.push(currentFile);
     }
     return _paths;
