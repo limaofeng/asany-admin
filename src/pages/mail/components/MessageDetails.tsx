@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 
+import $ from 'jquery';
 import classnames from 'classnames';
 import { Icon } from '@asany/icons';
 import moment from 'moment';
