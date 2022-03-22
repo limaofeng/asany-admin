@@ -4,7 +4,7 @@
   "private": true,
   "description": "An out-of-box UI solution for enterprise applications",
   "scripts": {
-    "postinstall": "umi g tmp && run-script-os",
+    "postinstall": "husky install && umi g tmp && run-script-os",
     "postinstall:win32": "cd scripts && run.cmd",
     "postinstall:darwin:linux": "sh ./scripts/run.sh",
     "postinstall:default": "sh ./scripts/run.sh",
@@ -32,7 +32,16 @@
     "test:all": "node ./tests/run-tests.js",
     "test:component": "umi test ./src/components",
     "serve": "umi-serve",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "prepublishOnly": "pinst --disable",
+    "postpublish": "pinst --enable",
+    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
+    "postversion": "git push --follow-tags"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",
@@ -105,6 +114,8 @@
   "devDependencies": {
     "@asany/umi-plugin-apollo": "^0.1.6",
     "@asany/umi-plugin-app": "^0.1.30",
+    "@commitlint/cli": "^15.0.0",
+    "@commitlint/config-conventional": "^15.0.0",
     "@graphql-codegen/cli": "^2.3.1",
     "@graphql-codegen/introspection": "^2.1.1",
     "@graphql-codegen/typescript": "^2.4.2",
@@ -147,6 +158,7 @@
     "express": "^4.17.2",
     "file-loader": "^6.2.0",
     "gh-pages": "^3.2.3",
+    "husky": "^7.0.4",
     "jsdom-global": "^3.0.2",
     "lint-staged": "^12.1.7",
     "mockjs": "^1.1.0",
