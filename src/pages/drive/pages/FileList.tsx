@@ -78,10 +78,15 @@ function FileList(props: FileListProps) {
 
   const fileFilter = useMemo(() => {
     if (menuKey == 'image') {
-      return { recursive: true, mimeType_startsWith: 'image/' };
+      return {
+        isDirectory: false,
+        recursive: true,
+        mimeType_startsWith: 'image/',
+      };
     }
     if (menuKey == 'document') {
       return {
+        isDirectory: false,
         recursive: true,
         mimeType_in: [
           'application/msword',
@@ -95,18 +100,21 @@ function FileList(props: FileListProps) {
     }
     if (menuKey == 'video') {
       return {
+        isDirectory: false,
         recursive: true,
         mimeType_startsWith: 'video/',
       };
     }
     if (menuKey == 'audio') {
       return {
+        isDirectory: false,
         recursive: true,
         mimeType_startsWith: 'audio/',
       };
     }
     if (menuKey == 'other') {
       return {
+        isDirectory: false,
         recursive: true,
         AND: [
           { mimeType_notStartsWith: 'image/' },

@@ -158,8 +158,8 @@ function Modal(props: ModalProps) {
 }
 
 export type ModalOptions = {
-  title?: string;
-  content?: string;
+  title?: string | React.ReactNode;
+  content?: string | React.ReactNode;
   width?: number | string;
   okText?: string;
   cancelText?: string;
@@ -188,8 +188,8 @@ const message = async (options: MessageOptions) => {
   const result = await MySwal.fire({
     ...alertOptions,
     icon,
-    title,
-    html: content,
+    title: title as any,
+    html: content as any,
     confirmButtonText,
     buttonsStyling: false,
     allowOutsideClick: () => !Swal.isLoading(),
@@ -206,24 +206,48 @@ const message = async (options: MessageOptions) => {
 };
 
 Modal.confirm = async (options: ModalOptions) => {
-  const { okText, cancelText, okClassName, cancelClassName } = options;
+  const {
+    icon,
+    title,
+    okText,
+    cancelText,
+    content,
+    okClassName,
+    cancelClassName,
+    ...otherOptions
+  } = options;
 
-  const icon = await store.get('Duotune/arr061');
+  const closeIcon = await store.get('Duotune/arr061');
 
   return message({
-    ...options,
+    ...otherOptions,
+    title: title as any,
+    content: (
+      <>
+        {icon && (
+          <div
+            className={classnames('swal2-icon swal2-icon-show', `swal2-${icon}`)}
+            style={{ display: 'flex' }}
+          >
+            <div className="swal2-icon-content">i</div>
+          </div>
+        )}
+        {content}
+      </>
+    ),
+    allowOutsideClick: true,
     confirmButtonText: okText || '确 认',
     cancelButtonText: cancelText || '取 消',
     reverseButtons: true,
     showCancelButton: true,
     showCloseButton: true,
-    closeButtonHtml: `<span class="svg-icon svg-icon-2x">${icon?.content}</span>`,
+    closeButtonHtml: `<span class="svg-icon svg-icon-2">${closeIcon?.content}</span>`,
     customClass: {
-      container: 'modal-confirm',
+      container: classnames('modal-confirm', { 'has-icon': !!icon }),
       closeButton: 'btn btn-icon btn-sm btn-active-light-primary ms-2',
       title: 'text-left pe-0',
-      htmlContainer: 'text-left pe-0',
-      actions: 'justify-content-end',
+      htmlContainer: classnames(' pe-0 ms-0', { 'text-left': !icon }),
+      actions: classnames('justify-content-end ', { 'w-100': !icon }),
       confirmButton: classnames('btn btn-sm btn-primary', okClassName),
       cancelButton: classnames('btn btn-sm btn-secondary', cancelClassName),
     },
@@ -231,23 +255,23 @@ Modal.confirm = async (options: ModalOptions) => {
 };
 
 Modal.question = (options: ModalOptions) => {
-  return message({ ...options, icon: 'question' });
+  return message({ ...(options as any), icon: 'question' });
 };
 
 Modal.info = (options: ModalOptions) => {
-  return message({ ...options, icon: 'info' });
+  return message({ ...(options as any), icon: 'info' });
 };
 
 Modal.success = (options: ModalOptions) => {
-  return message({ ...options, icon: 'success' });
+  return message({ ...(options as any), icon: 'success' });
 };
 
 Modal.error = (options: ModalOptions) => {
-  return message({ ...options, icon: 'error' });
+  return message({ ...(options as any), icon: 'error' });
 };
 
 Modal.warning = (options: ModalOptions) => {
-  return message({ ...options, icon: 'warning' });
+  return message({ ...(options as any), icon: 'warning' });
 };
 
 Modal.Header = ModalHeader;

@@ -1,4 +1,9 @@
 .modal-confirm {
+  &.has-icon {
+    .swal2-icon {
+      margin: 1em auto 1.5em;
+    }
+  }
   .swal2-close {
     position: absolute;
     top: 1rem;
@@ -11,10 +16,15 @@
   .swal2-title {
     padding-top: 0;
     padding-left: 0;
+    font-size: 14px;
   }
   .swal2-html-container {
     margin-top: 1rem;
     padding-left: 0;
+    font-size: 14px;
+    .tip-confirm {
+      margin-bottom: 4px;
+    }
   }
   .swal2-actions {
     margin-top: 0;
@@ -50,8 +60,8 @@
         font-size: 14px;
       }
       .modal-dialog-description {
-        font-size: 13px;
         padding: 8px 0;
+        font-size: 13px;
       }
     }
   }

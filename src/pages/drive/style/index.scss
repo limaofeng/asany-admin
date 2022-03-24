@@ -16,6 +16,20 @@
   }
 }
 .app-drive-main {
+  &.pages-starred {
+    .container-xxl > .card > .card-body .table-virtualized-scroll {
+      height: calc(100vh - 122px);
+    }
+  }
+  &.pages-trash {
+    .container-xxl > .card > .card-body .table-virtualized-scroll {
+      height: calc(100vh - 197px);
+    }
+    .trash-restore {
+      font-size: 14px;
+      letter-spacing: 2px;
+    }
+  }
   .file-action-group {
     color: #04c8c8;
     background-color: #dcfdfd;
@@ -64,7 +78,7 @@
         }
 
         .table-virtualized-scroll {
-          height: calc(100vh - 204px);
+          height: calc(100vh - 210px);
         }
 
         .clouddrive-listfiles-no-rows {
@@ -78,6 +92,20 @@
             img {
               width: 32px;
               height: 32px;
+            }
+            .starred-flag {
+              top: 50% !important;
+              left: 50% !important;
+              color: #ffc700;
+              transform: translate(-50%, -50%) !important;
+              svg {
+                width: 1rem;
+                height: 1rem;
+              }
+              path {
+                opacity: 1;
+                fill-opacity: 1 !important;
+              }
             }
           }
         }
@@ -137,9 +165,9 @@
                 background-color: #fff;
                 border-radius: 13px;
                 .symbol > img {
-                  border-radius: 0;
                   width: auto;
                   height: 134px;
+                  border-radius: 0;
                 }
               }
 

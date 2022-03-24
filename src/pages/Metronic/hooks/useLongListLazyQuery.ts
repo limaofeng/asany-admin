@@ -21,6 +21,8 @@ type LoadObjectUtils<T> = {
   allItems: () => T[];
   loadedCount: number;
   refetch: (page: number) => Promise<void>;
+  refetchForObjects: (objs: T[], compare: (l: T, r: T) => boolean) => Promise<void>;
+  refetchWithRemoveForObjects: (objs: T[], compare: (l: T, r: T) => boolean) => Promise<void>;
   refetchWithRemove: (index: number) => Promise<void>;
   loadObject: LoadObject<T>;
 };
@@ -58,7 +60,6 @@ export function useLongListLazyQuery<T, P>(
     pagination: PaginationType;
   }>({
     page: 1,
-    // folder,
     conditions,
     loading: false,
     files: [],
@@ -92,8 +93,46 @@ export function useLongListLazyQuery<T, P>(
       state.current.page = page;
       // debugger;
       // console.log('loadFileObjects 3');
+      console.log('loadFileObjects 3 page', state.current.conditions);
       await refetch(state.current.conditions, state.current.page);
       await sleep(300);
+    },
+    [refetch],
+  );
+
+  const handleRefetchForObjects = useCallback(
+    async (objs: T[], compare: (l: T, r: T) => boolean) => {
+      const _pages = new Set<number>();
+      const indexs = objs.map((obj) =>
+        state.current.files.findIndex((item) => item && compare(item, obj)),
+      );
+      const pageSize = state.current.pagination.pageSize;
+      for (const index of indexs) {
+        _pages.add(Math.ceil((index + 1) / pageSize));
+      }
+      for (const _page of _pages) {
+        await refetch(state.current.conditions, _page);
+      }
+    },
+    [refetch],
+  );
+
+  const handleRefetchWithRemoveForObjects = useCallback(
+    async (objs: T[], compare: (l: T, r: T) => boolean) => {
+      const _pages = new Set<number>();
+      const indexs = objs.map((obj) =>
+        state.current.files.findIndex((item) => item && compare(item, obj)),
+      );
+      state.current.files = state.current.files.filter(
+        (item) => !objs.some((obj) => compare(item, obj)),
+      );
+      const pageSize = state.current.pagination.pageSize;
+      for (const index of indexs) {
+        _pages.add(Math.ceil((index + 1) / pageSize));
+      }
+      for (const _page of _pages) {
+        await refetch(state.current.conditions, _page);
+      }
     },
     [refetch],
   );
@@ -161,7 +200,7 @@ export function useLongListLazyQuery<T, P>(
     state.current.pagination = { ...DEFAULT_PAGINATION };
     state.current.files.length = 0;
     state.current.page = 1;
-
+    console.log('loadFileObjects 2 page', conditions);
     _loadObjects(state.current.conditions, state.current.page);
   }, [conditions]);
 
@@ -261,7 +300,7 @@ export function useLongListLazyQuery<T, P>(
 
   const loadedCount = state.current.files.filter((item) => !!item).length;
 
-  const utils = useMemo(
+  const utils: LoadObjectUtils<T> = useMemo(
     () => ({
       allItems: () => {
         return state.current.files;
@@ -269,15 +308,23 @@ export function useLongListLazyQuery<T, P>(
       loadedCount,
       loadObject,
       refetch: handleRefetch,
+      refetchForObjects: handleRefetchForObjects,
+      refetchWithRemoveForObjects: handleRefetchWithRemoveForObjects,
       refetchWithRemove: handleRefetchWithRemove,
     }),
-    [loadedCount, loadObject, handleRefetch, handleRefetchWithRemove],
+    [
+      loadedCount,
+      loadObject,
+      handleRefetch,
+      handleRefetchForObjects,
+      handleRefetchWithRemoveForObjects,
+      handleRefetchWithRemove,
+    ],
   );
 
   const pagination = state.current.pagination;
 
-  return useMemo(
-    () => [pagination, loading, useObject, utils],
-    [pagination, loading, useObject, utils],
-  );
+  return useMemo(() => {
+    return [pagination, loading, useObject, utils];
+  }, [pagination, loading, useObject, utils]);
 }

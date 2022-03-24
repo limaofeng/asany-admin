@@ -11,6 +11,7 @@ import type { PaginationProps } from './Pagination';
 import Pagination from './Pagination';
 import TableHeader, { Colgroup } from './TableHeader';
 import type {
+  DataSource,
   NoContentRenderer,
   RowHeightFunc,
   RowSelection,
@@ -22,16 +23,6 @@ import TableRow from './TableRow';
 import { getRowKey } from './utils';
 
 import './Table.scss';
-
-export type UseDataSourceItem<T> = (index: number) => T | undefined;
-
-export type DataSource<T> = {
-  type?: 'array' | 'lazy';
-  items: T[];
-  loadedCount: number;
-  rowCount: number;
-  useItem: UseDataSourceItem<T>;
-};
 
 type OnChange = (
   pagination: PaginationProps | undefined,
@@ -380,7 +371,9 @@ function Table<T>(props: TableProps<T>) {
   return (
     <div className="dataTables_wrapper dt-bootstrap4 no-footer">
       <TableHeader
+        rowKey={rowKey}
         toolbar={toolbar}
+        dataSource={dataSource}
         renderTitle={renderTitle}
         selectedAll={state.current.selectedAll}
         selectedKeys={state.current.selectedKeys}

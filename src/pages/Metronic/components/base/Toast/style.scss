@@ -1,0 +1,10 @@
+#toastr-container {
+  z-index: 2000;
+  .toastr {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1.25rem !important;
+    background-image: none !important;
+  }
+}

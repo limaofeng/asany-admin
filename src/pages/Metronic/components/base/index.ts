@@ -22,3 +22,5 @@ export * from './Popover';
 export * from './NProgress';
 export * from './InfiniteScroll';
 export * from './BlockUI';
+export * from './Alert';
+export * from './Toast';

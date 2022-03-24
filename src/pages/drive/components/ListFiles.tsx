@@ -1,23 +1,39 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import Icon from '@asany/icons';
 import { useHistory } from 'umi';
+import Icon from '@asany/icons';
 import classnames from 'classnames';
 
-// import FileActions from '../components/FileActions';
 import FolderPath from '../components/FolderPath';
-import { useFolderQuery, useListFiles } from '../hooks';
+import {
+  useAddStarForFilesMutation,
+  useClearFilesInTrashMutation,
+  useFolderQuery,
+  useListFiles,
+  useMoveFilesToTrashMutation,
+  useRestoreFilesMutation,
+} from '../hooks';
 
 import FileDetails from './FileDetails';
 import FileName from './FileName';
 import NewFolderModal from './NewFolderModal';
 
-import { Badge, BlockUI, Button, Card, Input, Table } from '@/pages/Metronic/components';
+import {
+  Alert,
+  Badge,
+  BlockUI,
+  Button,
+  Card,
+  Input,
+  Modal,
+  Table,
+  Toast,
+} from '@/pages/Metronic/components';
 import type { FileFilter, FileObject } from '@/types';
-import type { DataSource } from '@/pages/Metronic/components/base/Table';
-import type { Sorter } from '@/pages/Metronic/components/base/Table/typings';
+import type { DataSource, Sorter } from '@/pages/Metronic/components/base/Table/typings';
 
 type ListFilesProps = {
+  toolbar?: 'default' | 'starred' | 'trash';
   orderBy?: Sorter;
   filter?: FileFilter;
   rootFolder?: FileObject;
@@ -37,7 +53,7 @@ function generatePaths(rootFolder?: FileObject, currentFolder?: FileObject) {
         },
       ]
     : [];
-  if (!!currentFolder) {
+  if (!!currentFolder && currentFolder.id !== rootFolder?.id) {
     currentFolder.parents && _paths.push(...currentFolder.parents!);
     if (!currentFolder.isRootFolder) {
       _paths.push({ ...(currentFolder as any) });
@@ -47,7 +63,7 @@ function generatePaths(rootFolder?: FileObject, currentFolder?: FileObject) {
 }
 
 function ListFiles(props: ListFilesProps) {
-  const { folder, rootFolder, filter } = props;
+  const { folder, rootFolder, filter, toolbar = 'default' } = props;
 
   const history = useHistory();
 
@@ -56,6 +72,7 @@ function ListFiles(props: ListFilesProps) {
     currentFolder?: FileObject;
     newFolderVisible: boolean;
     sorter: Sorter;
+    renameFile?: FileObject;
   }>({
     sorter: props.orderBy || { field: 'name', order: 'ascend' },
     rootFolder,
@@ -80,6 +97,11 @@ function ListFiles(props: ListFilesProps) {
       folder: folder,
     },
   });
+  const [starFiles] = useAddStarForFilesMutation();
+  // const [deleteFiles] = useDeleteFilesMutation();
+  const [moveToTrash] = useMoveFilesToTrashMutation();
+  const [clearTrash] = useClearFilesInTrashMutation();
+  const [restoreFiles] = useRestoreFilesMutation();
 
   const { sorter } = temp.current;
 
@@ -90,11 +112,12 @@ function ListFiles(props: ListFilesProps) {
     return 'isDirectory_desc,' + sorter.field + '_' + (sorter.order == 'ascend' ? 'asc' : 'desc');
   }, [sorter]);
 
-  const [pagination, loading, useFileObject, { loadedCount, allItems, refetch }] = useListFiles(
-    folder,
-    filter,
-    orderBy,
-  );
+  const [
+    pagination,
+    loading,
+    useFileObject,
+    { loadedCount, allItems, refetch, refetchForObjects, refetchWithRemoveForObjects },
+  ] = useListFiles(folder, filter, orderBy);
 
   const dataSource: DataSource<FileObject> = useMemo(() => {
     return {
@@ -107,7 +130,6 @@ function ListFiles(props: ListFilesProps) {
     };
   }, [allItems, loadedCount, pagination.totalCount, useFileObject]);
 
-  const [renameFile, setRenameFile] = useState<FileObject>();
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 
   const currentFolder = useMemo(() => {
@@ -132,16 +154,23 @@ function ListFiles(props: ListFilesProps) {
     [setSelectedKeys],
   );
 
-  const handleRename = useCallback(
-    async (key) => {
-      const file = dataSource.items.find((item) => item.id == key);
-      setRenameFile(file);
+  const handleSuccess = useCallback(
+    async (file: FileObject) => {
+      await refetchForObjects([file], (l, r) => l.id == r.id);
     },
-    [dataSource.items],
+    [refetchForObjects],
   );
 
+  const selectedFile = useMemo(() => {
+    if (selectedKeys.length != 1) {
+      return undefined;
+    }
+    return allItems().find((item) => item && item.id == selectedKeys[0]);
+  }, [allItems, selectedKeys]);
+
   const handleCancelRename = useCallback(() => {
-    setRenameFile(undefined);
+    temp.current.renameFile = undefined;
+    forceRender();
   }, []);
 
   const paths = useMemo(() => {
@@ -149,7 +178,15 @@ function ListFiles(props: ListFilesProps) {
   }, [rootFolder, currentFolder]);
 
   const handleClick = useCallback(
-    (item: FileObject) => {
+    async (item: FileObject) => {
+      if (toolbar == 'trash') {
+        await Modal.confirm({
+          title: <>此文件{item.isDirectory && '夹'}位于您的回收站中</>,
+          content: <>要查看该文件{item.isDirectory && '夹'}，您需要将其从回收站还原。</>,
+          okText: '还原',
+        });
+        return;
+      }
       if (item.isDirectory) {
         const _currentFolder = { ...item };
 
@@ -184,7 +221,7 @@ function ListFiles(props: ListFilesProps) {
         return;
       }
     },
-    [rootFolder, history],
+    [toolbar, history, rootFolder],
   );
 
   const noRowsRenderer = useCallback(() => {
@@ -211,21 +248,14 @@ function ListFiles(props: ListFilesProps) {
     );
   }, [loadedCount, loading, pagination.totalCount]);
 
+  const starred = allItems()
+    .filter((item) => selectedKeys.includes(item.id))
+    .every((item) => item.starred);
+
   const handleChange = useCallback((_pagination, _filters, _sorter) => {
     temp.current.sorter = _sorter;
-    console.log('handleChange', temp.current.sorter);
     forceRender();
   }, []);
-
-  const row_selection_state = useMemo(() => {
-    if (!selectedKeys.length) {
-      return 'no_rows';
-    }
-    if (selectedKeys.length == 1) {
-      return 'row';
-    }
-    return 'multi-row';
-  }, [selectedKeys.length]);
 
   const selectedFiles = useMemo(() => {
     return dataSource.items.filter((item) => selectedKeys.some((key) => key == item.id));
@@ -235,11 +265,7 @@ function ListFiles(props: ListFilesProps) {
     async (_folder: FileObject) => {
       await refetch(1);
       const items = allItems();
-      console.log(
-        'xxxx',
-        items.some((item) => item.id == _folder.id),
-      );
-      if (items.some((item) => item.id == _folder.id)) {
+      if (items.some((item) => item && item.id == _folder.id)) {
         setSelectedKeys([_folder.id]);
       }
     },
@@ -252,102 +278,238 @@ function ListFiles(props: ListFilesProps) {
     setSelectedKeys([]);
   }, [currentFolderId, rootFolder?.name]);
 
+  const handleDelete = useCallback(async () => {
+    const message = selectedFile
+      ? selectedFile?.isDirectory
+        ? '文件夹'
+        : '文件'
+      : selectedKeys.length + ' 项内容';
+
+    const result = await Modal.confirm({
+      title: '确定删除',
+      content: (
+        <>
+          <p className="tip-confirm">确定删除所选的文件吗？</p>
+          <p>删除的文件可在 10天 内通过回收站还原</p>
+        </>
+      ),
+      icon: 'info',
+      okText: '删除',
+    });
+    if (!result.isConfirmed) {
+      return;
+    }
+    const { data: rdata } = await moveToTrash({ variables: { ids: selectedKeys } });
+    setSelectedKeys([]);
+    refetchWithRemoveForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+    Toast.success(message + ' 已移至回收站', 2000, {
+      placement: 'bottom-start',
+      progressBar: true,
+    });
+  }, [moveToTrash, refetchWithRemoveForObjects, selectedFile, selectedKeys]);
+
+  const handleClearTrash = useCallback(async () => {
+    const result = await Modal.confirm({
+      title: '清空回收站',
+      content: '系统将永久删除回收站中的内容，此操作无法恢复 ？',
+    });
+    if (!result.isConfirmed) {
+      return;
+    }
+    await clearTrash({
+      variables: { folder },
+    });
+    refetch(1);
+    Toast.success('回收站已被清空', 2000, {
+      placement: 'bottom-start',
+      progressBar: true,
+    });
+  }, [clearTrash, folder, refetch]);
+
+  const handleRestore = useCallback(async () => {
+    const message = selectedFile
+      ? selectedFile?.isDirectory
+        ? '文件夹'
+        : '文件'
+      : selectedKeys.length + ' 项内容';
+    const result = await Modal.confirm({
+      title: '确定还原',
+      content: '确认还原选中的 ' + message + ' ？',
+    });
+    if (!result.isConfirmed) {
+      return;
+    }
+    const { data: rdata } = await restoreFiles({ variables: { ids: selectedKeys } });
+    setSelectedKeys([]);
+    refetchWithRemoveForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+    Toast.success(message + ' 还原成功', 2000, {
+      placement: 'bottom-start',
+      progressBar: true,
+    });
+  }, [refetchWithRemoveForObjects, restoreFiles, selectedFile, selectedKeys]);
+
+  const handleStar = useCallback(async () => {
+    const message = selectedFile
+      ? selectedFile?.isDirectory
+        ? '文件夹'
+        : '文件'
+      : selectedKeys.length + ' 项内容';
+
+    if (starred) {
+      const { data: rdata } = await starFiles({
+        variables: {
+          ids: selectedKeys,
+          mode: 'REMOVE',
+        },
+      });
+      refetchForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+      Toast.success(message + '已从收藏中移除', 2000, {
+        placement: 'bottom-start',
+        progressBar: true,
+      });
+    } else {
+      const { data: rdata } = await starFiles({
+        variables: {
+          ids: selectedKeys,
+          mode: 'ADD',
+        },
+      });
+      refetchForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+      Toast.success(message + ' 已添加到收藏', 2000, {
+        placement: 'bottom-start',
+        progressBar: true,
+      });
+    }
+    forceRender();
+  }, [refetchForObjects, selectedFile, selectedKeys, starFiles, starred]);
+
+  const handleRename = useCallback(async () => {
+    temp.current.renameFile = selectedFile;
+    forceRender();
+  }, [selectedFile]);
+
+  const row_selection_state = useMemo(() => {
+    if (!selectedKeys.length) {
+      return 'no_rows';
+    }
+    if (selectedKeys.length == 1) {
+      return 'row';
+    }
+    return 'multi-row';
+  }, [selectedKeys.length]);
+
   return (
     <Card flush>
-      <Card.Header className="pt-8 flex-row-reverse">
-        <Card.Title>
-          <Input.Search solid className="w-250px" placeholder="搜索 文件 & 文件夹" />
-        </Card.Title>
-        <Card.Toolbar>
-          <div
-            className={classnames('d-flex justify-content-end', {
-              'file-action-group px-3 gap-2': ['row', 'multi-row'].includes(row_selection_state),
-            })}
-          >
-            {row_selection_state == 'no_rows' && (
-              <>
+      {toolbar == 'default' && (
+        <Card.Header className="pt-8 flex-row-reverse">
+          <Card.Title>
+            <Input.Search solid className="w-250px" placeholder="搜索 文件 & 文件夹" />
+          </Card.Title>
+          <Card.Toolbar>
+            <div
+              className={classnames('d-flex justify-content-end', {
+                'file-action-group px-3 gap-2': ['row', 'multi-row'].includes(row_selection_state),
+              })}
+            >
+              {row_selection_state == 'no_rows' && (
+                <>
+                  {toolbar == 'default' && (
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      className="me-3"
+                      icon={<Icon className="svg-icon-2" name="Duotune/fil018" />}
+                    >
+                      上传文件
+                    </Button>
+                  )}
+                  {toolbar == 'default' && rootFolder?.isRootFolder && (
+                    <Button
+                      variantStyle="light"
+                      variant="primary"
+                      size="sm"
+                      icon={<Icon className="svg-icon-2" name="Duotune/fil013" />}
+                      onClick={handleOpenNewFolderModal}
+                    >
+                      新建文件夹
+                    </Button>
+                  )}
+                </>
+              )}
+              {['row', 'multi-row'].includes(row_selection_state) && (
                 <Button
                   size="sm"
+                  variantStyle="light"
                   variant="primary"
-                  className="me-3"
-                  icon={<Icon className="svg-icon-2" name="Duotune/fil018" />}
+                  icon={<Icon className="svg-icon-2" name="Duotune/arr095" />}
                 >
-                  上传文件
+                  分享
                 </Button>
-                {rootFolder?.isRootFolder && (
-                  <Button
-                    variantStyle="light"
-                    variant="primary"
-                    size="sm"
-                    icon={<Icon className="svg-icon-2" name="Duotune/fil013" />}
-                    onClick={handleOpenNewFolderModal}
-                  >
-                    新建文件夹
-                  </Button>
-                )}
-              </>
-            )}
-            {['row', 'multi-row'].includes(row_selection_state) && (
-              <Button
-                size="sm"
-                variantStyle="light"
-                variant="primary"
-                icon={<Icon className="svg-icon-2" name="Duotune/arr095" />}
-              >
-                分享
-              </Button>
-            )}
-            {['row', 'multi-row'].includes(row_selection_state) && (
-              <Button
-                variantStyle="light"
-                variant="primary"
-                icon={
-                  <Icon
-                    className="svg-icon-2"
-                    style={{ transform: 'rotateZ(90deg)' }}
-                    name="Duotune/arr076"
-                  />
-                }
-                size="sm"
-              >
-                下载
-              </Button>
-            )}
-            {['row', 'multi-row'].includes(row_selection_state) && (
-              <Button
-                size="sm"
-                variantStyle="light"
-                variant="primary"
-                icon={<Icon className="svg-icon-2" name="Duotune/gen027" />}
-              >
-                删除
-              </Button>
-            )}
-            {row_selection_state == 'row' && (
-              <Button
-                as="button"
-                variantStyle="light"
-                variant="primary"
-                size="sm"
-                icon={<Icon className="svg-icon-2" name="Duotune/gen055" />}
-                onClick={() => handleRename(selectedKeys[0])}
-              >
-                重命名
-              </Button>
-            )}
-            {['row', 'multi-row'].includes(row_selection_state) && (
-              <Button
-                size="sm"
-                variantStyle="light"
-                variant="primary"
-                icon={<Icon className="svg-icon-2" name="Duotune/arr033" />}
-              >
-                移动
-              </Button>
-            )}
-          </div>
-        </Card.Toolbar>
-      </Card.Header>
+              )}
+              {['row', 'multi-row'].includes(row_selection_state) && (
+                <Button
+                  variantStyle="light"
+                  variant="primary"
+                  icon={
+                    <Icon
+                      className="svg-icon-2"
+                      style={{ transform: 'rotateZ(90deg)' }}
+                      name="Duotune/arr076"
+                    />
+                  }
+                  size="sm"
+                >
+                  下载
+                </Button>
+              )}
+              {['row', 'multi-row'].includes(row_selection_state) && (
+                <Button
+                  size="sm"
+                  variantStyle="light"
+                  variant="primary"
+                  icon={<Icon className="svg-icon-2" name="Duotune/gen027" />}
+                  onClick={handleDelete}
+                >
+                  删除
+                </Button>
+              )}
+              {row_selection_state == 'row' && (
+                <Button
+                  as="button"
+                  variantStyle="light"
+                  variant="primary"
+                  size="sm"
+                  icon={<Icon className="svg-icon-2" name="Duotune/gen055" />}
+                  onClick={handleRename}
+                >
+                  重命名
+                </Button>
+              )}
+              {['row', 'multi-row'].includes(row_selection_state) && (
+                <Button
+                  size="sm"
+                  variantStyle="light"
+                  variant="primary"
+                  icon={<Icon className="svg-icon-2" name="Duotune/arr033" />}
+                >
+                  移动
+                </Button>
+              )}
+              {['row', 'multi-row'].includes(row_selection_state) && (
+                <Button
+                  size="sm"
+                  variantStyle="light"
+                  variant="primary"
+                  icon={<Icon className="svg-icon-2" name="Duotune/abs024" />}
+                  onClick={handleStar}
+                >
+                  {starred ? '取消收藏' : '收藏'}
+                </Button>
+              )}
+            </div>
+          </Card.Toolbar>
+        </Card.Header>
+      )}
       <Card.Body className="d-flex flex-row">
         <div className="flex-row-fluid">
           <div className="d-flex flex-stack">
@@ -356,6 +518,24 @@ function ListFiles(props: ListFilesProps) {
               {renderStats()}
             </Badge>
           </div>
+          {toolbar == 'trash' && (
+            <Alert
+              theme="Light"
+              type="primary"
+              action={
+                <Button
+                  onClick={handleClearTrash}
+                  size="sm"
+                  variantStyle="light"
+                  variant="primary"
+                  className="me-3 ls-1"
+                >
+                  清空回收站
+                </Button>
+              }
+              message="内容移至回收站后会在 30 天后被永久删除"
+            />
+          )}
           <BlockUI overlayClassName="bg-white bg-opacity-25" loading={loading}>
             {!pagination.totalCount && !loading ? (
               noRowsRenderer()
@@ -371,6 +551,26 @@ function ListFiles(props: ListFilesProps) {
                       已选中<span className="mx-2">{size}</span>个文件/文件夹
                     </>
                   ),
+                  toolbar:
+                    toolbar == 'trash' &&
+                    (() => {
+                      return (
+                        <div>
+                          <Button
+                            color="success"
+                            variant={false}
+                            className="trash-restore"
+                            size="sm"
+                            onClick={handleRestore}
+                            icon={
+                              <Icon name="Duotune/arr029" className="svg-icon-4 svg-icon-success" />
+                            }
+                          >
+                            还原
+                          </Button>
+                        </div>
+                      );
+                    }),
                   onChange: handleRowSelectionChange,
                 }}
                 rowHeight={50}
@@ -385,9 +585,10 @@ function ListFiles(props: ListFilesProps) {
                       return (
                         <FileName
                           onClick={handleClick}
+                          onSuccess={handleSuccess}
                           onCancelRename={handleCancelRename}
                           data={record}
-                          editable={record && record.id == renameFile?.id}
+                          editable={record.id == temp.current.renameFile?.id}
                         />
                       );
                     },

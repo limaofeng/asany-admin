@@ -4,6 +4,7 @@ query cloudDrive($id: ID!) {
     name
     type
     rootFolder
+    recycler
   }
 }
 
@@ -11,6 +12,36 @@ mutation createFolder($name: String!, $parentFolder: ID!) {
   folder: createFolder(name: $name, parentFolder: $parentFolder) {
     id
     name
+  }
+}
+
+mutation addStarForFiles($ids: [ID!]!, $mode: UpdateMode) {
+  files: addStarForFiles(ids: $ids, mode: $mode) {
+    id
+    starred
+  }
+}
+
+mutation deleteFiles($ids: [ID!]!) {
+  files: deleteFiles(ids: $ids) {
+    id
+  }
+}
+
+mutation moveFilesToTrash($ids: [ID!]!) {
+  files: moveFilesToTrash(ids: $ids) {
+    id
+  }
+}
+
+mutation clearFilesInTrash($folder: ID!) {
+  clearFilesInTrash(folder: $folder)
+}
+
+mutation restoreFiles($ids: [ID!]!) {
+  files: restoreFiles(ids: $ids) {
+    id
+    path
   }
 }
 
@@ -44,6 +75,7 @@ query file($id: ID!) {
     id
     name
     path
+    starred
     size(format: true)
     mimeType
     extension
@@ -91,6 +123,7 @@ query listFiles($folder: ID!, $filter: FileFilter, $page: Int = 1, $orderBy: Ord
         name
         path
         size(format: true)
+        starred
         mimeType
         extension
         isDirectory

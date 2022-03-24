@@ -5,7 +5,15 @@ import { useMeasure } from 'react-use';
 
 import { Checkbox } from '../../forms';
 
-import type { RowSelection, SortDirection, Sorter, TableColumn, TableHeadToolbar } from './typings';
+import type {
+  DataSource,
+  RowSelection,
+  SortDirection,
+  Sorter,
+  TableColumn,
+  TableHeadToolbar,
+} from './typings';
+import { getRowKey } from './utils';
 
 type ColgroupProps<T> = {
   columns: TableColumn<T>[];
@@ -119,8 +127,9 @@ type TableHeaderProps<T> = {
   selectedAll: boolean;
   selectedKeys: Set<string>;
   rowSelection?: RowSelection<T>;
-  dataSource?: T[];
+  dataSource: DataSource<T>;
   columns: TableColumn<T>[];
+  rowKey: string | ((record: T) => string);
   onSelectAll: (selected: boolean) => void;
   renderTitle: (size: number) => React.ReactNode;
   toolbar: TableHeadToolbar;
@@ -136,6 +145,8 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
     toolbar,
     onColgroup,
     onSort,
+    rowKey,
+    dataSource,
     selectedAll,
     onSelectAll,
   } = props;
@@ -209,11 +220,13 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
                     <div className="fw-bolder me-5 text-gray-800">
                       {renderTitle(selectedKeys.size)}
                     </div>
-                    {/* {typeof toolbar == 'function' &&
+                    {typeof toolbar == 'function' &&
                       toolbar(
                         [...selectedKeys],
-                        [...selectedKeys].map((key) => temp.current.get(key)),
-                      )} */}
+                        dataSource.items.filter((item) =>
+                          selectedKeys.has(getRowKey(item, rowKey)),
+                        ),
+                      )}
                   </div>
                 </th>
               </>

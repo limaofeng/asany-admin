@@ -182,6 +182,7 @@ function Sidebar() {
             </Menu.Item>
           </Menu.SubMenu>
           <Menu.Separator />
+          {/*
           <Menu.Item
             className="mb-2"
             url="/drive/shared"
@@ -200,6 +201,7 @@ function Sidebar() {
           >
             最近用过
           </Menu.Item>
+          */}
           <Menu.Item
             className="mb-2"
             url="/drive/starred"
@@ -207,7 +209,7 @@ function Sidebar() {
             icon={<Icon className="svg-icon-2 me-3" name="Duotune/abs024" />}
             key="starred"
           >
-            已加星标
+            收藏夹
           </Menu.Item>
           <Menu.Item
             url="/drive/trash"

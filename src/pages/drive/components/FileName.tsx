@@ -7,7 +7,7 @@ import { useRenameFileMutation } from '../hooks';
 import { image_formats } from '../utils';
 
 import type { InputRef } from '@/pages/Metronic/components';
-import { Modal } from '@/pages/Metronic/components';
+import { Toast } from '@/pages/Metronic/components';
 import { Button, Input, Symbol } from '@/pages/Metronic/components';
 import type { FileObject } from '@/types';
 import { delay, sleep } from '@/utils';
@@ -15,12 +15,13 @@ import { delay, sleep } from '@/utils';
 type FileNameProps = {
   onClick: (file: FileObject) => void;
   onCancelRename: () => void;
+  onSuccess: (file: FileObject) => void;
   editable: boolean;
   data: FileObject;
 };
 
 function FileName(props: FileNameProps) {
-  const { data, editable, onClick, onCancelRename } = props;
+  const { data, editable, onClick, onCancelRename, onSuccess } = props;
 
   const inputRef = useRef<InputRef>(null);
 
@@ -38,7 +39,7 @@ function FileName(props: FileNameProps) {
       e.stopPropagation();
       try {
         setSaving(true);
-        await delay(
+        const { data: rdata } = await delay(
           rename({
             variables: {
               id: data.id,
@@ -47,21 +48,21 @@ function FileName(props: FileNameProps) {
           }),
           350,
         );
+        onSuccess(rdata.file);
         await sleep(350);
         setSaving(false);
         onCancelRename();
       } catch (_e: any) {
         setSaving(false);
-        await Modal.error({
-          content: _e.message,
-          timer: 2000,
-          timerProgressBar: true,
+        await Toast.error(_e.message, 200000, {
+          progressBar: true,
+          placement: 'middle-center',
         });
         await sleep(300);
         inputRef.current?.select();
       }
     },
-    [data.id, name, onCancelRename, rename],
+    [data.id, name, onCancelRename, onSuccess, rename],
   );
 
   const handlePressEnter = useCallback(
@@ -116,7 +117,7 @@ function FileName(props: FileNameProps) {
       onClick={handleBlocking}
       className={classnames('d-flex align-items-center', { 'no-selecto-drag': editable })}
     >
-      <div className="title-icon-container me-1 d-flex align-items-center justify-content-center">
+      <div className="title-icon-container position-relative me-1 d-flex align-items-center justify-content-center">
         {image_formats.includes(data.extension!) ? (
           <Symbol
             alt={
@@ -132,6 +133,9 @@ function FileName(props: FileNameProps) {
             name={`Duotune/${data.isDirectory ? 'fil012' : 'fil003'}`}
             className="svg-icon-2x svg-icon-primary"
           />
+        )}
+        {data.starred && (
+          <Icon name="Bootstrap/star-fill" className="position-absolute starred-flag" />
         )}
       </div>
       {editable ? (

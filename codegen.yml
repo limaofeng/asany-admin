@@ -1,5 +1,5 @@
 overwrite: true
-schema: "https://api.asany.cn/graphql"
+schema: "http://localhost:8080/graphql"
 generates:
   src/types.ts:
     plugins:

@@ -47,6 +47,16 @@ export type TableColumn<T> = {
   sortDirections?: SortDirection[];
 };
 
+export type UseDataSourceItem<T> = (index: number) => T | undefined;
+
+export type DataSource<T> = {
+  type?: 'array' | 'lazy';
+  items: T[];
+  loadedCount: number;
+  rowCount: number;
+  useItem: UseDataSourceItem<T>;
+};
+
 export type TableHeadToolbar =
   | ((selectedRowKeys: string[], selectedRows: any[]) => React.ReactNode)
   | boolean;

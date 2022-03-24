@@ -27,19 +27,25 @@ const useLazyQuery: UseLazyQuery<FileObject, QueryCondition> = function () {
     [currentPage, pageSize, totalCount, totalPage],
   );
 
-  return [
-    function (params: QueryCondition, page: number) {
+  const loadFileObjects = useMemo(
+    () => (params: QueryCondition, page: number) => {
       _loadFileObjects({ variables: { ...(params as any), page } });
     },
-    {
+    [_loadFileObjects],
+  );
+
+  const actions = useMemo(() => {
+    return {
       pagination: _pagination,
       items: (data?.listFiles.edges.map((item) => item.node) || []) as unknown as FileObject[],
       loading: _loading,
       refetch: (params: QueryCondition, page: number) => {
-        return refetch({ variables: { ...(params as any), page } });
+        return refetch({ ...(params as any), page });
       },
-    },
-  ];
+    };
+  }, [_loading, _pagination, data?.listFiles.edges, refetch]);
+
+  return [loadFileObjects, actions];
 };
 
 export function useListFiles(

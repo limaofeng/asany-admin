@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { useCreateFolderMutation } from '../hooks';
 
 import type { InputRef } from '@/pages/Metronic/components';
+import { Toast } from '@/pages/Metronic/components';
 import { Input, Modal } from '@/pages/Metronic/components';
 import { sleep } from '@/utils';
 import type { FileObject } from '@/types';
@@ -48,16 +49,13 @@ function NewFolderModal(props: NewFolderModalProps) {
       });
       onCancel && onCancel();
       data?.folder && onSuccess(data.folder as any);
-      Modal.success({
-        content: `文件夹新增成功`,
-        timer: 2000,
-        timerProgressBar: true,
+      Toast.success(`文件夹新增成功`, 2000, {
+        progressBar: true,
+        placement: 'bottom-start',
       });
     } catch (e: any) {
-      await Modal.error({
-        content: e.message,
-        timer: 2000,
-        timerProgressBar: true,
+      await Toast.error(e.message, 2000, {
+        progressBar: true,
       });
       await sleep(300);
       inputRef.current?.select();
