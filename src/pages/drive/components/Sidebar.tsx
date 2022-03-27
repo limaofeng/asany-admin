@@ -6,9 +6,12 @@ import Icon from '@asany/icons';
 
 import { useCloudDrivesQuery } from '../hooks';
 
+import Transfers from './Transfers';
+
 import type { OptionData } from '@/pages/Metronic/components';
+import { Popover } from '@/pages/Metronic/components';
 import { Menu } from '@/pages/Metronic/components';
-import { AsideWorkspace, Select } from '@/pages/Metronic/components';
+import { AsideWorkspace, Pulse, Select } from '@/pages/Metronic/components';
 import type { CloudDrive } from '@/types';
 
 type SidebarFooterProps = {
@@ -108,12 +111,17 @@ function Sidebar() {
     return [type!];
   }, [type, value]);
 
-  // console.log('match', type, value, selectedKeys);
-
   return (
     <AsideWorkspace width={280} className="app-sidebar app-drive-sidebar">
-      <div className="mt-5 px-5 pt-5">
-        <h1 className="text-gray-800 fw-bold mb-6 mx-5">云盘</h1>
+      <div className="relative mt-5 px-5 pt-5 d-flex">
+        <h1 className="text-gray-800 flex-row-fluid fw-bold mb-6 mx-5">云盘</h1>
+        <Popover overlayClassName="dialog-transfers" title="传输列表" content={<Transfers />}>
+          <div className="file-transfer-icon">
+            <Pulse size="sm">
+              <Icon className="svg-icon-3" name="Duotune/arr032" />
+            </Pulse>
+          </div>
+        </Popover>
       </div>
       <OverlayScrollbarsComponent
         className="app-sidebar-body flex-column-fluid d-flex flex-column px-8 custom-scrollbar"

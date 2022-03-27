@@ -2,8 +2,17 @@
   padding: 0.65rem 1rem;
 }
 .app-drive-sidebar {
+  .file-transfer-icon {
+    position: absolute;
+    top: 2rem;
+    right: 1.25rem;
+    .pulse {
+      border-radius: 1.3rem;
+    }
+  }
   .app-sidebar-body {
     height: calc(100vh - 114px);
+
     .menu-state-bg .menu-item.show {
       .menu-link:not(.active):not(:hover) {
         color: inherit;
@@ -13,6 +22,42 @@
   }
   .app-sidebar-footer {
     height: 34px;
+  }
+}
+.dialog-transfers {
+  display: flex;
+  flex-direction: column;
+  width: 704px;
+  height: 408px;
+  padding: 0;
+
+  .popover-body {
+    flex: 1;
+    padding: 0;
+
+    .tabs-container {
+      height: 100%;
+
+      .nav-tabs {
+        border-right: 1px solid #eff2f5;
+      }
+    }
+  }
+
+  .nav-tabs {
+    padding: 12px;
+    .nav-item .nav-link {
+      justify-content: center;
+      width: 120px;
+      color: inherit;
+      &.active {
+        color: #04c8c8;
+        background-color: #dcfdfd;
+      }
+    }
+  }
+  .tab-content {
+    flex: 1;
   }
 }
 .app-drive-main {

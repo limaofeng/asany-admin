@@ -52,6 +52,7 @@ export function fileSizeToBytes(size: number, unit: FILE_UNIT_OF_TYPE) {
 
 /**
  * 对文件大小进行简单的格式化（xxx bytes、xxx KB、xxx MB）
+ * 需要注意的是： MacOS 是以 1000 作为进制单位的
  * @param {Number/String} size 要格式化的数值
  * @return {String} 已格式化的值
  */

@@ -13,6 +13,7 @@ type PopoverProps = {
   placement?: Placement;
   overlayClassName?: string;
   trigger?: OverlayTriggerType | OverlayTriggerType[];
+  title?: React.ReactNode;
   content: React.ReactNode;
   children: React.ReactElement;
   stopPropagation?: boolean;
@@ -21,6 +22,7 @@ type PopoverProps = {
 function Popover(props: PopoverProps) {
   const {
     children,
+    title,
     content,
     trigger = 'click',
     placement = 'right',
@@ -28,7 +30,8 @@ function Popover(props: PopoverProps) {
     stopPropagation,
   } = props;
 
-  const nodeRef = useRef<HTMLElement>();
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(props.visible || false);
 
   const wrapRef = useCallback(
@@ -41,7 +44,6 @@ function Popover(props: PopoverProps) {
     },
     [],
   );
-
   useEffect(() => {
     setVisible(!!props.visible);
   }, [props.visible]);
@@ -62,7 +64,12 @@ function Popover(props: PopoverProps) {
     };
   }, [trigger, stopPropagation]);
 
-  useClickAway(nodeRef as any, () => {
+  useClickAway(contentRef as any, (e) => {
+    if (nodeRef.current?.contains(e.target as any)) {
+      return;
+    }
+    e.stopPropagation();
+    e.preventDefault();
     setVisible(false);
   });
 
@@ -72,11 +79,11 @@ function Popover(props: PopoverProps) {
       show={visible}
       placement={placement}
       overlay={
-        <BsPopover
-          onClick={(e) => e.stopPropagation()}
-          className={classnames('asany-popover-overlay', overlayClassName)}
-        >
-          <BsPopover.Body>{content}</BsPopover.Body>
+        <BsPopover className={classnames('asany-popover-overlay', overlayClassName)}>
+          <div className="flex-column-fluid d-flex flex-column" ref={contentRef}>
+            {title && <BsPopover.Header>{title}</BsPopover.Header>}
+            <BsPopover.Body>{content}</BsPopover.Body>
+          </div>
         </BsPopover>
       }
     >

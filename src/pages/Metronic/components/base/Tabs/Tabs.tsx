@@ -9,13 +9,14 @@ import './style.scss';
 interface TabsProps {
   className?: string;
   activeKey?: string;
+  tabPosition?: 'left' | 'top';
   defaultActiveKey?: string;
   children: React.ReactElement | React.ReactElement[];
   onChange?: (activeKey: string) => void;
 }
 
 function Tabs(props: TabsProps) {
-  const { children, className, onChange } = props;
+  const { children, className, onChange, tabPosition = 'top' } = props;
 
   const panes = useMemo(() => {
     return React.Children.map(children, (item) => ({
@@ -40,8 +41,17 @@ function Tabs(props: TabsProps) {
   );
 
   return (
-    <div className="tabs-container">
-      <ul className={classnames('nav nav-tabs nav-line-tabs', className)}>
+    <div
+      className={classnames('tabs-container', {
+        'd-flex flex-column flex-md-row': tabPosition == 'left',
+      })}
+    >
+      <ul
+        className={classnames('nav nav-tabs', className, {
+          'nav-line-tabs': tabPosition == 'top',
+          'nav-pills flex-row flex-md-column  border-bottom-0': tabPosition == 'left',
+        })}
+      >
         {panes.map((item) => (
           <li key={item.id} className="nav-item">
             {React.isValidElement(item.name) ? (

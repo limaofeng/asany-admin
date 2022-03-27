@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import { useHistory } from 'umi';
+import { useHistory, useModel } from 'umi';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import { useDropzone } from 'react-dropzone';
 
 import FolderPath from '../components/FolderPath';
 import {
@@ -66,6 +69,8 @@ function ListFiles(props: ListFilesProps) {
   const { folder, rootFolder, filter, toolbar = 'default' } = props;
 
   const history = useHistory();
+
+  const upload = useModel('cloud-drive', (model) => model.upload);
 
   const temp = useRef<{
     rootFolder?: FileObject;
@@ -278,6 +283,35 @@ function ListFiles(props: ListFilesProps) {
     setSelectedKeys([]);
   }, [currentFolderId, rootFolder?.name]);
 
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      upload(acceptedFiles);
+    },
+    [upload],
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+  console.log('isDragActive', isDragActive);
+
+  const { onClick: browseLocalFiles, ...rootProps } = getRootProps();
+
+  const handleUpload = useCallback(
+    (e) => {
+      browseLocalFiles(e);
+    },
+    [browseLocalFiles],
+  );
+
+  const handleDownload = useCallback(async () => {
+    const zip = new JSZip();
+    zip.file('Hello.txt', 'Hello World\n');
+    const img = zip.folder('images')!;
+    img.file('smile.gif', 'xxx', { base64: true });
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveAs(content, 'example.zip');
+  }, []);
+
   const handleDelete = useCallback(async () => {
     const message = selectedFile
       ? selectedFile?.isDirectory
@@ -374,14 +408,27 @@ function ListFiles(props: ListFilesProps) {
           mode: 'ADD',
         },
       });
-      refetchForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+      if (toolbar == 'starred') {
+        setSelectedKeys([]);
+        refetchWithRemoveForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+      } else {
+        refetchForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+      }
       Toast.success(message + ' 已添加到收藏', 2000, {
         placement: 'bottom-start',
         progressBar: true,
       });
     }
     forceRender();
-  }, [refetchForObjects, selectedFile, selectedKeys, starFiles, starred]);
+  }, [
+    refetchForObjects,
+    refetchWithRemoveForObjects,
+    selectedFile,
+    selectedKeys,
+    starFiles,
+    starred,
+    toolbar,
+  ]);
 
   const handleRename = useCallback(async () => {
     temp.current.renameFile = selectedFile;
@@ -397,6 +444,46 @@ function ListFiles(props: ListFilesProps) {
     }
     return 'multi-row';
   }, [selectedKeys.length]);
+
+  const tableToolbar = useMemo(() => {
+    if (toolbar == 'starred') {
+      return () => {
+        return (
+          <div>
+            <Button
+              color="success"
+              variant={false}
+              className="trash-restore"
+              size="sm"
+              onClick={handleStar}
+              icon={<Icon name="Duotune/arr029" className="svg-icon-4 svg-icon-success" />}
+            >
+              取消收藏
+            </Button>
+          </div>
+        );
+      };
+    }
+    if (toolbar == 'trash') {
+      return () => {
+        return (
+          <div>
+            <Button
+              color="success"
+              variant={false}
+              className="trash-restore"
+              size="sm"
+              onClick={handleRestore}
+              icon={<Icon name="Duotune/arr029" className="svg-icon-4 svg-icon-success" />}
+            >
+              还原
+            </Button>
+          </div>
+        );
+      };
+    }
+    return undefined;
+  }, [handleRestore, handleStar, toolbar]);
 
   return (
     <Card flush>
@@ -419,6 +506,7 @@ function ListFiles(props: ListFilesProps) {
                       variant="primary"
                       className="me-3"
                       icon={<Icon className="svg-icon-2" name="Duotune/fil018" />}
+                      onClick={handleUpload}
                     >
                       上传文件
                     </Button>
@@ -458,6 +546,7 @@ function ListFiles(props: ListFilesProps) {
                     />
                   }
                   size="sm"
+                  onClick={handleDownload}
                 >
                   下载
                 </Button>
@@ -511,14 +600,14 @@ function ListFiles(props: ListFilesProps) {
         </Card.Header>
       )}
       <Card.Body className="d-flex flex-row">
-        <div className="flex-row-fluid">
+        <div className="flex-row-fluid" {...rootProps}>
           <div className="d-flex flex-stack">
             <FolderPath onClick={handleClick} paths={paths as any} />
             <Badge size="lg" color="white">
               {renderStats()}
             </Badge>
           </div>
-          {toolbar == 'trash' && (
+          {toolbar == 'trash' && !!dataSource.rowCount && (
             <Alert
               theme="Light"
               type="primary"
@@ -533,9 +622,10 @@ function ListFiles(props: ListFilesProps) {
                   清空回收站
                 </Button>
               }
-              message="内容移至回收站后会在 30 天后被永久删除"
+              message="内容移至回收站后会在 10 天后被永久删除"
             />
           )}
+          <input {...getInputProps()} />
           <BlockUI overlayClassName="bg-white bg-opacity-25" loading={loading}>
             {!pagination.totalCount && !loading ? (
               noRowsRenderer()
@@ -551,26 +641,7 @@ function ListFiles(props: ListFilesProps) {
                       已选中<span className="mx-2">{size}</span>个文件/文件夹
                     </>
                   ),
-                  toolbar:
-                    toolbar == 'trash' &&
-                    (() => {
-                      return (
-                        <div>
-                          <Button
-                            color="success"
-                            variant={false}
-                            className="trash-restore"
-                            size="sm"
-                            onClick={handleRestore}
-                            icon={
-                              <Icon name="Duotune/arr029" className="svg-icon-4 svg-icon-success" />
-                            }
-                          >
-                            还原
-                          </Button>
-                        </div>
-                      );
-                    }),
+                  toolbar: tableToolbar,
                   onChange: handleRowSelectionChange,
                 }}
                 rowHeight={50}
