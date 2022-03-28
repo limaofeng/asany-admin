@@ -103,7 +103,7 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
-  const [upload, , progress] = useUpload(namespace);
+  const [upload, { progress }] = useUpload(namespace);
 
   const handleUpload = useCallback(
     async (file: FileUploadObject) => {

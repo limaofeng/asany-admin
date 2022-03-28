@@ -12,6 +12,7 @@ type PopoverProps = {
   visible?: boolean;
   placement?: Placement;
   overlayClassName?: string;
+  onVisibleChange?: (visible: boolean) => void;
   trigger?: OverlayTriggerType | OverlayTriggerType[];
   title?: React.ReactNode;
   content: React.ReactNode;
@@ -27,12 +28,18 @@ function Popover(props: PopoverProps) {
     trigger = 'click',
     placement = 'right',
     overlayClassName,
+    onVisibleChange,
     stopPropagation,
   } = props;
 
   const nodeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(props.visible || false);
+
+  const temp = useRef(visible);
+  temp.current = visible;
+
+  const [controlled] = useState(props.visible != null);
 
   const wrapRef = useCallback(
     (originalRef: any, localRef: any) => (ref: any) => {
@@ -55,14 +62,18 @@ function Popover(props: PopoverProps) {
       return;
     }
     const handler = (e: any) => {
-      setVisible((_v) => !_v);
+      if (!controlled) {
+        setVisible((_v) => !_v);
+      } else {
+        onVisibleChange && onVisibleChange(!temp.current);
+      }
       stopPropagation && e.stopPropagation();
     };
     node.addEventListener(eventName, handler);
     return () => {
       node.removeEventListener(eventName, handler);
     };
-  }, [trigger, stopPropagation]);
+  }, [trigger, stopPropagation, onVisibleChange, controlled]);
 
   useClickAway(contentRef as any, (e) => {
     if (nodeRef.current?.contains(e.target as any)) {
@@ -70,7 +81,11 @@ function Popover(props: PopoverProps) {
     }
     e.stopPropagation();
     e.preventDefault();
-    setVisible(false);
+    if (!controlled) {
+      setVisible(false);
+    } else {
+      onVisibleChange && onVisibleChange(false);
+    }
   });
 
   return (

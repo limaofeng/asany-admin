@@ -1,27 +1,34 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+
+import EventEmitter from 'events';
 
 import Dexie from 'dexie';
 
 import { useUpload } from '@/pages/Metronic/components';
-import { uuid } from '@/pages/Metronic/components/utils';
+import type { UploadState } from '@/pages/Metronic/components/forms/Upload/utils/upload';
 
-type DownloadFile = {
+export type DownloadFile = {
   id: string;
 };
 
-type UploadFile = {
-  id: string;
-  file?: File;
+export type UploadFile = {
+  id?: string;
+  source: File;
+  size: number;
   state: 'waiting' | 'uploading' | 'paused' | 'canceled' | 'completed';
   name: string;
   extension?: string;
   mimeType: string;
   progress: number;
   uploadSpeed: string;
-  folder: string;
+  uploadOptions: {
+    namespace: string;
+    folder: string;
+  };
 };
 
 type CloudDriveState = {
+  visibleTransfers: boolean;
   currentCloudDrive?: string;
   uploadFiles: UploadFile[];
   downloadFiles: DownloadFile[];
@@ -35,7 +42,7 @@ class TransferDatabase {
   public constructor() {
     const db = new Dexie('TransferDatabase');
     db.version(1).stores({
-      uploadFiles: '++id,name,state,extension,progress,uploadSpeed',
+      uploadFiles: '++id,name,state,size,extension,progress,uploadSpeed,source, uploadOptions',
       downloadFiles: '++id,name',
     });
     this.uploadFiles = db.table('uploadFiles');
@@ -48,12 +55,27 @@ class TransferDatabase {
 const database = new TransferDatabase();
 
 const initialState = {
+  visibleTransfers: true,
   currentCloudDrive: '',
   uploadFiles: [],
   downloadFiles: [],
 };
 
+const EVENT_NAME_OF_UPLOADFILE_CHANGE = 'UPLOADFILE_CHANGE';
+const EVENT_NAME_OF_DOWNLOADFILE_CHANGE = 'DOWNLOADFILE_CHANGE';
+
+const EVENT_NAME_OF_UPLOADFILE_DATA_RELOADED = 'UPLOADFILE_DATA_RELOADED';
+
 export default function useCloudDriveModel() {
+  const [emitter] = useState(new EventEmitter());
+
+  const internalState = useRef<{
+    uploadFile?: UploadFile;
+    uploading: boolean;
+  }>({
+    uploading: false,
+  });
+
   const state = useRef<CloudDriveState>(initialState);
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
@@ -65,63 +87,206 @@ export default function useCloudDriveModel() {
     forceRender();
   }, []);
 
+  const reloadUploadFiles = useCallback(async () => {
+    const value = await database.uploadFiles.toArray();
+    state.current.uploadFiles = value;
+    forceRender();
+
+    emitter.emit(EVENT_NAME_OF_UPLOADFILE_DATA_RELOADED);
+
+    //  TODO: 测试读取 IndexedDB 中的文件信息
+    // const reader = new FileReader();
+    // reader.onload = function fileReadCompleted() {
+    //   // 当读取完成时，内容只在`reader.result`中
+    //   console.log(reader.result);
+    // };
+    // reader.readAsText(value[0].file!);
+  }, [emitter]);
+
+  const reloadDownloadFiles = useCallback(async () => {
+    const value = await database.downloadFiles.toArray();
+    state.current.downloadFiles = value;
+    forceRender();
+  }, []);
+
   useEffect(() => {
-    database.uploadFiles.toArray().then((value) => {
-      state.current.uploadFiles = value;
-      const reader = new FileReader();
-      reader.onload = function fileReadCompleted() {
-        // 当读取完成时，内容只在`reader.result`中
-        debugger;
-        console.log(reader.result);
-      };
-      reader.readAsText(value[0].file!);
-    });
-  }, []);
+    reloadUploadFiles();
+    reloadDownloadFiles();
 
-  const [upload, , progress] = useUpload('292eb203e6444c2287b545d8afbc7cee', {
-    folder: 'uUw7hWtFvpx-vNSeMNpueccrRWGr8VF6tQJzCH9wgYc2QrAsBrOaBzAuuIiVTwdk',
-  });
+    emitter.on(EVENT_NAME_OF_UPLOADFILE_CHANGE, reloadUploadFiles);
+    emitter.on(EVENT_NAME_OF_DOWNLOADFILE_CHANGE, reloadDownloadFiles);
 
-  console.log(upload, progress);
+    return () => {
+      emitter.off(EVENT_NAME_OF_UPLOADFILE_CHANGE, reloadUploadFiles);
+      emitter.off(EVENT_NAME_OF_DOWNLOADFILE_CHANGE, reloadDownloadFiles);
+    };
+  }, [emitter, reloadDownloadFiles, reloadUploadFiles]);
 
-  const handleUploadFile = useCallback(async (files: File[]) => {
-    console.log('upload files', files);
+  const updateUploadFile = useCallback(
+    async (
+      file: UploadFile,
+      {
+        progress,
+        uploadState,
+        uploadSpeed,
+      }: { progress?: number; uploadSpeed?: string; uploadState: UploadState },
+    ) => {
+      console.log('upload 上传进度', progress, uploadState, uploadSpeed);
 
-    const folder = 'uUw7hWtFvpx-vNSeMNpueccrRWGr8VF6tQJzCH9wgYc2QrAsBrOaBzAuuIiVTwdk';
+      uploadSpeed && (file.uploadSpeed = uploadSpeed);
+      progress && (file.progress = progress);
 
-    const _uploadFiles = files.map((file) => {
-      const lastIndex = file.name.lastIndexOf('.');
-      const uploadFile: UploadFile = {
-        id: uuid(),
-        file,
-        state: 'waiting',
-        name: file.name,
-        extension: lastIndex == -1 ? undefined : file.name.substring(lastIndex + 1),
-        mimeType: file.type,
-        progress: 0,
-        uploadSpeed: '',
-        folder,
-      };
-      return uploadFile;
-    });
-
-    await database.transaction('rw', database.uploadFiles, async () => {
-      for (const item of _uploadFiles) {
-        console.time('保存文件耗时');
-        await database.uploadFiles.add(item);
-        console.timeEnd('保存文件耗时');
+      let newState = file.state;
+      if (['uploading', 'waitingForCompleted'].includes(uploadState)) {
+        newState = 'uploading';
+      } else if (uploadState == 'aborted') {
+        newState = 'canceled';
+      } else if (uploadState == 'completed') {
+        newState = 'completed';
       }
-    });
 
-    // 添加到队列
+      if (newState != file.state) {
+        await database.uploadFiles.update(file.id!, file);
+      }
 
-    // 触发上传
-    // upload(files[0]);
+      const index = state.current.uploadFiles.findIndex((item) => item.id == file.id);
+      state.current.uploadFiles.splice(index, 1, { ...file });
+      state.current.uploadFiles = [...state.current.uploadFiles];
+      forceRender();
+    },
+    [],
+  );
+
+  const [upload, { progress, state: uploadState, uploading, uploadSpeed }] = useUpload(
+    '292eb203e6444c2287b545d8afbc7cee',
+    {
+      folder: 'uUw7hWtFvpx-vNSeMNpueccrRWGr8VF6tQJzCH9wgYc2QrAsBrOaBzAuuIiVTwdk',
+    },
+  );
+
+  internalState.current.uploading = uploading;
+
+  console.log('upload uploading ->', uploading);
+
+  useEffect(() => {
+    const file = internalState.current.uploadFile;
+    if (file == null) {
+      return;
+    }
+    updateUploadFile(file, { progress, uploadState, uploadSpeed });
+  }, [progress, uploadState, uploadSpeed, updateUploadFile]);
+
+  const autoUpload = useCallback(async () => {
+    if (internalState.current.uploading) {
+      return;
+    }
+
+    const file = state.current.uploadFiles.find((item) =>
+      ['waiting', 'uploading'].includes(item.state),
+    );
+
+    if (!file) {
+      return;
+    }
+
+    internalState.current.uploadFile = file;
+
+    // for (let i = 1; i <= 100; i++) {
+    //   await sleep(1000);
+    //   updateUploadFile(file, { uploadState: 'uploading', progress: i });
+    // }
+
+    await upload(file.source, file.uploadOptions);
+
+    console.log('如何开始下一个');
+  }, [upload]);
+
+  useEffect(() => {
+    emitter.on(EVENT_NAME_OF_UPLOADFILE_DATA_RELOADED, autoUpload);
+    return () => {
+      emitter.off(EVENT_NAME_OF_UPLOADFILE_DATA_RELOADED, autoUpload);
+    };
+  }, [autoUpload, emitter]);
+
+  const handleUploadFile = useCallback(
+    async (files: File[]) => {
+      console.log('upload files', files);
+
+      const namespace = '292eb203e6444c2287b545d8afbc7cee';
+      const folder = 'uUw7hWtFvpx-vNSeMNpueccrRWGr8VF6tQJzCH9wgYc2QrAsBrOaBzAuuIiVTwdk';
+
+      const _uploadFiles = files.map((file) => {
+        const lastIndex = file.name.lastIndexOf('.');
+        const uploadFile: UploadFile = {
+          source: file,
+          size: file.size,
+          state: 'waiting',
+          name: file.name,
+          extension: lastIndex == -1 ? undefined : file.name.substring(lastIndex + 1),
+          mimeType: file.type,
+          progress: 0,
+          uploadSpeed: '',
+          uploadOptions: {
+            namespace,
+            folder,
+          },
+        };
+        return uploadFile;
+      });
+
+      await database.transaction('rw', database.uploadFiles, async () => {
+        for (const item of _uploadFiles) {
+          console.time('保存文件耗时');
+          await database.uploadFiles.add(item);
+          console.timeEnd('保存文件耗时');
+        }
+      });
+
+      emitter.emit(EVENT_NAME_OF_UPLOADFILE_CHANGE);
+
+      state.current.visibleTransfers = true;
+      forceRender();
+    },
+    [emitter],
+  );
+
+  const openTransfers = useCallback(() => {
+    state.current.visibleTransfers = true;
+    forceRender();
   }, []);
+
+  const closeTransfers = useCallback(() => {
+    state.current.visibleTransfers = false;
+    forceRender();
+  }, []);
+
+  const cancelUploadFile = useCallback((id: string) => {
+    console.log('cancelUploadFile', id);
+  }, []);
+
+  const pauseUploadFile = useCallback((id: string) => {
+    console.log('pauseUploadFile', id);
+  }, []);
+
+  const startUploadFile = useCallback((id: string) => {
+    console.log('startUploadFile', id);
+  }, []);
+
+  const restoreUploadFile = useCallback((id: string) => {
+    console.log('restoreUploadFile', id);
+  }, []);
+
+  console.log('....', state.current);
 
   return {
     state: state.current,
     setCloudDrive: handleSetCloudDrive,
     upload: handleUploadFile,
+    openTransfers,
+    closeTransfers,
+    cancelUploadFile,
+    pauseUploadFile,
+    startUploadFile,
+    restoreUploadFile,
   };
 }

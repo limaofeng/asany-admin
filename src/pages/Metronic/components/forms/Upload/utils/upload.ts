@@ -1,5 +1,5 @@
 /* eslint-disable graphql/template-strings */
-import { useCallback, useReducer, useRef } from 'react';
+import { useCallback, useMemo, useReducer, useRef } from 'react';
 
 import CryptoJs from 'crypto-js';
 import encHex from 'crypto-js/enc-hex';
@@ -85,7 +85,7 @@ function calculateUploadSpeed(
     stat.oldTimestamp = timestamp;
     stat.oldLoadsize = e.loaded;
   }
-  return fileSize(bitrate);
+  return fileSize(Math.min(bitrate, e.total));
 }
 
 const INITIATE_MULTIPART_UPLOAD = gql`
@@ -121,7 +121,7 @@ const MUTATION_UPLOAD = gql`
   }
 `;
 
-type UploadResult = {
+type UploadFile = {
   id: string;
   name: string;
   path: string;
@@ -131,16 +131,33 @@ type UploadResult = {
   createdAt: string;
 };
 
-type UseUploadResult = [(file: File) => Promise<UploadResult>, UploadResult | undefined, number];
+type UploadController = { abort: () => void };
+
+type UploadResult = {
+  data?: UploadFile;
+  state: UploadState;
+  progress: number;
+  uploadSpeed: string;
+  uploading: boolean;
+  abort: () => void;
+};
+
+type UseUploadResult = [
+  (file: File, overwrites?: UploadOptions) => Promise<UploadFile>,
+  UploadResult,
+];
+
+export type UploadState = 'waiting' | 'uploading' | 'waitingForCompleted' | 'aborted' | 'completed';
 
 type UseUploadState = {
-  data?: UploadResult;
-  state: 'waiting' | 'uploading' | 'waitingForCompleted' | 'aborted' | 'Completed';
+  data?: UploadFile;
+  state: UploadState;
   progress: number;
   uploadSpeed: string;
 };
 
 type UploadOptions = {
+  namespace?: string;
   partSize?: number;
   folder?: string;
 };
@@ -251,7 +268,7 @@ export const useUpload = (
 
       console.log('initiateMultipartUpload', multipartUpload);
 
-      const stat = { loaded: 0, oldTimestamp: 0, oldLoadsize: 0 };
+      const stat = { loaded: 0, oldTimestamp: Date.now(), oldLoadsize: 0 };
 
       let _upload;
 
@@ -300,7 +317,7 @@ export const useUpload = (
       }
 
       state.current.data = _upload;
-      state.current.state = 'Completed';
+      state.current.state = 'completed';
 
       forceRender();
 
@@ -311,7 +328,7 @@ export const useUpload = (
 
   const handleOrdinaryUpload = useCallback(
     async (file: File) => {
-      const stat = { oldTimestamp: 0, oldLoadsize: 0 };
+      const stat = { oldTimestamp: Date.now(), oldLoadsize: 0 };
       const _upload = await executeUploadFile(
         file,
         {
@@ -333,7 +350,7 @@ export const useUpload = (
       );
 
       state.current.data = _upload;
-      state.current.state = 'Completed';
+      state.current.state = 'completed';
 
       forceRender();
 
@@ -343,7 +360,7 @@ export const useUpload = (
   );
 
   const handleUpload = useCallback(
-    async (file: File, overwrites?: UploadOptions): Promise<UploadResult> => {
+    async (file: File, overwrites?: UploadOptions): Promise<UploadFile> => {
       // TODO:  支持通过 overwrites 覆盖默认选项
 
       console.log(overwrites);
@@ -362,5 +379,31 @@ export const useUpload = (
     [partSize, handleMultipartUpload, handleOrdinaryUpload],
   );
 
-  return [handleUpload, state.current.data, state.current.progress];
+  const uploadController = useMemo<UploadController>(
+    () => ({
+      abort: () => {
+        if (state.current.state == 'uploading') {
+          abortController.current.abort();
+        }
+        state.current.state = 'aborted';
+      },
+    }),
+    [],
+  );
+
+  const { data: dataFile, progress, state: uploadState, uploadSpeed } = state.current;
+
+  const result = useMemo<UploadResult>(
+    () => ({
+      data: dataFile,
+      progress,
+      uploadSpeed,
+      uploading: uploadState == 'uploading' || uploadState == 'waitingForCompleted',
+      state: uploadState,
+      abort: uploadController.abort,
+    }),
+    [dataFile, progress, uploadSpeed, uploadController.abort, uploadState],
+  );
+
+  return [handleUpload, result];
 };

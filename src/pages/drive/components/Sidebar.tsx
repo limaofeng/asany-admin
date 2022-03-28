@@ -61,6 +61,10 @@ function SidebarFooter(props: SidebarFooterProps) {
 function Sidebar() {
   const currentBook = useModel('cloud-drive', ({ state }) => state.currentCloudDrive);
 
+  const visibleTransfers = useModel('cloud-drive', ({ state }) => state.visibleTransfers);
+  const openTransfers = useModel('cloud-drive', (model) => model.openTransfers);
+  const closeTransfers = useModel('cloud-drive', (model) => model.closeTransfers);
+
   const oneMatch = useRouteMatch<{ type: string; value?: string }>({
     path: '/drive/:type/:value',
     strict: true,
@@ -98,6 +102,17 @@ function Sidebar() {
   const type = useMemo(() => oneMatch?.params.type || twoMatch?.params.type, [oneMatch, twoMatch]);
   const value = useMemo(() => oneMatch?.params.value, [oneMatch]);
 
+  const handleVisibleChange = useCallback(
+    (visible: boolean) => {
+      if (visible) {
+        openTransfers();
+      } else {
+        closeTransfers();
+      }
+    },
+    [closeTransfers, openTransfers],
+  );
+
   const selectedKeys = useMemo(() => {
     if (!value) {
       return [type!];
@@ -115,7 +130,13 @@ function Sidebar() {
     <AsideWorkspace width={280} className="app-sidebar app-drive-sidebar">
       <div className="relative mt-5 px-5 pt-5 d-flex">
         <h1 className="text-gray-800 flex-row-fluid fw-bold mb-6 mx-5">云盘</h1>
-        <Popover overlayClassName="dialog-transfers" title="传输列表" content={<Transfers />}>
+        <Popover
+          visible={visibleTransfers}
+          onVisibleChange={handleVisibleChange}
+          overlayClassName="dialog-transfers"
+          title="传输列表"
+          content={<Transfers />}
+        >
           <div className="file-transfer-icon">
             <Pulse size="sm">
               <Icon className="svg-icon-3" name="Duotune/arr032" />

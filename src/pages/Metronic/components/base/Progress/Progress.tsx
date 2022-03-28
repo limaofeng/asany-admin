@@ -1,13 +1,18 @@
+import classnames from 'classnames';
+
+import type { MainColor } from '../../typings';
+
 type ProgressProps = {
   className?: string;
   percent?: number;
+  color?: MainColor;
 };
 
 function Progress(props: ProgressProps) {
-  const { percent } = props;
+  const { percent, className, color = 'primary' } = props;
   return (
     <div
-      className="bg-primary rounded h-4px"
+      className={classnames('rounded', `bg-${color}`, className, { 'opacity-0': !percent })}
       role="progressbar"
       style={{ width: `${percent}%` }}
       aria-valuenow={50}

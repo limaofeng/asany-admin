@@ -2,21 +2,14 @@ import React from 'react';
 
 import classnames from 'classnames';
 
+import type { MainColor } from '../../typings';
+
 type PulseProps = {
   children: React.ReactNode;
   pause?: boolean;
   className?: string;
   size?: 'lg' | 'sm' | 'xs';
-  color?:
-    | 'white'
-    | 'primary'
-    | 'light'
-    | 'secondary'
-    | 'success'
-    | 'info'
-    | 'warning'
-    | 'danger'
-    | 'dark';
+  color?: MainColor;
   width?: 1 | 2 | 3 | 4 | 5;
 };
 
