@@ -159,10 +159,10 @@
     "@asany/sortable" "^0.1.30"
     classnames "^2.3.1"
 
-"@asany/umi-plugin-apollo@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.npmjs.org/@asany/umi-plugin-apollo/-/umi-plugin-apollo-0.1.6.tgz#28beb2c0bbd89601719f0c866166ec763aae84dc"
-  integrity sha512-ae8+ss9ij5K2UD7ZOltmmJ6iw/ZditvQTCb+CLRyQdSIilMaWkYCorf9n+JzK64uWTBOuhMCv9aSmwGmH6UvAw==
+"@asany/umi-plugin-apollo@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.npmjs.org/@asany/umi-plugin-apollo/-/umi-plugin-apollo-0.1.7.tgz#49f3219076e9239df1fbac126b3844030b5a8013"
+  integrity sha512-p3T8Jo4o7xXdBLlIbtfUgDuEO3Q3z8pjU3eYxJlPjIgBkw4JqIcHLFaHfGL5nl8YeVTw/2fjjd4kP8hcZNgeVQ==
   dependencies:
     "@apollo/client" "^3.1.3"
     "@lifeomic/axios-fetch" "^2.0.5"

@@ -117,11 +117,14 @@ const MUTATION_UPLOAD = gql`
       size
       mimeType
       md5
+      parentFolder {
+        id
+      }
     }
   }
 `;
 
-type UploadFile = {
+export type UploadFileData = {
   id: string;
   name: string;
   path: string;
@@ -129,12 +132,16 @@ type UploadFile = {
   size: number;
   mimeType: string;
   createdAt: string;
+  parentFolder: {
+    id: string;
+  };
 };
 
 type UploadController = { abort: () => void };
 
 type UploadResult = {
-  data?: UploadFile;
+  data?: UploadFileData;
+  error?: Error;
   state: UploadState;
   progress: number;
   uploadSpeed: string;
@@ -143,21 +150,35 @@ type UploadResult = {
 };
 
 type UseUploadResult = [
-  (file: File, overwrites?: UploadOptions) => Promise<UploadFile>,
+  (file: File, overwrites?: UploadOverwriteOptions) => Promise<UploadFileData>,
   UploadResult,
 ];
 
-export type UploadState = 'waiting' | 'uploading' | 'waitingForCompleted' | 'aborted' | 'completed';
+export type UploadState =
+  | 'waiting'
+  | 'uploading'
+  | 'waitingForCompleted'
+  | 'aborted'
+  | 'completed'
+  | 'error';
 
 type UseUploadState = {
-  data?: UploadFile;
+  data?: UploadFileData;
+  error?: Error;
   state: UploadState;
   progress: number;
   uploadSpeed: string;
+  options: UploadOptions;
 };
 
 type UploadOptions = {
-  namespace?: string;
+  space: string;
+  partSize?: number;
+  folder?: string;
+};
+
+type UploadOverwriteOptions = {
+  space?: string;
   partSize?: number;
   folder?: string;
 };
@@ -169,21 +190,21 @@ type UploadFileOptions = {
   hash?: string;
 };
 
-const DEFAULT_PART_SIZE = 1024 * 1024 * 50; // 按每 50M 分割文件
+const DEFAULT_PART_SIZE = 1024 * 1024 * 50 * 1024; // 按每 50M 分割文件
 
-export const useUpload = (
-  namespace: string = 'Default',
-  options?: UploadOptions,
-): UseUploadResult => {
-  const { partSize = DEFAULT_PART_SIZE, folder } = options || ({} as UploadOptions);
+const DEFAULT_OPTIONS = { partSize: DEFAULT_PART_SIZE, space: 'Default' };
 
+export const useUpload = (options: UploadOptions): UseUploadResult => {
   const abortController = useRef(new AbortController());
   const state = useRef<UseUploadState>({
     state: 'waiting',
     uploadSpeed: '0 KB',
     progress: 0,
+    options: { ...DEFAULT_OPTIONS, ...options },
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
+
+  state.current.options = { ...DEFAULT_OPTIONS, ...options };
 
   const [initiateMultipartUpload] = useMutation<{
     multipartUpload: {
@@ -196,44 +217,45 @@ export const useUpload = (
       }[];
     };
   }>(INITIATE_MULTIPART_UPLOAD);
-  const [uploadFile] = useMutation(MUTATION_UPLOAD, {
-    context: {
-      fetchOptions: {
-        signal: abortController.current.signal,
-        onUploadProgress: (_progress: any) => {
-          const percent = ((_progress.loaded / _progress.total) * 100) << 0;
-          if (percent == 100) {
-            state.current.progress = Math.max(state.current.progress, 85);
-            return forceRender();
-          }
-          state.current.progress = percent;
-          forceRender();
-        },
-      },
-    },
-  });
+  const [uploadFile] = useMutation(MUTATION_UPLOAD);
 
   const executeUploadFile = useCallback(
     async (file: File, _options: UploadFileOptions, onUploadProgress: OnUploadProgress) => {
-      const { data } = await uploadFile({
-        variables: {
-          file,
-          options: _options,
-        },
-        context: {
-          fetchOptions: {
-            signal: abortController.current.signal,
-            onUploadProgress,
+      try {
+        abortController.current = new AbortController();
+        const { data } = await uploadFile({
+          variables: {
+            file,
+            options: _options,
           },
-        },
-      });
-      return data.upload;
+          context: {
+            fetchOptions: {
+              signal: abortController.current.signal,
+              onUploadProgress,
+            },
+          },
+        });
+        return data.upload;
+      } catch (e) {
+        if ((e as Error).name == 'AbortError') {
+          state.current.state = 'aborted';
+          forceRender();
+        } else {
+          state.current.state = 'error';
+          state.current.error = e as Error;
+          forceRender();
+        }
+        throw e;
+      }
     },
     [uploadFile],
   );
 
   const handleMultipartUpload = useCallback(
-    async (file: File) => {
+    async (file: File, _options: UploadOptions) => {
+      const { space, folder } = _options;
+      const partSize = _options.partSize!;
+
       const partLength = Math.ceil(file.size / partSize) + (file.size % partSize == 0 ? 0 : 1);
 
       console.log('文件分为:' + partLength + '段上传');
@@ -257,9 +279,13 @@ export const useUpload = (
             name: file.name,
             hash,
             folder,
-            space: namespace,
+            space,
             chunkSize: offset,
             chunkLength: chunks.length,
+            metadata: {
+              size,
+              mimeType: file.type,
+            },
           },
         },
       });
@@ -272,6 +298,7 @@ export const useUpload = (
 
       let _upload;
 
+      abortController.current = new AbortController();
       for (let i = 0; i < chunks.length; i++) {
         const chunk = chunks[i];
         if (multipartUpload.chunks.some((item) => item.index == i + 1)) {
@@ -285,13 +312,17 @@ export const useUpload = (
         stat.oldLoadsize = 0;
         stat.oldTimestamp = Date.now();
 
+        if (abortController.current.signal.aborted) {
+          throw new Error('上传取消');
+        }
+
         _upload = await executeUploadFile(
           new File([chunk], file.name + '.part' + addZeroLeft(String(i + 1), 5), {
             type: 'application/octet-stream',
             lastModified: new Date().getTime(),
           }),
           {
-            space: namespace,
+            space,
             uploadId: multipartUpload.id,
             hash: partHash,
           },
@@ -302,7 +333,7 @@ export const useUpload = (
             state.current.progress = percent;
             state.current.uploadSpeed = calculateUploadSpeed(_progress, stat);
 
-            if (percent == 100) {
+            if (percent == 100 && state.current.state == 'uploading') {
               state.current.state = 'waitingForCompleted';
             }
 
@@ -323,16 +354,18 @@ export const useUpload = (
 
       return _upload;
     },
-    [executeUploadFile, folder, initiateMultipartUpload, namespace, partSize],
+    [executeUploadFile, initiateMultipartUpload],
   );
 
   const handleOrdinaryUpload = useCallback(
-    async (file: File) => {
+    async (file: File, _options: UploadOptions) => {
+      const { space, folder } = _options;
+
       const stat = { oldTimestamp: Date.now(), oldLoadsize: 0 };
       const _upload = await executeUploadFile(
         file,
         {
-          space: namespace,
+          space,
           folder,
         },
         (e) => {
@@ -341,7 +374,7 @@ export const useUpload = (
           state.current.progress = percent;
           state.current.uploadSpeed = calculateUploadSpeed(e, stat);
 
-          if (percent == 100) {
+          if (percent == 100 && state.current.state == 'uploading') {
             state.current.state = 'waitingForCompleted';
           }
 
@@ -356,53 +389,55 @@ export const useUpload = (
 
       return _upload;
     },
-    [executeUploadFile, folder, namespace],
+    [executeUploadFile],
   );
 
   const handleUpload = useCallback(
-    async (file: File, overwrites?: UploadOptions): Promise<UploadFile> => {
-      // TODO:  支持通过 overwrites 覆盖默认选项
+    async (file: File, overwrites?: UploadOverwriteOptions): Promise<UploadFileData> => {
+      const _options = { ...state.current.options, ...overwrites };
 
-      console.log(overwrites);
+      const { partSize } = _options;
 
       state.current.data = undefined;
+      state.current.error = undefined;
       state.current.state = 'waiting';
+      state.current.uploadSpeed = '';
       state.current.progress = 0;
+      forceRender();
       await sleep(60);
 
-      if (file.size > partSize) {
-        return await handleMultipartUpload(file);
+      if (file.size > partSize!) {
+        return await handleMultipartUpload(file, _options);
       } else {
-        return await handleOrdinaryUpload(file);
+        return await handleOrdinaryUpload(file, _options);
       }
     },
-    [partSize, handleMultipartUpload, handleOrdinaryUpload],
+    [handleMultipartUpload, handleOrdinaryUpload],
   );
 
   const uploadController = useMemo<UploadController>(
     () => ({
       abort: () => {
-        if (state.current.state == 'uploading') {
-          abortController.current.abort();
-        }
+        abortController.current.abort();
         state.current.state = 'aborted';
       },
     }),
     [],
   );
 
-  const { data: dataFile, progress, state: uploadState, uploadSpeed } = state.current;
+  const { data: dataFile, progress, state: uploadState, uploadSpeed, error } = state.current;
 
   const result = useMemo<UploadResult>(
     () => ({
       data: dataFile,
       progress,
       uploadSpeed,
+      error,
       uploading: uploadState == 'uploading' || uploadState == 'waitingForCompleted',
       state: uploadState,
       abort: uploadController.abort,
     }),
-    [dataFile, progress, uploadSpeed, uploadController.abort, uploadState],
+    [dataFile, progress, uploadSpeed, uploadController.abort, error, uploadState],
   );
 
   return [handleUpload, result];

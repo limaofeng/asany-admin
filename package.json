@@ -116,7 +116,7 @@
     "umi-serve": "^1.9.10"
   },
   "devDependencies": {
-    "@asany/umi-plugin-apollo": "^0.1.6",
+    "@asany/umi-plugin-apollo": "^0.1.7",
     "@asany/umi-plugin-app": "^0.1.30",
     "@commitlint/cli": "^15.0.0",
     "@commitlint/config-conventional": "^15.0.0",

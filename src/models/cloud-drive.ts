@@ -5,7 +5,10 @@ import EventEmitter from 'events';
 import Dexie from 'dexie';
 
 import { useUpload } from '@/pages/Metronic/components';
-import type { UploadState } from '@/pages/Metronic/components/forms/Upload/utils/upload';
+import type {
+  UploadFileData,
+  UploadState,
+} from '@/pages/Metronic/components/forms/Upload/utils/upload';
 
 export type DownloadFile = {
   id: string;
@@ -15,12 +18,14 @@ export type UploadFile = {
   id?: string;
   source: File;
   size: number;
-  state: 'waiting' | 'uploading' | 'paused' | 'canceled' | 'completed';
+  state: 'waiting' | 'uploading' | 'paused' | 'canceled' | 'completed' | 'error';
   name: string;
   extension?: string;
   mimeType: string;
   progress: number;
   uploadSpeed: string;
+  error?: Error;
+  result?: UploadFileData;
   uploadOptions: {
     namespace: string;
     folder: string;
@@ -42,7 +47,8 @@ class TransferDatabase {
   public constructor() {
     const db = new Dexie('TransferDatabase');
     db.version(1).stores({
-      uploadFiles: '++id,name,state,size,extension,progress,uploadSpeed,source, uploadOptions',
+      uploadFiles:
+        '++id,name,state,size,extension,progress,uploadSpeed,source,uploadOptions,error,result',
       downloadFiles: '++id,name',
     });
     this.uploadFiles = db.table('uploadFiles');
@@ -70,7 +76,7 @@ export default function useCloudDriveModel() {
   const [emitter] = useState(new EventEmitter());
 
   const internalState = useRef<{
-    uploadFile?: UploadFile;
+    uploadFileId?: string;
     uploading: boolean;
   }>({
     uploading: false,
@@ -110,13 +116,16 @@ export default function useCloudDriveModel() {
   }, []);
 
   useEffect(() => {
-    reloadUploadFiles();
-    reloadDownloadFiles();
-
     emitter.on(EVENT_NAME_OF_UPLOADFILE_CHANGE, reloadUploadFiles);
     emitter.on(EVENT_NAME_OF_DOWNLOADFILE_CHANGE, reloadDownloadFiles);
 
+    const timer = setTimeout(() => {
+      reloadUploadFiles();
+      reloadDownloadFiles();
+    }, 5000);
+
     return () => {
+      clearTimeout(timer);
       emitter.off(EVENT_NAME_OF_UPLOADFILE_CHANGE, reloadUploadFiles);
       emitter.off(EVENT_NAME_OF_DOWNLOADFILE_CHANGE, reloadDownloadFiles);
     };
@@ -129,77 +138,106 @@ export default function useCloudDriveModel() {
         progress,
         uploadState,
         uploadSpeed,
-      }: { progress?: number; uploadSpeed?: string; uploadState: UploadState },
+        result,
+        error,
+      }: {
+        progress?: number;
+        uploadSpeed?: string;
+        uploadState: UploadState;
+        result?: UploadFileData;
+        error?: Error;
+      },
     ) => {
       console.log('upload 上传进度', progress, uploadState, uploadSpeed);
 
-      uploadSpeed && (file.uploadSpeed = uploadSpeed);
-      progress && (file.progress = progress);
+      const newFile = { ...file };
 
-      let newState = file.state;
-      if (['uploading', 'waitingForCompleted'].includes(uploadState)) {
+      uploadSpeed && (newFile.uploadSpeed = uploadSpeed);
+      progress != null && (newFile.progress = progress);
+
+      let newState = newFile.state;
+      if (['waiting', 'uploading', 'waitingForCompleted'].includes(uploadState)) {
         newState = 'uploading';
-      } else if (uploadState == 'aborted') {
-        newState = 'canceled';
       } else if (uploadState == 'completed') {
         newState = 'completed';
+      } else if (uploadState == 'error') {
+        newState = 'error';
+        newFile.error = error;
       }
 
-      if (newState != file.state) {
-        await database.uploadFiles.update(file.id!, file);
+      if (newState != newFile.state) {
+        newFile.state = newState;
+        result && (newFile.result = result);
+        database.uploadFiles.update(newFile.id!, newFile);
       }
 
-      const index = state.current.uploadFiles.findIndex((item) => item.id == file.id);
-      state.current.uploadFiles.splice(index, 1, { ...file });
-      state.current.uploadFiles = [...state.current.uploadFiles];
+      state.current.uploadFiles = state.current.uploadFiles.map((item) =>
+        item.id == newFile.id ? newFile : item,
+      );
       forceRender();
     },
     [],
   );
 
-  const [upload, { progress, state: uploadState, uploading, uploadSpeed }] = useUpload(
-    '292eb203e6444c2287b545d8afbc7cee',
-    {
+  const [upload, { progress, state: uploadState, uploading, uploadSpeed, error, abort }] =
+    useUpload({
+      space: '292eb203e6444c2287b545d8afbc7cee',
       folder: 'uUw7hWtFvpx-vNSeMNpueccrRWGr8VF6tQJzCH9wgYc2QrAsBrOaBzAuuIiVTwdk',
-    },
-  );
+    });
 
   internalState.current.uploading = uploading;
 
-  console.log('upload uploading ->', uploading);
+  console.log('upload uploading ->', uploading, progress, uploadState, uploadSpeed);
 
   useEffect(() => {
-    const file = internalState.current.uploadFile;
+    const file = state.current.uploadFiles.find(
+      (item) => item.id == internalState.current.uploadFileId,
+    );
     if (file == null) {
       return;
     }
-    updateUploadFile(file, { progress, uploadState, uploadSpeed });
-  }, [progress, uploadState, uploadSpeed, updateUploadFile]);
+    updateUploadFile(file, { progress, uploadState, uploadSpeed, error });
+  }, [progress, uploadState, uploadSpeed, updateUploadFile, error]);
 
   const autoUpload = useCallback(async () => {
     if (internalState.current.uploading) {
       return;
     }
 
-    const file = state.current.uploadFiles.find((item) =>
+    let file = state.current.uploadFiles.find((item) =>
       ['waiting', 'uploading'].includes(item.state),
     );
 
     if (!file) {
-      return;
+      console.log('没有需要上传的文件');
     }
 
-    internalState.current.uploadFile = file;
+    while (!!file) {
+      internalState.current.uploadFileId = file.id;
 
-    // for (let i = 1; i <= 100; i++) {
-    //   await sleep(1000);
-    //   updateUploadFile(file, { uploadState: 'uploading', progress: i });
-    // }
+      await updateUploadFile(file, { uploadState: 'uploading' });
 
-    await upload(file.source, file.uploadOptions);
+      try {
+        const uploadFile = await upload(file.source, file.uploadOptions);
 
-    console.log('如何开始下一个');
-  }, [upload]);
+        await updateUploadFile(file, {
+          uploadState: 'completed',
+          result: uploadFile,
+        });
+      } catch (e: any) {
+        await updateUploadFile(file, {
+          uploadState: 'error',
+          error: e as Error,
+        });
+      }
+
+      file = state.current.uploadFiles.find((item) =>
+        ['waiting', 'uploading'].includes(item.state),
+      );
+    }
+
+    internalState.current.uploadFileId = undefined;
+  }, [updateUploadFile, upload]);
 
   useEffect(() => {
     emitter.on(EVENT_NAME_OF_UPLOADFILE_DATA_RELOADED, autoUpload);
@@ -260,26 +298,90 @@ export default function useCloudDriveModel() {
     forceRender();
   }, []);
 
-  const cancelUploadFile = useCallback((id: string) => {
-    console.log('cancelUploadFile', id);
-  }, []);
+  const cancelUploadFile = useCallback(
+    (id: string) => {
+      const xfile = state.current.uploadFiles.find((item) => item.id == id);
+      if (!xfile) {
+        return;
+      }
+      if (internalState.current.uploadFileId == xfile.id) {
+        abort();
+      }
+      const newFile: UploadFile = { ...xfile, state: 'canceled' };
+      database.uploadFiles.update(id, newFile);
+      state.current.uploadFiles = state.current.uploadFiles.map((item) =>
+        item.id == id ? newFile : item,
+      );
+      forceRender();
+    },
+    [abort],
+  );
 
-  const pauseUploadFile = useCallback((id: string) => {
-    console.log('pauseUploadFile', id);
-  }, []);
+  const pauseUploadFile = useCallback(
+    async (id: string) => {
+      const xfile = state.current.uploadFiles.find((item) => item.id == id);
+      if (!xfile) {
+        return;
+      }
+      if (internalState.current.uploadFileId == xfile.id) {
+        abort();
+      }
+      const newFile: UploadFile = { ...xfile, state: 'paused' };
+      database.uploadFiles.update(id, newFile);
+      state.current.uploadFiles = state.current.uploadFiles.map((item) =>
+        item.id == id ? newFile : item,
+      );
+      forceRender();
+    },
+    [abort],
+  );
 
-  const startUploadFile = useCallback((id: string) => {
-    console.log('startUploadFile', id);
-  }, []);
+  const startUploadFile = useCallback(
+    async (id: string) => {
+      const xfile = state.current.uploadFiles.find((item) => item.id == id);
+      if (!xfile) {
+        return;
+      }
+      const newFile: UploadFile = { ...xfile, state: 'waiting' };
+      database.uploadFiles.update(id, newFile);
+      state.current.uploadFiles = state.current.uploadFiles.map((item) =>
+        item.id == id ? newFile : item,
+      );
+      forceRender();
+      autoUpload();
+    },
+    [autoUpload],
+  );
 
-  const restoreUploadFile = useCallback((id: string) => {
-    console.log('restoreUploadFile', id);
-  }, []);
+  const restoreUploadFile = useCallback(
+    async (id: string) => {
+      const xfile = state.current.uploadFiles.find((item) => item.id == id);
+      if (!xfile) {
+        return;
+      }
+      const newFile: UploadFile = { ...xfile, state: 'waiting' };
+      database.uploadFiles.update(id, newFile);
+      state.current.uploadFiles = state.current.uploadFiles.map((item) =>
+        item.id == id ? newFile : item,
+      );
+      forceRender();
+      autoUpload();
+    },
+    [autoUpload],
+  );
 
-  console.log('....', state.current);
+  const deleteUploadFile = useCallback(async (id: string) => {
+    const xfile = state.current.uploadFiles.find((item) => item.id == id);
+    if (!xfile) {
+      return;
+    }
+    await database.uploadFiles.delete(id);
+    state.current.uploadFiles = state.current.uploadFiles.filter((item) => item.id != id);
+    forceRender();
+  }, []);
 
   return {
-    state: state.current,
+    state: { ...state.current },
     setCloudDrive: handleSetCloudDrive,
     upload: handleUploadFile,
     openTransfers,
@@ -288,5 +390,6 @@ export default function useCloudDriveModel() {
     pauseUploadFile,
     startUploadFile,
     restoreUploadFile,
+    deleteUploadFile,
   };
 }

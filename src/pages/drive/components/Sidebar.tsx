@@ -8,7 +8,7 @@ import { useCloudDrivesQuery } from '../hooks';
 
 import Transfers from './Transfers';
 
-import type { OptionData } from '@/pages/Metronic/components';
+import { CircleProgress, OptionData } from '@/pages/Metronic/components';
 import { Popover } from '@/pages/Metronic/components';
 import { Menu } from '@/pages/Metronic/components';
 import { AsideWorkspace, Pulse, Select } from '@/pages/Metronic/components';
@@ -134,13 +134,14 @@ function Sidebar() {
           visible={visibleTransfers}
           onVisibleChange={handleVisibleChange}
           overlayClassName="dialog-transfers"
-          title="传输列表"
           content={<Transfers />}
         >
           <div className="file-transfer-icon">
-            <Pulse size="sm">
-              <Icon className="svg-icon-3" name="Duotune/arr032" />
-            </Pulse>
+            <CircleProgress width={38} percent={70} success={{ strokeColor: '#04c8c8' }}>
+              <Pulse size="sm">
+                <Icon className="svg-icon-5" name="Duotune/arr032" />
+              </Pulse>
+            </CircleProgress>
           </div>
         </Popover>
       </div>

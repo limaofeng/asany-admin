@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
-import { useModel } from 'umi';
+import { useHistory, useModel } from 'umi';
 import Icon from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import classnames from 'classnames';
@@ -12,12 +12,15 @@ import { fileSize } from '@/pages/Metronic/components/utils/format';
 function randerFileIcon(file: UploadFile) {
   console.log('randerFileIcon', file);
   if (['zip'].includes(file.extension!)) {
-    return <Icon name="Material/zip" className="svg-icon-2x" />;
+    return <Icon name="Bootstrap/file-zip-fill" className="svg-icon-2x" />;
+  }
+  if (file.mimeType.startsWith('image/')) {
+    return <Icon name="Bootstrap/file-image-fill" className="svg-icon-2x" />;
   }
   if (file.mimeType.startsWith('video/')) {
-    return <Icon name="Material/video" className="svg-icon-2x" />;
+    return <Icon name="Bootstrap/file-play-fill" className="svg-icon-2x" />;
   }
-  return <Icon name="Duotune/fil003" className="svg-icon-2x" />;
+  return <Icon name="Bootstrap/file-post-fill" className="svg-icon-2x" />;
 }
 
 type UploadFileItemProps = {
@@ -27,28 +30,67 @@ type UploadFileItemProps = {
 function UploadFileItem(props: UploadFileItemProps) {
   const { file } = props;
 
+  const history = useHistory();
+
   const api = useModel('cloud-drive', (model) => ({
+    closeTransfers: model.closeTransfers,
     cancelUploadFile: model.cancelUploadFile,
     pauseUploadFile: model.pauseUploadFile,
     startUploadFile: model.startUploadFile,
     restoreUploadFile: model.restoreUploadFile,
+    deleteUploadFile: model.deleteUploadFile,
   }));
 
   const handleCancelUpload = useCallback(() => {
     api.cancelUploadFile(file.id!);
   }, [api, file.id]);
 
+  const handleOpenFolder = useCallback(() => {
+    api.closeTransfers();
+    history.push(`/drive/folders/${file.result!.parentFolder.id}`);
+  }, [api, file.result, history]);
+
+  const handleStart = useCallback(() => {
+    api.startUploadFile(file.id!);
+  }, [api, file.id]);
+
+  const handleRestore = useCallback(() => {
+    api.restoreUploadFile(file.id!);
+  }, [api, file.id]);
+
+  const handlePause = useCallback(() => {
+    api.pauseUploadFile(file.id!);
+  }, [api, file.id]);
+
+  const handleDelete = useCallback(() => {
+    api.deleteUploadFile(file.id!);
+  }, [api, file.id]);
+
   return (
-    <li className="file-item" key={file.id}>
+    <li
+      className={classnames('file-item', {
+        'file-item-uploaded': ['completed', 'error'].includes(file.state),
+      })}
+      key={file.id}
+    >
       <div className="file-icon">{randerFileIcon(file)}</div>
       <div className="file-details">
         <div className="file-title">{file.name}</div>
-        <div className="file-transfer-progress progress">
+        <div
+          className={classnames('file-transfer-progress progress', {
+            'opacity-0': file.state == 'completed',
+          })}
+        >
           <Progress color="success" percent={file.progress} />
         </div>
         <div className="file-status">
           <div className="file-size">{fileSize(file.size)}</div>
-          <div className="file-transfer-rate">{!!file.uploadSpeed && file.uploadSpeed + '/s'}</div>
+          {file.state == 'error' && <div className="upload-error text-danger">上传出现错误!</div>}
+          {!['completed', 'error'].includes(file.state) && (
+            <div className="file-transfer-rate">
+              {file.progress == 100 ? '等待完成...' : !!file.uploadSpeed && file.uploadSpeed + '/s'}
+            </div>
+          )}
         </div>
       </div>
       <div className="file-actions">
@@ -56,20 +98,42 @@ function UploadFileItem(props: UploadFileItemProps) {
           <Button icon={<Icon name="Bootstrap/clock" className="svg-icon-4" />} />
         )}
         {file.state == 'uploading' && (
-          <Button icon={<Icon name="Bootstrap/pause" className="svg-icon-4" />} />
+          <Button
+            onClick={handlePause}
+            icon={<Icon name="Bootstrap/pause" className="svg-icon-4" />}
+          />
         )}
         {file.state == 'paused' && (
-          <Button icon={<Icon name="Bootstrap/arrow-up-short" className="svg-icon-4" />} />
+          <Button
+            onClick={handleStart}
+            icon={<Icon name="Bootstrap/arrow-up-short" className="svg-icon-4" />}
+          />
         )}
-        {file.state == 'canceled' && (
-          <Button icon={<Icon name="Bootstrap/arrow-counterclockwise" className="svg-icon-4" />} />
+        {['canceled', 'error'].includes(file.state) && (
+          <Button
+            onClick={handleRestore}
+            icon={<Icon name="Bootstrap/arrow-counterclockwise" className="svg-icon-4" />}
+          />
         )}
-        {file.state != 'canceled' && (
+        {file.state == 'completed' && (
+          <Button
+            onClick={handleOpenFolder}
+            icon={<Icon name="Bootstrap/folder2" className="svg-icon-6" />}
+          />
+        )}
+        {!['completed', 'canceled', 'error'].includes(file.state) && (
           <Button
             onClick={handleCancelUpload}
             icon={<Icon name="Bootstrap/x" className="svg-icon-4" />}
           />
         )}
+        {['completed', 'canceled', 'error'].includes(file.state) && (
+          <Button
+            onClick={handleDelete}
+            icon={<Icon name="Bootstrap/eraser" className="svg-icon-6" />}
+          />
+        )}
+        {/* {eraser} */}
       </div>
     </li>
   );
@@ -90,25 +154,64 @@ function UploadFileList() {
         scrollbars: { autoHide: 'scroll' },
       }}
     >
-      <ul className="transfer-file-list">
-        {uploadFiles.map((file) => (
-          <UploadFileItem file={file} key={file.id} />
-        ))}
-      </ul>
+      {!!uploadFiles.length ? (
+        <ul className="transfer-file-list">
+          {uploadFiles.map((file) => (
+            <UploadFileItem file={file} key={file.id} />
+          ))}
+        </ul>
+      ) : (
+        <div className="transfer-list-empty">
+          <img src="/assets/media/illustrations/dozzy-1/4.png" />
+          <span className="empty-title">没有下载任务</span>
+        </div>
+      )}
     </OverlayScrollbarsComponent>
   );
 }
 
 function Transfers() {
+  const [activeKey, setActiveKey] = useState('upload');
+
+  const handleChange = useCallback((_activeKey: string) => {
+    setActiveKey(_activeKey);
+  }, []);
+
+  const api = useModel('cloud-drive', (model) => ({
+    deleteUploadFile: model.deleteUploadFile,
+  }));
+
+  const uploadedFiles = useModel('cloud-drive', ({ state }) => {
+    return state.uploadFiles.filter((item) => item.state == 'completed');
+  });
+
+  const handleClear = useCallback(async () => {
+    for (const _file of uploadedFiles) {
+      await api.deleteUploadFile(_file.id!);
+    }
+  }, [api, uploadedFiles]);
+
   return (
-    <Tabs tabPosition="left">
-      <Tabs.TabPane key="upload" tab="文件上传">
-        <UploadFileList />
-      </Tabs.TabPane>
-      <Tabs.TabPane key="download" tab="文件下载">
-        ssss
-      </Tabs.TabPane>
-    </Tabs>
+    <>
+      <div className="popover-header">
+        <span className="popover-title">传输列表</span>
+        <div className="popover-toolbar">
+          {!!uploadedFiles && activeKey == 'upload' && (
+            <a className="cursor-pointer" onClick={handleClear}>
+              清空已完成
+            </a>
+          )}
+        </div>
+      </div>
+      <Tabs activeKey={activeKey} onChange={handleChange} tabPosition="left">
+        <Tabs.TabPane key="upload" tab="文件上传">
+          <UploadFileList />
+        </Tabs.TabPane>
+        <Tabs.TabPane key="download" tab="文件下载">
+          ssss
+        </Tabs.TabPane>
+      </Tabs>
+    </>
   );
 }
 
