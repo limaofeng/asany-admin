@@ -12,6 +12,9 @@ import type {
 
 export type DownloadFile = {
   id: string;
+  size: number;
+  progress: number;
+  downloadSpeed: string;
 };
 
 export type UploadFile = {
@@ -61,7 +64,7 @@ class TransferDatabase {
 const database = new TransferDatabase();
 
 const initialState = {
-  visibleTransfers: true,
+  visibleTransfers: false,
   currentCloudDrive: '',
   uploadFiles: [],
   downloadFiles: [],
@@ -148,7 +151,7 @@ export default function useCloudDriveModel() {
         error?: Error;
       },
     ) => {
-      console.log('upload 上传进度', progress, uploadState, uploadSpeed);
+      // console.log('upload 上传进度', progress, uploadState, uploadSpeed);
 
       const newFile = { ...file };
 
@@ -158,11 +161,16 @@ export default function useCloudDriveModel() {
       let newState = newFile.state;
       if (['waiting', 'uploading', 'waitingForCompleted'].includes(uploadState)) {
         newState = 'uploading';
+        newFile.error = undefined;
       } else if (uploadState == 'completed') {
         newState = 'completed';
+        newFile.progress = 100;
       } else if (uploadState == 'error') {
         newState = 'error';
         newFile.error = error;
+      } else if (uploadState == 'aborted') {
+        console.log('xxx', state.current.uploadFiles);
+        newFile.error = undefined;
       }
 
       if (newState != newFile.state) {
@@ -187,7 +195,7 @@ export default function useCloudDriveModel() {
 
   internalState.current.uploading = uploading;
 
-  console.log('upload uploading ->', uploading, progress, uploadState, uploadSpeed);
+  // console.log('upload uploading ->', uploading, progress, uploadState, uploadSpeed);
 
   useEffect(() => {
     const file = state.current.uploadFiles.find(
@@ -215,6 +223,8 @@ export default function useCloudDriveModel() {
     while (!!file) {
       internalState.current.uploadFileId = file.id;
 
+      const fileId = file?.id;
+
       await updateUploadFile(file, { uploadState: 'uploading' });
 
       try {
@@ -224,16 +234,18 @@ export default function useCloudDriveModel() {
           uploadState: 'completed',
           result: uploadFile,
         });
-      } catch (e: any) {
-        await updateUploadFile(file, {
-          uploadState: 'error',
-          error: e as Error,
+      } catch (e) {
+        const _error = e as Error;
+
+        await updateUploadFile(state.current.uploadFiles.find((item) => item.id == fileId)!, {
+          uploadState: _error.name == 'AbortError' ? 'aborted' : 'error',
+          error: _error,
         });
       }
 
-      file = state.current.uploadFiles.find((item) =>
-        ['waiting', 'uploading'].includes(item.state),
-      );
+      file = state.current.uploadFiles
+        .filter((item) => item.id != fileId)
+        .find((item) => ['waiting', 'uploading'].includes(item.state));
     }
 
     internalState.current.uploadFileId = undefined;

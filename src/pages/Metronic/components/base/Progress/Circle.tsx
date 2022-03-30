@@ -7,7 +7,7 @@ import type { ProgressProps } from './typings';
 import { validProgress } from './utils';
 
 interface CircleProps extends ProgressProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   progressStatus?: string;
 }
 
@@ -26,6 +26,7 @@ function getStrokeColor({
 
 const Circle: React.FC<CircleProps> = (props) => {
   const {
+    className,
     width,
     strokeWidth,
     trailColor,
@@ -59,7 +60,7 @@ const Circle: React.FC<CircleProps> = (props) => {
   const isGradient = Object.prototype.toString.call(props.strokeColor) === '[object Object]';
   const strokeColor = getStrokeColor({ success, strokeColor: props.strokeColor });
 
-  const wrapperClassName = classnames(`progress-inner`, {
+  const wrapperClassName = classnames(`progress-inner`, className, {
     [`progress-circle-gradient`]: isGradient,
   });
 

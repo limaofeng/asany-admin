@@ -8,7 +8,8 @@ import { useCloudDrivesQuery } from '../hooks';
 
 import Transfers from './Transfers';
 
-import { CircleProgress, OptionData } from '@/pages/Metronic/components';
+import type { OptionData } from '@/pages/Metronic/components';
+import { CircleProgress } from '@/pages/Metronic/components';
 import { Popover } from '@/pages/Metronic/components';
 import { Menu } from '@/pages/Metronic/components';
 import { AsideWorkspace, Pulse, Select } from '@/pages/Metronic/components';
@@ -126,6 +127,26 @@ function Sidebar() {
     return [type!];
   }, [type, value]);
 
+  const uploadPercent = useModel('cloud-drive', ({ state }) => {
+    let total = 0;
+    let upladed = 0;
+    for (const file of state.uploadFiles) {
+      total += file.size;
+      upladed += file.size * (file.progress / 100);
+    }
+    return Math.max(((upladed / total) * 100) << 0, state.uploadFiles.length ? 1 : 0);
+  });
+
+  const downloadPercent = useModel('cloud-drive', ({ state }) => {
+    let total = 0;
+    let upladed = 0;
+    for (const file of state.downloadFiles) {
+      total += file.size;
+      upladed += file.size * file.progress;
+    }
+    return Math.max(((upladed / total) * 100) << 0, state.downloadFiles.length ? 1 : 0);
+  });
+
   return (
     <AsideWorkspace width={280} className="app-sidebar app-drive-sidebar">
       <div className="relative mt-5 px-5 pt-5 d-flex">
@@ -137,11 +158,23 @@ function Sidebar() {
           content={<Transfers />}
         >
           <div className="file-transfer-icon">
-            <CircleProgress width={38} percent={70} success={{ strokeColor: '#04c8c8' }}>
-              <Pulse size="sm">
-                <Icon className="svg-icon-5" name="Duotune/arr032" />
-              </Pulse>
-            </CircleProgress>
+            <CircleProgress
+              className="download-all-progress position-absolute top-50 start-50 translate-middle"
+              width={34}
+              percent={downloadPercent}
+              strokeWidth={6}
+              success={{ strokeColor: '#04c8c8' }}
+            />
+            <CircleProgress
+              className="upload-all-progress position-absolute top-50 start-50 translate-middle"
+              width={26}
+              percent={uploadPercent}
+              strokeWidth={7.5}
+              success={{ strokeColor: '#009ef7' }}
+            />
+            <Pulse size="sm" pause={!downloadPercent && !uploadPercent}>
+              <Icon className="svg-icon-6" name="Duotune/arr032" />
+            </Pulse>
           </div>
         </Popover>
       </div>

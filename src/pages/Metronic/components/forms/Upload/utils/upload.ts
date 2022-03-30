@@ -190,9 +190,15 @@ type UploadFileOptions = {
   hash?: string;
 };
 
-const DEFAULT_PART_SIZE = 1024 * 1024 * 50 * 1024; // 按每 50M 分割文件
+const DEFAULT_PART_SIZE = 1024 * 1024 * 50; // 按每 50M 分割文件
 
 const DEFAULT_OPTIONS = { partSize: DEFAULT_PART_SIZE, space: 'Default' };
+
+function throwAbortError() {
+  const _error = new Error('canceled');
+  _error.name = 'AbortError';
+  throw _error;
+}
 
 export const useUpload = (options: UploadOptions): UseUploadResult => {
   const abortController = useRef(new AbortController());
@@ -222,7 +228,9 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
   const executeUploadFile = useCallback(
     async (file: File, _options: UploadFileOptions, onUploadProgress: OnUploadProgress) => {
       try {
-        abortController.current = new AbortController();
+        if (abortController.current.signal.aborted) {
+          return new Error('canceled');
+        }
         const { data } = await uploadFile({
           variables: {
             file,
@@ -237,8 +245,9 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         });
         return data.upload;
       } catch (e) {
-        if ((e as Error).name == 'AbortError') {
+        if ((e as Error).name == 'AbortError' || (e as Error).message == 'canceled') {
           state.current.state = 'aborted';
+          (e as Error).name = 'AbortError';
           forceRender();
         } else {
           state.current.state = 'error';
@@ -256,22 +265,24 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       const { space, folder } = _options;
       const partSize = _options.partSize!;
 
-      const partLength = Math.ceil(file.size / partSize) + (file.size % partSize == 0 ? 0 : 1);
-
-      console.log('文件分为:' + partLength + '段上传');
-
       const offset = partSize,
         size = file.size;
 
       const chunks = [file.slice(0, offset)];
       let cur = offset;
       while (cur < size) {
-        console.log('xxx', cur, cur + offset);
+        if (abortController.current.signal.aborted) {
+          throwAbortError();
+        }
         chunks.push(file.slice(cur, cur + offset));
         cur += offset;
       }
 
       const hash = await hashFile(file);
+
+      if (abortController.current.signal.aborted) {
+        throwAbortError();
+      }
 
       const { data: multipartUploadData } = await initiateMultipartUpload({
         variables: {
@@ -290,15 +301,16 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         },
       });
 
-      const multipartUpload = multipartUploadData!.multipartUpload!;
+      if (abortController.current.signal.aborted) {
+        throwAbortError();
+      }
 
-      console.log('initiateMultipartUpload', multipartUpload);
+      const multipartUpload = multipartUploadData!.multipartUpload!;
 
       const stat = { loaded: 0, oldTimestamp: Date.now(), oldLoadsize: 0 };
 
       let _upload;
 
-      abortController.current = new AbortController();
       for (let i = 0; i < chunks.length; i++) {
         const chunk = chunks[i];
         if (multipartUpload.chunks.some((item) => item.index == i + 1)) {
@@ -309,13 +321,14 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
 
         const partHash = await hashFile(chunk);
 
+        if (abortController.current.signal.aborted) {
+          throwAbortError();
+        }
+
         stat.oldLoadsize = 0;
         stat.oldTimestamp = Date.now();
 
-        if (abortController.current.signal.aborted) {
-          throw new Error('上传取消');
-        }
-
+        abortController.current = new AbortController();
         _upload = await executeUploadFile(
           new File([chunk], file.name + '.part' + addZeroLeft(String(i + 1), 5), {
             type: 'application/octet-stream',
@@ -329,6 +342,8 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
           (_progress) => {
             const _loaded = stat.loaded + _progress.loaded;
             const percent = ((_loaded / size) * 100) << 0;
+
+            // console.log('upload aborted', abortController.current.signal.aborted);
 
             state.current.progress = percent;
             state.current.uploadSpeed = calculateUploadSpeed(_progress, stat);
@@ -362,6 +377,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       const { space, folder } = _options;
 
       const stat = { oldTimestamp: Date.now(), oldLoadsize: 0 };
+      abortController.current = new AbortController();
       const _upload = await executeUploadFile(
         file,
         {

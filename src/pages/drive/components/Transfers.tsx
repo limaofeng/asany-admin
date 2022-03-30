@@ -10,7 +10,6 @@ import type { UploadFile } from '@/models/cloud-drive';
 import { fileSize } from '@/pages/Metronic/components/utils/format';
 
 function randerFileIcon(file: UploadFile) {
-  console.log('randerFileIcon', file);
   if (['zip'].includes(file.extension!)) {
     return <Icon name="Bootstrap/file-zip-fill" className="svg-icon-2x" />;
   }
@@ -133,7 +132,6 @@ function UploadFileItem(props: UploadFileItemProps) {
             icon={<Icon name="Bootstrap/eraser" className="svg-icon-6" />}
           />
         )}
-        {/* {eraser} */}
       </div>
     </li>
   );
@@ -141,11 +139,8 @@ function UploadFileItem(props: UploadFileItemProps) {
 
 function UploadFileList() {
   const uploadFiles = useModel('cloud-drive', ({ state }) => {
-    console.log('uploadFiles', state.uploadFiles);
     return state.uploadFiles;
   });
-
-  console.log('uploadFiles', uploadFiles);
 
   return (
     <OverlayScrollbarsComponent
