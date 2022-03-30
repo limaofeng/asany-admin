@@ -158,7 +158,7 @@ function UploadFileList() {
       ) : (
         <div className="transfer-list-empty">
           <img src="/assets/media/illustrations/dozzy-1/4.png" />
-          <span className="empty-title">没有下载任务</span>
+          <span className="empty-title">没有上传任务</span>
         </div>
       )}
     </OverlayScrollbarsComponent>
