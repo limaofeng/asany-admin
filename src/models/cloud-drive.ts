@@ -13,8 +13,13 @@ import type {
 export type DownloadFile = {
   id: string;
   size: number;
+  name: string;
+  state: 'waiting' | 'downloading' | 'paused' | 'canceled' | 'completed' | 'error';
   progress: number;
+  extension: string;
+  mimeType: string;
   downloadSpeed: string;
+  error?: Error;
 };
 
 export type UploadFile = {

@@ -23,13 +23,9 @@ function Avatar(props: AvatarProps) {
     [backgroundColor],
   );
 
-  const handleError = useCallback(
-    (e) => {
-      console.log(e, src);
-      setLoadFailed(true);
-    },
-    [src],
-  );
+  const handleError = useCallback(() => {
+    setLoadFailed(true);
+  }, []);
 
   useEffect(() => {
     setLoadFailed(false);
