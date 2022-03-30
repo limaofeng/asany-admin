@@ -156,7 +156,7 @@ export default function useCloudDriveModel() {
       const newFile = { ...file };
 
       uploadSpeed && (newFile.uploadSpeed = uploadSpeed);
-      progress != null && (newFile.progress = progress);
+      progress && (newFile.progress = progress);
 
       let newState = newFile.state;
       if (['waiting', 'uploading', 'waitingForCompleted'].includes(uploadState)) {
@@ -169,7 +169,6 @@ export default function useCloudDriveModel() {
         newState = 'error';
         newFile.error = error;
       } else if (uploadState == 'aborted') {
-        console.log('xxx', state.current.uploadFiles);
         newFile.error = undefined;
       }
 
@@ -215,10 +214,6 @@ export default function useCloudDriveModel() {
     let file = state.current.uploadFiles.find((item) =>
       ['waiting', 'uploading'].includes(item.state),
     );
-
-    if (!file) {
-      console.log('没有需要上传的文件');
-    }
 
     while (!!file) {
       internalState.current.uploadFileId = file.id;
@@ -286,9 +281,7 @@ export default function useCloudDriveModel() {
 
       await database.transaction('rw', database.uploadFiles, async () => {
         for (const item of _uploadFiles) {
-          console.time('保存文件耗时');
           await database.uploadFiles.add(item);
-          console.timeEnd('保存文件耗时');
         }
       });
 

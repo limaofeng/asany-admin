@@ -92,10 +92,10 @@ const INITIATE_MULTIPART_UPLOAD = gql`
   mutation initiateMultipartUpload($input: MultipartUploadInput!) {
     multipartUpload: initiateMultipartUpload(input: $input) {
       id
-      name
       path
-      storage
       hash
+      space
+      storage
       chunks {
         id
         hash
@@ -110,6 +110,23 @@ const INITIATE_MULTIPART_UPLOAD = gql`
 const MUTATION_UPLOAD = gql`
   mutation upload($file: Upload!, $options: UploadOptions) {
     upload(file: $file, options: $options) {
+      id
+      name
+      path
+      isDirectory
+      size
+      mimeType
+      md5
+      parentFolder {
+        id
+      }
+    }
+  }
+`;
+
+const COMPLETE_MULTIPART_UPLOAD = gql`
+  mutation completeMultipartUpload($id: ID!, $name: String!, $folder: ID) {
+    upload: completeMultipartUpload(id: $id, name: $name, folder: $folder) {
       id
       name
       path
@@ -223,6 +240,9 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       }[];
     };
   }>(INITIATE_MULTIPART_UPLOAD);
+  const [completeMultipartUpload] = useMutation<{
+    upload: UploadFileData;
+  }>(COMPLETE_MULTIPART_UPLOAD);
   const [uploadFile] = useMutation(MUTATION_UPLOAD);
 
   const executeUploadFile = useCallback(
@@ -268,6 +288,8 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       const offset = partSize,
         size = file.size;
 
+      abortController.current = new AbortController();
+
       const chunks = [file.slice(0, offset)];
       let cur = offset;
       while (cur < size) {
@@ -287,9 +309,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       const { data: multipartUploadData } = await initiateMultipartUpload({
         variables: {
           input: {
-            name: file.name,
             hash,
-            folder,
             space,
             chunkSize: offset,
             chunkLength: chunks.length,
@@ -309,8 +329,6 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
 
       const stat = { loaded: 0, oldTimestamp: Date.now(), oldLoadsize: 0 };
 
-      let _upload;
-
       for (let i = 0; i < chunks.length; i++) {
         const chunk = chunks[i];
         if (multipartUpload.chunks.some((item) => item.index == i + 1)) {
@@ -329,7 +347,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         stat.oldTimestamp = Date.now();
 
         abortController.current = new AbortController();
-        _upload = await executeUploadFile(
+        await executeUploadFile(
           new File([chunk], file.name + '.part' + addZeroLeft(String(i + 1), 5), {
             type: 'application/octet-stream',
             lastModified: new Date().getTime(),
@@ -357,19 +375,24 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         );
 
         stat.loaded += chunk.size;
-
-        console.log('hashFile', partHash);
-        console.timeEnd('开始MD5' + i);
       }
 
-      state.current.data = _upload;
+      const { data: xdata } = await completeMultipartUpload({
+        variables: {
+          id: multipartUpload.id,
+          name: file.name,
+          folder,
+        },
+      });
+
+      state.current.data = xdata!.upload;
       state.current.state = 'completed';
 
       forceRender();
 
-      return _upload;
+      return state.current.data;
     },
-    [executeUploadFile, initiateMultipartUpload],
+    [completeMultipartUpload, executeUploadFile, initiateMultipartUpload],
   );
 
   const handleOrdinaryUpload = useCallback(

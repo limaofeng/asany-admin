@@ -191,7 +191,7 @@ function Transfers() {
       <div className="popover-header">
         <span className="popover-title">传输列表</span>
         <div className="popover-toolbar">
-          {!!uploadedFiles && activeKey == 'upload' && (
+          {!!uploadedFiles.length && activeKey == 'upload' && (
             <a className="cursor-pointer" onClick={handleClear}>
               清空已完成
             </a>
