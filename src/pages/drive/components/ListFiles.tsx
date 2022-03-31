@@ -3,8 +3,6 @@ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'r
 import { useHistory, useModel } from 'umi';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import { useDropzone } from 'react-dropzone';
 
 import FolderPath from '../components/FolderPath';
@@ -34,6 +32,7 @@ import {
 } from '@/pages/Metronic/components';
 import type { FileFilter, FileObject } from '@/types';
 import type { DataSource, Sorter } from '@/pages/Metronic/components/base/Table/typings';
+import { fileSize } from '@/pages/Metronic/components/utils/format';
 
 type ListFilesProps = {
   toolbar?: 'default' | 'starred' | 'trash';
@@ -70,7 +69,9 @@ function ListFiles(props: ListFilesProps) {
 
   const history = useHistory();
 
-  const upload = useModel('cloud-drive', (model) => model.upload);
+  const cloudDrive = useModel('cloud-drive.index', ({ state }) => state.cloudDrive);
+  const upload = useModel('cloud-drive.index', (model) => model.upload);
+  const download = useModel('cloud-drive.index', (model) => model.download);
 
   const temp = useRef<{
     rootFolder?: FileObject;
@@ -264,7 +265,7 @@ function ListFiles(props: ListFilesProps) {
 
   const selectedFiles = useMemo(() => {
     return dataSource.items.filter((item) => selectedKeys.some((key) => key == item.id));
-  }, [dataSource.items, selectedKeys]);
+  }, [dataSource, selectedKeys]);
 
   const handleNewFolderSuccess = useCallback(
     async (_folder: FileObject) => {
@@ -285,16 +286,19 @@ function ListFiles(props: ListFilesProps) {
 
   const onDrop = useCallback(
     (acceptedFiles) => {
-      upload(acceptedFiles);
+      upload(acceptedFiles, {
+        space: cloudDrive!.space,
+        folder: currentFolderId!,
+      });
     },
-    [upload],
+    [cloudDrive, currentFolderId, upload],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   console.log('isDragActive', isDragActive);
 
-  const { onClick: browseLocalFiles, ...rootProps } = getRootProps();
+  const { role, tabIndex, onClick: browseLocalFiles, ...rootProps } = getRootProps();
 
   const handleUpload = useCallback(
     (e) => {
@@ -304,13 +308,26 @@ function ListFiles(props: ListFilesProps) {
   );
 
   const handleDownload = useCallback(async () => {
-    const zip = new JSZip();
-    zip.file('Hello.txt', 'Hello World\n');
-    const img = zip.folder('images')!;
-    img.file('smile.gif', 'xxx', { base64: true });
-    const content = await zip.generateAsync({ type: 'blob' });
-    saveAs(content, 'example.zip');
-  }, []);
+    // const zip = new JSZip();
+    // zip.file('Hello.txt', 'Hello World\n');
+    // const img = zip.folder('images')!;
+    // img.file('smile.gif', 'xxx', { base64: true });
+    // const content = await zip.generateAsync({ type: 'blob' });
+    // saveAs(content, 'example.zip');
+    // download('http://localhost:8080/download', {
+    //   ids: ['uUw7hWtFvpx-vNSeMNpueccrRWGr8VF6tQJzCH9wgYccj8lolsWAa3h6YkXKtAfp'],
+    // });
+
+    const items = dataSource.items;
+    const files = items.filter((item) => selectedKeys.includes(item.id));
+
+    const filename = files[0].name;
+
+    download(
+      files,
+      files.length == 1 ? filename : `【批量下载】${filename} 等 (${files.length}).zip`,
+    );
+  }, [dataSource, download, selectedKeys]);
 
   const handleDelete = useCallback(async () => {
     const message = selectedFile
@@ -678,7 +695,7 @@ function ListFiles(props: ListFilesProps) {
                     className: 'min-w-100px',
                     sortOrder: sorter.field == 'size' ? sorter.order : undefined,
                     render(value, record) {
-                      return record.isDirectory ? '-' : value;
+                      return record.isDirectory ? '-' : fileSize(value);
                     },
                   },
                   // {

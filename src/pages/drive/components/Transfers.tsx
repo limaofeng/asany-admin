@@ -31,38 +31,32 @@ function UploadFileItem(props: UploadFileItemProps) {
 
   const history = useHistory();
 
-  const api = useModel('cloud-drive', (model) => ({
-    closeTransfers: model.closeTransfers,
-    cancelUploadFile: model.cancelUploadFile,
-    pauseUploadFile: model.pauseUploadFile,
-    startUploadFile: model.startUploadFile,
-    restoreUploadFile: model.restoreUploadFile,
-    deleteUploadFile: model.deleteUploadFile,
-  }));
+  const baseApi = useModel('cloud-drive.index', (model) => model.api.base);
+  const api = useModel('cloud-drive.index', (model) => model.api.upload);
 
   const handleCancelUpload = useCallback(() => {
-    api.cancelUploadFile(file.id!);
+    api.cancel(file.id!);
   }, [api, file.id]);
 
   const handleOpenFolder = useCallback(() => {
-    api.closeTransfers();
+    baseApi.closeTransfers();
     history.push(`/drive/folders/${file.result!.parentFolder.id}`);
-  }, [api, file.result, history]);
+  }, [baseApi, file.result, history]);
 
   const handleStart = useCallback(() => {
-    api.startUploadFile(file.id!);
+    api.start(file.id!);
   }, [api, file.id]);
 
   const handleRestore = useCallback(() => {
-    api.restoreUploadFile(file.id!);
+    api.restore(file.id!);
   }, [api, file.id]);
 
   const handlePause = useCallback(() => {
-    api.pauseUploadFile(file.id!);
+    api.pause(file.id!);
   }, [api, file.id]);
 
   const handleDelete = useCallback(() => {
-    api.deleteUploadFile(file.id!);
+    api.delete(file.id!);
   }, [api, file.id]);
 
   return (
@@ -138,7 +132,7 @@ function UploadFileItem(props: UploadFileItemProps) {
 }
 
 function UploadFileList() {
-  const uploadFiles = useModel('cloud-drive', ({ state }) => {
+  const uploadFiles = useModel('cloud-drive.index', ({ state }) => {
     return state.uploadFiles;
   });
 
@@ -172,37 +166,31 @@ type DownloadFileItemProps = {
 function DownloadFileItem(props: DownloadFileItemProps) {
   const { file } = props;
 
-  const api = useModel('cloud-drive', (model) => ({
-    closeTransfers: model.closeTransfers,
-    cancelUploadFile: model.cancelUploadFile,
-    pauseUploadFile: model.pauseUploadFile,
-    startUploadFile: model.startUploadFile,
-    restoreUploadFile: model.restoreUploadFile,
-    deleteUploadFile: model.deleteUploadFile,
-  }));
+  const api = useModel('cloud-drive.index', (model) => model.api.download);
 
   const handleCancelUpload = useCallback(() => {
-    api.cancelUploadFile(file.id!);
+    api.cancel(file.id!);
   }, [api, file.id]);
 
-  const handleOpenFolder = useCallback(() => {
-    api.closeTransfers();
-  }, [api]);
+  const handleSaveFile = useCallback(() => {
+    api.save(file.id!);
+    console.log('本地下载');
+  }, [api, file.id]);
 
   const handleStart = useCallback(() => {
-    api.startUploadFile(file.id!);
+    api.start(file.id!);
   }, [api, file.id]);
 
   const handleRestore = useCallback(() => {
-    api.restoreUploadFile(file.id!);
+    api.restore(file.id!);
   }, [api, file.id]);
 
   const handlePause = useCallback(() => {
-    api.pauseUploadFile(file.id!);
+    api.pause(file.id!);
   }, [api, file.id]);
 
   const handleDelete = useCallback(() => {
-    api.deleteUploadFile(file.id!);
+    api.delete(file.id!);
   }, [api, file.id]);
 
   return (
@@ -220,11 +208,11 @@ function DownloadFileItem(props: DownloadFileItemProps) {
             'opacity-0': file.state == 'completed',
           })}
         >
-          <Progress color="success" percent={file.progress} />
+          <Progress color="primary" percent={file.progress} />
         </div>
         <div className="file-status">
           <div className="file-size">{fileSize(file.size)}</div>
-          {file.state == 'error' && <div className="upload-error text-danger">上传出现错误!</div>}
+          {file.state == 'error' && <div className="upload-error text-danger">下载出现错误!</div>}
           {!['completed', 'error'].includes(file.state) && (
             <div className="file-transfer-rate">
               {file.progress == 100
@@ -247,7 +235,7 @@ function DownloadFileItem(props: DownloadFileItemProps) {
         {file.state == 'paused' && (
           <Button
             onClick={handleStart}
-            icon={<Icon name="Bootstrap/arrow-up-short" className="svg-icon-4" />}
+            icon={<Icon name="Bootstrap/arrow-down-short" className="svg-icon-4" />}
           />
         )}
         {['canceled', 'error'].includes(file.state) && (
@@ -258,8 +246,8 @@ function DownloadFileItem(props: DownloadFileItemProps) {
         )}
         {file.state == 'completed' && (
           <Button
-            onClick={handleOpenFolder}
-            icon={<Icon name="Bootstrap/folder2" className="svg-icon-6" />}
+            onClick={handleSaveFile}
+            icon={<Icon name="Bootstrap/download" className="svg-icon-6" />}
           />
         )}
         {!['completed', 'canceled', 'error'].includes(file.state) && (
@@ -280,7 +268,7 @@ function DownloadFileItem(props: DownloadFileItemProps) {
 }
 
 function DownloadFileList() {
-  const downloadFiles = useModel('cloud-drive', ({ state }) => {
+  const downloadFiles = useModel('cloud-drive.index', ({ state }) => {
     return state.downloadFiles;
   });
 
@@ -314,11 +302,11 @@ function Transfers() {
     setActiveKey(_activeKey);
   }, []);
 
-  const api = useModel('cloud-drive', (model) => ({
-    deleteUploadFile: model.deleteUploadFile,
+  const api = useModel('cloud-drive.index', (model) => ({
+    deleteUploadFile: model.api.upload.delete,
   }));
 
-  const uploadedFiles = useModel('cloud-drive', ({ state }) => {
+  const uploadedFiles = useModel('cloud-drive.index', ({ state }) => {
     return state.uploadFiles.filter((item) => item.state == 'completed');
   });
 

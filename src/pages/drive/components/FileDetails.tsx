@@ -10,6 +10,7 @@ import { useFileQuery } from '../hooks';
 
 import { BlockUI, Symbol, Tabs } from '@/pages/Metronic/components';
 import type { FileObject } from '@/types';
+import { fileSize } from '@/pages/Metronic/components/utils/format';
 
 type FileDetailsProps = {
   currentFolder?: FileObject;
@@ -89,7 +90,7 @@ function ViewFileDetails(props: ViewFileDetailsProps) {
         <div className="row mb-4">
           <label className="col-lg-3 fw-bold text-muted">大小</label>
           <div className="col-lg-9 fv-row">
-            <span className="fs-7 text-gray-800">{file.size}</span>
+            <span className="fs-7 text-gray-800">{fileSize(file.size)}</span>
           </div>
         </div>
       )}

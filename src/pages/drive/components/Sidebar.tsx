@@ -23,7 +23,7 @@ type SidebarFooterProps = {
 function SidebarFooter(props: SidebarFooterProps) {
   const { drives, onAction } = props;
 
-  const currentBook = useModel('cloud-drive', ({ state }) => state.currentCloudDrive);
+  const currentDriveId = useModel('cloud-drive.index', ({ state }) => state.driveId);
 
   const handleSelect = useCallback(
     (key) => {
@@ -52,7 +52,7 @@ function SidebarFooter(props: SidebarFooterProps) {
       <Select
         onChange={handleSelect}
         placement="topCenter"
-        value={currentBook ? `drive-${currentBook}` : undefined}
+        value={currentDriveId ? `drive-${currentDriveId}` : undefined}
         options={options}
       />
     </div>
@@ -60,11 +60,10 @@ function SidebarFooter(props: SidebarFooterProps) {
 }
 
 function Sidebar() {
-  const currentBook = useModel('cloud-drive', ({ state }) => state.currentCloudDrive);
+  const currentDriveId = useModel('cloud-drive.index', ({ state }) => state.driveId);
 
-  const visibleTransfers = useModel('cloud-drive', ({ state }) => state.visibleTransfers);
-  const openTransfers = useModel('cloud-drive', (model) => model.openTransfers);
-  const closeTransfers = useModel('cloud-drive', (model) => model.closeTransfers);
+  const visibleTransfers = useModel('cloud-drive.index', ({ state }) => state.visibleTransfers);
+  const api = useModel('cloud-drive.index', (model) => model.api.base);
 
   const oneMatch = useRouteMatch<{ type: string; value?: string }>({
     path: '/drive/:type/:value',
@@ -80,25 +79,25 @@ function Sidebar() {
 
   const { data } = useCloudDrivesQuery({ fetchPolicy: 'cache-and-network' });
 
-  const currentCloudDrive = useModel('cloud-drive', ({ state }) => state.currentCloudDrive);
-  const setCloudDrive = useModel('cloud-drive', (model) => model.setCloudDrive);
+  const driveId = useModel('cloud-drive.index', ({ state }) => state.driveId);
+  const setCloudDrive = useModel('cloud-drive.index', (model) => model.setCloudDrive);
 
   useEffect(() => {
     if (!data?.cloudDrives) {
       return;
     }
     const cloudDrives = data?.cloudDrives;
-    if (!cloudDrives.some((item) => item.id == currentCloudDrive)) {
-      setCloudDrive(cloudDrives[0].id);
+    if (!cloudDrives.some((item) => item.id == driveId)) {
+      setCloudDrive(cloudDrives[0] as any as CloudDrive);
     }
-  }, [data?.cloudDrives, setCloudDrive, currentCloudDrive]);
+  }, [data?.cloudDrives, setCloudDrive, driveId]);
 
   const cloudDrive = useMemo(() => {
-    if (!data?.cloudDrives || !currentBook) {
+    if (!data?.cloudDrives || !currentDriveId) {
       return;
     }
-    return data.cloudDrives.find((item) => item.id == currentBook);
-  }, [data?.cloudDrives, currentBook]);
+    return data.cloudDrives.find((item) => item.id == currentDriveId);
+  }, [data?.cloudDrives, currentDriveId]);
 
   const type = useMemo(() => oneMatch?.params.type || twoMatch?.params.type, [oneMatch, twoMatch]);
   const value = useMemo(() => oneMatch?.params.value, [oneMatch]);
@@ -106,12 +105,12 @@ function Sidebar() {
   const handleVisibleChange = useCallback(
     (visible: boolean) => {
       if (visible) {
-        openTransfers();
+        api.openTransfers();
       } else {
-        closeTransfers();
+        api.closeTransfers();
       }
     },
-    [closeTransfers, openTransfers],
+    [api],
   );
 
   const selectedKeys = useMemo(() => {
@@ -127,7 +126,7 @@ function Sidebar() {
     return [type!];
   }, [type, value]);
 
-  const uploadPercent = useModel('cloud-drive', ({ state }) => {
+  const uploadPercent = useModel('cloud-drive.index', ({ state }) => {
     let total = 0;
     let upladed = 0;
     for (const file of state.uploadFiles) {
@@ -137,14 +136,14 @@ function Sidebar() {
     return Math.max(((upladed / total) * 100) << 0, state.uploadFiles.length ? 1 : 0);
   });
 
-  const downloadPercent = useModel('cloud-drive', ({ state }) => {
+  const downloadPercent = useModel('cloud-drive.index', ({ state }) => {
     let total = 0;
-    let upladed = 0;
+    let download = 0;
     for (const file of state.downloadFiles) {
       total += file.size;
-      upladed += file.size * file.progress;
+      download += file.size * (file.progress / 100);
     }
-    return Math.max(((upladed / total) * 100) << 0, state.downloadFiles.length ? 1 : 0);
+    return Math.max(((download / total) * 100) << 0, state.downloadFiles.length ? 1 : 0);
   });
 
   return (

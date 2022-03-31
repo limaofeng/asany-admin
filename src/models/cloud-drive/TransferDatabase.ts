@@ -1,0 +1,56 @@
+import Dexie from 'dexie';
+
+import type { DownloadFile, UploadFile } from './typings';
+
+class TransferDatabase {
+  public uploadFiles: Dexie.Table<UploadFile, string>;
+  public downloadFiles: Dexie.Table<DownloadFile, string>;
+  transaction: any;
+
+  public constructor() {
+    const db = new Dexie('TransferDatabase');
+    db.version(1).stores({
+      uploadFiles:
+        '++id,name,state,size,extension,progress,uploadSpeed,source,uploadOptions,error,result',
+      downloadFiles:
+        '++id,name,state,size,progress,downloadSpeed,chunks,downloadOptions,error,result',
+    });
+    this.uploadFiles = db.table('uploadFiles');
+    this.downloadFiles = db.table('downloadFiles');
+
+    this.transaction = db.transaction.bind(db);
+  }
+}
+
+const database = new TransferDatabase();
+
+export default {
+  downloadFiles() {
+    return database.downloadFiles.toArray();
+  },
+  addDownloadFile(file: DownloadFile) {
+    return database.downloadFiles.add(file);
+  },
+  updateDownloadFile(id: string, file: DownloadFile) {
+    return database.downloadFiles.update(id, file);
+  },
+  deleteDownloadFile(id: string) {
+    return database.downloadFiles.delete(id);
+  },
+  uploadFiles() {
+    return database.uploadFiles.toArray();
+  },
+  async addUploadFiles(files: UploadFile[]) {
+    return await database.transaction('rw', database.uploadFiles, async () => {
+      for (const item of files) {
+        await database.uploadFiles.add(item);
+      }
+    });
+  },
+  updateUploadFile(id: string, file: UploadFile) {
+    return database.uploadFiles.update(id, file);
+  },
+  deleteUploadFile(id: string) {
+    return database.uploadFiles.delete(id);
+  },
+};

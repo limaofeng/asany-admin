@@ -34,16 +34,16 @@ function DriveStarred(props: DriveStarredProps) {
     },
   } = props;
 
-  const currentCloudDrive = useModel('cloud-drive', ({ state }) => state.currentCloudDrive);
+  const driveId = useModel('cloud-drive.index', ({ state }) => state.driveId);
 
   const [loadCloudDrive, { data }] = useCloudDriveLazyQuery();
 
   useEffect(() => {
-    if (!currentCloudDrive) {
+    if (!driveId) {
       return;
     }
-    loadCloudDrive({ variables: { id: currentCloudDrive } });
-  }, [currentCloudDrive, loadCloudDrive]);
+    loadCloudDrive({ variables: { id: driveId } });
+  }, [driveId, loadCloudDrive]);
 
   const cloudDrive = useMemo(() => {
     return data?.cloudDrive || location.state?.cloudDrive;

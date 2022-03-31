@@ -3,6 +3,7 @@ query cloudDrive($id: ID!) {
     id
     name
     type
+    space
     rootFolder
     recycler
   }
@@ -58,6 +59,7 @@ query cloudDrives {
     id
     name
     type
+    space
     quota {
       id
       count
@@ -76,7 +78,8 @@ query file($id: ID!) {
     name
     path
     starred
-    size(format: true)
+    size
+    sizeFormat: size(format: true)
     mimeType
     extension
     isDirectory
@@ -122,7 +125,7 @@ query listFiles($folder: ID!, $filter: FileFilter, $page: Int = 1, $orderBy: Ord
         id
         name
         path
-        size(format: true)
+        size
         starred
         mimeType
         extension

@@ -102,7 +102,8 @@
       height: 72px;
       border-bottom: 1px solid #eff2f5;
 
-      &.file-item-uploaded {
+      &.file-item-uploaded,
+      &.file-item-download {
         .file-details {
           .file-title {
             padding-top: 16px;

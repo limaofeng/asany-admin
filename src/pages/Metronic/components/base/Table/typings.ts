@@ -41,7 +41,7 @@ export type TableColumn<T> = {
   width?: string | number;
   className?: string;
   align?: 'left' | 'right' | 'center';
-  render?: (value: string, record: T, index: number) => React.ReactNode | string | RenderResult;
+  render?: (value: any, record: T, index: number) => React.ReactNode | string | RenderResult;
   sorter?: ((a: T, b: T) => boolean) | true;
   sortOrder?: SortDirection | false;
   sortDirections?: SortDirection[];

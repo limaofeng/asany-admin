@@ -4,8 +4,9 @@ import { useCallback, useMemo, useReducer, useRef } from 'react';
 import CryptoJs from 'crypto-js';
 import encHex from 'crypto-js/enc-hex';
 import { gql, useMutation } from '@apollo/client';
+import { debounce } from 'lodash';
 
-import { fileSize } from '../../../utils/format';
+import { networkSpeed } from '../../../utils';
 
 import { sleep } from '@/utils';
 
@@ -70,22 +71,6 @@ async function hashFile(file: Blob) {
   }
 
   return encHex.stringify(alog.finalize());
-}
-
-function calculateUploadSpeed(
-  e: UploadProgressEvent,
-  stat: { oldTimestamp: number; oldLoadsize: number },
-) {
-  const timestamp = Date.now();
-  const duration = timestamp - stat.oldTimestamp; // 间隔时间（毫秒）
-  let bitrate = 0;
-  if (duration > 0) {
-    const _size = e.loaded - stat.oldLoadsize;
-    bitrate = (_size / duration) * 1000; // kb
-    stat.oldTimestamp = timestamp;
-    stat.oldLoadsize = e.loaded;
-  }
-  return fileSize(Math.min(bitrate, e.total));
 }
 
 const INITIATE_MULTIPART_UPLOAD = gql`
@@ -189,7 +174,7 @@ type UseUploadState = {
 };
 
 type UploadOptions = {
-  space: string;
+  space?: string;
   partSize?: number;
   folder?: string;
 };
@@ -201,7 +186,7 @@ type UploadOverwriteOptions = {
 };
 
 type UploadFileOptions = {
-  space: string;
+  space?: string;
   folder?: string;
   uploadId?: string;
   hash?: string;
@@ -247,10 +232,13 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
 
   const executeUploadFile = useCallback(
     async (file: File, _options: UploadFileOptions, onUploadProgress: OnUploadProgress) => {
+      if (!_options.space) {
+        throw new Error('存储空间为空');
+      }
+      if (abortController.current.signal.aborted) {
+        throw new Error('canceled');
+      }
       try {
-        if (abortController.current.signal.aborted) {
-          return new Error('canceled');
-        }
         const { data } = await uploadFile({
           variables: {
             file,
@@ -259,20 +247,17 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
           context: {
             fetchOptions: {
               signal: abortController.current.signal,
-              onUploadProgress,
+              onUploadProgress: debounce(onUploadProgress, 600, {
+                leading: true,
+                maxWait: 600,
+              }),
             },
           },
         });
         return data.upload;
       } catch (e) {
-        if ((e as Error).name == 'AbortError' || (e as Error).message == 'canceled') {
-          state.current.state = 'aborted';
+        if ((e as Error).name != 'AbortError' && (e as Error).message == 'canceled') {
           (e as Error).name = 'AbortError';
-          forceRender();
-        } else {
-          state.current.state = 'error';
-          state.current.error = e as Error;
-          forceRender();
         }
         throw e;
       }
@@ -363,8 +348,8 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
 
             // console.log('upload aborted', abortController.current.signal.aborted);
 
-            state.current.progress = percent;
-            state.current.uploadSpeed = calculateUploadSpeed(_progress, stat);
+            state.current.progress = Math.max(percent, 1);
+            state.current.uploadSpeed = networkSpeed(_progress, stat);
 
             if (percent == 100 && state.current.state == 'uploading') {
               state.current.state = 'waitingForCompleted';
@@ -410,8 +395,8 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         (e) => {
           const percent = ((e.loaded / e.total) * 100) << 0;
 
-          state.current.progress = percent;
-          state.current.uploadSpeed = calculateUploadSpeed(e, stat);
+          state.current.progress = Math.max(percent, 1);
+          state.current.uploadSpeed = networkSpeed(e, stat);
 
           if (percent == 100 && state.current.state == 'uploading') {
             state.current.state = 'waitingForCompleted';
@@ -445,10 +430,22 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       forceRender();
       await sleep(60);
 
-      if (file.size > partSize!) {
-        return await handleMultipartUpload(file, _options);
-      } else {
-        return await handleOrdinaryUpload(file, _options);
+      try {
+        if (file.size > partSize!) {
+          return await handleMultipartUpload(file, _options);
+        } else {
+          return await handleOrdinaryUpload(file, _options);
+        }
+      } catch (e) {
+        if ((e as Error).name == 'AbortError') {
+          state.current.state = 'aborted';
+          forceRender();
+        } else {
+          state.current.state = 'error';
+          state.current.error = e as Error;
+          forceRender();
+        }
+        throw e;
       }
     },
     [handleMultipartUpload, handleOrdinaryUpload],

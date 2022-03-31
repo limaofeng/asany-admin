@@ -14,7 +14,9 @@ type UploadAvatarProps = {
 function UploadAvatar(props: UploadAvatarProps) {
   const { width, height } = props;
 
-  const [upload, data, progress] = useUpload();
+  const [upload, { data, progress }] = useUpload({
+    space: '',
+  });
 
   console.log('progress: ', data, progress);
 

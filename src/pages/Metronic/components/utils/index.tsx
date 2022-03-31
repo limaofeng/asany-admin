@@ -6,6 +6,7 @@ import type { Dictionary } from 'lodash';
 import { clone, isEqual, uniq, zipObject } from 'lodash';
 
 import * as KTUtil from './KTUtil';
+import { fileSize } from './format';
 
 import { sleep } from '@/utils';
 
@@ -173,4 +174,23 @@ export function unpack(children: any): any[] {
     }
   }
   return newChildren;
+}
+
+export function networkSpeed(
+  e: {
+    loaded: number;
+    total: number;
+  },
+  stat: { oldTimestamp: number; oldLoadsize: number },
+) {
+  const timestamp = Date.now();
+  const duration = timestamp - stat.oldTimestamp; // 间隔时间（毫秒）
+  let bitrate = 0;
+  if (duration > 0) {
+    const _size = e.loaded - stat.oldLoadsize;
+    bitrate = (_size / duration) * 1000; // kb
+    stat.oldTimestamp = timestamp;
+    stat.oldLoadsize = e.loaded;
+  }
+  return fileSize(Math.min(bitrate, e.total));
 }
