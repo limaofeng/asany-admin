@@ -1,37 +1,232 @@
 import { useCallback, useMemo, useReducer, useRef } from 'react';
 
-import { buildAxiosFetch } from '@lifeomic/axios-fetch';
-import type { AxiosRequestConfig } from 'axios';
-import axios from 'axios';
 import saveAs from 'file-saver';
 import { debounce, merge } from 'lodash';
 
 import { networkSpeed } from '@/pages/Metronic/components/utils';
+import { sleep } from '@/utils';
 
-const fetch = buildAxiosFetch(axios, (config, input, init) => ({
-  ...config,
-  signal: init.signal,
-  onUploadProgress: init.onUploadProgress,
-  onDownloadProgress: init.onDownloadProgress,
-}));
+type OnDownloadProgress = (e: DownloadProgressEvent) => void;
+
+type BrokenFile = {
+  url: string;
+  /**
+   * 文件名称
+   */
+  name?: string;
+  /**
+   * 总大小
+   */
+  size: number;
+  /**
+   * 已下载的长度
+   */
+  loaded: number;
+  /**
+   * 已下载的内容
+   */
+  chunks: Uint8Array[];
+  /**
+   * 过期
+   */
+  expires: string | null;
+  /**
+   * 最后编辑日期
+   */
+  lastModified: string | null;
+  /**
+   * 资源标识符
+   */
+  etag: string | null;
+};
+
+interface DownloadCache {
+  put: (url: string, file: BrokenFile) => void;
+  get: (url: string) => BrokenFile | undefined;
+  delete: (url: string) => void;
+}
+
+class DownloadCacheInMemory implements DownloadCache {
+  private files = new Map<string, BrokenFile>();
+
+  put(url: string, file: BrokenFile) {
+    console.log('断点下载 - 缓存:', url);
+    this.files.set(url, file);
+  }
+
+  get(url: string) {
+    console.log('断点下载 - 获取缓存:', url);
+    return this.files.get(url);
+  }
+
+  delete(url: string) {
+    console.log('断点下载 - 删除缓存:', url);
+    return this.files.delete(url);
+  }
+}
+
+const FILENAME_REGEX_DISPOSITION = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+
+const DEFAULT_DOWNLOAD_CACHE = new DownloadCacheInMemory();
+
+type DownloadFetchOptions = RequestInit & {
+  cache?: DownloadCache;
+  onDownloadProgress?: OnDownloadProgress;
+};
+
+const getFilename = (disposition: string) => {
+  const matches = FILENAME_REGEX_DISPOSITION.exec(disposition);
+  if (matches != null && matches[1]) {
+    return matches[1].replace(/['"]/g, '');
+  }
+  return undefined;
+};
+
+const getRange = (contentRange: string) => {
+  const matches = /^([^ ]+) ([\d]+)-([\d]+)\/([\S]+)$/.exec(contentRange);
+  if (matches != null) {
+    return {
+      unit: matches[1],
+      start: parseInt(matches[2]),
+      end: parseInt(matches[3]),
+      size: matches[4],
+    };
+  }
+  return undefined;
+};
+
+async function downloadFetch(url: string, options?: DownloadFetchOptions) {
+  const {
+    cache = DEFAULT_DOWNLOAD_CACHE,
+    onDownloadProgress,
+    ..._options
+  } = options || { headers: {} as any };
+
+  const brokenFile = cache && cache.get(url);
+  const chunks: Uint8Array[] = [];
+  let receivedLength = 0; // 当前接收到了这么多字节
+  let size;
+
+  if (brokenFile) {
+    receivedLength = brokenFile.loaded;
+    size = brokenFile.size;
+    _options.headers = _options.headers || {};
+    _options.headers.Range = `bytes=${receivedLength}-`;
+    brokenFile.etag && (_options.headers['If-None-Match'] = brokenFile.etag);
+    brokenFile.lastModified && (_options.headers['If-Modified-Since'] = brokenFile.lastModified);
+    chunks.push(...brokenFile.chunks);
+  }
+
+  const response = await fetch(url, _options);
+
+  const disposition = response.headers.get('Content-Disposition');
+
+  const contentLength = size || parseInt(response.headers.get('Content-Length')!, 10);
+  const contentRange = response.headers.get('Content-Range')!;
+  const contentType = response.headers.get('Content-Type')!;
+  const connection = response.headers.get('Connection');
+  const lastModified = response.headers.get('Last-Modified');
+  const expires = response.headers.get('Expires');
+  const etag = response.headers.get('ETag');
+
+  // 虽然使用了分段下载，但如果响应数据依然从 0 开始，表示数据发送变化，需要重新下载
+  const range = getRange(contentRange);
+  if (range && receivedLength && receivedLength != range.start) {
+    chunks.length = 0;
+    receivedLength = range.start;
+  }
+
+  const isKeepAlive = connection?.includes('keep-alive');
+
+  const downloadFile = async () => {
+    try {
+      const reader = response.body!.getReader();
+
+      onDownloadProgress &&
+        onDownloadProgress({ loaded: Math.max(receivedLength, 1), total: contentLength });
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        chunks.push(value);
+        receivedLength += value.length;
+
+        onDownloadProgress && onDownloadProgress({ total: contentLength, loaded: receivedLength });
+      }
+
+      const index = contentType.indexOf(';');
+      const mimeType = index == -1 ? contentType : contentType.substring(0, index);
+
+      if (isKeepAlive && cache) {
+        cache.delete(url);
+      }
+
+      return {
+        url,
+        name: disposition ? getFilename(disposition) : '',
+        mimeType,
+        size: contentLength,
+        data: new Blob(chunks),
+      };
+    } catch (e) {
+      if (isKeepAlive && cache) {
+        cache.put(url, {
+          url,
+          name: disposition ? getFilename(disposition) : '',
+          loaded: receivedLength,
+          size: contentLength,
+          chunks,
+          expires,
+          lastModified,
+          etag,
+        });
+      }
+      throw e;
+    }
+  };
+
+  const responseWrapper = new Proxy(response, {
+    get(targetObj, property) {
+      if (property == 'file') {
+        return downloadFile;
+      }
+      if (property == 'chunks') {
+        return chunks;
+      }
+      if (property == 'chunks') {
+        return chunks;
+      }
+      return targetObj[property];
+    },
+  });
+
+  return responseWrapper;
+}
 
 type DownloadProgressEvent = {
   loaded: number;
   total: number;
 };
 
-type DownloadFetchOptions = {
+type DownloadOptions = {
   saveAs: string | boolean;
-  fetchOptions?: AxiosRequestConfig;
+  fetchOptions?: DownloadFetchOptions;
 };
 
-const DEFAULT_DOWNLOAD_FETCH_OPTIONS: DownloadFetchOptions = {
+const DEFAULT_DOWNLOAD_FETCH_OPTIONS: DownloadOptions = {
   saveAs: true,
+  fetchOptions: {
+    headers: {},
+  },
 };
 
-export async function download(url: string, options?: DownloadFetchOptions) {
+export async function download(url: string, options?: DownloadOptions) {
   const _options = merge({ ...DEFAULT_DOWNLOAD_FETCH_OPTIONS }, options);
-  console.log('download', url, _options);
+  // console.log('download', url, _options);
 
   const onDownloadProgress = _options.fetchOptions?.onDownloadProgress;
 
@@ -42,34 +237,25 @@ export async function download(url: string, options?: DownloadFetchOptions) {
     });
   }
 
+  let response;
   try {
-    const response = await fetch(url, _options.fetchOptions);
+    response = await downloadFetch(url, _options.fetchOptions);
 
-    console.log('response', response.headers);
-
-    const content = (await response.blob()) as Blob;
-
-    console.log('content', response.headers);
+    const file: DownloadFileData = await (response as any).file();
 
     if (options?.saveAs) {
-      if (options?.saveAs === true) {
-        //  TODO: 通过响应头中的信息，设置 saveAs 信息
-        debugger;
+      if (options.saveAs === true) {
+        saveAs(file.data, file.name || 'download.bin');
       } else {
-        saveAs(content, options.saveAs);
+        saveAs(file.data, options.saveAs);
       }
     }
 
-    return {
-      name: 'xx',
-      size: 0,
-      mimeType: '',
-      content,
-    };
+    return file;
   } catch (e) {
-    console.log((e as any).response);
-    debugger;
-    console.log(e);
+    if (response) {
+      (e as any).response = response;
+    }
     if ((e as Error).name != 'AbortError' && (e as Error).message == 'canceled') {
       (e as Error).name = 'AbortError';
     }
@@ -88,10 +274,11 @@ export type DownloadState =
 type DownloadController = { abort: () => void };
 
 export type DownloadFileData = {
+  url: string;
   name: string;
   mimeType: string;
-  content: Blob;
   size: number;
+  data: Blob;
 };
 
 type DownloadResult = {
@@ -104,7 +291,7 @@ type DownloadResult = {
   abort: () => void;
 };
 
-type DownloadOverwriteOptions = DownloadFetchOptions;
+type DownloadOverwriteOptions = DownloadOptions;
 
 type UseDownloadResult = [
   (url: string | string[], overwrites?: DownloadOverwriteOptions) => Promise<DownloadFileData>,
@@ -138,7 +325,7 @@ export const useDownload = (): UseDownloadResult => {
     [],
   );
 
-  const executeDownloadFile = useCallback((url: string, options: DownloadFetchOptions) => {
+  const executeDownloadFile = useCallback((url: string, options: DownloadOptions) => {
     try {
       if (abortController.current.signal.aborted) {
         throw new Error('canceled');
@@ -160,6 +347,14 @@ export const useDownload = (): UseDownloadResult => {
 
   const handleDownload = useCallback(
     async (urls: string | string[], overwrites?: DownloadOverwriteOptions) => {
+      state.current.data = undefined;
+      state.current.error = undefined;
+      state.current.state = 'waiting';
+      state.current.downloadSpeed = '';
+      state.current.progress = 0;
+      forceRender();
+      await sleep(60);
+
       let url;
       if (Array.isArray(urls)) {
         if (urls.length > 1) {
@@ -178,16 +373,33 @@ export const useDownload = (): UseDownloadResult => {
             onDownloadProgress: (e: DownloadProgressEvent) => {
               const percentage = Math.round((e.loaded * 100) / e.total);
 
+              if (['completed', 'aborted', 'error'].includes(state.current.state)) {
+                return;
+              }
+
               state.current.progress = Math.max(percentage, 1);
               state.current.downloadSpeed = networkSpeed(e, stat);
 
-              forceRender();
+              if (percentage == 100 && state.current.state == 'downloading') {
+                state.current.state = 'waitingForCompleted';
+                forceRender();
+              } else if (percentage != 100) {
+                state.current.state = 'downloading';
+                forceRender();
+              }
             },
           },
         },
         overwrites,
       );
-      return executeDownloadFile(url, options);
+      const _download = await executeDownloadFile(url, options);
+
+      state.current.data = _download;
+      state.current.state = 'completed';
+
+      forceRender();
+
+      return _download;
     },
     [executeDownloadFile],
   );

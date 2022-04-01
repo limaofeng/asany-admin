@@ -317,7 +317,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       for (let i = 0; i < chunks.length; i++) {
         const chunk = chunks[i];
         if (multipartUpload.chunks.some((item) => item.index == i + 1)) {
-          console.log(file.name, '部分已经上传', i + 1);
+          // console.log(file.name, '部分已经上传', i + 1);
           stat.loaded += chunk.size;
           continue;
         }
@@ -346,16 +346,20 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
             const _loaded = stat.loaded + _progress.loaded;
             const percent = ((_loaded / size) * 100) << 0;
 
-            // console.log('upload aborted', abortController.current.signal.aborted);
+            if (['completed', 'aborted', 'error'].includes(state.current.state)) {
+              return;
+            }
 
             state.current.progress = Math.max(percent, 1);
             state.current.uploadSpeed = networkSpeed(_progress, stat);
 
             if (percent == 100 && state.current.state == 'uploading') {
               state.current.state = 'waitingForCompleted';
+              forceRender();
+            } else if (percent != 100) {
+              state.current.state = 'uploading';
+              forceRender();
             }
-
-            forceRender();
           },
         );
 
@@ -395,14 +399,20 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         (e) => {
           const percent = ((e.loaded / e.total) * 100) << 0;
 
+          if (['completed', 'aborted', 'error'].includes(state.current.state)) {
+            return;
+          }
+
           state.current.progress = Math.max(percent, 1);
           state.current.uploadSpeed = networkSpeed(e, stat);
 
           if (percent == 100 && state.current.state == 'uploading') {
             state.current.state = 'waitingForCompleted';
+            forceRender();
+          } else if (percent != 100) {
+            state.current.state = 'uploading';
+            forceRender();
           }
-
-          forceRender();
         },
       );
 

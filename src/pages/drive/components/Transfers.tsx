@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useHistory, useModel } from 'umi';
 import Icon from '@asany/icons';
@@ -304,25 +304,46 @@ function Transfers() {
 
   const api = useModel('cloud-drive.index', (model) => ({
     deleteUploadFile: model.api.upload.delete,
+    deleteDownloadFile: model.api.download.delete,
   }));
 
   const uploadedFiles = useModel('cloud-drive.index', ({ state }) => {
     return state.uploadFiles.filter((item) => item.state == 'completed');
   });
 
-  const handleClear = useCallback(async () => {
+  const downloadFiles = useModel('cloud-drive.index', ({ state }) => {
+    return state.downloadFiles.filter((item) => item.state == 'completed');
+  });
+
+  const handleClearUploadedFiles = useCallback(async () => {
     for (const _file of uploadedFiles) {
       await api.deleteUploadFile(_file.id!);
     }
   }, [api, uploadedFiles]);
+
+  const handleClearDownloadFiles = useCallback(async () => {
+    for (const _file of downloadFiles) {
+      await api.deleteDownloadFile(_file.id!);
+    }
+  }, [api, downloadFiles]);
+
+  const showToolbar = useMemo(() => {
+    return (
+      (!!uploadedFiles.length && activeKey == 'upload') ||
+      (!!downloadFiles.length && activeKey == 'download')
+    );
+  }, [activeKey, uploadedFiles.length, downloadFiles.length]);
 
   return (
     <>
       <div className="popover-header">
         <span className="popover-title">传输列表</span>
         <div className="popover-toolbar">
-          {!!uploadedFiles.length && activeKey == 'upload' && (
-            <a className="cursor-pointer" onClick={handleClear}>
+          {showToolbar && (
+            <a
+              className="cursor-pointer"
+              onClick={activeKey == 'upload' ? handleClearUploadedFiles : handleClearDownloadFiles}
+            >
               清空已完成
             </a>
           )}

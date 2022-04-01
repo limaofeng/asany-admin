@@ -104,7 +104,7 @@ export default function useCloudDriveModel() {
         error?: Error;
       },
     ) => {
-      // console.log('upload 上传进度', progress, uploadState, uploadSpeed);
+      console.log('upload 上传进度', progress, uploadState, uploadSpeed);
 
       const newFile = { ...file };
 
@@ -157,7 +157,7 @@ export default function useCloudDriveModel() {
       },
     ) => {
       const file = state.current.downloadFiles.find((item) => item.id == id)!;
-      console.log(downloadState, result, file);
+      // console.log(downloadState, result, file, error);
 
       const newFile = { ...file };
 
@@ -221,6 +221,7 @@ export default function useCloudDriveModel() {
   internalState.current.downloading = downloading;
 
   // console.log('upload uploading ->', uploading, progress, uploadState, uploadSpeed);
+  // console.log('download info ->', downloadData, downloading, downloadProgress, downloadState, downloadSpeed, uploadError);
 
   useEffect(() => {
     const file = state.current.uploadFiles.find(
@@ -568,7 +569,7 @@ export default function useCloudDriveModel() {
         if (!xfile) {
           return;
         }
-        saveAs(xfile.result!.content, xfile.name);
+        saveAs(xfile.result!.data, xfile.name);
       },
     };
   }, [autoDownload, downloadAbort]);
