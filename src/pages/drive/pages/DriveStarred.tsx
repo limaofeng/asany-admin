@@ -60,7 +60,16 @@ function DriveStarred(props: DriveStarredProps) {
 
   // const menuKey = useMemo(() => 'starred', []);
 
-  const fileFilter = useMemo(() => ({ recursive: true, starred: true }), []);
+  const fileFilter = useMemo(
+    () => ({
+      folder: {
+        subfolders: true,
+        id: folder!,
+      },
+      starred: true,
+    }),
+    [folder],
+  );
 
   const rootFolder = useMemo(() => {
     if (!cloudDrive) {

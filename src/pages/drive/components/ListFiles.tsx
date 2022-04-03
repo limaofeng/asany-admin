@@ -123,7 +123,7 @@ function ListFiles(props: ListFilesProps) {
     loading,
     useFileObject,
     { loadedCount, allItems, refetch, refetchForObjects, refetchWithRemoveForObjects },
-  ] = useListFiles(folder, filter, orderBy);
+  ] = useListFiles(rootFolder?.id, filter, orderBy);
 
   const dataSource: DataSource<FileObject> = useMemo(() => {
     return {
@@ -321,12 +321,10 @@ function ListFiles(props: ListFilesProps) {
     const items = dataSource.items;
     const files = items.filter((item) => selectedKeys.includes(item.id));
 
-    const filename = files[0].name;
+    const filename =
+      files.length == 1 ? files[0].name : `【批量下载】${files[0].name} 等 (${files.length}).zip`;
 
-    download(
-      files,
-      files.length == 1 ? filename : `【批量下载】${filename} 等 (${files.length}).zip`,
-    );
+    download(files, filename);
   }, [dataSource, download, selectedKeys]);
 
   const handleDelete = useCallback(async () => {

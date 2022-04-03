@@ -211,12 +211,12 @@ function DownloadFileItem(props: DownloadFileItemProps) {
           <Progress color="primary" percent={file.progress} />
         </div>
         <div className="file-status">
-          <div className="file-size">{fileSize(file.size)}</div>
+          <div className="file-size">{!!file.size && fileSize(file.size)}</div>
           {file.state == 'error' && <div className="upload-error text-danger">下载出现错误!</div>}
           {!['completed', 'error'].includes(file.state) && (
             <div className="file-transfer-rate">
-              {file.progress == 100
-                ? '等待完成...'
+              {file.progress == 0 || !file.size
+                ? '等待资源...'
                 : !!file.downloadSpeed && file.downloadSpeed + '/s'}
             </div>
           )}

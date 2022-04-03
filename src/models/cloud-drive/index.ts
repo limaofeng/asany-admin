@@ -145,12 +145,14 @@ export default function useCloudDriveModel() {
       {
         downloadState,
         downloadSpeed,
+        size,
         progress,
         result,
         error,
       }: {
         downloadState: DownloadState;
         downloadSpeed?: string;
+        size?: number;
         result?: DownloadFileData;
         progress?: number;
         error?: Error;
@@ -163,6 +165,7 @@ export default function useCloudDriveModel() {
 
       downloadSpeed && (newFile.downloadSpeed = downloadSpeed);
       progress && (newFile.progress = progress);
+      size && (newFile.size = size);
 
       let newState = newFile.state;
       if (['waiting', 'downloading', 'waitingForCompleted'].includes(downloadState)) {
@@ -198,6 +201,7 @@ export default function useCloudDriveModel() {
       progress: downloadProgress,
       state: downloadState,
       downloading,
+      size: downloadFileSize,
       downloadSpeed,
       error: downloadError,
       abort: downloadAbort,
@@ -337,10 +341,18 @@ export default function useCloudDriveModel() {
     updateDownloadFile(file.id!, {
       progress: downloadProgress,
       downloadState,
+      size: downloadFileSize,
       downloadSpeed,
       error: downloadError,
     });
-  }, [downloadProgress, downloadState, downloadSpeed, updateDownloadFile, downloadError]);
+  }, [
+    downloadProgress,
+    downloadState,
+    downloadSpeed,
+    updateDownloadFile,
+    downloadError,
+    downloadFileSize,
+  ]);
 
   const autoDownload = useCallback(async () => {
     if (internalState.current.downloading) {
@@ -359,9 +371,9 @@ export default function useCloudDriveModel() {
       await updateDownloadFile(fileId!, { downloadState: 'downloading' });
 
       try {
-        const urls = file.chunks.map((f) => FILEOBJECT_DOWNLOAD_URL + '?fidlist=' + f.id);
+        const url = FILEOBJECT_DOWNLOAD_URL + '?fidlist=' + file.chunks.map((f) => f.id).join(',');
 
-        const _downloadFileData = await download(urls, { saveAs: file.name });
+        const _downloadFileData = await download(url, { saveAs: file.name });
 
         await updateDownloadFile(fileId!, {
           downloadState: 'completed',
@@ -399,7 +411,7 @@ export default function useCloudDriveModel() {
 
       const _downloadFile: DownloadFile = {
         name: name,
-        size,
+        size: files.length == 1 ? size : 0,
         state: 'waiting',
         extension: files.length == 1 ? files[0].extension! : 'zip',
         mimeType: files.length == 1 ? files[0].mimeType! : 'application/zip',
@@ -412,7 +424,6 @@ export default function useCloudDriveModel() {
 
       emitter.emit(EVENT_NAME_OF_DOWNLOADFILE_CHANGE);
 
-      state.current.visibleTransfers = true;
       forceRender();
     },
     [emitter],

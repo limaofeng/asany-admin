@@ -101,7 +101,7 @@ const MUTATION_UPLOAD = gql`
       isDirectory
       size
       mimeType
-      md5
+      etag
       parentFolder {
         id
       }
@@ -118,7 +118,7 @@ const COMPLETE_MULTIPART_UPLOAD = gql`
       isDirectory
       size
       mimeType
-      md5
+      etag
       parentFolder {
         id
       }

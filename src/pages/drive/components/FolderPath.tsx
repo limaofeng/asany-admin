@@ -12,7 +12,7 @@ type FolderPathProps = {
 
 function FolderPath(props: FolderPathProps) {
   const { paths, onClick } = props;
-  // console.log('FolderPath', paths);
+  console.log('FolderPath', paths);
 
   const handleClick = useCallback(
     (item: FileObject) => (e: React.MouseEvent) => {

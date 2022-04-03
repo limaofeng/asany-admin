@@ -27,10 +27,17 @@ function DriveTrash() {
   // console.log('paths', cloudDrive, location.state?.currentFolder);
 
   const folder = useMemo(() => {
-    return cloudDrive?.recycler;
-  }, [cloudDrive?.recycler]);
+    return cloudDrive?.recycleBin;
+  }, [cloudDrive?.recycleBin]);
 
-  const fileFilter = useMemo(() => ({}), []);
+  const fileFilter = useMemo(
+    () => ({
+      folder: {
+        id: folder!,
+      },
+    }),
+    [folder],
+  );
 
   const rootFolder = useMemo(() => {
     if (!cloudDrive) {
@@ -38,7 +45,7 @@ function DriveTrash() {
     }
     return {
       ...cloudDrive,
-      id: cloudDrive.recycler,
+      id: cloudDrive.recycleBin,
       isRootFolder: false,
       name: '回收站',
     } as any as FileObject;

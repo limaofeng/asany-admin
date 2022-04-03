@@ -94,7 +94,7 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
       setAttachments((_attachments) => {
         return [
           ..._attachments,
-          ...newFiles.filter((item) => !_attachments.some((f) => f.md5 == item.md5)),
+          ...newFiles.filter((item) => !_attachments.some((f) => f.etag == item.etag)),
         ];
       });
     },
@@ -103,7 +103,7 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
-  const [upload, { progress }] = useUpload(namespace);
+  const [upload, { progress }] = useUpload({ space: namespace });
 
   const handleUpload = useCallback(
     async (file: FileUploadObject) => {
@@ -136,7 +136,12 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
       const index = files.findIndex((item) => item.id == id);
       const file = files[index];
       const result = await handleUpload(file);
-      files[index] = { ...result, status: 'success', isDirectory: false, isRootFolder: false };
+      files[index] = {
+        ...result,
+        status: 'success',
+        isDirectory: false,
+        isRootFolder: false,
+      } as any;
       handleChange();
       forceRender();
     },
@@ -158,7 +163,7 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
       forceRender();
       try {
         const result = await handleUpload(file);
-        files[i] = { ...result, status: 'success', isDirectory: false, isRootFolder: false };
+        files[i] = { ...result, status: 'success', isDirectory: false, isRootFolder: false } as any;
         updated = true;
       } catch (e: any) {
         files[i].status = 'failure';

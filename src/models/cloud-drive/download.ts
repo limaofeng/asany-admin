@@ -40,6 +40,11 @@ type BrokenFile = {
   etag: string | null;
 };
 
+type ResourceURL = {
+  url: string;
+  path: string;
+};
+
 interface DownloadCache {
   put: (url: string, file: BrokenFile) => void;
   get: (url: string) => BrokenFile | undefined;
@@ -285,6 +290,7 @@ type DownloadResult = {
   data?: DownloadFileData;
   error?: Error;
   state: DownloadState;
+  size: number;
   progress: number;
   downloadSpeed: string;
   downloading: boolean;
@@ -301,17 +307,23 @@ type UseDownloadResult = [
 type UseDownloadState = {
   data?: DownloadFileData;
   error?: Error;
+  size: number;
   state: DownloadState;
   progress: number;
   downloadSpeed: string;
 };
 
-export const useDownload = (): UseDownloadResult => {
+type UseDownloadOptions = {
+  cache?: DownloadCache;
+};
+
+export const useDownload = ({ cache }: UseDownloadOptions = {}): UseDownloadResult => {
   const abortController = useRef(new AbortController());
   const state = useRef<UseDownloadState>({
     state: 'waiting',
     downloadSpeed: '0 KB',
     progress: 0,
+    size: 0,
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
@@ -326,72 +338,46 @@ export const useDownload = (): UseDownloadResult => {
   );
 
   const executeDownloadFile = useCallback((url: string, options: DownloadOptions) => {
-    try {
-      if (abortController.current.signal.aborted) {
-        throw new Error('canceled');
-      }
-      return download(url, options);
-    } catch (e) {
-      if ((e as Error).name == 'AbortError') {
-        state.current.state = 'aborted';
-        (e as Error).name = 'AbortError';
-        forceRender();
-      } else {
-        state.current.state = 'error';
-        state.current.error = e as Error;
-        forceRender();
-      }
-      throw e;
+    if (abortController.current.signal.aborted) {
+      throw new Error('canceled');
     }
+    return download(url, options);
   }, []);
 
-  const handleDownload = useCallback(
-    async (urls: string | string[], overwrites?: DownloadOverwriteOptions) => {
-      state.current.data = undefined;
-      state.current.error = undefined;
-      state.current.state = 'waiting';
-      state.current.downloadSpeed = '';
-      state.current.progress = 0;
-      forceRender();
-      await sleep(60);
+  // TODO: 多个文件下载后压缩 - 1.合并在一个目录 2.多个目录
+  const handleZipDownload = useCallback(async (resources: ResourceURL[]) => {
+    console.log(resources);
+    throw new Error('暂不支持');
+    return {} as DownloadFileData;
+  }, []);
 
-      let url;
-      if (Array.isArray(urls)) {
-        if (urls.length > 1) {
-          throw new Error('暂不支持多文件合并');
-        }
-        url = urls[0];
-      } else {
-        url = urls;
-      }
-      abortController.current = new AbortController();
+  const handleOrdinaryDownload = useCallback(
+    async (url: string, options: DownloadOptions) => {
       const stat = { oldTimestamp: Date.now(), oldLoadsize: 0 };
-      const options = merge(
-        {
-          fetchOptions: {
-            signal: abortController.current.signal,
-            onDownloadProgress: (e: DownloadProgressEvent) => {
-              const percentage = Math.round((e.loaded * 100) / e.total);
 
-              if (['completed', 'aborted', 'error'].includes(state.current.state)) {
-                return;
-              }
+      abortController.current = new AbortController();
 
-              state.current.progress = Math.max(percentage, 1);
-              state.current.downloadSpeed = networkSpeed(e, stat);
+      options.fetchOptions!.signal = abortController.current.signal;
+      options.fetchOptions!.onDownloadProgress = (e: DownloadProgressEvent) => {
+        const percentage = Math.round((e.loaded * 100) / e.total);
 
-              if (percentage == 100 && state.current.state == 'downloading') {
-                state.current.state = 'waitingForCompleted';
-                forceRender();
-              } else if (percentage != 100) {
-                state.current.state = 'downloading';
-                forceRender();
-              }
-            },
-          },
-        },
-        overwrites,
-      );
+        if (['completed', 'aborted', 'error'].includes(state.current.state)) {
+          return;
+        }
+
+        state.current.progress = Math.max(percentage, 1);
+        state.current.downloadSpeed = networkSpeed(e, stat);
+        state.current.size = e.total;
+
+        if (percentage == 100 && state.current.state == 'downloading') {
+          state.current.state = 'waitingForCompleted';
+          forceRender();
+        } else if (percentage != 100) {
+          state.current.state = 'downloading';
+          forceRender();
+        }
+      };
+
       const _download = await executeDownloadFile(url, options);
 
       state.current.data = _download;
@@ -404,7 +390,61 @@ export const useDownload = (): UseDownloadResult => {
     [executeDownloadFile],
   );
 
-  const { data: dataFile, progress, state: downloadState, downloadSpeed, error } = state.current;
+  const handleDownload = useCallback(
+    async (urls: string | string[] | ResourceURL[], overwrites?: DownloadOverwriteOptions) => {
+      const options = merge(
+        {
+          fetchOptions: {
+            cache,
+          },
+        },
+        overwrites,
+      );
+
+      state.current.data = undefined;
+      state.current.error = undefined;
+      state.current.state = 'waiting';
+      state.current.downloadSpeed = '';
+      state.current.progress = 0;
+      state.current.size = 0;
+      forceRender();
+      await sleep(60);
+
+      try {
+        if (!Array.isArray(urls)) {
+          return handleOrdinaryDownload(urls, options);
+        } else {
+          const resources: ResourceURL[] = urls.map((url) => {
+            if (typeof url == 'string') {
+              return { url, path: '/' };
+            }
+            return url;
+          });
+          return handleZipDownload(resources);
+        }
+      } catch (e) {
+        if ((e as Error).name == 'AbortError') {
+          state.current.state = 'aborted';
+          forceRender();
+        } else {
+          state.current.state = 'error';
+          state.current.error = e as Error;
+          forceRender();
+        }
+        throw e;
+      }
+    },
+    [cache, handleOrdinaryDownload, handleZipDownload],
+  );
+
+  const {
+    data: dataFile,
+    progress,
+    state: downloadState,
+    downloadSpeed,
+    error,
+    size,
+  } = state.current;
 
   const result = useMemo<DownloadResult>(
     () => ({
@@ -412,11 +452,12 @@ export const useDownload = (): UseDownloadResult => {
       progress,
       downloadSpeed,
       error,
+      size,
       downloading: downloadState == 'downloading' || downloadState == 'waitingForCompleted',
       state: downloadState,
       abort: downloadController.abort,
     }),
-    [dataFile, progress, downloadSpeed, error, downloadState, downloadController.abort],
+    [dataFile, progress, downloadSpeed, error, size, downloadState, downloadController.abort],
   );
 
   return [handleDownload, result];

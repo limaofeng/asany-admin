@@ -1,1 +1,29 @@
-export const image_formats = ['bmp', 'jpg', 'jpeg', 'png', 'gif'];
+const compressedFileExtensions = ['7z', 'arj', 'deb', 'pkg', 'rar', 'rpm', 'tar.gz', 'z', 'zip'];
+const fontFileExtensions = ['fnt', 'fon', 'otf', 'ttf'];
+const spreadsheetFileExtension = ['ods', 'xls', 'xlsm', 'xlsx'];
+
+export const extensions = {
+  video: [
+    '3g2',
+    '3gp',
+    'avi',
+    'flv',
+    'h264',
+    'm4v',
+    'mkv',
+    'mov',
+    'mp4',
+    'mpg',
+    'mpeg',
+    'rm',
+    'swf',
+    'vob',
+    'wmv',
+  ],
+  audio: ['aif', 'cda', 'mid', 'mp3', 'mpa', 'ogg', 'wav', 'wma', 'wpl'],
+  image: ['ai', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'ps', 'psd', 'svg', 'tif', 'tiff'],
+  document: ['doc', 'docx', 'odt', 'pdf', 'rtf', 'tex', 'txt', 'wpd', ...spreadsheetFileExtension],
+  spreadsheet: spreadsheetFileExtension,
+  compressed: compressedFileExtensions,
+  font: fontFileExtensions,
+};

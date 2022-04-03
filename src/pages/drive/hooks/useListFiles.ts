@@ -7,7 +7,7 @@ import { useLongListLazyQuery } from '@/pages/Metronic/hooks';
 import type { FileFilter, FileObject } from '@/types';
 
 type QueryCondition = {
-  folder?: string;
+  rootFolder?: string;
   filter?: FileFilter;
   orderBy?: string;
 };
@@ -49,12 +49,12 @@ const useLazyQuery: UseLazyQuery<FileObject, QueryCondition> = function () {
 };
 
 export function useListFiles(
-  folder: string | undefined,
+  rootFolder: string | undefined,
   filter: FileFilter | undefined,
   orderBy: string | undefined,
 ) {
   return useLongListLazyQuery<FileObject, QueryCondition>(useLazyQuery, {
-    folder,
+    rootFolder,
     filter,
     orderBy,
   });

@@ -5,7 +5,7 @@ query cloudDrive($id: ID!) {
     type
     space
     rootFolder
-    recycler
+    recycleBin
   }
 }
 
@@ -114,8 +114,20 @@ query folder($folder: ID!) {
   }
 }
 
-query listFiles($folder: ID!, $filter: FileFilter, $page: Int = 1, $orderBy: OrderBy) {
-  listFiles(folder: $folder, filter: $filter, page: $page, pageSize: 30, orderBy: $orderBy) {
+query listFiles(
+  $rootFolder: ID!
+  $filter: FileFilter
+  $page: Int = 1
+  $pageSize: Int = 30
+  $orderBy: OrderBy
+) {
+  listFiles(
+    rootFolder: $rootFolder
+    filter: $filter
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
     pageSize
     currentPage
     totalPage

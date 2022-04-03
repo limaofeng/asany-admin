@@ -6,6 +6,7 @@ import type { RouteComponentProps } from 'react-router-dom';
 
 import { useCloudDriveLazyQuery } from '../hooks';
 import ListFiles from '../components/ListFiles';
+import { extensions } from '../utils';
 
 import { ContentWrapper } from '@/pages/Metronic/components';
 import type { CloudDrive, FileObject } from '@/types';
@@ -80,61 +81,64 @@ function FileList(props: FileListProps) {
     if (menuKey == 'image') {
       return {
         isDirectory: false,
-        recursive: true,
-        mimeType_startsWith: 'image/',
+        folder: {
+          subfolders: true,
+          id: folder!,
+        },
+        extension_in: extensions.image,
       };
     }
     if (menuKey == 'document') {
       return {
         isDirectory: false,
-        recursive: true,
-        mimeType_in: [
-          'application/msword',
-          'application/pdf',
-          'application/vnd.ms-powerpoint',
-          'text/plain',
-          'text/html',
-          'text/xml',
-        ],
+        folder: {
+          subfolders: true,
+          id: folder!,
+        },
+        extension_in: extensions.document,
       };
     }
     if (menuKey == 'video') {
       return {
         isDirectory: false,
-        recursive: true,
-        mimeType_startsWith: 'video/',
+        folder: {
+          subfolders: true,
+          id: folder!,
+        },
+        extension_in: extensions.video,
       };
     }
     if (menuKey == 'audio') {
       return {
         isDirectory: false,
-        recursive: true,
-        mimeType_startsWith: 'audio/',
+        folder: {
+          subfolders: true,
+          id: folder!,
+        },
+        extension_in: extensions.audio,
       };
     }
     if (menuKey == 'other') {
       return {
         isDirectory: false,
-        recursive: true,
-        AND: [
-          { mimeType_notStartsWith: 'image/' },
-          { mimeType_notStartsWith: 'video/' },
-          { mimeType_notStartsWith: 'audio/' },
-          {
-            mimeType_notIn: [
-              'application/msword',
-              'application/pdf',
-              'application/vnd.ms-powerpoint',
-              'text/plain',
-              'text/html',
-              'text/xml',
-            ],
-          },
+        folder: {
+          subfolders: true,
+          id: folder!,
+        },
+        extension_notIn: [
+          ...extensions.image,
+          ...extensions.audio,
+          ...extensions.video,
+          ...extensions.document,
         ],
       };
     }
-    return undefined;
-  }, [menuKey]);
+    return {
+      folder: {
+        id: folder!,
+      },
+    };
+  }, [menuKey, folder]);
 
   const rootFolder = useMemo(() => {
     if (!cloudDrive) {

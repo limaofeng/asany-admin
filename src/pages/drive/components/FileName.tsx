@@ -4,7 +4,7 @@ import Icon from '@asany/icons';
 import classnames from 'classnames';
 
 import { useRenameFileMutation } from '../hooks';
-import { image_formats } from '../utils';
+import { extensions } from '../utils';
 
 import type { InputRef } from '@/pages/Metronic/components';
 import { Toast } from '@/pages/Metronic/components';
@@ -118,7 +118,7 @@ function FileName(props: FileNameProps) {
       className={classnames('d-flex align-items-center', { 'no-selecto-drag': editable })}
     >
       <div className="title-icon-container position-relative me-1 d-flex align-items-center justify-content-center">
-        {image_formats.includes(data.extension!) ? (
+        {extensions.image.includes(data.extension!) ? (
           <Symbol
             alt={
               <Icon
