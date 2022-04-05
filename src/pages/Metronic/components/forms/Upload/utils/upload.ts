@@ -296,6 +296,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
           input: {
             hash,
             space,
+            folder,
             chunkSize: offset,
             chunkLength: chunks.length,
             metadata: {
