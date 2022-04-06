@@ -3,10 +3,14 @@ import Dexie from 'dexie';
 import type { BrokenFile, DownloadCache } from './download';
 import type { DownloadFile, UploadFile } from './typings';
 
+type DownloadFileCache = BrokenFile & {
+  id?: string;
+};
+
 class TransferDatabase {
   public uploadFiles: Dexie.Table<UploadFile, string>;
   public downloadFiles: Dexie.Table<DownloadFile, string>;
-  public downloadCaches: Dexie.Table<BrokenFile, string>;
+  public downloadCaches: Dexie.Table<DownloadFileCache, string>;
   transaction: any;
 
   public constructor() {
@@ -33,7 +37,7 @@ export const downloadCache: DownloadCache = {
     return await database.downloadCaches.get(url);
   },
   async put(url: string, file: BrokenFile) {
-    await database.downloadFiles.update(url, file);
+    await database.downloadCaches.put({ ...file, id: url }, url);
   },
   async delete(url: string) {
     await database.downloadFiles.delete(url);
