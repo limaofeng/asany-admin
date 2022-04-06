@@ -63,5 +63,11 @@ export function fileSize(length: number) {
     size /= 1024;
     i++;
   }
-  return Math.ceil(size) + ' ' + FILE_UNITS[i];
+  if (i < 2) {
+    return Math.ceil(size) + ' ' + FILE_UNITS[i];
+  } else if (i == 2) {
+    return Math.ceil(size * 10) / 10 + ' ' + FILE_UNITS[i];
+  } else {
+    return Math.ceil(size * 100) / 100 + ' ' + FILE_UNITS[i];
+  }
 }
