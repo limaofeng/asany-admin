@@ -40,7 +40,7 @@ export const downloadCache: DownloadCache = {
     await database.downloadCaches.put({ ...file, id: url }, url);
   },
   async delete(url: string) {
-    await database.downloadFiles.delete(url);
+    await database.downloadCaches.delete(url);
     return true;
   },
 };
