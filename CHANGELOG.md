@@ -1,3 +1,26 @@
+## [0.2.12](https://github.com/limaofeng/asany-admin/compare/v0.2.11...v0.2.12) (2022-04-06)
+
+### Bug Fixes
+
+- 分段上传初始化时，需要提供 folder 参数，定位具体的存储位置 ([67c4b79](https://github.com/limaofeng/asany-admin/commit/67c4b79d613d422cc1bbb4e63c388fa81ab49c67))
+- 完善 fileSize 函数, MB 以上应该显示小数位 ([46eb5b9](https://github.com/limaofeng/asany-admin/commit/46eb5b9db1e7179c0b1537e426fdcb1b68282766))
+- 提示标语错误 ([c92c0d8](https://github.com/limaofeng/asany-admin/commit/c92c0d8d9cd2b6dfb3069306d0307a03ed857fff))
+- 解决下载缓存，key 错误的问题 ([274b689](https://github.com/limaofeng/asany-admin/commit/274b68961126b81efe9922d535de71a73e982fe2))
+
+### Features
+
+- **云盘:** 传输列表，基本操作功能完成 ([8cc2416](https://github.com/limaofeng/asany-admin/commit/8cc241629bdedd96407c9c69e7cb8c0feeb9ead7))
+- 优化上传功能，支持分片上传 ([8e2e223](https://github.com/limaofeng/asany-admin/commit/8e2e2230bb20275c5302ebafe4f7485f04f8b4b1))
+- 优化查询逻辑 ([096c7c3](https://github.com/limaofeng/asany-admin/commit/096c7c3bfa039c3beb2d6f85796a73d23a09d992))
+- 传输打开按钮，添加上传与下载进展展示 ([f7672fa](https://github.com/limaofeng/asany-admin/commit/f7672fa44c6e5d3dd079bae1dc81ad44d6222a19))
+- 分片上传合并 ([6b4017b](https://github.com/limaofeng/asany-admin/commit/6b4017bfdeb259cb316b30f66c6cf16cb1433164))
+- 基于 Dexie 的下载缓存机制 ([87ed7a6](https://github.com/limaofeng/asany-admin/commit/87ed7a69241c5d0f07ece4adfaae8ace44a79d2d))
+- 实现单个文件下载 ([c189ffb](https://github.com/limaofeng/asany-admin/commit/c189ffb9fd9bbe7b05033fcdf484982aa350fa0e))
+- 实现断点下载 ([c22a8a0](https://github.com/limaofeng/asany-admin/commit/c22a8a00ebeb80efe8384a46249162693d0ea05a))
+- 文件传输 - 下载界面 ([f16bd6b](https://github.com/limaofeng/asany-admin/commit/f16bd6b6deaa378ea0620e2a0db0b61802c8ac24))
+- 文件传输，上传文件列表 UI 展示 ([2120e0d](https://github.com/limaofeng/asany-admin/commit/2120e0da15f3fa6a7c67ca31a1c5ef85a46c7d17))
+- 文件操作：删除/还原/清空回收站 ([c0eb601](https://github.com/limaofeng/asany-admin/commit/c0eb601efff15f3946eb146bab8a6d6cc2c006a0))
+
 ## [0.2.11](https://github.com/limaofeng/asany-admin/compare/v0.2.10...v0.2.11) (2022-03-22)
 
 ### Bug Fixes
