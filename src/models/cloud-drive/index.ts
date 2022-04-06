@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 
 import saveAs from 'file-saver';
 
-import database from './TransferDatabase';
+import database, { downloadCache } from './TransferDatabase';
 import type { CloudDriveState, DownloadFile, UploadFile } from './typings';
 import type { DownloadFileData, DownloadState } from './download';
 import { useDownload } from './download';
@@ -206,7 +206,7 @@ export default function useCloudDriveModel() {
       error: downloadError,
       abort: downloadAbort,
     },
-  ] = useDownload();
+  ] = useDownload({ cache: downloadCache });
   const [
     upload,
     {
@@ -267,6 +267,8 @@ export default function useCloudDriveModel() {
         });
       } catch (e) {
         const _error = e as Error;
+
+        console.log('上传出现异常', e);
 
         await updateUploadFile(state.current.uploadFiles.find((item) => item.id == fileId)!, {
           uploadState: _error.name == 'AbortError' ? 'aborted' : 'error',
@@ -381,6 +383,8 @@ export default function useCloudDriveModel() {
         });
       } catch (e) {
         const _error = e as Error;
+
+        console.log('下载出现异常', e);
 
         await updateDownloadFile(fileId!, {
           downloadState: _error.name == 'AbortError' ? 'aborted' : 'error',

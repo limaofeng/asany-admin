@@ -1,10 +1,12 @@
 import Dexie from 'dexie';
 
+import type { BrokenFile, DownloadCache } from './download';
 import type { DownloadFile, UploadFile } from './typings';
 
 class TransferDatabase {
   public uploadFiles: Dexie.Table<UploadFile, string>;
   public downloadFiles: Dexie.Table<DownloadFile, string>;
+  public downloadCaches: Dexie.Table<BrokenFile, string>;
   transaction: any;
 
   public constructor() {
@@ -14,15 +16,30 @@ class TransferDatabase {
         '++id,name,state,size,extension,progress,uploadSpeed,source,uploadOptions,error,result',
       downloadFiles:
         '++id,name,state,size,progress,downloadSpeed,chunks,downloadOptions,error,result',
+      downloadCaches: '++id,url,name,size,loaded,chunks,expires,lastModified,etag',
     });
     this.uploadFiles = db.table('uploadFiles');
     this.downloadFiles = db.table('downloadFiles');
+    this.downloadCaches = db.table('downloadCaches');
 
     this.transaction = db.transaction.bind(db);
   }
 }
 
 const database = new TransferDatabase();
+
+export const downloadCache: DownloadCache = {
+  async get(url: string) {
+    return await database.downloadCaches.get(url);
+  },
+  async put(url: string, file: BrokenFile) {
+    await database.downloadFiles.update(url, file);
+  },
+  async delete(url: string) {
+    await database.downloadFiles.delete(url);
+    return true;
+  },
+};
 
 export default {
   downloadFiles() {

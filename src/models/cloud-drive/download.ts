@@ -8,7 +8,7 @@ import { sleep } from '@/utils';
 
 type OnDownloadProgress = (e: DownloadProgressEvent) => void;
 
-type BrokenFile = {
+export type BrokenFile = {
   url: string;
   /**
    * 文件名称
@@ -40,31 +40,31 @@ type BrokenFile = {
   etag: string | null;
 };
 
-type ResourceURL = {
-  url: string;
-  path: string;
-};
+// type ResourceURL = {
+//   url: string;
+//   path: string;
+// };
 
-interface DownloadCache {
-  put: (url: string, file: BrokenFile) => void;
-  get: (url: string) => BrokenFile | undefined;
-  delete: (url: string) => void;
+export interface DownloadCache {
+  put: (url: string, file: BrokenFile) => Promise<void>;
+  get: (url: string) => Promise<BrokenFile | undefined>;
+  delete: (url: string) => Promise<boolean>;
 }
 
 class DownloadCacheInMemory implements DownloadCache {
   private files = new Map<string, BrokenFile>();
 
-  put(url: string, file: BrokenFile) {
+  async put(url: string, file: BrokenFile) {
     console.log('断点下载 - 缓存:', url);
     this.files.set(url, file);
   }
 
-  get(url: string) {
+  async get(url: string) {
     console.log('断点下载 - 获取缓存:', url);
     return this.files.get(url);
   }
 
-  delete(url: string) {
+  async delete(url: string) {
     console.log('断点下载 - 删除缓存:', url);
     return this.files.delete(url);
   }
@@ -107,7 +107,7 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
     ..._options
   } = options || { headers: {} as any };
 
-  const brokenFile = cache && cache.get(url);
+  const brokenFile = cache && (await cache.get(url));
   const chunks: Uint8Array[] = [];
   let receivedLength = 0; // 当前接收到了这么多字节
   let size;
@@ -129,7 +129,7 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
   const contentLength = size || parseInt(response.headers.get('Content-Length')!, 10);
   const contentRange = response.headers.get('Content-Range')!;
   const contentType = response.headers.get('Content-Type')!;
-  const connection = response.headers.get('Connection');
+  const acceptRanges = response.headers.get('Accept-Ranges');
   const lastModified = response.headers.get('Last-Modified');
   const expires = response.headers.get('Expires');
   const etag = response.headers.get('ETag');
@@ -141,7 +141,7 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
     receivedLength = range.start;
   }
 
-  const isKeepAlive = connection?.includes('keep-alive');
+  const isAcceptRanges = acceptRanges == 'bytes';
 
   const downloadFile = async () => {
     try {
@@ -150,6 +150,7 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
       onDownloadProgress &&
         onDownloadProgress({ loaded: Math.max(receivedLength, 1), total: contentLength });
 
+      let percent = 0;
       while (true) {
         const { done, value } = await reader.read();
 
@@ -160,13 +161,30 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
         chunks.push(value);
         receivedLength += value.length;
 
+        const nextPercent = Math.round((receivedLength * 100) / contentLength);
+
+        if (isAcceptRanges && cache && percent != nextPercent) {
+          percent = nextPercent;
+
+          cache.put(url, {
+            url,
+            name: disposition ? getFilename(disposition) : '',
+            loaded: receivedLength,
+            size: contentLength,
+            chunks,
+            expires,
+            lastModified,
+            etag,
+          });
+        }
+
         onDownloadProgress && onDownloadProgress({ total: contentLength, loaded: receivedLength });
       }
 
       const index = contentType.indexOf(';');
       const mimeType = index == -1 ? contentType : contentType.substring(0, index);
 
-      if (isKeepAlive && cache) {
+      if (isAcceptRanges && cache) {
         cache.delete(url);
       }
 
@@ -178,7 +196,7 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
         data: new Blob(chunks),
       };
     } catch (e) {
-      if (isKeepAlive && cache) {
+      if (isAcceptRanges && cache) {
         cache.put(url, {
           url,
           name: disposition ? getFilename(disposition) : '',
@@ -300,7 +318,7 @@ type DownloadResult = {
 type DownloadOverwriteOptions = DownloadOptions;
 
 type UseDownloadResult = [
-  (url: string | string[], overwrites?: DownloadOverwriteOptions) => Promise<DownloadFileData>,
+  (url: string, overwrites?: DownloadOverwriteOptions) => Promise<DownloadFileData>,
   DownloadResult,
 ];
 
@@ -317,7 +335,9 @@ type UseDownloadOptions = {
   cache?: DownloadCache;
 };
 
-export const useDownload = ({ cache }: UseDownloadOptions = {}): UseDownloadResult => {
+export const useDownload = ({
+  cache = DEFAULT_DOWNLOAD_CACHE,
+}: UseDownloadOptions = {}): UseDownloadResult => {
   const abortController = useRef(new AbortController());
   const state = useRef<UseDownloadState>({
     state: 'waiting',
@@ -345,11 +365,11 @@ export const useDownload = ({ cache }: UseDownloadOptions = {}): UseDownloadResu
   }, []);
 
   // TODO: 多个文件下载后压缩 - 1.合并在一个目录 2.多个目录
-  const handleZipDownload = useCallback(async (resources: ResourceURL[]) => {
-    console.log(resources);
-    throw new Error('暂不支持');
-    return {} as DownloadFileData;
-  }, []);
+  // const handleZipDownload = useCallback(async (resources: ResourceURL[]) => {
+  //   console.log(resources);
+  //   throw new Error('暂不支持');
+  //   return {} as DownloadFileData;
+  // }, []);
 
   const handleOrdinaryDownload = useCallback(
     async (url: string, options: DownloadOptions) => {
@@ -391,7 +411,7 @@ export const useDownload = ({ cache }: UseDownloadOptions = {}): UseDownloadResu
   );
 
   const handleDownload = useCallback(
-    async (urls: string | string[] | ResourceURL[], overwrites?: DownloadOverwriteOptions) => {
+    async (url: string, overwrites?: DownloadOverwriteOptions) => {
       const options = merge(
         {
           fetchOptions: {
@@ -401,27 +421,31 @@ export const useDownload = ({ cache }: UseDownloadOptions = {}): UseDownloadResu
         overwrites,
       );
 
+      const cacheItem = await cache.get(url);
+
       state.current.data = undefined;
       state.current.error = undefined;
       state.current.state = 'waiting';
       state.current.downloadSpeed = '';
-      state.current.progress = 0;
-      state.current.size = 0;
+      state.current.progress = cacheItem
+        ? Math.round((cacheItem.loaded * 100) / cacheItem.size)
+        : 0;
+      state.current.size = cacheItem ? cacheItem.size : 0;
       forceRender();
       await sleep(60);
 
       try {
-        if (!Array.isArray(urls)) {
-          return handleOrdinaryDownload(urls, options);
-        } else {
-          const resources: ResourceURL[] = urls.map((url) => {
-            if (typeof url == 'string') {
-              return { url, path: '/' };
-            }
-            return url;
-          });
-          return handleZipDownload(resources);
-        }
+        // if (!Array.isArray(urls)) {
+        return handleOrdinaryDownload(url, options);
+        // } else {
+        //   const resources: ResourceURL[] = urls.map((url) => {
+        //     if (typeof url == 'string') {
+        //       return { url, path: '/' };
+        //     }
+        //     return url;
+        //   });
+        //   return handleZipDownload(resources);
+        // }
       } catch (e) {
         if ((e as Error).name == 'AbortError') {
           state.current.state = 'aborted';
@@ -434,7 +458,7 @@ export const useDownload = ({ cache }: UseDownloadOptions = {}): UseDownloadResu
         throw e;
       }
     },
-    [cache, handleOrdinaryDownload, handleZipDownload],
+    [cache, handleOrdinaryDownload],
   );
 
   const {
