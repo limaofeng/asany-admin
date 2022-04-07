@@ -49,7 +49,7 @@ function ViewFileDetails(props: ViewFileDetailsProps) {
     <BlockUI overlayClassName="bg-white bg-opacity-25" className="pt-5" loading={loading}>
       {!file.isDirectory && (
         <div className="file-preview mb-6">
-          <Symbol src={`http://localhost:8080${file.path}`} />
+          <Symbol src={process.env.API_URL + `/thumbnail/${file.id}?size=120x120`} />
         </div>
       )}
       {false && (

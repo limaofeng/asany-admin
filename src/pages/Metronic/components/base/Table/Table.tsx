@@ -309,6 +309,9 @@ function Table<T>(props: TableProps<T>) {
   );
 
   const handleSelectoDragCondition = useCallback((e) => {
+    if (!e.inputEvent.path) {
+      return true;
+    }
     const documents = Array.from(e.inputEvent.path).slice(0, -3);
     const lastIndex = documents.lastIndexOf(tableBodyContainer.current);
     const isOff = (lastIndex == -1 ? documents : documents.slice(0, lastIndex)).some((item: any) =>

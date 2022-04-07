@@ -208,7 +208,10 @@ function InfiniteScroll(props: InfiniteScrollProps, ref: React.ForwardedRef<Infi
   }, []);
 
   const handleResize = useCallback(() => {
-    const _target = scrollbar.current!.osTarget();
+    const _target = scrollbar.current?.osTarget();
+    if (!_target) {
+      return;
+    }
     state.current.height = _target!.clientHeight;
     temp.current.timer && clearTimeout(temp.current.timer);
     temp.current.timer = setTimeout(() => {

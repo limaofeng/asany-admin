@@ -69,7 +69,7 @@ function UploadAvatar(props: UploadAvatarProps) {
           </svg>
           {data ? (
             <div className="upload-preview symbol">
-              <img src={'http://localhost:8080' + data.path} />
+              <img src={process.env.API_URL + `/thumbnail/${data.id}?size=120x120`} />
             </div>
           ) : (
             <i className="bi bi-file-earmark-arrow-up text-muted upload-icon fs-3x" />

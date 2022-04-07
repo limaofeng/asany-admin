@@ -34,32 +34,48 @@ const database = new TransferDatabase();
 
 export const downloadCache: DownloadCache = {
   async get(url: string) {
-    return await database.downloadCaches.get(url);
+    return await database.transaction('r', database.downloadCaches, async () => {
+      return await database.downloadCaches.get(url);
+    });
   },
   async put(url: string, file: BrokenFile) {
-    await database.downloadCaches.put({ ...file, id: url }, url);
+    await database.transaction('rw', database.downloadCaches, async () => {
+      await database.downloadCaches.put({ ...file, id: url }, url);
+    });
   },
   async delete(url: string) {
-    await database.downloadCaches.delete(url);
+    await database.transaction('rw', database.downloadCaches, async () => {
+      await database.downloadCaches.delete(url);
+    });
     return true;
   },
 };
 
 export default {
   downloadFiles() {
-    return database.downloadFiles.toArray();
+    return database.transaction('r', database.downloadFiles, async () => {
+      return database.downloadFiles.toArray();
+    });
   },
   addDownloadFile(file: DownloadFile) {
-    return database.downloadFiles.add(file);
+    return database.transaction('rw', database.downloadFiles, async () => {
+      return database.downloadFiles.add(file);
+    });
   },
   updateDownloadFile(id: string, file: DownloadFile) {
-    return database.downloadFiles.update(id, file);
+    return database.transaction('rw', database.downloadFiles, async () => {
+      return database.downloadFiles.update(id, file);
+    });
   },
   deleteDownloadFile(id: string) {
-    return database.downloadFiles.delete(id);
+    return database.transaction('rw', database.downloadFiles, async () => {
+      return database.downloadFiles.delete(id);
+    });
   },
   uploadFiles() {
-    return database.uploadFiles.toArray();
+    return database.transaction('r', database.uploadFiles, async () =>
+      database.uploadFiles.toArray(),
+    );
   },
   async addUploadFiles(files: UploadFile[]) {
     return await database.transaction('rw', database.uploadFiles, async () => {
@@ -69,9 +85,13 @@ export default {
     });
   },
   updateUploadFile(id: string, file: UploadFile) {
-    return database.uploadFiles.update(id, file);
+    return database.transaction('rw', database.uploadFiles, async () => {
+      return database.uploadFiles.update(id, file);
+    });
   },
   deleteUploadFile(id: string) {
-    return database.uploadFiles.delete(id);
+    return database.transaction('rw', database.uploadFiles, async () => {
+      return database.uploadFiles.delete(id);
+    });
   },
 };

@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 
 import { useRenameFileMutation } from '../hooks';
-import { extensions } from '../utils';
 
 import type { InputRef } from '@/pages/Metronic/components';
 import { Toast } from '@/pages/Metronic/components';
@@ -112,13 +111,17 @@ function FileName(props: FileNameProps) {
     [editable],
   );
 
+  const isImageOrVideo = useMemo(() => {
+    return data.mimeType?.startsWith('image/') || data.mimeType?.startsWith('video/');
+  }, [data.mimeType]);
+
   return (
     <div
       onClick={handleBlocking}
       className={classnames('d-flex align-items-center', { 'no-selecto-drag': editable })}
     >
       <div className="title-icon-container position-relative me-1 d-flex align-items-center justify-content-center">
-        {extensions.image.includes(data.extension!) ? (
+        {isImageOrVideo ? (
           <Symbol
             alt={
               <Icon
@@ -126,7 +129,7 @@ function FileName(props: FileNameProps) {
                 className="svg-icon-2x svg-icon-primary"
               />
             }
-            src={`http://localhost:8080${data.path}`}
+            src={process.env.API_URL + `/thumbnail/${data.id}?size=120x120`}
           />
         ) : (
           <Icon

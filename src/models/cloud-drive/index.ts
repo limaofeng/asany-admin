@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 
 import saveAs from 'file-saver';
 
-import database, { downloadCache } from './TransferDatabase';
+import database from './TransferDatabase';
 import type { CloudDriveState, DownloadFile, UploadFile } from './typings';
 import type { DownloadFileData, DownloadState } from './download';
 import { useDownload } from './download';
@@ -29,7 +29,7 @@ const EVENT_NAME_OF_DOWNLOADFILE_CHANGE = 'DOWNLOADFILE_CHANGE';
 const EVENT_NAME_OF_UPLOADFILE_DATA_RELOADED = 'UPLOADFILE_DATA_RELOADED';
 const EVENT_NAME_OF_DOWNLOADFILE_DATA_RELOADED = 'DOWNLOADFILE_DATA_RELOADED';
 
-const FILEOBJECT_DOWNLOAD_URL = 'http://localhost:8080/download';
+const FILEOBJECT_DOWNLOAD_URL = process.env.API_URL + '/download';
 
 export * from './typings';
 
@@ -206,7 +206,7 @@ export default function useCloudDriveModel() {
       error: downloadError,
       abort: downloadAbort,
     },
-  ] = useDownload({ cache: downloadCache });
+  ] = useDownload();
   const [
     upload,
     {

@@ -158,6 +158,10 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
           break;
         }
 
+        if (response.status >= 400) {
+          throw new Error('下载出现错误');
+        }
+
         chunks.push(value);
         receivedLength += value.length;
 
@@ -179,6 +183,10 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
         }
 
         onDownloadProgress && onDownloadProgress({ total: contentLength, loaded: receivedLength });
+      }
+
+      if (response.status >= 400) {
+        throw new Error(response.statusText);
       }
 
       const index = contentType.indexOf(';');

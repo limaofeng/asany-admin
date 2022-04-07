@@ -10,6 +10,9 @@ export default defineConfig({
   app: {
     id: '6068485332c5fc853a65',
   },
+  define: {
+    'process.env.API_URL': '//api.asany.cn',
+  },
   hash: true,
   antd: false,
   dva: {
