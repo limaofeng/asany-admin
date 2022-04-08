@@ -2,7 +2,7 @@
 
 ### Bug Fixes
 
-- 解决下载缓存清楚的 BUG ([dd56c14](https://github.com/limaofeng/asany-admin/commit/dd56c14369e994e33cd120fbbe6107f6083f3435))
+- 解决下载缓存清除的 BUG ([dd56c14](https://github.com/limaofeng/asany-admin/commit/dd56c14369e994e33cd120fbbe6107f6083f3435))
 
 ### Features
 
