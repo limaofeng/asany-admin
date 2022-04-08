@@ -1,3 +1,13 @@
+## [0.2.13](https://github.com/limaofeng/asany-admin/compare/v0.2.12...v0.2.13) (2022-04-08)
+
+### Bug Fixes
+
+- 解决下载缓存清楚的 BUG ([dd56c14](https://github.com/limaofeng/asany-admin/commit/dd56c14369e994e33cd120fbbe6107f6083f3435))
+
+### Features
+
+- **文件管理:** 图片和视频支持缩略图 ([38c1495](https://github.com/limaofeng/asany-admin/commit/38c149578bcb97b2b36818b7a2879880a934da68))
+
 ## [0.2.12](https://github.com/limaofeng/asany-admin/compare/v0.2.11...v0.2.12) (2022-04-06)
 
 ### Bug Fixes
