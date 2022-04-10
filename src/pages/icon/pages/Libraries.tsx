@@ -4,7 +4,8 @@ import { useIconLibrariesQuery } from '../hooks';
 import LibraryCreate from '../components/LibraryCreate';
 import LibraryCard from '../components/LibraryCard';
 
-import { ContentWrapper, Spin } from '@/pages/Metronic/components';
+import { Spin } from '@/pages/Metronic/components';
+import { ContentWrapper } from '@/layouts/components';
 
 import '../style/index.scss';
 

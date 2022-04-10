@@ -3,7 +3,7 @@ import Icon from '@asany/icons';
 
 import { useAppQuery } from '../hooks';
 
-import { ContentWrapper, Navbar } from '@/pages/Metronic/components/page';
+import { ContentWrapper, Navbar } from '@/layouts/components';
 import { CountUp, Nav, Stat, Symbol } from '@/pages/Metronic/components';
 
 type AppViewProps = RouteComponentProps<{ id: string }> & {

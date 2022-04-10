@@ -13,7 +13,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import LibraryControlPanel from '../components/LibraryControlPanel';
 import { useIconLibraryQuery } from '../hooks';
 
-import { ContentWrapper } from '@/pages/Metronic/components';
+import { ContentWrapper } from '@/layouts/components';
 
 type LibraryNameProps = {
   editing: boolean;

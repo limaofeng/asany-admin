@@ -11,9 +11,10 @@ import {
 } from '../hooks';
 import MessageEditor from '../components/MessageEditor';
 
-import { Button, Card, ContentWrapper, Modal, Spin, Tabs } from '@/pages/Metronic/components';
+import { Button, Card, Modal, Spin, Tabs } from '@/pages/Metronic/components';
 import type { MailboxMessage } from '@/types';
 import { sleep } from '@/utils';
+import { ContentWrapper } from '@/layouts/components';
 
 const { TabPane } = Tabs;
 

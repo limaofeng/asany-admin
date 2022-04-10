@@ -12,8 +12,9 @@ import type { OptionData } from '@/pages/Metronic/components';
 import { CircleProgress } from '@/pages/Metronic/components';
 import { Popover } from '@/pages/Metronic/components';
 import { Menu } from '@/pages/Metronic/components';
-import { AsideWorkspace, Pulse, Select } from '@/pages/Metronic/components';
+import { Pulse, Select } from '@/pages/Metronic/components';
 import type { CloudDrive } from '@/types';
+import { AsideWorkspace } from '@/layouts/Demo7';
 
 type SidebarFooterProps = {
   drives: CloudDrive[];

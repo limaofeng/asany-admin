@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { loginWithUsername, useHistory, useModel } from 'umi';
 
-import { Button, Form, Input, Modal } from '../components';
+import { Button, Form, Input, Modal } from '@/pages/Metronic/components';
 
 function Aside() {
   return (

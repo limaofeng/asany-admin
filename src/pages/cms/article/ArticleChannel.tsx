@@ -11,7 +11,7 @@ import { NewArticleChannelModal } from './ArticleChannelNew';
 
 import { Button, CountUp, Dropdown, Menu, Nav, Stat } from '@/pages/Metronic/components/base';
 import { User } from '@/pages/Metronic/components';
-import { ContentWrapper, Navbar } from '@/pages/Metronic/components/page';
+import { ContentWrapper, Navbar } from '@/layouts/components';
 import type { ArticleChannel as IArticleChannel } from '@/types';
 
 type ArticleChannelProps = RouteComponentProps<{ id: string }>;

@@ -5,7 +5,7 @@ import type { RouteComponentProps } from 'react-router';
 
 import { useStorageQuery } from '../hooks';
 
-import { ContentWrapper } from '@/pages/Metronic/components/page';
+import { ContentWrapper } from '@/layouts/components';
 import { Card, Nav } from '@/pages/Metronic/components';
 
 type FileManagerProps = RouteComponentProps<{ id: string }> & {

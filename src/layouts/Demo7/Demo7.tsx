@@ -5,11 +5,11 @@ import { getMatchMenu, transformRoute } from '@umijs/route-utils';
 import type { RouteComponentProps } from 'react-router';
 import type { Route } from '@umijs/route-utils/dist/types';
 
-import Aside from '../Aside';
+import { LayoutProvider, useLayoutSelector } from '../LayoutContext';
 
-import { LayoutProvider, useLayoutSelector } from './LayoutContext';
+import Aside from './components/Aside';
 import getLayoutRenderConfig from './utils';
-import buildMenuRender from './components';
+import buildMenuRender from './components/utils';
 
 import * as utils from '@/utils';
 import type { MenuData } from '@/.umi/app/typings';

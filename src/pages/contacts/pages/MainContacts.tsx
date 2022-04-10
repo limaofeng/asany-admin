@@ -9,7 +9,7 @@ import NoContacts from '../components/NoContacts';
 import { useContacts } from '../hooks';
 import type { ContactListState, ContactRouteParams } from '../typings';
 
-import { ContentWrapper } from '@/pages/Metronic/components';
+import { ContentWrapper } from '@/layouts/components';
 
 type MainContactsProps = RouteComponentProps<ContactRouteParams> & {
   children: React.ReactNode;

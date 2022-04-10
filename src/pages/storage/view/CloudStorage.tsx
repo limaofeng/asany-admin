@@ -1,4 +1,4 @@
-import { ContentWrapper } from '@/pages/Metronic/components';
+import { ContentWrapper } from '@/layouts/components';
 
 function CloudStorage() {
   return (

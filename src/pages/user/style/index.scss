@@ -1,0 +1,97 @@
+.user-status-modal {
+  .modal-header {
+    align-items: center !important;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  .user-status-limited-availability {
+    .form-check {
+      padding: 0;
+    }
+    .form-check-label {
+      color: #3f4254;
+      font-weight: bold;
+    }
+    .note {
+      padding-left: 28px;
+      color: #7e8299;
+      font-size: 12px;
+    }
+  }
+  .user-status-settings {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+
+    & > span {
+      margin-right: 4px;
+      color: #3f4254;
+    }
+
+    .form-select {
+      width: auto;
+      min-height: 28px;
+      margin-right: 16px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    .form-select-popover {
+      padding: 4px 0;
+
+      .menu-item:hover {
+        background-color: rgb(245, 248, 250);
+      }
+    }
+  }
+  .user-status-actions {
+    display: flex;
+    .btn {
+      flex: 1;
+      &:first-child {
+        margin-right: 8px;
+      }
+      &:last-child {
+        margin-left: 8px;
+      }
+    }
+  }
+}
+.user-status-form-group {
+  .input-group-text {
+    display: flex;
+    justify-content: center;
+    width: 46px;
+    padding: 0;
+    overflow: hidden;
+    .btn {
+      flex: 1;
+      border-radius: 0;
+    }
+  }
+}
+.emoji-mart-picker {
+  border: 1px solid #d9d9d9;
+  .emoji-mart {
+    border-width: 0;
+  }
+  .popover-arrow::before {
+    border-bottom-color: #d9d9d9;
+  }
+  .emoji-mart-search-icon {
+    top: 4px;
+  }
+}
+.user-account-menu {
+  .user-status-details {
+    cursor: pointer;
+    .menu-content {
+      padding: 2px 0px 2px 8px;
+      color: #5e6278;
+      &:hover,
+      &:hover .svg-icon {
+        color: #04c8c8;
+        transition: color 0.2s ease, background-color 0.2s ease;
+      }
+    }
+  }
+}

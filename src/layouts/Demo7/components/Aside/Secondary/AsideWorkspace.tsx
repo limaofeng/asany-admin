@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import classnames from 'classnames';
 
-import { useLayout, useLayoutSelector } from '../../Layout/LayoutContext';
+import { useLayout, useLayoutSelector } from '../../../../LayoutContext';
 
 type AsideWorkspaceProps = {
   className?: string;

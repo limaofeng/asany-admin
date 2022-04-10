@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 import ReactDOM from 'react-dom';
 import SunmaoEditor from 'sunmao-editor';
 
-import { ContentWrapper } from '@/pages/Metronic/components/page/Content';
+import { ContentWrapper } from '@/layouts/components';
 
 function RanderSunmaoEditor() {
   return ReactDOM.createPortal(

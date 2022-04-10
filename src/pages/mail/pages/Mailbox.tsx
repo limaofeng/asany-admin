@@ -24,15 +24,10 @@ import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
 import type { InfiniteScrollRef, RowRendererParams } from '@/pages/Metronic/components';
 import { Button } from '@/pages/Metronic/components';
 import { Modal } from '@/pages/Metronic/components';
-import {
-  Card,
-  ContentWrapper,
-  InfiniteScroll,
-  Input,
-  NProgress,
-} from '@/pages/Metronic/components';
+import { Card, InfiniteScroll, Input, NProgress } from '@/pages/Metronic/components';
 import { delay, sleep } from '@/utils';
 import type { MailboxMessage, MailboxMessageConnection } from '@/types';
+import { ContentWrapper } from '@/layouts/components';
 
 interface MailboxState {
   width: number;

@@ -1,8 +1,7 @@
 import React from 'react';
 
-import Menu from '../../base/Menu';
-
 import type { MenuData } from '@/.umi/app/typings';
+import { Menu } from '@/pages/Metronic/components';
 
 type MenuPaneProps = {
   title: string;

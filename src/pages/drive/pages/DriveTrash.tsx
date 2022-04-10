@@ -5,7 +5,7 @@ import { useModel } from 'umi';
 import { useCloudDriveLazyQuery } from '../hooks';
 import ListFiles from '../components/ListFiles';
 
-import { ContentWrapper } from '@/pages/Metronic/components';
+import { ContentWrapper } from '@/layouts/components';
 import type { FileObject } from '@/types';
 
 function DriveTrash() {

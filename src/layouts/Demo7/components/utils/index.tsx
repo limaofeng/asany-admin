@@ -1,7 +1,6 @@
-import Navigation from '../../Aside/Secondary/Navigation';
-import AsideWorkspace from '../../Aside/Secondary/AsideWorkspace';
-
-import CustomAsideSecondaryContent from './CustomAsideSecondaryContent';
+import CustomAsideSecondaryContent from '../CustomAsideSecondaryContent';
+import Navigation from '../Aside/Secondary/Navigation';
+import AsideWorkspace from '../Aside/Secondary/AsideWorkspace';
 
 import type { MenuData } from '@/.umi/app/typings';
 

@@ -22,8 +22,12 @@ canvas {
 body {
   font-weight: 400;
   font-size: 13px !important;
-  font-family: Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-variant: tabular-nums;
   background-color: #f3f6f9;
+  font-feature-settings: 'tnum';
   -webkit-font-smoothing: antialiased;
 }
 

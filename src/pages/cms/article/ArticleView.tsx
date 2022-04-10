@@ -6,7 +6,7 @@ import { QUERY_ARTICLE } from './gql/article.gql';
 import type { IArticle } from './typings';
 
 import { Card } from '@/pages/Metronic/components';
-import { ContentWrapper } from '@/pages/Metronic/components/page';
+import { ContentWrapper } from '@/layouts/components';
 
 function ArticleShare() {
   return (

@@ -12,7 +12,7 @@ type PopoverProps = {
   visible?: boolean;
   placement?: Placement;
   overlayClassName?: string;
-  onVisibleChange?: (visible: boolean) => void;
+  onVisibleChange?: (visible: boolean, e?: React.MouseEvent) => void;
   trigger?: OverlayTriggerType | OverlayTriggerType[];
   title?: React.ReactNode;
   content: React.ReactNode;
@@ -79,12 +79,12 @@ function Popover(props: PopoverProps) {
     if (nodeRef.current?.contains(e.target as any)) {
       return;
     }
-    e.stopPropagation();
-    e.preventDefault();
+    // e.stopPropagation();
+    // e.preventDefault();
     if (!controlled) {
       setVisible(false);
     } else {
-      onVisibleChange && onVisibleChange(false);
+      onVisibleChange && onVisibleChange(false, e as any);
     }
   });
 

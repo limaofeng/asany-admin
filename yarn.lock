@@ -3274,6 +3274,13 @@
   dependencies:
     "@types/jquery" "*"
 
+"@types/emoji-mart@^3.0.9":
+  version "3.0.9"
+  resolved "https://registry.npmjs.org/@types/emoji-mart/-/emoji-mart-3.0.9.tgz#2f7ef5d9ec194f28029c46c81a5fc1e5b0efa73c"
+  integrity sha512-qdBo/2Y8MXaJ/2spKjDZocuq79GpnOhkwMHnK2GnVFa8WYFgfA+ei6sil3aeWQPCreOKIx9ogPpR5+7MaOqYAA==
+  dependencies:
+    "@types/react" "*"
+
 "@types/eslint@^7.2.13":
   version "7.29.0"
   resolved "https://registry.npmjs.org/@types/eslint/-/eslint-7.29.0.tgz#e56ddc8e542815272720bb0b4ccc2aff9c3e1c78"
@@ -7451,6 +7458,14 @@ emittery@^0.7.1:
   version "0.7.2"
   resolved "https://registry.npmjs.org/emittery/-/emittery-0.7.2.tgz#25595908e13af0f5674ab419396e2fb394cdfa82"
   integrity sha512-A8OG5SR/ij3SsJdWDJdkkSYUjQdCUx6APQXem0SaEePBSRg4eymGYwBkKo1Y6DU+af/Jn2dBQqDBvjnr9Vi8nQ==
+
+emoji-mart@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/emoji-mart/-/emoji-mart-3.0.1.tgz#9ce86706e02aea0506345f98464814a662ca54c6"
+  integrity sha512-sxpmMKxqLvcscu6mFn9ITHeZNkGzIvD0BSNFE/LJESPbCA8s1jM6bCDPjWbV31xHq7JXaxgpHxLB54RCbBZSlg==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    prop-types "^15.6.0"
 
 emoji-regex@^7.0.1:
   version "7.0.3"
@@ -13720,7 +13735,7 @@ prop-types-extra@^1.1.0:
     react-is "^16.3.2"
     warning "^4.0.0"
 
-prop-types@15.x, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@15.x, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -16742,10 +16757,10 @@ sunmao-editor@^0.1.15:
   resolved "https://registry.npmjs.org/sunmao-editor/-/sunmao-editor-0.1.15.tgz#5ddd4b4da4d10b23460acac671e2a34bc1a90349"
   integrity sha512-lGioy25N3ePfdUYhfZ4Q6thTXMlsCb6VSyfLk0dVMWMzmSftuN9PAkqpolfzxahJ0OZHng8cgAaMCiESwiLwew==
 
-sunmao@^0.2.29:
-  version "0.2.29"
-  resolved "https://registry.npmjs.org/sunmao/-/sunmao-0.2.29.tgz#bc4d7d9decde8d9290c42389c9425b7b04f0a6f2"
-  integrity sha512-Kj9x+dMuHx2qLnp53WKDcT7vE6JNys6J8ixPN32/YUNL45ZuhZhjCLRQeOhVjg5SCyFb1wu3lhKvU+vzHHEdTA==
+sunmao@^0.2.30:
+  version "0.2.30"
+  resolved "https://registry.npmjs.org/sunmao/-/sunmao-0.2.30.tgz#ed1695fe1e9ede521a35ae15d8876d9455576808"
+  integrity sha512-g6U39yECNqGVHE1l++pVKoypQ8qnPw9da+8EgikYnMHZWidJxtW4qXIrPfnVH7NlpO5hmSLb2pY+5KltSc3sPA==
   dependencies:
     classnames "^2.3.1"
     lodash-es "^4.17.21"

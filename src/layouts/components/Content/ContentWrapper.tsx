@@ -2,7 +2,7 @@ import React from 'react';
 
 import classnames from 'classnames';
 
-import { useLayoutSelector } from '../../Layout/LayoutContext';
+import { useLayoutSelector } from '../../LayoutContext';
 
 import Content from './Content';
 import type { ContentFooterProps } from './ContentFooter';

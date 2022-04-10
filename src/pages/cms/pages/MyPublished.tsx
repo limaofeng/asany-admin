@@ -2,7 +2,7 @@ import { useCurrentuser } from 'umi';
 
 import ArticleList from '../components/ArticleList';
 
-import { ContentWrapper } from '@/pages/Metronic/components';
+import { ContentWrapper } from '@/layouts/components';
 
 function MyDrafts() {
   const user = useCurrentuser();

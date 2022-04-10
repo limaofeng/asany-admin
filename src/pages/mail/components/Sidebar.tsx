@@ -9,7 +9,8 @@ import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL } from '../utils';
 
 import Preferences from './preferences';
 
-import { AsideWorkspace, Badge, Button, Menu } from '@/pages/Metronic/components';
+import { Badge, Button, Menu } from '@/pages/Metronic/components';
+import { AsideWorkspace } from '@/layouts/Demo7';
 
 type SidebarFooterProps = {
   onAction: () => void;

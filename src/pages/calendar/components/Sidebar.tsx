@@ -16,8 +16,9 @@ import CalendarSidebarFooter from './CalendarSidebarFooter';
 import Preferences from './preferences';
 
 import type { CalendarEvent, CalendarSet } from '@/types';
-import { AsideWorkspace, Popover } from '@/pages/Metronic/components';
+import { Popover } from '@/pages/Metronic/components';
 import { sleep } from '@/utils';
+import { AsideWorkspace } from '@/layouts/Demo7';
 
 type EventWithDay = {
   key: string;

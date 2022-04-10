@@ -1,7 +1,4 @@
-import { component, library } from 'sunmao';
-
-import Layout from './components/Layout/Demo7';
-import SignIn from './authentication/SignIn';
+import { library } from 'sunmao';
 
 import './style/index.scss';
 
@@ -10,11 +7,6 @@ import './style/index.scss';
   description: '',
   namespace: 'cn.asany.ui.theme.metronic',
 })
-class Metronic {
-  @component()
-  Layout = Layout;
-  @component({ name: 'authentication.SignIn' })
-  SignIn = SignIn;
-}
+class Metronic {}
 
 export default new Metronic();

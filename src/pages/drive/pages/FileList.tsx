@@ -8,7 +8,7 @@ import { useCloudDriveLazyQuery } from '../hooks';
 import ListFiles from '../components/ListFiles';
 import { extensions } from '../utils';
 
-import { ContentWrapper } from '@/pages/Metronic/components';
+import { ContentWrapper } from '@/layouts/components';
 import type { CloudDrive, FileObject } from '@/types';
 import type { Sorter } from '@/pages/Metronic/components/base/Table/typings';
 

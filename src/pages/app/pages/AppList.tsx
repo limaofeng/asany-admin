@@ -1,6 +1,6 @@
 import { useMyAppsQuery } from '../hooks';
 
-import { ContentWrapper } from '@/pages/Metronic/components/page';
+import { ContentWrapper } from '@/layouts/components';
 import { Badge, Card, Col, Progress, Row, Symbol, Tooltip } from '@/pages/Metronic/components';
 
 function AppList() {
