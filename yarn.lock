@@ -151,6 +151,14 @@
     lodash-es "^4.17.21"
     react-flip-toolkit "^7.0.13"
 
+"@asany/tags-input@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.npmjs.org/@asany/tags-input/-/tags-input-0.1.2.tgz#dee86334b9e53bf244b1830416620d0fea650ce7"
+  integrity sha512-zbHR1bImVBrA6iBkt2i03EYLOn8vDGud/m3iTMb9BD5j9J9a/YNbx0J47OAu6hHZWqrsw651JYhPnLgHkSIqTA==
+  dependencies:
+    classnames "^2.3.1"
+    react-use "^17.3.2"
+
 "@asany/tree@^0.1.14", "@asany/tree@^0.1.21":
   version "0.1.21"
   resolved "https://registry.npmjs.org/@asany/tree/-/tree-0.1.21.tgz#b66022418a2c7f7f0ae7aab38c534807ee22ac34"

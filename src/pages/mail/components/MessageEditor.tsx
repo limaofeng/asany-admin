@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import type { ValidateErrorEntity } from 'rc-field-form/lib/interface';
 import Icon from '@asany/icons';
 import ReactQuill, { Quill } from 'react-quill';
+import TagsInput, { emailValidator, parseEmailTag } from '@asany/tags-input';
 
 import {
   MailboxesDocument,
@@ -14,13 +15,11 @@ import {
 import {
   Button,
   Card,
-  EmailTagsInput,
   Form,
   Input,
   Modal,
   QueueUpload,
   Tooltip,
-  parseMail,
 } from '@/pages/Metronic/components';
 import type { QueueUploadRef } from '@/pages/Metronic/components';
 import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
@@ -31,7 +30,7 @@ import { delay } from '@/utils';
 const RULE_VERIFY_MAIL = {
   async validator(_: any, emails: string[]) {
     for (const email of emails) {
-      if (parseMail(email).invalid) {
+      if (emailValidator(email)) {
         throw new Error('电子邮件地址无效');
       }
     }
@@ -82,6 +81,21 @@ type ContentEditorProps = {
   value?: string;
   onChange?: (value: string) => void;
 };
+
+type EmailTagsInputProps = {
+  placeholder?: string;
+};
+
+function EmailTagsInput(props: EmailTagsInputProps) {
+  return (
+    <TagsInput
+      className="email-tags-input border-0 form-control form-control-transparent"
+      validate={emailValidator}
+      parseTag={parseEmailTag}
+      {...props}
+    />
+  );
+}
 
 function ContentEditor(props: ContentEditorProps) {
   const { mode, onChange } = props;
@@ -229,8 +243,9 @@ function MessageEditor(props: MessageEditorProps) {
     (method: 'cc' | 'bcc') => () => {
       if (state.current.recipients.includes(method)) {
         state.current.recipients = state.current.recipients.filter((item) => item != method);
+      } else {
+        state.current.recipients = [...state.current.recipients, method];
       }
-      state.current.recipients = [...state.current.recipients, method];
       forceRender();
     },
     [],
@@ -380,6 +395,8 @@ function MessageEditor(props: MessageEditorProps) {
 
   const { message, recipients, mode, autoSaveState, disabled, sending } = state.current;
 
+  console.log('recipients', recipients);
+
   return (
     <Card className="email-compose-editor">
       <Card.Header>
@@ -400,7 +417,7 @@ function MessageEditor(props: MessageEditorProps) {
             <div className="d-flex align-items-center border-bottom px-8 min-h-45px">
               <div className="text-dark fw-bolder w-75px">收件人:</div>
               <Form.Item noStyle name="to" rules={[RULE_VERIFY_MAIL]}>
-                <EmailTagsInput className="border-0" transparent />
+                <EmailTagsInput placeholder="输入收件人邮箱" />
               </Form.Item>
               <div className="ms-auto w-75px text-end">
                 {!recipients.includes('cc') && (
@@ -425,7 +442,7 @@ function MessageEditor(props: MessageEditorProps) {
               <div className="align-items-center border-bottom ps-8 pe-5 min-h-45px d-flex">
                 <div className="text-dark fw-bolder w-75px">抄送:</div>
                 <Form.Item noStyle name="cc" rules={[RULE_VERIFY_MAIL]}>
-                  <EmailTagsInput className="border-0" transparent />
+                  <EmailTagsInput placeholder="输入抄送邮箱" />
                 </Form.Item>
                 <span
                   className="btn btn-clean btn-xs btn-icon"
@@ -439,7 +456,7 @@ function MessageEditor(props: MessageEditorProps) {
               <div className="align-items-center border-bottom inbox-to-bcc ps-8 pe-5 min-h-45px d-flex">
                 <div className="text-dark fw-bolder w-75px">密送:</div>
                 <Form.Item noStyle name="bcc" rules={[RULE_VERIFY_MAIL]}>
-                  <EmailTagsInput className="border-0" transparent />
+                  <EmailTagsInput placeholder="输入密送邮箱" />
                 </Form.Item>
                 <span
                   className="btn btn-clean btn-xs btn-icon"

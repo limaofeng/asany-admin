@@ -38,6 +38,14 @@
       flex-direction: column;
     }
 
+    .email-tags-input {
+      margin-left: 0;
+      padding-left: 1rem;
+      span.standard:last-child[contenteditable][placeholder]:empty:before {
+        font-size: 1.1rem !important;
+      }
+    }
+
     #kt_inbox_form_editor {
       display: flex;
       flex: 1;

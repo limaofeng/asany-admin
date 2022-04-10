@@ -1,4 +1,4 @@
-import { parseMail } from '../Metronic/components';
+import { parseEmailTag } from '@asany/tags-input';
 
 type DEFAULT_MAILBOXE_TYPE = {
   id: string;
@@ -53,6 +53,6 @@ export const DEFAULT_MAILBOXES_ALL: DEFAULT_MAILBOXE_TYPE[] = Object.keys(DEFAUL
 );
 
 export function displayName(item: string) {
-  const mail = parseMail(item);
-  return mail.name || mail.address.substring(0, mail.address.indexOf('@'));
+  const mail = parseEmailTag(item);
+  return mail.name || (mail.address && mail.address.substring(0, mail.address.indexOf('@')));
 }

@@ -102,7 +102,7 @@ query mailboxMessage($id: ID!) {
 }
 
 query mailboxMessages($user: ID, $filter: MailboxMessageFilter, $page: Int = 1) {
-  mailboxMessages(user: $user, filter: $filter, page: $page) {
+  mailboxMessages(user: $user, filter: $filter, page: $page, pageSize: 30) {
     totalCount
     pageSize
     totalPage
