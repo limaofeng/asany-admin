@@ -153,7 +153,7 @@ function SubMenu(props: SubMenuProps) {
     >
       {icon ? (
         <span className="menu-icon">
-          {typeof icon == 'string' ? <Icon className="svg-icon-2" name={icon} /> : icon}
+          {typeof icon == 'string' ? <Icon className="svg-icon-4" name={icon} /> : icon}
         </span>
       ) : (
         bullet && (

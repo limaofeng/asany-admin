@@ -1,19 +1,25 @@
 import Icon from '@asany/icons';
+import { getMatchMenu } from '@umijs/route-utils';
+import { useLocation } from 'umi';
 
-function Breadcrumb() {
-  return (
-    <ul className="breadcrumb fw-bold fs-base my-1">
-      <li className="breadcrumb-item text-muted">
-        <a href="../../demo7/dist/index.html" className="text-muted">
-          Home
-        </a>
-      </li>
-      <li className="breadcrumb-item text-muted">Pages</li>
-      <li className="breadcrumb-item text-muted">Blog</li>
-      <li className="breadcrumb-item text-dark">Blog Post</li>
-    </ul>
-  );
-}
+import { Breadcrumb } from '@/pages/Metronic/components';
+import { useSticky } from '@/pages/Metronic/hooks';
+import { useLayoutSelector } from '@/layouts/LayoutContext';
+
+// function Breadcrumb() {
+//   return (
+//     <ul className="breadcrumb fw-bold fs-base my-1">
+//       <li className="breadcrumb-item text-muted">
+//         <a href="../../demo7/dist/index.html" className="text-muted">
+//           Home
+//         </a>
+//       </li>
+//       <li className="breadcrumb-item text-muted">Pages</li>
+//       <li className="breadcrumb-item text-muted">Blog</li>
+//       <li className="breadcrumb-item text-dark">Blog Post</li>
+//     </ul>
+//   );
+// }
 
 function Toolbar() {
   return (
@@ -61,14 +67,22 @@ export type ContentHeaderProps = {
 
 function ContentHeader(props: ContentHeaderProps) {
   const { title } = props;
+
+  const [ref] = useSticky({
+    name: 'header',
+    offset: { default: 200, lg: 300 },
+  });
+
+  const location = useLocation();
+
+  const routes = useLayoutSelector((state) => state.routes);
+
+  const _matchMenus = getMatchMenu(location.pathname, routes, true);
+
+  console.log('breadcrumb', routes, _matchMenus, location.pathname);
+
   return (
-    <div
-      id="kt_header"
-      className="header"
-      data-kt-sticky="true"
-      data-kt-sticky-name="header"
-      data-kt-sticky-offset="{default: '200px', lg: '300px'}"
-    >
+    <div id="kt_header" ref={ref} className="header">
       <div
         className="container-xxl d-flex align-items-center justify-content-between"
         id="kt_header_container"
@@ -80,7 +94,7 @@ function ContentHeader(props: ContentHeaderProps) {
           data-kt-swapper-parent="{default: '#kt_content_container', lg: '#kt_header_container'}"
         >
           <h1 className="text-dark fw-bolder my-0 fs-2">{title}</h1>
-          <Breadcrumb />
+          <Breadcrumb className="breadcrumb fw-bold fs-base my-1" />
         </div>
         {/* --begin::Wrapper-- */}
         <div className="d-flex d-lg-none align-items-center ms-n2 me-2">

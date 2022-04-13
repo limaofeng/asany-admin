@@ -91,10 +91,10 @@ function LayoutWrapper(props: LayoutProps) {
   const menus: MenuData[] = useMemo(
     () =>
       utils.tree(
-        sourceMenus.map((item) => ({ ...item, children: [] })),
+        sourceMenus.map((item) => ({ ...item, key: item.id, routes: [] })),
         {
           idKey: 'id',
-          childrenKey: 'children',
+          childrenKey: 'routes',
           pidKey: 'parent.id',
           sort: (l: any, r: any) => l.index - r.index,
         },
@@ -129,37 +129,42 @@ function LayoutWrapper(props: LayoutProps) {
   );
 
   const currentMenu = useMemo(() => {
-    return menus.find(({ path }) => {
-      return path && (path || '').split(',').some((rule) => location.pathname.startsWith(rule));
-    });
+    const matchMenus = getMatchMenu(location.pathname, menus, true);
+    return matchMenus[0];
   }, [location.pathname, menus]);
 
   useEffect(() => {
-    if (currentMenu == null || state.current.activeMenuKey == currentMenu.id) {
+    if (!currentMenu || state.current.activeMenuKey == currentMenu.id) {
       return;
     }
     state.current.activeMenuKey = currentMenu.id;
     forceRender();
   }, [currentMenu]);
 
-  const activeMenuKey = state.current.activeMenuKey;
   const menuRender = useMemo(() => {
     if (layoutRestProps.menuRender == false) {
       return false;
     }
-    const menu = menus.find(({ id }) => id === activeMenuKey);
+    if (!!layoutRestProps.menuRender) {
+      return layoutRestProps.menuRender;
+    }
+    const menu = currentMenu as MenuData;
     if (!menu) {
       return false;
     }
-    if (!menu.component && !(menu.children || []).length) {
+    if (!menu.component && !(menu.routes || []).length) {
       return false;
     }
     return buildMenuRender(menu);
-  }, [menus, layoutRestProps.menuRender, activeMenuKey]);
+  }, [layoutRestProps.menuRender, currentMenu]);
 
   return (
     <LayoutProvider
-      state={{ aside: { menus, minimize: false, pure: layoutRestProps.pure, width: 200 } }}
+      state={{
+        menus,
+        routes: props.route.routes || [],
+        aside: { menus, minimize: false, pure: layoutRestProps.pure, width: 200 },
+      }}
     >
       <LayoutInner
         {...props}

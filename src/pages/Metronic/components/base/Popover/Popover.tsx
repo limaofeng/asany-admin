@@ -12,6 +12,7 @@ type PopoverProps = {
   visible?: boolean;
   placement?: Placement;
   overlayClassName?: string;
+  zIndex?: number;
   onVisibleChange?: (visible: boolean, e?: React.MouseEvent) => void;
   trigger?: OverlayTriggerType | OverlayTriggerType[];
   title?: React.ReactNode;
@@ -29,6 +30,7 @@ function Popover(props: PopoverProps) {
     placement = 'right',
     overlayClassName,
     onVisibleChange,
+    zIndex,
     stopPropagation,
   } = props;
 
@@ -65,7 +67,7 @@ function Popover(props: PopoverProps) {
       if (!controlled) {
         setVisible((_v) => !_v);
       } else {
-        onVisibleChange && onVisibleChange(!temp.current);
+        onVisibleChange && onVisibleChange(!temp.current, e);
       }
       stopPropagation && e.stopPropagation();
     };
@@ -76,11 +78,16 @@ function Popover(props: PopoverProps) {
   }, [trigger, stopPropagation, onVisibleChange, controlled]);
 
   useClickAway(contentRef as any, (e) => {
-    if (nodeRef.current?.contains(e.target as any)) {
+    const target = e.target!;
+    const _tar = document.querySelector('.modal');
+    if (
+      nodeRef.current?.contains(e.target as any) ||
+      target == _tar ||
+      _tar?.contains(target as any)
+    ) {
+      // ignore click
       return;
     }
-    // e.stopPropagation();
-    // e.preventDefault();
     if (!controlled) {
       setVisible(false);
     } else {
@@ -94,7 +101,10 @@ function Popover(props: PopoverProps) {
       show={visible}
       placement={placement}
       overlay={
-        <BsPopover className={classnames('asany-popover-overlay', overlayClassName)}>
+        <BsPopover
+          style={{ zIndex }}
+          className={classnames('asany-popover-overlay', overlayClassName)}
+        >
           <div className="flex-column-fluid d-flex flex-column" ref={contentRef}>
             {title && <BsPopover.Header>{title}</BsPopover.Header>}
             <BsPopover.Body>{content}</BsPopover.Body>

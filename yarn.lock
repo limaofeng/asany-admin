@@ -184,10 +184,10 @@
     lodash "^4.17.21"
     subscriptions-transport-ws "^0.9.16"
 
-"@asany/umi-plugin-app@^0.1.30":
-  version "0.1.30"
-  resolved "https://registry.npmjs.org/@asany/umi-plugin-app/-/umi-plugin-app-0.1.30.tgz#58f34432ac7e82762bac611ffff8b3c79255af11"
-  integrity sha512-62ti0aR9jmP66ps+W14enk2voUyDW2Rgfuso4mSA4T6aMSSYYe2XS2veBSAbtwLzXNTRCIXWhrE1n7pmlgm4Bw==
+"@asany/umi-plugin-app@^0.1.35":
+  version "0.1.35"
+  resolved "https://registry.npmjs.org/@asany/umi-plugin-app/-/umi-plugin-app-0.1.35.tgz#23d2b4deeac9ca23ecaf9756081b809a39fd15e8"
+  integrity sha512-KAkpZORaLMOlR7fXJc3a8vXcpKE7xPqO1drQ0UEIVyWbZiexLHQEy12M4q4bcXynWnnoXT5J+XhCVOtxLyymCg==
   dependencies:
     classnames "^2.3.1"
     lodash "^4.17.21"
@@ -16757,10 +16757,10 @@ sunmao-editor@^0.1.15:
   resolved "https://registry.npmjs.org/sunmao-editor/-/sunmao-editor-0.1.15.tgz#5ddd4b4da4d10b23460acac671e2a34bc1a90349"
   integrity sha512-lGioy25N3ePfdUYhfZ4Q6thTXMlsCb6VSyfLk0dVMWMzmSftuN9PAkqpolfzxahJ0OZHng8cgAaMCiESwiLwew==
 
-sunmao@^0.2.30:
-  version "0.2.30"
-  resolved "https://registry.npmjs.org/sunmao/-/sunmao-0.2.30.tgz#ed1695fe1e9ede521a35ae15d8876d9455576808"
-  integrity sha512-g6U39yECNqGVHE1l++pVKoypQ8qnPw9da+8EgikYnMHZWidJxtW4qXIrPfnVH7NlpO5hmSLb2pY+5KltSc3sPA==
+sunmao@^0.2.31:
+  version "0.2.31"
+  resolved "https://registry.npmjs.org/sunmao/-/sunmao-0.2.31.tgz#594c6972138b3b5b88665272d016feddfbd0b2a9"
+  integrity sha512-DHU1xlWRTwVg0tJXH9GP5pJE3NjYfODb1exPR+O1XlaLOSyb9zaDtQCSJhf86uxddgYC68tX5ZHV40RlyPV1rg==
   dependencies:
     classnames "^2.3.1"
     lodash-es "^4.17.21"

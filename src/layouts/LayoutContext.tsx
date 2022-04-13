@@ -8,9 +8,13 @@ import React, {
   useState,
 } from 'react';
 
+import type { Route } from '@umijs/route-utils/dist/types';
+
 import type { MenuData } from '@/.umi/app/typings';
 
 export type LayoutState = {
+  routes: Route[];
+  menus: MenuData[];
   aside: {
     pure: boolean;
     width: number;

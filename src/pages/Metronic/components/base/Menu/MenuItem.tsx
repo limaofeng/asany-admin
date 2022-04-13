@@ -18,6 +18,7 @@ export type MenuItemProps = {
   as?: string;
   titleClassName?: string;
   linkClassName?: string;
+  contentClassName?: string;
   bullet?: boolean | BulletProps;
   children?: React.ReactNode;
   badge?: React.ReactNode;
@@ -50,6 +51,7 @@ function MenuItem(props: MenuItemProps) {
     bullet,
     className,
     linkClassName,
+    contentClassName,
     titleClassName,
   } = props;
   const { menuKey, path } = props as any;
@@ -76,29 +78,35 @@ function MenuItem(props: MenuItemProps) {
     [context, menuKey, url, history],
   );
 
+  const contented = React.Children.toArray(children).some(React.isValidElement);
+
   return (
     <div className={classnames('menu-item', className)}>
-      {React.createElement(
-        as,
-        {
-          onClick: handleClick,
-          className: classnames('menu-link', linkClassName, { active: selected }),
-        },
-        <>
-          {icon ? (
-            <span className="menu-icon">
-              {typeof icon == 'string' ? <Icon className="svg-icon-2" name={icon} /> : icon}
-            </span>
-          ) : (
-            bullet && (
-              <span className="menu-bullet">
-                <Bullet {...(typeof bullet !== 'boolean' ? bullet : {})} />
+      {contented ? (
+        <div className={classnames('menu-content', contentClassName)}>{children}</div>
+      ) : (
+        React.createElement(
+          as,
+          {
+            onClick: handleClick,
+            className: classnames('menu-link', linkClassName, { active: selected }),
+          },
+          <>
+            {icon ? (
+              <span className="menu-icon">
+                {typeof icon == 'string' ? <Icon className="svg-icon-4" name={icon} /> : icon}
               </span>
-            )
-          )}
-          <span className={classnames('menu-title', titleClassName)}>{children || title}</span>
-          {badge}
-        </>,
+            ) : (
+              bullet && (
+                <span className="menu-bullet">
+                  <Bullet {...(typeof bullet !== 'boolean' ? bullet : {})} />
+                </span>
+              )
+            )}
+            <span className={classnames('menu-title', titleClassName)}>{children || title}</span>
+            {badge}
+          </>,
+        )
       )}
     </div>
   );

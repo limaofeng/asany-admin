@@ -1,9 +1,8 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 import { Button, Nav, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Icon from '@asany/icons';
-import { useReactComponent } from 'sunmao';
 
 import { useLayout, useLayoutSelector } from '../../../LayoutContext';
 
@@ -14,6 +13,7 @@ import AsideWorkspace from './Secondary/AsideWorkspace';
 import type { MenuData } from '@/.umi/app/typings';
 import { Popover } from '@/pages/Metronic/components';
 import { useScroll } from '@/pages/Metronic/components/utils';
+import UserAccountMenu from '@/pages/user/components/UserAccountMenu';
 
 export interface AsideProps {
   activeKey?: string;
@@ -33,11 +33,15 @@ interface FooterProps {
 const Footer = React.forwardRef((props: FooterProps, ref: any) => {
   const { menus, activeKey, onSelect } = props;
 
+  const [userMenuVisible, setUserMenuVisible] = useState(false);
+
+  const handleCloseUserMenu = useCallback(() => {
+    setUserMenuVisible(false);
+  }, []);
+
   const handleClick = (menu: MenuData) => () => {
     onSelect(menu.id);
   };
-
-  const UserAccountMenu = useReactComponent('cn.asany.ui.admin.user.UserAccountMenu');
 
   return (
     <div ref={ref} className="aside-footer d-flex flex-column align-items-center flex-column-auto">
@@ -94,12 +98,14 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
           <Icon name="Duotune/gen025" className="svg-icon-2 svg-icon-lg-1" />
         </div>
       </div>
-      <div className="d-flex align-items-center mb-10" id="kt_header_user_menu_toggle">
+      <div className="d-flex align-items-center mb-10">
         <Popover
           placement="top-start"
-          // visible={true}
-          overlayClassName="z-100 overlay-zero-gap overlay-no-arrow"
-          content={<UserAccountMenu />}
+          zIndex={100}
+          visible={userMenuVisible}
+          onVisibleChange={setUserMenuVisible}
+          overlayClassName="overlay-zero-gap overlay-no-arrow"
+          content={<UserAccountMenu close={handleCloseUserMenu} />}
         >
           <div className="cursor-pointer symbol symbol-40px" title="User profile">
             <img src="/assets/media/avatars/150-26.jpg" alt="image" />
@@ -171,6 +177,7 @@ function Aside(props: AsideProps) {
     () =>
       menus
         .filter((item) => DEFAULT_APP_PATHS.includes(item.path!))
+        .filter((item) => !item.hideInMenu)
         .sort(
           (l, r) =>
             DEFAULT_APP_PATHS.findIndex((p) => p == l.path!) -
@@ -180,7 +187,10 @@ function Aside(props: AsideProps) {
   );
 
   const topMenus = useMemo(
-    () => menus.filter((item) => !DEFAULT_APP_PATHS.includes(item.path!)),
+    () =>
+      menus
+        .filter((item) => !DEFAULT_APP_PATHS.includes(item.path!))
+        .filter((item) => !item.hideInMenu),
     [menus],
   );
 

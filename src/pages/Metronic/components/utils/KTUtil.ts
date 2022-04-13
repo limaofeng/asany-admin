@@ -510,3 +510,74 @@ export function getHighestZindex(el: any) {
   }
   return 1;
 }
+
+export function getScrollTop() {
+  return (document.scrollingElement || document.documentElement).scrollTop;
+}
+
+export function onetime(el: HTMLElement, type: string, callback: (event: Event) => void) {
+  el.addEventListener(type, function callee(e) {
+    // remove event
+    if (e.target && e.target.removeEventListener) {
+      e.target.removeEventListener(e.type, callee);
+    }
+
+    // need to verify from https://themeforest.net/author_dashboard#comment_23615588
+    e.currentTarget?.removeEventListener(e.type, callee);
+
+    // call handler
+    return callback(e);
+  });
+}
+
+export function animateClass(el: HTMLElement, animationName: string, callback?: () => void) {
+  let animation;
+  const animations = {
+    animation: 'animationend',
+    OAnimation: 'oAnimationEnd',
+    MozAnimation: 'mozAnimationEnd',
+    WebkitAnimation: 'webkitAnimationEnd',
+    msAnimation: 'msAnimationEnd',
+  };
+
+  for (const t in animations) {
+    if (el.style[t] !== undefined) {
+      animation = animations[t];
+    }
+  }
+
+  addClass(el, animationName);
+
+  onetime(el, animation, function () {
+    removeClass(el, animationName);
+  });
+
+  if (callback) {
+    onetime(el, animation, callback);
+  }
+}
+
+export function offset(el: HTMLElement) {
+  // Return zeros for disconnected and hidden (display: none) elements (gh-2310)
+  // Support: IE <=11 only
+  // Running getBoundingClientRect on a
+  // disconnected node in IE throws an error
+
+  if (!el.getClientRects().length) {
+    return { top: 0, left: 0 };
+  }
+
+  // Get document-relative position by adding viewport scroll to viewport-relative gBCR
+  const rect = el.getBoundingClientRect();
+  const win = el.ownerDocument.defaultView!;
+
+  return {
+    top: rect.top + win.pageYOffset,
+    left: rect.left + win.pageXOffset,
+    right: window.innerWidth - (el.offsetLeft + el.offsetWidth),
+  };
+}
+
+export function getUniqueId(prefix: string) {
+  return prefix + Math.floor(Math.random() * new Date().getTime());
+}

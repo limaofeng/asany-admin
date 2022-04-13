@@ -29,7 +29,7 @@ function Separator(props: SeparatorProps) {
       className={classnames('separator', className, {
         [`border-${border}`]: border > 1,
         [`border-${color}`]: !!color,
-        [`separator-${style}`]: style != 'solid',
+        [`separator-${style}`]: !!style,
         'separator-content': haveChildren,
       })}
     >

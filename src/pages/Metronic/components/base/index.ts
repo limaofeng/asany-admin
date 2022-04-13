@@ -25,3 +25,4 @@ export * from './BlockUI';
 export * from './Alert';
 export * from './Toast';
 export * from './Pulse';
+export * from './Breadcrumb';

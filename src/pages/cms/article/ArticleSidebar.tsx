@@ -7,9 +7,10 @@ import { useArticleChannelAllQuery } from '../hooks';
 
 import { NewArticleChannelModal } from './ArticleChannelNew';
 
-import { AsideWorkspace, Button, Menu } from '@/pages/Metronic/components';
+import { Button, Menu } from '@/pages/Metronic/components';
 import { tree } from '@/utils';
 import type { ArticleChannel } from '@/types';
+import { AsideWorkspace } from '@/layouts/Demo7';
 
 import './style/ArticleSidebar.scss';
 

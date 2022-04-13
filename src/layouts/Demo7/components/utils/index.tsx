@@ -10,7 +10,7 @@ export default function buildMenuRender(menu: MenuData) {
   }
   return (
     <AsideWorkspace>
-      <Navigation title={menu.name} menus={menu.children!} />
+      <Navigation title={menu.name} menus={menu.routes!} />
     </AsideWorkspace>
   );
 }
