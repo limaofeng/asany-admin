@@ -21,7 +21,7 @@ type ContentWrapperProps = {
 function ContentWrapper(props: ContentWrapperProps, ref: any) {
   const {
     mask,
-    header,
+    header = {},
     className,
     footer = { copyright: '版权所有 2021 林暮春 | 沪ICP备11003026号' },
     children,

@@ -1,25 +1,14 @@
+import { useMemo } from 'react';
+
 import Icon from '@asany/icons';
+import type { MenuDataItem } from '@umijs/route-utils';
 import { getMatchMenu } from '@umijs/route-utils';
-import { useLocation } from 'umi';
+import { useLocation, useParams } from 'umi';
+import { findLast } from 'lodash';
 
 import { Breadcrumb } from '@/pages/Metronic/components';
 import { useSticky } from '@/pages/Metronic/hooks';
 import { useLayoutSelector } from '@/layouts/LayoutContext';
-
-// function Breadcrumb() {
-//   return (
-//     <ul className="breadcrumb fw-bold fs-base my-1">
-//       <li className="breadcrumb-item text-muted">
-//         <a href="../../demo7/dist/index.html" className="text-muted">
-//           Home
-//         </a>
-//       </li>
-//       <li className="breadcrumb-item text-muted">Pages</li>
-//       <li className="breadcrumb-item text-muted">Blog</li>
-//       <li className="breadcrumb-item text-dark">Blog Post</li>
-//     </ul>
-//   );
-// }
 
 function Toolbar() {
   return (
@@ -62,24 +51,49 @@ function Toolbar() {
 }
 
 export type ContentHeaderProps = {
-  title: string;
+  title?: string;
 };
 
 function ContentHeader(props: ContentHeaderProps) {
-  const { title } = props;
-
   const [ref] = useSticky({
     name: 'header',
     offset: { default: 200, lg: 300 },
   });
 
   const location = useLocation();
+  const params = useParams();
 
-  const routes = useLayoutSelector((state) => state.routes);
+  const allMenus = useLayoutSelector((_state) => _state.menus);
+  const allRoutes = useLayoutSelector((_state) => _state.routes);
 
-  const _matchMenus = getMatchMenu(location.pathname, routes, true);
+  const { routes, title } = useMemo(() => {
+    const _matchMenus = getMatchMenu(location.pathname, allMenus, true);
+    const _matchRoutes = getMatchMenu(location.pathname, allRoutes, true);
 
-  console.log('breadcrumb', routes, _matchMenus, location.pathname);
+    let last: MenuDataItem | undefined;
+
+    const startIndex = _matchRoutes.findIndex((item) => item.path == last?.path);
+
+    let breadcrumbData: MenuDataItem[] = [];
+
+    breadcrumbData.push(..._matchMenus);
+
+    if (startIndex != -1) {
+      breadcrumbData.push(..._matchRoutes.slice(startIndex + 1));
+    }
+
+    if (breadcrumbData.length) {
+      last = findLast(breadcrumbData, (item) => !item.hideInBreadcrumb);
+    }
+
+    if (!!props.title && !!last) {
+      breadcrumbData = breadcrumbData.map((item) =>
+        item.key == last!.key ? { ...last, name: props.title } : item,
+      );
+    }
+
+    return { routes: breadcrumbData, title: last?.name };
+  }, [location.pathname, allMenus, allRoutes, props.title]);
 
   return (
     <div id="kt_header" ref={ref} className="header">
@@ -87,14 +101,9 @@ function ContentHeader(props: ContentHeaderProps) {
         className="container-xxl d-flex align-items-center justify-content-between"
         id="kt_header_container"
       >
-        <div
-          className="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-2 pb-2 pb-lg-0"
-          data-kt-swapper="true"
-          data-kt-swapper-mode="prepend"
-          data-kt-swapper-parent="{default: '#kt_content_container', lg: '#kt_header_container'}"
-        >
-          <h1 className="text-dark fw-bolder my-0 fs-2">{title}</h1>
-          <Breadcrumb className="breadcrumb fw-bold fs-base my-1" />
+        <div className="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-2 pb-2 pb-lg-0">
+          <h1 className="text-dark fw-bolder my-0 fs-2">{props.title || title}</h1>
+          <Breadcrumb params={params} routes={routes} className="fw-bold fs-base my-1" />
         </div>
         {/* --begin::Wrapper-- */}
         <div className="d-flex d-lg-none align-items-center ms-n2 me-2">

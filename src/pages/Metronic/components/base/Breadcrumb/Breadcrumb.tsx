@@ -2,6 +2,10 @@ import type { ReactNode } from 'react';
 
 import classnames from 'classnames';
 import type { Route } from 'umi';
+import type { MenuDataItem } from '@umijs/route-utils';
+import { generatePath } from 'react-router';
+
+import BreadcrumbItem from './BreadcrumbItem';
 
 type BreadcrumbItemRender = (
   route: Route,
@@ -12,25 +16,41 @@ type BreadcrumbItemRender = (
 
 type BreadcrumbProps = {
   className?: string;
+  params?: any;
   type?: 'line' | 'dot' | 'separatorless';
   itemRender?: BreadcrumbItemRender;
+  separator?: React.ReactNode;
+  routes?: MenuDataItem[];
+  children?: React.ReactNode;
 };
 
 function Breadcrumb(props: BreadcrumbProps) {
-  const { className } = props;
+  const { className, routes, children, params } = props;
+
   return (
     <ol className={classnames('breadcrumb', className)}>
-      <li className="breadcrumb-item text-muted">
-        <a href="#" className="text-muted">
-          Home
-        </a>
-      </li>
-      <li className="breadcrumb-item text-muted">
-        <a href="#" className="text-muted">
-          Library
-        </a>
-      </li>
-      <li className="breadcrumb-item text-dark">Active</li>
+      {!!routes
+        ? routes
+            .filter((item) => !item.hideInBreadcrumb && !!item.name)
+            .map((item, index, array) => {
+              const url = !!item.path ? generatePath(item.path, params) : undefined;
+
+              const isLast = array.length == index + 1;
+
+              return (
+                <BreadcrumbItem
+                  className={classnames({
+                    'text-muted': !isLast,
+                    'text-dark': isLast,
+                  })}
+                  href={isLast ? undefined : url}
+                  key={item.key}
+                >
+                  {item.name}
+                </BreadcrumbItem>
+              );
+            })
+        : children}
     </ol>
   );
 }

@@ -9,7 +9,7 @@ Menu.SubMenu = SubMenu;
 Menu.Item = MenuItem;
 Menu.Separator = MenuSeparator;
 
-interface MenuComponent
+export interface MenuComponent
   extends React.ForwardRefExoticComponent<MenuProps & React.RefAttributes<HTMLDivElement | null>> {
   Section: typeof MenuSection;
   SubMenu: typeof SubMenu;
