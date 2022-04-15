@@ -357,8 +357,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
                   <Button
                     htmlType="submit"
                     disabled={!form.getFieldValue('title')}
-                    className="event-btn-add"
-                    size="sm"
+                    className="event-btn-add rounded-2"
                   >
                     添加日程
                   </Button>

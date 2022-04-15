@@ -21,6 +21,16 @@
     position: relative;
     display: flex;
     padding: 2rem 1.25rem 0 1.5rem;
+
+    .calendar-event-header-left {
+      input {
+        min-height: calc(1.5em + 1.1rem + 2px);
+        padding: 0.55rem 0.75rem;
+        font-size: 0.925rem;
+        border-radius: 0.475rem;
+      }
+    }
+
     &.event-header-state-new {
       .calendar-event-header-left {
         input {
@@ -171,7 +181,7 @@
     .Calendar__monthYear {
       left: 49%;
       flex-direction: row-reverse;
-      width: 136px;
+      width: 140px;
 
       &.-shown {
         transform: translateX(-50%);
@@ -496,6 +506,12 @@
     .nav-link {
       margin-right: 0;
       margin-left: 0;
+    }
+
+    .nav-item .btn {
+      height: auto;
+      padding: calc(0.75rem + 1px) calc(1.5rem + 1px) !important;
+      border-radius: 0.475rem;
     }
   }
   .modal-content {

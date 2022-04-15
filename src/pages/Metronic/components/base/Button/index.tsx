@@ -53,6 +53,8 @@ type ButtonColor =
 
 type ActiveColor = Variant | ACTIVE_LIGHT_STYLE;
 
+import './style.scss';
+
 export interface ButtonProps<AsProps = any> {
   as?: 'button' | 'a' | 'span' | React.ComponentType<AsProps>;
   id?: string;

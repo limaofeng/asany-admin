@@ -38,6 +38,7 @@ function CalendarPicker(props: CalendarPickerProps) {
               marginRight: 8,
               border: `1px solid ${darkenColor(_color)}`,
               borderRadius: 6,
+              display: 'inline-block',
             }}
           />
         );

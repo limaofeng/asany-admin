@@ -86,22 +86,13 @@ function NewFolderModal(props: NewFolderModalProps) {
       closable={false}
       okButtonProps={{
         loading,
-        className: classnames('btn-sm', { disabled }),
-      }}
-      cancelButtonProps={{
-        className: 'btn-sm',
+        className: classnames({ disabled }),
       }}
       headerClassName="border-bottom-0"
       bodyClassName="py-2"
       footerClassName="border-top-0"
     >
-      <Input
-        ref={inputRef}
-        onPressEnter={handlePressEnter}
-        onChange={handleChange}
-        size="sm"
-        value={value}
-      />
+      <Input ref={inputRef} onPressEnter={handlePressEnter} onChange={handleChange} value={value} />
     </Modal>
   );
 }

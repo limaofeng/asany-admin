@@ -61,15 +61,10 @@ export default function ErrorList({
   }
 
   return (
-    <div
-      className={classnames(
-        'fv-plugins-message-container invalid-feedback',
-        baseClassName,
-        rootClassName,
-      )}
-    >
+    <div className={classnames('fv-plugins-message-container', baseClassName, rootClassName)}>
       {fullKeyList.map((itemProps) => {
         const { key, error, errorStatus } = itemProps;
+        console.log('itemProps', itemProps);
         return (
           <div
             key={key}

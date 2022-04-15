@@ -485,7 +485,8 @@ function MessageEditor(props: MessageEditorProps) {
                 <Button
                   htmlType="button"
                   loading={sending}
-                  className="fs-bold px-10"
+                  size="lg"
+                  className="rounded-2 fs-bold px-10"
                   variant="primary"
                   icon={<Icon name="Duotune/gen016" className="svg-icon-1 ms-n4 me-4" />}
                   disabled={saving || disabled}
@@ -507,7 +508,6 @@ function MessageEditor(props: MessageEditorProps) {
               <Tooltip title="切换编辑器" placement="top">
                 <Button
                   as="span"
-                  size="sm"
                   variant="clean"
                   activeColor="light-primary"
                   className="btn-clean"

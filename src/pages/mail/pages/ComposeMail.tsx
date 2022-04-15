@@ -118,7 +118,7 @@ function ComposeMail(props: ComposeMailProps) {
   const { message, isChanged } = state.current;
 
   return (
-    <ContentWrapper className="apps-email-compose" footer={false}>
+    <ContentWrapper className="apps-email-compose" header={false} footer={false}>
       <NavigationPrompt disableNative when={!!message?.id && isChanged}>
         {({ onConfirm, onCancel }) => (
           <Modal

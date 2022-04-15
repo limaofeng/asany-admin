@@ -1,0 +1,41 @@
+.btn {
+  height: 32px;
+  font-size: 14px;
+  line-height: 1.7;
+  border-radius: 4px;
+
+  &:not(.btn-outline):not(.btn-dashed):not(.border-hover):not(.border-active):not(.btn-flush):not(.btn-icon) {
+    padding: 4px 15px;
+
+    &.btn-sm {
+      padding: 0 7px;
+    }
+
+    &.btn-lg {
+      padding: 6.4px 15px;
+    }
+  }
+
+  &.btn-lg {
+    height: 40px;
+    font-size: 16px;
+    border-radius: 2px;
+  }
+
+  &.btn-sm {
+    height: 24px;
+    font-size: 14px;
+    border-radius: 2px;
+  }
+}
+
+.btn-group-sm > .btn.btn-icon,
+.btn.btn-icon {
+  width: 34px;
+  height: 34px;
+
+  &.btn-sm {
+    width: 24px;
+    height: 24px;
+  }
+}

@@ -4,6 +4,7 @@ import React from 'react';
 import { useDropzone } from 'react-dropzone';
 import SparkMD5 from 'spark-md5';
 import { isEqual } from 'lodash';
+import classnames from 'classnames';
 
 import { uuid } from '../../utils';
 import { fileSize } from '../../utils/format';
@@ -209,7 +210,12 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
   }, [auto, handleUploadAll]);
 
   return (
-    <div {...rootProps} className="dropzone dropzone-queue px-8 py-4">
+    <div
+      {...rootProps}
+      className={classnames('dropzone dropzone-queue px-8', {
+        'py-4': attachments.length != 0,
+      })}
+    >
       <input {...getInputProps()} />
       <div className="dropzone-items">
         {attachments.map((item) => (

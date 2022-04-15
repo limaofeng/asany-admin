@@ -592,6 +592,7 @@ function UpdateCalendarModal(props: UpdateCalendarModalProps) {
                         height: 14,
                         marginRight: 8,
                         border: `1px solid ${darkenColor(_color)}`,
+                        display: 'inline-block',
                       }}
                     />
                   );

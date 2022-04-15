@@ -244,10 +244,9 @@ function Aside(props: AsideProps) {
       {!hideAside && collapsible && (
         <Button
           style={{ marginBottom: '1.35rem', zIndex: 10 }}
-          size="sm"
           onClick={handleToggle}
           className={classnames(
-            'btn-icon bg-body btn-color-gray-700 btn-active-primary position-absolute translate-middle start-100 end-0 bottom-0 shadow-sm d-none d-lg-flex',
+            'btn-icon bg-body btn-color-gray-700 rounded-2 btn-active-primary position-absolute translate-middle start-100 end-0 bottom-0 shadow-sm d-none d-lg-flex',
             { active: minimize },
           )}
         >

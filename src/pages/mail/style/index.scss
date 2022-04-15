@@ -6,16 +6,19 @@
   text-overflow: ellipsis;
 }
 
-.email-compose {
+.btn.btn-primary.email-compose {
+  height: auto !important;
   margin-top: 2rem;
   margin-right: 2.25rem;
   margin-bottom: 2rem;
   margin-left: 2.25rem;
-  padding-right: 0 !important;
-  padding-left: 0 !important;
+  padding: calc(0.75rem + 1px) 0 !important;
+  font-size: 1.1rem !important;
+  line-height: 1.5 !important;
   letter-spacing: 32px;
   text-align: center;
   text-indent: 32px;
+  border-radius: 0.475rem !important;
 }
 
 .email-compose-editor {
@@ -624,6 +627,11 @@
     .nav-link {
       margin-right: 0;
       margin-left: 0;
+    }
+    .nav-item .btn {
+      height: auto;
+      padding: calc(0.75rem + 1px) calc(1.5rem + 1px) !important;
+      border-radius: 0.475rem;
     }
   }
   .modal-content {

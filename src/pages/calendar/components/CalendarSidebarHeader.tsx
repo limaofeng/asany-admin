@@ -92,7 +92,6 @@ function CalendarSidebarHeader() {
           ref={quicklyEnter as any}
           value={value}
           onChange={handleChange}
-          size="sm"
           solid
           placeholder="新建日程"
           onKeyUp={handleKeyWithEscape as any}

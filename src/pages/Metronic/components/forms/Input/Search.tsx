@@ -13,17 +13,17 @@ type SearchProps = InputProps & {
 const sizes = {
   sm: {
     boxClassName: 'my-1',
-    iconClassName: 'svg-icon-3 ms-3',
+    iconClassName: 'svg-icon-3 ms-2',
     inputClassName: 'ps-9',
   },
   lg: {
-    boxClassName: '',
-    iconClassName: '',
-    inputClassName: '',
+    boxClassName: 'my-1',
+    iconClassName: 'svg-icon-1 ms-4',
+    inputClassName: 'ps-12',
   },
   middle: {
     boxClassName: 'my-1',
-    iconClassName: 'svg-icon-1 ms-6',
+    iconClassName: 'svg-icon-1 ms-2',
     inputClassName: 'ps-15',
   },
 };

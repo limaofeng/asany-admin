@@ -49,7 +49,11 @@ const FormItemInput: React.FC<FormItemInputProps & FormItemInputMiscProps> = (pr
   // Pass to sub FormItem should not with col info
   const subFormContext = { ...formContext };
 
-  const inputDom = <>{children}</>;
+  const inputDom = (
+    <div className={`${baseClassName}-control-input`}>
+      <div className={`${baseClassName}-control-input-content`}>{children}</div>
+    </div>
+  );
 
   const errorListDom = (
     <FormItemPrefixContext.Provider value={{ prefixCls, status }}>
@@ -68,7 +72,7 @@ const FormItemInput: React.FC<FormItemInputProps & FormItemInputMiscProps> = (pr
   const extraDom = extra ? <div className={`${baseClassName}-extra`}>{extra}</div> : null;
 
   const dom =
-    formItemRender && formItemRender.mark === 'pro_table_render' && formItemRender.render ? (
+    formItemRender && formItemRender.render ? (
       formItemRender.render(props, { input: inputDom, errorList: errorListDom, extra: extraDom })
     ) : (
       <div className="fv-control-wrapper">

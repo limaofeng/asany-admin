@@ -87,7 +87,7 @@ function EditStatusModal(props: EditStatusModalProps) {
                 />
               }
             >
-              <Button variant="light" size="sm" icon={icon} />
+              <Button variant="light" icon={icon} />
             </Popover>
           </span>
           <Input type="text" placeholder="在忙什么" className="form-control" />
@@ -113,8 +113,8 @@ function EditStatusModal(props: EditStatusModalProps) {
         />
       </div>
       <div className="user-status-actions p-7 border-top">
-        <Button size="sm">设置状态</Button>
-        <Button size="sm" variant="light">
+        <Button className="rounded-2">设置状态</Button>
+        <Button className="rounded-2" variant="light">
           清除状态
         </Button>
       </div>

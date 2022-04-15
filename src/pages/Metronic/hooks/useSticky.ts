@@ -201,7 +201,7 @@ function useSticky(options: StickyOptions) {
     const diff = document.documentElement.scrollHeight - window.innerHeight - KTUtil.getScrollTop();
 
     if (!element.current) {
-      throw new Error('element is null');
+      return;
     }
 
     const _element = element.current;

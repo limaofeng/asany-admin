@@ -57,10 +57,7 @@ function ModalHeader(props: ModalHeaderProps) {
     >
       {children}
       {closable && (
-        <div
-          onClick={onCancel}
-          className="btn btn-sm btn-icon btn-active-color-primary align-self-start"
-        >
+        <div onClick={onCancel} className="btn btn-icon btn-active-color-primary align-self-start">
           <Icon name="Duotune/arr061" className="svg-icon-1" />
         </div>
       )}
@@ -92,16 +89,10 @@ function ModalFooter(props: ModalFooterProps) {
   } = props;
   return (
     <BsModal.Footer className={className}>
-      <Button variant="light" size="sm" {...cancelButtonProps} onClick={onCancel}>
+      <Button variant="light" {...cancelButtonProps} onClick={onCancel}>
         {cancelText}
       </Button>
-      <Button
-        loading={confirmLoading}
-        variant="primary"
-        size="sm"
-        {...okButtonProps}
-        onClick={onOk}
-      >
+      <Button loading={confirmLoading} variant="primary" {...okButtonProps} onClick={onOk}>
         {okText}
       </Button>
     </BsModal.Footer>
@@ -244,12 +235,12 @@ Modal.confirm = async (options: ModalOptions) => {
     closeButtonHtml: `<span class="svg-icon svg-icon-2">${closeIcon?.content}</span>`,
     customClass: {
       container: classnames('modal-confirm', { 'has-icon': !!icon }),
-      closeButton: 'btn btn-icon btn-sm btn-active-light-primary ms-2',
+      closeButton: 'btn btn-icon btn-active-light-primary ms-2',
       title: 'text-left pe-0',
       htmlContainer: classnames(' pe-0 ms-0', { 'text-left': !icon }),
       actions: classnames('justify-content-end ', { 'w-100': !icon }),
-      confirmButton: classnames('btn btn-sm btn-primary', okClassName),
-      cancelButton: classnames('btn btn-sm btn-secondary', cancelClassName),
+      confirmButton: classnames('btn btn-primary', okClassName),
+      cancelButton: classnames('btn btn-secondary', cancelClassName),
     },
   });
 };

@@ -469,7 +469,6 @@ function ListFiles(props: ListFilesProps) {
               color="success"
               variant={false}
               className="trash-restore"
-              size="sm"
               onClick={handleStar}
               icon={<Icon name="Duotune/arr029" className="svg-icon-4 svg-icon-success" />}
             >
@@ -487,7 +486,6 @@ function ListFiles(props: ListFilesProps) {
               color="success"
               variant={false}
               className="trash-restore"
-              size="sm"
               onClick={handleRestore}
               icon={<Icon name="Duotune/arr029" className="svg-icon-4 svg-icon-success" />}
             >
@@ -505,7 +503,12 @@ function ListFiles(props: ListFilesProps) {
       {toolbar == 'default' && (
         <Card.Header className="pt-8 flex-row-reverse">
           <Card.Title>
-            <Input.Search solid className="w-250px" placeholder="搜索 文件 & 文件夹" />
+            <Input.Search
+              size="lg"
+              solid
+              className="rounded-2 w-300px"
+              placeholder="搜索 文件 & 文件夹"
+            />
           </Card.Title>
           <Card.Toolbar>
             <div
@@ -517,9 +520,8 @@ function ListFiles(props: ListFilesProps) {
                 <>
                   {toolbar == 'default' && (
                     <Button
-                      size="sm"
                       variant="primary"
-                      className="me-3"
+                      className="rounded-2 me-3"
                       icon={<Icon className="svg-icon-2" name="Duotune/fil018" />}
                       onClick={handleUpload}
                     >
@@ -530,7 +532,7 @@ function ListFiles(props: ListFilesProps) {
                     <Button
                       variantStyle="light"
                       variant="primary"
-                      size="sm"
+                      className="rounded-2"
                       icon={<Icon className="svg-icon-2" name="Duotune/fil013" />}
                       onClick={handleOpenNewFolderModal}
                     >
@@ -541,9 +543,9 @@ function ListFiles(props: ListFilesProps) {
               )}
               {['row', 'multi-row'].includes(row_selection_state) && (
                 <Button
-                  size="sm"
                   variantStyle="light"
                   variant="primary"
+                  className="rounded-2"
                   icon={<Icon className="svg-icon-2" name="Duotune/arr095" />}
                 >
                   分享
@@ -553,6 +555,7 @@ function ListFiles(props: ListFilesProps) {
                 <Button
                   variantStyle="light"
                   variant="primary"
+                  className="rounded-2"
                   icon={
                     <Icon
                       className="svg-icon-2"
@@ -560,7 +563,6 @@ function ListFiles(props: ListFilesProps) {
                       name="Duotune/arr076"
                     />
                   }
-                  size="sm"
                   onClick={handleDownload}
                 >
                   下载
@@ -568,9 +570,9 @@ function ListFiles(props: ListFilesProps) {
               )}
               {['row', 'multi-row'].includes(row_selection_state) && (
                 <Button
-                  size="sm"
                   variantStyle="light"
                   variant="primary"
+                  className="rounded-2"
                   icon={<Icon className="svg-icon-2" name="Duotune/gen027" />}
                   onClick={handleDelete}
                 >
@@ -582,7 +584,7 @@ function ListFiles(props: ListFilesProps) {
                   as="button"
                   variantStyle="light"
                   variant="primary"
-                  size="sm"
+                  className="rounded-2"
                   icon={<Icon className="svg-icon-2" name="Duotune/gen055" />}
                   onClick={handleRename}
                 >
@@ -591,9 +593,9 @@ function ListFiles(props: ListFilesProps) {
               )}
               {['row', 'multi-row'].includes(row_selection_state) && (
                 <Button
-                  size="sm"
                   variantStyle="light"
                   variant="primary"
+                  className="rounded-2"
                   icon={<Icon className="svg-icon-2" name="Duotune/arr033" />}
                 >
                   移动
@@ -601,9 +603,9 @@ function ListFiles(props: ListFilesProps) {
               )}
               {['row', 'multi-row'].includes(row_selection_state) && (
                 <Button
-                  size="sm"
                   variantStyle="light"
                   variant="primary"
+                  className="rounded-2"
                   icon={<Icon className="svg-icon-2" name="Duotune/abs024" />}
                   onClick={handleStar}
                 >
@@ -629,7 +631,6 @@ function ListFiles(props: ListFilesProps) {
               action={
                 <Button
                   onClick={handleClearTrash}
-                  size="sm"
                   variantStyle="light"
                   variant="primary"
                   className="me-3 ls-1"
