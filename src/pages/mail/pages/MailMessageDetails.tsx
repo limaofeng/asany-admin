@@ -59,7 +59,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
         <>
           <Tooltip placement="bottom" title="返回">
             <Link
-              className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3"
+              className="btn btn-icon btn-clear btn-active-light-primary me-3"
               to={`/mail/${message.mailboxName.toLowerCase()}`}
             >
               <Icon name="Duotune/arr063" className="svg-icon-1 m-0" />
@@ -72,7 +72,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
               <Tooltip placement="bottom" title="收件箱">
                 <a
                   onClick={buildClick('inbox')}
-                  className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+                  className="btn btn-icon btn-light btn-active-light-primary me-2"
                 >
                   <Icon name={DEFAULT_MAILBOXES.INBOX.icon} className="svg-icon-2 m-0" />
                 </a>
@@ -85,7 +85,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
               <Tooltip placement="bottom" title="已发送">
                 <a
                   onClick={buildClick('sent')}
-                  className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+                  className="btn btn-icon btn-light btn-active-light-primary me-2"
                 >
                   <Icon name={DEFAULT_MAILBOXES.Sent.icon} className="svg-icon-2 m-0" />
                 </a>
@@ -99,7 +99,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
             <Tooltip placement="bottom" title="存档">
               <a
                 onClick={buildClick('archive')}
-                className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+                className="btn btn-icon btn-light btn-active-light-primary me-2"
               >
                 <Icon name={DEFAULT_MAILBOXES.Archive.icon} className="svg-icon-2 m-0" />
               </a>
@@ -111,7 +111,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
             <Tooltip placement="bottom" title="垃圾邮件">
               <a
                 onClick={buildClick('spam')}
-                className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+                className="btn btn-icon btn-light btn-active-light-primary me-2"
               >
                 <Icon name={DEFAULT_MAILBOXES.Spam.icon} className="svg-icon-2 m-0" />
               </a>
@@ -120,7 +120,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
           <Tooltip placement="bottom" title="删除邮件">
             <a
               onClick={buildClick('deleted')}
-              className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+              className="btn btn-icon btn-light btn-active-light-primary me-2"
             >
               <Icon name="Duotune/gen027" className="svg-icon-2 m-0" />
             </a>
@@ -128,7 +128,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
           <Tooltip placement="bottom" title={message.seen ? '标记为未读' : '标记为已读'}>
             <a
               onClick={buildClick(message.seen ? 'unread' : 'read')}
-              className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
+              className="btn btn-icon btn-light btn-active-light-primary me-2"
             >
               <Icon
                 name={message.seen ? 'Duotune/gen028' : 'Duotune/gen054'}
@@ -137,7 +137,7 @@ function MailMessageActions(props: MailMessageActionsProps) {
             </a>
           </Tooltip>
           {/* <Tooltip placement="bottom" title="移动到">
-        <a className="btn btn-sm btn-icon btn-light btn-active-light-primary">
+        <a className="btn btn-icon btn-light btn-active-light-primary">
           <Icon name="Duotune/arr076" className="svg-icon-2 m-0" />
         </a>
       </Tooltip> */}
@@ -175,7 +175,6 @@ function Pagination(props: PaginationProps) {
         <Button
           onClick={handlePrev}
           icon={<Icon name="Duotune/arr074" className="svg-icon-2 m-0" />}
-          size="sm"
           variant="light"
           activeColor="light-primary"
           className="me-3"
@@ -186,7 +185,6 @@ function Pagination(props: PaginationProps) {
         <Button
           onClick={handleNext}
           icon={<Icon name="Duotune/arr071" className="svg-icon-2 m-0" />}
-          size="sm"
           variant="light"
           activeColor="light-primary"
           className="me-2"
@@ -201,7 +199,7 @@ function Pagination(props: PaginationProps) {
 //   return (
 //     <div>
 //       <a
-//         className="btn btn-sm btn-icon btn-light btn-active-light-primary"
+//         className="btn btn-icon btn-light btn-active-light-primary"
 //         data-kt-menu-trigger="click"
 //         data-kt-menu-placement="bottom-end"
 //         data-bs-toggle="tooltip"

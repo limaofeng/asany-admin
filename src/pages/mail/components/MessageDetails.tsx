@@ -143,23 +143,23 @@ function MessageWrapper(props: MessageWrapperProps) {
           {/*--end::Date--*/}
           <div className="mail-message-actions d-flex">
             <Tooltip placement="bottom" title="收藏">
-              <a className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3">
+              <a className="btn btn-icon btn-clear btn-active-light-primary me-3">
                 <Icon name="Duotune/gen029" className="svg-icon-2 m-0" />
               </a>
             </Tooltip>
             <Tooltip placement="bottom" title="设置为重要">
-              <a className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3">
+              <a className="btn btn-icon btn-clear btn-active-light-primary me-3">
                 <Icon name="Duotune/gen056" className="svg-icon-2 m-0" />
               </a>
             </Tooltip>
             <Tooltip placement="bottom" title="回复">
-              <a className="btn btn-sm btn-icon btn-clear btn-active-light-primary me-3">
+              <a className="btn btn-icon btn-clear btn-active-light-primary me-3">
                 <Icon name="Duotune/gen055" className="svg-icon-2 m-0" />
               </a>
             </Tooltip>
             {/*--begin::Settings--*/}
             <a
-              className="btn btn-sm btn-icon btn-clear btn-active-light-primary"
+              className="btn btn-icon btn-clear btn-active-light-primary"
               data-bs-toggle="tooltip"
               data-bs-placement="top"
               title="Settings"
@@ -223,7 +223,7 @@ function MessageDetails(props: MessageDetailsProps) {
         </div>
         <div className="d-flex">
           <Tooltip placement="bottom" title="打印">
-            <a className="btn btn-sm btn-icon btn-light btn-active-light-primary me-2">
+            <a className="btn btn-icon btn-light btn-active-light-primary me-2">
               <i className="bi bi-printer-fill fs-2" />
             </a>
           </Tooltip>
