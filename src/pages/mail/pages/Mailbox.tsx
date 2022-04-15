@@ -504,7 +504,7 @@ function Mailbox(props: MailboxProps) {
                   name="Duotune/gen021"
                   className="svg-icon-2 svg-icon-lg-1 svg-icon-gray-500 position-absolute top-50 ms-5 translate-middle-y"
                 />
-                <Input solid className="px-15" size="sm" placeholder="搜索邮件…" />
+                <Input solid className="px-15" placeholder="搜索邮件…" />
               </form>
             </Card.Header>
             <Card.Body>

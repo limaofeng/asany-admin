@@ -381,7 +381,9 @@
         .box-actions {
           padding-right: 8px;
           .trash-clear {
-            padding: calc(0.1rem + 1px) calc(0.5rem + 1px);
+            display: flex;
+            align-items: center;
+            padding: 0 calc(0.5rem + 1px);
             font-size: 12px;
             border: 1px solid #f1416c;
             border-radius: 2px;
@@ -415,7 +417,7 @@
       }
 
       .mailbox-list {
-        height: calc(100vh - 2rem - 51px - 2rem) !important;
+        height: calc(100vh - 2rem - 48px - 2rem) !important;
         margin-top: 0;
         overflow-x: hidden;
 

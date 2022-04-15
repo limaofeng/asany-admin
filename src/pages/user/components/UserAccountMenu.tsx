@@ -89,19 +89,9 @@ function UserAccountMenu(props: UserAccountMenuProps) {
       >
         偏好设置
       </Menu.Item>
+      <Menu.Separator />
       <Menu.Item key="sign-out" className="px-5 my-0" linkClassName="px-5">
         退出登录
-      </Menu.Item>
-      <Menu.Separator />
-      <Menu.Item url="/settings/profile" className="px-5 my-0" contentClassName="px-5">
-        <label
-          className="form-check form-switch form-check-custom form-check-solid pulse pulse-success"
-          htmlFor="kt_user_menu_dark_mode_toggle"
-        >
-          <input className="form-check-input w-30px h-20px" type="checkbox" value="1" name="mode" />
-          <span className="pulse-ring ms-n1" />
-          <span className="form-check-label text-gray-600 fs-7">深色模式</span>
-        </label>
       </Menu.Item>
     </Menu>
   );
