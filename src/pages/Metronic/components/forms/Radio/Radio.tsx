@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 
+import './style.scss';
+
 export interface RadioProps {
   solid?: boolean;
   value: string;
@@ -35,22 +37,22 @@ function Radio(props: RadioProps) {
 
   return (
     <div
-      className={classnames('form-check form-check-custom', className, {
+      className={classnames('form-radio-wrapper form-check form-check-custom', className, {
         'form-check-solid': solid,
         [`form-check-${size}`]: !!size,
       })}
+      onClick={handleClick}
     >
-      <input
-        ref={inputRef}
-        className="form-check-input"
-        type="radio"
-        value={value}
-        onChange={handleClick}
-        checked={checked}
-      />
-      <label onClick={handleClick} className="form-check-label">
-        {children}
-      </label>
+      <span className="form-radio">
+        <input
+          ref={inputRef}
+          className="form-check-input"
+          type="radio"
+          value={value}
+          checked={checked}
+        />
+      </span>
+      <label className="form-check-label">{children}</label>
     </div>
   );
 }

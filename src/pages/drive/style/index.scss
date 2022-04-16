@@ -38,7 +38,7 @@
     }
   }
   .app-sidebar-body {
-    height: calc(100vh - 114px);
+    height: calc(100vh - 80px - 40px);
 
     .menu-state-bg .menu-item.show {
       .menu-link:not(.active):not(:hover) {
@@ -48,7 +48,7 @@
     }
   }
   .app-sidebar-footer {
-    height: 34px;
+    height: 40px;
   }
 }
 

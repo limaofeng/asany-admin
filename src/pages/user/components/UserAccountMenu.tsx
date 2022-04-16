@@ -50,7 +50,7 @@ function UserAccountMenu(props: UserAccountMenuProps) {
     <Menu
       mode="vertical"
       rounded
-      className="user-account-menu menu-gray-700 menu-state-bg menu-state-primary fw-bold py-4 w-275px"
+      className="user-account-menu menu-gray-700 menu-state-bg menu-state-primary fw-bold f-14px py-4 w-275px"
       onClick={handleClick}
     >
       <Menu.Item className="px-3" contentClassName="d-flex align-items-center px-3">
@@ -68,7 +68,7 @@ function UserAccountMenu(props: UserAccountMenuProps) {
       <Menu.Separator />
       <Menu.Item className="px-5 my-0 user-status-details">
         <div onClick={handleUserStatus} className="d-flex align-items-center">
-          <Button className="user-status-header" variant={false} size="sm" icon={icon} />
+          <Button className="user-status-header" variant={false} icon={icon} />
           <span className="user-status-message">用户状态</span>
         </div>
         <EditStatusModal visible={editStatusModalVisible} onClose={handleCloseEditStatusModal} />

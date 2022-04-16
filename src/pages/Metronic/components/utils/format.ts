@@ -71,3 +71,7 @@ export function fileSize(length: number) {
     return Math.ceil(size * 100) / 100 + ' ' + FILE_UNITS[i];
   }
 }
+
+export function showCount(value: string): number {
+  return value.replace(/[^\x00-\xff]/g, 'rr').length;
+}

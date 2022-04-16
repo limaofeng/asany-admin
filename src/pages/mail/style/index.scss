@@ -54,21 +54,19 @@
       flex: 1;
       flex-direction: column;
       .editor_mode_text {
+        display: flex;
         flex: 1;
-        padding: 12px 15px;
-        font-weight: 400;
-        font-size: 14px;
-        &:focus-visible {
-          border: none;
-          outline: none;
+        textarea {
+          flex: 1;
+          padding: 12px 15px;
+          font-weight: 400;
+          font-size: 14px;
+          resize: none;
+          &:focus-visible {
+            border: none;
+            outline: none;
+          }
         }
-        // &[contenteditable][placeholder]:empty:before {
-        //   position: absolute;
-        //   color: #a1a5b7 !important;
-        //   font-size: 1.1rem !important;
-        //   background-color: transparent;
-        //   content: attr(placeholder);
-        // }
       }
       .ql-editor.ql-blank::before {
         color: #a1a5b7 !important;
@@ -301,7 +299,7 @@
     display: flex;
     flex-direction: column;
     .email-sidebar-body {
-      height: calc(100vh - 4rem - 43px - 34px);
+      height: calc(100vh - 4rem - 43px - 40px);
       padding-right: 2.25rem;
       padding-left: 2.25rem;
       .badge {
@@ -312,7 +310,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 34px;
+      height: 40px;
       border-top: #f7f7f7 1px solid;
 
       .mail-settings {

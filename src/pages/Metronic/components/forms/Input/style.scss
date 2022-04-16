@@ -1,0 +1,13 @@
+.input-textarea-show-count {
+  position: relative;
+  .show-count {
+    position: absolute;
+    color: #00000073;
+    white-space: nowrap;
+    pointer-events: none;
+    &.beyond-limit {
+      --bs-bg-opacity: 1;
+      color: rgba(var(--bs-danger-rgb), var(--bs-bg-opacity));
+    }
+  }
+}

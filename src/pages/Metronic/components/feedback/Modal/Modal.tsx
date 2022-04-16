@@ -51,7 +51,7 @@ function ModalHeader(props: ModalHeaderProps) {
   const { closable, onCancel, children, className } = props;
   return (
     <div
-      className={classnames('modal-header align-items-start', className, {
+      className={classnames('modal-header', className, {
         'pb-0 border-0 justify-content-end ': !React.Children.count(children),
       })}
     >
@@ -102,7 +102,6 @@ function ModalFooter(props: ModalFooterProps) {
 function Modal(props: ModalProps) {
   const {
     children,
-    scroll: pscroll = { y: true },
     centered,
     visible: show,
     dialogClassName,
@@ -123,8 +122,6 @@ function Modal(props: ModalProps) {
     ...footerProps
   } = props;
 
-  const scroll = typeof pscroll == 'boolean' ? (pscroll ? { y: true } : null) : pscroll;
-
   return (
     <BsModal
       backdrop={mask && (maskClosable ? mask : 'static')}
@@ -138,7 +135,7 @@ function Modal(props: ModalProps) {
       {header &&
         React.isValidElement(header) &&
         React.cloneElement(header as React.ReactElement, { closable, onCancel })}
-      <BsModal.Body className={classnames({ 'scroll-y': scroll?.y }, bodyClassName)}>
+      <BsModal.Body className={classnames(bodyClassName)}>
         {React.Children.count(children) == 1 && React.isValidElement(children)
           ? React.cloneElement(children as any, { visible: `${show}` })
           : children}

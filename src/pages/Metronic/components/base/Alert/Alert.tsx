@@ -22,7 +22,7 @@ const icons: Record<AlertType, React.ReactElement> = {
   success: <Icon name="Duotune/gen048" className="svg-icon-2hx" />,
   info: <Icon name="Duotune/gen048" className="svg-icon-2hx" />,
   warning: <Icon name="Duotune/gen048" className="svg-icon-2hx" />,
-  danger: <Icon name="Duotune/gen048" className="svg-icon-2hx" />,
+  danger: <Icon name="Duotune/gen048" className="svg-icon-2hx svg-icon-danger" />,
 };
 
 function getDefaultIcon(type: AlertType) {

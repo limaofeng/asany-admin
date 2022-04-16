@@ -464,8 +464,10 @@ function Sidebar() {
         <div className="calendar-day-list">
           <div className="event-list-header">
             <h6>
-              {onDay?.isToDay ? '今天' : onDay?.date.format('dddd')}
-              <span className="day-subtitle text-muted">{onDay?.date.format('YYYY-MM-DD')}</span>
+              {onDay?.isToDay ? '今天' : onDay?.date.format('dddd') || '今天'}
+              <span className="day-subtitle text-muted">
+                {onDay?.date.format('YYYY-MM-DD') || moment().format('YYYY-MM-DD')}
+              </span>
             </h6>
             {!onDay?.events.length && onDay?.isSelected && (
               <div className="onday-no-events text-muted">没有事件</div>

@@ -1,5 +1,5 @@
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card, DatePicker, Form, Input } from '@/pages/Metronic/components';
+import { Button, Card, DatePicker, Form, Input, Radio } from '@/pages/Metronic/components';
 
 function Profile() {
   return (
@@ -22,11 +22,25 @@ function Profile() {
               </Form.Item>
               <Form.Item
                 className="my-5"
+                name="email"
+                label="电子邮件"
+                help="此电子邮件将显示在您的公开个人资料中。"
+              >
+                <Input solid className="w-250px" />
+              </Form.Item>
+              <Form.Item
+                className="my-5"
                 name="sex"
                 label="性别"
                 help="您的性别信息不会在任何公开位置显示，但会作为默认头像规则中的一个因素"
               >
-                <Input solid />
+                <Radio.Group
+                  solid
+                  options={[
+                    { label: '男', value: 'male' },
+                    { label: '女', value: 'female' },
+                  ]}
+                />
               </Form.Item>
               <Form.Item
                 className="my-5"
@@ -34,10 +48,10 @@ function Profile() {
                 label="生日"
                 help="生日信息不会在任何公开位置显示，但会作为默认头像规则中的一个因素"
               >
-                <DatePicker solid />
+                <DatePicker solid className="w-150px" />
               </Form.Item>
               <Form.Item className="my-5" name="email" label="职业">
-                <Input solid />
+                <Input solid className="w-400px" />
               </Form.Item>
               <Form.Item
                 className="my-5"
@@ -45,18 +59,10 @@ function Profile() {
                 label="组织"
                 help="您可以使用 “@” 链接到您以加入的组织。"
               >
-                <Input solid />
+                <Input solid className="w-400px" />
               </Form.Item>
               <Form.Item className="my-5" name="url" label="所在地区">
-                <Input solid />
-              </Form.Item>
-              <Form.Item
-                className="my-5"
-                name="email"
-                label="电子邮件"
-                help="此电子邮件将显示在您的公开个人资料中。"
-              >
-                <Input solid />
+                <Input solid className="w-400px" />
               </Form.Item>
               <Form.Item
                 className="my-5"
@@ -64,11 +70,17 @@ function Profile() {
                 label="自我介绍"
                 help="请用少于250字符描述您自己"
               >
-                <Input.TextArea solid className="w-600px" />
+                <Input.TextArea
+                  solid
+                  autoSize={{ minRows: 4, maxRows: 8 }}
+                  showCount
+                  maxLength={250}
+                  className="w-600px"
+                />
               </Form.Item>
             </div>
             <div className="col-12 col-md-4 d-flex justify-content-center">
-              <div>
+              <div className="row">
                 {/* <label className="col-lg-4 col-form-label fw-bold fs-6">Avatar</label> */}
                 <div className="col-lg-8">
                   {/*--begin::Image input--*/}

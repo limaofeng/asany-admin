@@ -30,14 +30,13 @@ function RadioGroup(props: RadioGroupProps) {
   }, [defaultValue]);
 
   return (
-    <div className="py-4 d-flex">
+    <div className="form-radio-group d-flex">
       {options.map((item) => (
         <Radio
           onClick={handleClick}
           size={size}
           solid={solid}
           checked={value === item.value}
-          className="me-10"
           key={item.value}
           value={item.value}
         >

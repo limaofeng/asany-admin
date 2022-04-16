@@ -5,6 +5,8 @@ import React, { useCallback, useState } from 'react';
 
 import classnames from 'classnames';
 
+import './style.scss';
+
 export interface InputProps extends DOMAttributes<HTMLInputElement> {
   size?: 'xs' | 'sm' | 'lg';
   placeholder?: string;

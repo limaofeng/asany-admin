@@ -17,6 +17,7 @@ interface DatePickerProps {
   value?: string | Moment;
   minDate?: string | Moment;
   maxDate?: string | Moment;
+  className?: string;
   autoComplete?: boolean;
   bordered?: boolean;
   autoApply?: boolean;

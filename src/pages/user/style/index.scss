@@ -95,3 +95,27 @@
     }
   }
 }
+.change-username-modal {
+  &.waiting-to-continue .modal-body {
+    padding: 0;
+  }
+  .inner-body {
+    padding: 1.75rem;
+    ul {
+      list-style-type: disc;
+    }
+  }
+  .btn.confirm-to-continue,
+  .btn.change-name-save {
+    width: 100%;
+  }
+  .alert {
+    margin-bottom: 0;
+    border-right-width: 0;
+    border-left-width: 0;
+    border-radius: 0;
+  }
+  .alert-danger {
+    color: var(--bs-gray-900);
+  }
+}

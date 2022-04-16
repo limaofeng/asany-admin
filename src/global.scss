@@ -1,3 +1,7 @@
+:root {
+  --bs-body-font-size: 14px;
+}
+
 html,
 body,
 #root {
@@ -20,8 +24,9 @@ canvas {
 }
 
 body {
+  color: #404040;
   font-weight: 400;
-  font-size: 13px !important;
+  font-size: var(--bs-body-font-size) !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
     'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -34,6 +39,14 @@ body {
 ul,
 ol {
   list-style: none;
+}
+
+.text-small {
+  font-size: 12px;
+}
+
+.f-14px {
+  font-size: 14px;
 }
 
 // Compatible with IE11

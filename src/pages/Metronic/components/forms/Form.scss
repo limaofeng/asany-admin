@@ -1,3 +1,31 @@
+.fv-row.form-item-has-error {
+  .form-control {
+    border-color: #f1416c;
+  }
+}
+.asany-form-item.fv-row {
+  &.form-item-with-help {
+    .form-item-explain.form-explain-connected {
+      min-height: 17px;
+      margin: 4px 0 2px;
+      color: #57606a;
+      font-size: 12px;
+    }
+  }
+}
+.form-control {
+  min-height: 32px;
+  padding: 4px 11px;
+  border-radius: 6px;
+  &.form-control-sm {
+    min-height: 24px;
+    padding: 0 7px;
+  }
+  &.form-control-lg {
+    padding: 6.5px 11px;
+    font-size: 16px;
+  }
+}
 .form-control {
   &-borderless {
     background-color: transparent;
