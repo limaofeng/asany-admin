@@ -292,7 +292,7 @@ function FileManager(props: FileManagerProps) {
             </button>
             {/*--begin::Menu--*/}
             <div
-              className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-300px"
+              className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-300px"
               data-kt-menu="true"
             >
               {/*--begin::Card--*/}
@@ -382,7 +382,7 @@ function FileManager(props: FileManagerProps) {
             </button>
             {/*--begin::Menu--*/}
             <div
-              className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-150px py-4"
+              className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-150px py-4"
               data-kt-menu="true"
             >
               {/*--begin::Menu item--*/}

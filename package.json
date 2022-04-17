@@ -59,7 +59,7 @@
     "@ant-design/icons": "^4.7.0",
     "@asany/ckeditor5": "^31.1.0-3",
     "@asany/editor": "^0.2.23",
-    "@asany/icons": "^0.2.10",
+    "@asany/icons": "^0.2.11",
     "@asany/shortcuts": "^0.1.5",
     "@asany/sortable": "^0.1.30",
     "@asany/tags-input": "^0.1.2",
@@ -119,7 +119,7 @@
   },
   "devDependencies": {
     "@asany/umi-plugin-apollo": "^0.1.7",
-    "@asany/umi-plugin-app": "^0.1.35",
+    "@asany/umi-plugin-app": "^0.1.38",
     "@commitlint/cli": "^15.0.0",
     "@commitlint/config-conventional": "^15.0.0",
     "@graphql-codegen/cli": "^2.3.1",

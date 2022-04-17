@@ -4,7 +4,7 @@ import Icon from '@asany/icons';
 import { Emoji, Picker } from 'emoji-mart';
 import 'emoji-mart/css/emoji-mart.css';
 
-import { handleBackgroundImage } from './utils';
+import { handleBackgroundImage } from '../utils';
 
 import { Button, Checkbox, Input, Modal, Popover, Select } from '@/pages/Metronic/components';
 

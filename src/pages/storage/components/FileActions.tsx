@@ -58,7 +58,7 @@ function ShareLink(props: ShareLinkProps) {
   return (
     <Dropdown
       overlay={
-        <div className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-300px">
+        <div className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold w-300px">
           <ShareGen />
         </div>
       }
@@ -110,7 +110,7 @@ function FileActions(props: FileActionsProps) {
           overlay={
             <Menu
               onClick={handleClick}
-              className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"
+              className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold w-125px py-4"
             >
               {!data.isDirectory && (
                 <Menu.Item key="download" className="px-3">

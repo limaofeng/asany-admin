@@ -48,7 +48,7 @@ const SelectMenuBody = React.forwardRef(function (props: SelectMenuBodyProps, re
       rounded
       ref={ref}
       className={classnames(
-        'menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 py-4 w-auto',
+        'menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold py-4 w-auto',
         className,
       )}
       onSelect={handleSelect}

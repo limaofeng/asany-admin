@@ -119,3 +119,93 @@
     color: var(--bs-gray-900);
   }
 }
+.delete-account-modal {
+  .modal-body {
+    padding: 0;
+  }
+  .inner-body {
+    padding: 1.75rem;
+  }
+  .alert {
+    margin-bottom: 0;
+    border-right-width: 0;
+    border-left-width: 0;
+    border-radius: 0;
+  }
+  .alert-danger {
+    color: var(--bs-gray-900);
+  }
+  .btn.confirm-delete-account {
+    width: 100%;
+  }
+}
+.page-settings-emails {
+  .new-email-form {
+    .form-control-input-content {
+      display: flex;
+      align-items: center;
+    }
+  }
+  .set-primary-email-form {
+    .form-label {
+      margin-bottom: 0;
+    }
+
+    p code {
+      color: inherit;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono,
+        monospace;
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+  .settings-emails-list {
+    li {
+      &:last-child {
+        border-color: transparent !important;
+      }
+      .email-title {
+        height: 24px;
+
+        .remove-email {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+        }
+      }
+      ul {
+        list-style: disc;
+        li {
+          line-height: 21px;
+
+          .btn {
+            height: auto;
+            padding: 0 !important;
+            line-height: inherit;
+          }
+        }
+      }
+    }
+  }
+  .settings-email-preferences {
+    .form-checkbox {
+      margin-top: 15px;
+      margin-bottom: 15px;
+
+      .form-check-label {
+        font-weight: 600;
+      }
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+    .note {
+      font-size: 12px;
+    }
+  }
+}

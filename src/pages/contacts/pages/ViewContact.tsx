@@ -54,7 +54,7 @@ function ViewContact(props: ViewContactProps) {
             overlay={
               <Menu
                 onClick={handleClick}
-                className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4"
+                className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold w-125px py-4"
               >
                 <Menu.Item key="edit" className="px-3">
                   编辑

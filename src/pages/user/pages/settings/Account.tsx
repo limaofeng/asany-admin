@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import Icon from '@asany/icons';
 import { Link } from 'umi';
 
-import ChangeUsernameModal from '../../components/ChangeUsernameModal';
+import { ChangeUsernameModal, DeleteAccountModal } from '../../components/modals';
 
 import { ContentWrapper } from '@/layouts/components';
 import { Button, Card } from '@/pages/Metronic/components';
@@ -12,6 +12,7 @@ function Account() {
   const organizations = [];
 
   const [changeUsernameModalVisible, setChangeUsernameModalVisible] = useState(false);
+  const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false);
 
   const handleChangeUsername = useCallback(() => {
     setChangeUsernameModalVisible(true);
@@ -19,6 +20,14 @@ function Account() {
 
   const handleCloseChangeUsernameModal = useCallback(() => {
     setChangeUsernameModalVisible(false);
+  }, []);
+
+  const handleDeleteAccount = useCallback(() => {
+    setDeleteAccountModalVisible(true);
+  }, []);
+
+  const handleCloseDeleteAccountModal = useCallback(() => {
+    setDeleteAccountModalVisible(false);
   }, []);
 
   return (
@@ -35,7 +44,7 @@ function Account() {
             onCancel={handleCloseChangeUsernameModal}
           />
           <p className="mt-5 mb-3 text-gray-700 text-small d-flex align-items-center">
-            <Icon className="text-gray-800 svg-icon-5 me-1" name="Bootstrap/question-circle" />
+            <Icon className="text-gray-800 svg-icon-4 me-1" name="Bootstrap/question-circle" />
             想要管理帐户安全设置？您可以在 <Link to="/settings/security">帐户安全</Link>
             选项卡中找到它们。
           </p>
@@ -52,11 +61,15 @@ function Account() {
               <p>在删除用户之前，必须先将自己从组织中移除、转移所有权或删除这些组织。</p>
             </div>
           ) : (
-            <p className="mb-3">帐户删除后，我们也无法将其恢复。请谨慎操作</p>
+            <p className="mb-3">帐户删除后，将无法恢复。请谨慎操作</p>
           )}
-          <Button variant="danger" disabled={!!organizations.length}>
-            删除您的账户
+          <Button variant="danger" onClick={handleDeleteAccount} disabled={!!organizations.length}>
+            删除账户
           </Button>
+          <DeleteAccountModal
+            visible={deleteAccountModalVisible}
+            onCancel={handleCloseDeleteAccountModal}
+          />
         </Card.Body>
       </Card>
     </ContentWrapper>

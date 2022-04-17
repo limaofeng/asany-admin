@@ -4,7 +4,7 @@ import { useCurrentuser } from 'umi';
 import { Emoji } from 'emoji-mart';
 import Icon from '@asany/icons';
 
-import EditStatusModal from './EditStatusModal';
+import EditStatusModal from './modals/EditStatusModal';
 import { handleBackgroundImage } from './utils';
 
 import { Button, Menu, Symbol } from '@/pages/Metronic/components';

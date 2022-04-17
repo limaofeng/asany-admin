@@ -120,10 +120,10 @@
     scenejs "^1.5.0"
     styled-components "^5.3.3"
 
-"@asany/icons@^0.2.10":
-  version "0.2.10"
-  resolved "https://registry.npmjs.org/@asany/icons/-/icons-0.2.10.tgz#8ecc5b6ed839dfca2a5f23da57f372e94565d5d2"
-  integrity sha512-cYnGtJcmUK9gDKiNpythD0F4ztCxP+y+PegRCGfmAgco+5FcOz9C/hXQK+qD9tU5wM+x8DsVMosGN3ZDEeAk3g==
+"@asany/icons@^0.2.11":
+  version "0.2.11"
+  resolved "https://registry.npmjs.org/@asany/icons/-/icons-0.2.11.tgz#783ae9535645f1a41a10cec06f462f936e6c534c"
+  integrity sha512-QimNEWRzheSsqYNnAXZ0eTY4Mzn7cD6eN48zPRupA9pn80oReLYJlN7nspx5hgX6dxeT+FgNI67B8WQZWdcPCg==
   dependencies:
     classnames "^2.3.1"
     dexie "^3.2.0"
@@ -184,10 +184,10 @@
     lodash "^4.17.21"
     subscriptions-transport-ws "^0.9.16"
 
-"@asany/umi-plugin-app@^0.1.35":
-  version "0.1.35"
-  resolved "https://registry.npmjs.org/@asany/umi-plugin-app/-/umi-plugin-app-0.1.35.tgz#23d2b4deeac9ca23ecaf9756081b809a39fd15e8"
-  integrity sha512-KAkpZORaLMOlR7fXJc3a8vXcpKE7xPqO1drQ0UEIVyWbZiexLHQEy12M4q4bcXynWnnoXT5J+XhCVOtxLyymCg==
+"@asany/umi-plugin-app@^0.1.38":
+  version "0.1.38"
+  resolved "https://registry.npmjs.org/@asany/umi-plugin-app/-/umi-plugin-app-0.1.38.tgz#dcb134c8b94b323199ce236fbd94b9ee910a9443"
+  integrity sha512-O2TTSTi5YYW/RX9dH5ZiEYWomPTJl0dKlq+SCb8fn07MZj+eiPIZVewUgUNqm6yUhU0aNLPLqjV0zyUtK7jHGQ==
   dependencies:
     classnames "^2.3.1"
     lodash "^4.17.21"

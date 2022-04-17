@@ -91,7 +91,7 @@ function ArticleChannel(props: ArticleChannelProps) {
           <div className="me-0">
             <Dropdown
               overlay={
-                <Menu className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4">
+                <Menu className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold w-125px py-4">
                   <Menu.Item key="delete" className="px-3 actions-delete">
                     删除
                   </Menu.Item>
