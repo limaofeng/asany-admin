@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
-import Holder from 'holderjs';
 import { Toast as BsToast } from 'react-bootstrap';
 import ReactDOM from 'react-dom';
 import classnames from 'classnames';
@@ -18,14 +17,6 @@ type ToastProps = {
   onClose: () => void;
   bsPrefix: string;
 };
-
-Holder.addTheme('dark', {
-  bg: '#fafafa',
-  fg: '#d9d9d9',
-  size: 12,
-  font: 'Monaco',
-  fontweight: 'normal',
-});
 
 function Toast(props: ToastProps) {
   const {

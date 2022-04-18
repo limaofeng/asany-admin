@@ -1,74 +1,97 @@
+import { useCallback, useState } from 'react';
+
+import { DeleteOrganizationModal, RenameOrganizationModal } from '../../components/modals';
+
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card, DatePicker, Form, Input, Radio } from '@/pages/Metronic/components';
+import { Button, Card, Form, Input } from '@/pages/Metronic/components';
+
+function DangerZone() {
+  const [renameOrganizationModalVisible, setRenameOrganizationModalVisible] = useState(false);
+  const [deleteOrganizationModalVisible, setDeleteOrganizationModalVisible] = useState(false);
+
+  const handleRenameOrganization = useCallback(() => {
+    setRenameOrganizationModalVisible(true);
+  }, []);
+
+  const handleCloseRenameOrganizationModal = useCallback(() => {
+    setRenameOrganizationModalVisible(false);
+  }, []);
+
+  const handleDeleteOrganization = useCallback(() => {
+    setDeleteOrganizationModalVisible(true);
+  }, []);
+
+  const handleDeleteOrganizationModal = useCallback(() => {
+    setDeleteOrganizationModalVisible(false);
+  }, []);
+
+  return (
+    <Card className="mb-5 mb-xl-10">
+      <Card.Header>
+        <Card.Title className="text-danger">危险区域</Card.Title>
+      </Card.Header>
+      <Card.Body>
+        <div className="w-800px danger-zone rounded border border-danger">
+          <div className="p-5 border-bottom border-secondary d-flex align-items-center">
+            <div className="flex-row-fluid">
+              <div className="fw-bolder">重命名组织名称</div>
+              <span className="text-small">重命名组织可能会产生意想不到的副作用</span>
+            </div>
+            <Button onClick={handleRenameOrganization} type="solid" variant="danger">
+              修改组织名称
+            </Button>
+            <RenameOrganizationModal
+              visible={renameOrganizationModalVisible}
+              onCancel={handleCloseRenameOrganizationModal}
+            />
+          </div>
+          <div className="p-5 border-bottom border-secondary d-flex align-items-center">
+            <div className="flex-row-fluid">
+              <div className="fw-bolder">删除组织</div>
+              <span className="text-small">帐户删除后，将无法恢复。请谨慎操作</span>
+            </div>
+            <Button onClick={handleDeleteOrganization} type="solid" variant="danger">
+              删除组织
+            </Button>
+            <DeleteOrganizationModal
+              visible={deleteOrganizationModalVisible}
+              onCancel={handleDeleteOrganizationModal}
+            />
+          </div>
+        </div>
+      </Card.Body>
+    </Card>
+  );
+}
 
 function Profile() {
   return (
-    <ContentWrapper header={{ title: '编辑个人资料' }} footer={false}>
-      {/*--begin::Basic info--*/}
+    <ContentWrapper
+      className="page-organization-settings-profile"
+      header={{ title: '通用设置' }}
+      footer={false}
+    >
       <Card className="mb-5 mb-xl-10">
         <Card.Header>
-          <Card.Title>个人资料</Card.Title>
+          <Card.Title>通用设置</Card.Title>
         </Card.Header>
         <Card.Body>
           <Form className="w-800px row d-flex flex-shrink-0 flex-column-reverse flex-md-row">
             <div className="col-12 col-md-8">
-              <Form.Item
-                className="mb-5"
-                name="name"
-                label="昵称"
-                help="你的昵称可能会出现在你评论过的文章或被其他公开的信息中。您也可以随时删除它。"
-              >
+              <Form.Item className="mb-5" name="displayName" label="显示名称">
+                <Input solid className="w-400px" />
+              </Form.Item>
+              <Form.Item className="my-5" name="email" label="邮箱">
+                <Input solid className="w-400px" />
+              </Form.Item>
+              <Form.Item className="my-5" name="url" label="网址">
                 <Input solid className="w-400px" />
               </Form.Item>
               <Form.Item
                 className="my-5"
-                name="email"
-                label="邮箱"
-                help="此邮箱将显示在您的个人资料中"
-              >
-                <Input solid className="w-250px" />
-              </Form.Item>
-              <Form.Item
-                className="my-5"
-                name="sex"
-                label="性别"
-                help="您的性别信息不会在任何公开位置显示，但会作为默认头像规则中的一个因素"
-              >
-                <Radio.Group
-                  solid
-                  options={[
-                    { label: '男', value: 'male' },
-                    { label: '女', value: 'female' },
-                  ]}
-                />
-              </Form.Item>
-              <Form.Item
-                className="my-5"
-                name="birthday"
-                label="生日"
-                help="生日信息不会在任何公开位置显示，但会作为默认头像规则中的一个因素"
-              >
-                <DatePicker solid className="w-150px" />
-              </Form.Item>
-              <Form.Item className="my-5" name="email" label="职业">
-                <Input solid className="w-400px" />
-              </Form.Item>
-              <Form.Item
-                className="my-5"
-                name="organization"
-                label="组织"
-                help="您可以使用 “@” 链接到您以加入的组织。"
-              >
-                <Input solid className="w-400px" />
-              </Form.Item>
-              <Form.Item className="my-5" name="url" label="所在地区">
-                <Input solid className="w-400px" />
-              </Form.Item>
-              <Form.Item
-                className="my-5"
-                name="bio"
-                label="自我介绍"
-                help="请用少于250字符描述您自己"
+                name="description"
+                label="描述"
+                help="请用少于250字符描述"
               >
                 <Input.TextArea
                   solid
@@ -138,9 +161,13 @@ function Profile() {
               </div>
             </div>
           </Form>
-          <Button>更新个人资料</Button>
         </Card.Body>
+        <Card.Footer>
+          <Button>更新个人资料</Button>
+        </Card.Footer>
       </Card>
+
+      <DangerZone />
     </ContentWrapper>
   );
 }

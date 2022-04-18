@@ -61,7 +61,7 @@ export interface ButtonProps<AsProps = any> {
   variant?: Variant | 'clean' | false;
   variantStyle?: VariantStyle;
   dashed?: boolean;
-  type?: 'dashed' | 'link';
+  type?: 'dashed' | 'link' | 'solid';
   disabled?: boolean;
   icon?: React.ReactNode;
   color?: ButtonColor;
@@ -126,7 +126,8 @@ function Button(
           active,
           disabled: disabled && as != 'button',
           'btn-link': type == 'link',
-          [`btn-${variant}`]: !variantStyle && variant,
+          [`btn-text-${variant}`]: type == 'link',
+          [`btn-${variant}`]: !variantStyle && variant && !type,
           [`btn-${variantStyle}-${variant}`]: variantStyle && variant,
           [`btn-color-${color}`]: !!color,
           [`btn-color-text-${textColor}`]: !!textColor,
@@ -134,8 +135,11 @@ function Button(
           [`btn-active-text-${activeTextColor}`]: !!activeTextColor,
           [`btn-active-icon-${activeIconColor}`]: !!activeIconColor,
           [`btn-bg-${variant}`]: variantStyle == 'background',
-          [`btn-outline btn-outline-dashed btn-outline-${variant} btn-active-light-${variant}`]:
-            type == 'dashed',
+          [`btn-outline-dashed`]: type == 'dashed',
+          [`btn-outline btn-outline-${variant} btn-active-light-${variant}`]: [
+            'solid',
+            'dashed',
+          ].includes(type!),
           'btn-flush': flushed,
           [`btn-${size}`]: !!size,
           'btn-icon': !!icon && isEmpty,

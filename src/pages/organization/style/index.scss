@@ -1,0 +1,14 @@
+.page-organization-settings-profile {
+  .danger-zone {
+    & > div {
+      .flex-row-fluid {
+        & > div {
+          line-height: 21px;
+        }
+      }
+      &:last-child {
+        border-color: transparent !important;
+      }
+    }
+  }
+}

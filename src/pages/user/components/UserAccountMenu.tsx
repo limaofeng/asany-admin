@@ -30,7 +30,7 @@ function UserAccountMenu(props: UserAccountMenuProps) {
 
   const handleClick = useCallback(
     (e) => {
-      if (['profile', 'user-guide', 'preferences'].includes(e.key)) {
+      if (['profile', 'organizations', 'user-guide', 'preferences'].includes(e.key)) {
         close();
       }
     },
@@ -76,6 +76,14 @@ function UserAccountMenu(props: UserAccountMenuProps) {
       <Menu.Separator />
       <Menu.Item key="profile" url="/settings/profile" className="px-5 my-0" linkClassName="px-5">
         个人中心
+      </Menu.Item>
+      <Menu.Item
+        key="organizations"
+        url="/settings/organizations"
+        className="px-5 my-0"
+        linkClassName="px-5"
+      >
+        我的组织
       </Menu.Item>
       <Menu.Separator />
       <Menu.Item key="user-guide" url="/documentation" className="px-5 my-0" linkClassName="px-5">

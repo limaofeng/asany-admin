@@ -272,7 +272,9 @@ function useSticky(options: StickyOptions) {
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
+    const attributeName = state.current!.attributeName;
     return () => {
+      document.body.removeAttribute(attributeName);
       window.removeEventListener('scroll', handleScroll);
     };
   }, [handleScroll]);

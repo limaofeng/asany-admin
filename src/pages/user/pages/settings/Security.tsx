@@ -1,3 +1,6 @@
+import Icon from '@asany/icons';
+import { Link } from 'umi';
+
 import { ContentWrapper } from '@/layouts/components';
 import { Button, Card, Form, Input } from '@/pages/Metronic/components';
 
@@ -12,31 +15,59 @@ function TwoFactorAuthentication() {
   );
 }
 
-<TwoFactorAuthentication />;
+console.log('TwoFactorAuthentication', TwoFactorAuthentication);
+
+type SessionItemProps = {
+  device: 'phone' | 'laptop' | 'tablet';
+};
+
+function SessionItem(props: SessionItemProps) {
+  const { device } = props;
+  return (
+    <li className="session-item p-5 border-bottom border-secondary d-flex flex-row">
+      <div className="flex-column-fluid d-flex flex-column">
+        <div className="d-flex flex-row">
+          <span className="session-state-indicator mt-3 rounded recent" />
+          <div className="device-icon-container">
+            <Icon className="svg-icon-2hx" name={`Bootstrap/${device}`} />
+          </div>
+          <div className="session-info">
+            <strong>
+              上海 <span>67.230.185.83</span>
+            </strong>
+            <div className="text-small text-gray-800">
+              您当前的会话 / 最后访问时间 2022年 3月 15日
+            </div>
+          </div>
+        </div>
+        <div className="seen-in text-gray-800">访问位置可能位于 中国, 美国</div>
+      </div>
+      <div>
+        <Button
+          as={Link}
+          to="/settings/sessions/833633957"
+          className="btn-session-details"
+          type="solid"
+        >
+          查看详情
+        </Button>
+      </div>
+    </li>
+  );
+}
 
 function Sessions() {
   return (
-    <Card className="mb-5 mb-xl-10">
+    <Card className="user-session-list mb-5 mb-xl-10">
       <Card.Header>
         <Card.Title>会话</Card.Title>
       </Card.Header>
       <Card.Body>
         <p className="mb-4">这是已登录您帐户的设备列表。您可以撤销您不认可的任何会话。</p>
-        <ul className="w-800px">
-          <li>
-            <div>
-              <div>
-                <span>状态</span>
-                <div>设备</div>
-                <div>
-                  <span>城市，ip</span>
-                  <div>您当前的会话 / 最后访问时间是</div>
-                </div>
-              </div>
-              <div>登录于</div>
-            </div>
-            <div>查看详情</div>
-          </li>
+        <ul className="w-800px rounded border border-secondary">
+          <SessionItem device="laptop" />
+          <SessionItem device="phone" />
+          <SessionItem device="tablet" />
         </ul>
       </Card.Body>
     </Card>
@@ -45,7 +76,11 @@ function Sessions() {
 
 function Security() {
   return (
-    <ContentWrapper header={{ title: '密码与安全设置' }} footer={false}>
+    <ContentWrapper
+      className="page-settings-security"
+      header={{ title: '密码与安全设置' }}
+      footer={false}
+    >
       <Card className="mb-5 mb-xl-10">
         <Card.Header>
           <Card.Title>更改密码</Card.Title>

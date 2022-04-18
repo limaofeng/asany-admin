@@ -19,9 +19,9 @@ type EmailListItemProps = {
 function EmailListItem(props: EmailListItemProps) {
   const { state } = props;
   return (
-    <li className="p-5 border-bottom">
+    <li className="p-5 border-bottom border-secondary">
       <div className="email-title d-flex flex-justify-between">
-        <div className="d-flex flex-column-fluid flex-items-center">
+        <div className="d-flex flex-column-fluid align-items-center">
           <h4 className="mb-0">limaofeng@msn.com</h4>
           <span className="text-muted mx-2">–</span>
           <span>
@@ -85,7 +85,7 @@ function EmailListItem(props: EmailListItemProps) {
 
 function EmailList() {
   return (
-    <div className="w-800px rounded border">
+    <div className="w-800px rounded border border-secondary">
       <ul className="settings-emails-list">
         <EmailListItem state="1" />
         <EmailListItem state="0" />

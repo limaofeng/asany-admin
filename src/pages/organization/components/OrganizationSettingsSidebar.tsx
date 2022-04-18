@@ -1,23 +1,31 @@
 import { useMemo } from 'react';
 
 import { getMatchMenu } from '@umijs/route-utils';
-import { useCurrentuser, useLocation } from 'umi';
+import { Link, useCurrentuser } from 'umi';
+import { generatePath, useLocation, useRouteMatch } from 'react-router-dom';
 
 import type { MenuData } from '@/.umi/app/typings';
 import { AsideWorkspace } from '@/layouts/Demo7';
 import { Menu, Symbol } from '@/pages/Metronic/components';
 
-type UserSettingsSidebarProps = {
+type OrganizationSettingsSidebarProps = {
   menu: MenuData;
 };
 
-function renderMenuItem(item: MenuData) {
+function renderMenuItem(item: MenuData, params: any) {
   if (item.type === 'SECTION') {
     return <Menu.Section key={item.id} title={item.name} />;
   }
   if (item.type === 'URL') {
     return (
-      <Menu.Item bullet={true} key={item.id} icon={item.icon} title={item.name} url={item.path} />
+      <Menu.Item
+        as={Link}
+        bullet={true}
+        key={item.id}
+        icon={item.icon}
+        title={item.name}
+        url={generatePath(item.path, params)}
+      />
     );
   }
   if (item.type === 'SEPARATOR') {
@@ -26,7 +34,7 @@ function renderMenuItem(item: MenuData) {
   if (item.type === 'MENU') {
     return (
       <Menu.SubMenu bullet={true} key={item.id} icon={item.icon} title={item.name}>
-        {(item.routes || []).map(renderMenuItem)}
+        {(item.routes || []).map((_item) => renderMenuItem(_item, params))}
       </Menu.SubMenu>
     );
   }
@@ -35,7 +43,7 @@ function renderMenuItem(item: MenuData) {
 
 const initMenus: MenuData[] = [];
 
-function UserSettingsSidebar(props: UserSettingsSidebarProps) {
+function OrganizationSettingsSidebar(props: OrganizationSettingsSidebarProps) {
   const { menu } = props;
 
   const menus = menu?.routes || initMenus;
@@ -46,6 +54,12 @@ function UserSettingsSidebar(props: UserSettingsSidebarProps) {
   const routeMatchedMenus = useMemo(() => {
     return getMatchMenu(location.pathname, menus, true);
   }, [menus, location.pathname]);
+
+  const match = useRouteMatch<{ id: string }>({
+    path: '/organizations/:id/settings',
+    strict: true,
+    sensitive: true,
+  });
 
   return (
     <AsideWorkspace>
@@ -58,7 +72,7 @@ function UserSettingsSidebar(props: UserSettingsSidebarProps) {
             {/* <span className="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span> */}
           </div>
           <a href="#" className="fw-bold text-muted text-hover-primary fs-7">
-            {user?.email || 'xx'}
+            企业账户
           </a>
         </div>
       </div>
@@ -66,10 +80,12 @@ function UserSettingsSidebar(props: UserSettingsSidebarProps) {
         className="menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 px-6 my-5 my-lg-0"
         selectedKeys={routeMatchedMenus.map((item) => item.key!)}
       >
-        {menus.filter((item) => !item.hideInMenu).map(renderMenuItem)}
+        {menus
+          .filter((item) => !item.hideInMenu)
+          .map((item) => renderMenuItem(item, match?.params || { id: 'id' }))}
       </Menu>
     </AsideWorkspace>
   );
 }
 
-export default UserSettingsSidebar;
+export default OrganizationSettingsSidebar;

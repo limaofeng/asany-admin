@@ -95,7 +95,8 @@
     }
   }
 }
-.change-username-modal {
+.change-username-modal,
+.rename-organization-modal {
   &.waiting-to-continue .modal-body {
     padding: 0;
   }
@@ -119,7 +120,7 @@
     color: var(--bs-gray-900);
   }
 }
-.delete-account-modal {
+.delete-account-modal,.delete-organization-modal {
   .modal-body {
     padding: 0;
   }
@@ -205,7 +206,66 @@
       }
     }
     .note {
+      margin-left: 26px;
       font-size: 12px;
     }
+  }
+}
+.page-settings-security,
+.page-settings-sessions-details {
+  --color-success-emphasis: #2da44e;
+  .session-item,
+  .user-session-details {
+    &.session-item:last-child {
+      border-color: transparent !important;
+    }
+    .session-state-indicator {
+      display: block;
+      width: 8px;
+      height: 8px;
+      margin-right: 8px;
+      background-color: var(--color-success-emphasis);
+      box-shadow: 0 0 10px rgba(108, 198, 68, 0.5);
+    }
+    .device-icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      margin-right: 8px;
+    }
+    .session-info {
+      strong {
+        display: block;
+        line-height: 21px;
+      }
+    }
+    .seen-in {
+      margin-top: 1.5px;
+      font-size: 13px;
+      line-height: 21px;
+    }
+    .btn-session-details {
+      height: 28px;
+      padding: 3px 12px;
+      font-size: 12px !important;
+      line-height: 20px;
+    }
+  }
+}
+.page-settings-sessions-details {
+  p {
+    line-height: 21px;
+  }
+  .map-container {
+    img {
+      width: 100%;
+    }
+  }
+}
+.page-settings-organizations {
+  .organization-item:last-child {
+    border-color: transparent !important;
   }
 }

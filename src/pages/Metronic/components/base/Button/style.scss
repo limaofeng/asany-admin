@@ -1,14 +1,15 @@
 .btn {
   height: 32px;
+  padding: 4px 15px;
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 24px;
   border-radius: 6px;
 
   &:not(.btn-outline):not(.btn-dashed):not(.border-hover):not(.border-active):not(.btn-flush):not(.btn-icon) {
     padding: 4px 15px;
 
     &.btn-sm {
-      padding: 0 7px;
+      padding: 3px 12px;
     }
 
     &.btn-lg {
@@ -23,9 +24,10 @@
   }
 
   &.btn-sm {
-    height: 24px;
-    font-size: 14px;
-    border-radius: 2px;
+    height: auto;
+    padding: 3px 12px;
+    font-size: 12px;
+    line-height: 20px;
   }
 }
 

@@ -2,6 +2,7 @@ import { component, library } from 'sunmao';
 
 import UserSettingsSidebar from './components/UserSettingsSidebar';
 import {
+  SessionDetails,
   UserAccount,
   UserEmails,
   UserNotifications,
@@ -35,6 +36,8 @@ class User {
   UserPreferences = UserPreferences;
   @component({ name: 'settings.Security' })
   UserSecurity = UserSecurity;
+  @component({ name: 'settings.SessionDetails' })
+  SessionDetails = SessionDetails;
 }
 
 export default new User();

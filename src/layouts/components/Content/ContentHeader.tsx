@@ -72,6 +72,9 @@ function ContentHeader(props: ContentHeaderProps) {
 
     let last: MenuDataItem | undefined;
 
+    console.log('_matchMenus', _matchMenus, location.pathname);
+    console.log('_matchRoutes', _matchRoutes);
+
     const startIndex = _matchRoutes.findIndex((item) => item.path == last?.path);
 
     let breadcrumbData: MenuDataItem[] = [];

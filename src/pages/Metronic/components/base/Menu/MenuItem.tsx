@@ -4,6 +4,7 @@ import React from 'react';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 import { useHistory } from 'react-router';
+import { Link } from 'umi';
 
 import type { BulletProps } from '../Bullet';
 import { Bullet } from '../Bullet';
@@ -15,7 +16,7 @@ export type MenuItemProps = {
   icon?: string | React.ReactNode;
   title?: string;
   className?: string;
-  as?: string;
+  as?: string | React.ComponentType<any>;
   titleClassName?: string;
   linkClassName?: string;
   contentClassName?: string;
@@ -42,9 +43,9 @@ export function MenuSection(props: MenuItemProps) {
 
 function MenuItem(props: MenuItemProps) {
   const {
-    url,
     icon,
     badge,
+    url,
     as = 'span',
     children,
     title,
@@ -70,12 +71,14 @@ function MenuItem(props: MenuItemProps) {
     };
   }, [context, menuKey, icon, title, path]);
 
+  const isLink = as == Link;
+
   const handleClick = useCallback(
     (e) => {
       menuKey && context.select(menuKey, e);
-      url && history.push(url);
+      !isLink && url && history.push(url);
     },
-    [context, menuKey, url, history],
+    [menuKey, context, isLink, url, history],
   );
 
   const contented = React.Children.toArray(children).some(React.isValidElement);
@@ -88,6 +91,7 @@ function MenuItem(props: MenuItemProps) {
         React.createElement(
           as,
           {
+            to: isLink ? url : undefined,
             onClick: handleClick,
             className: classnames('menu-link', linkClassName, { active: selected }),
           },
