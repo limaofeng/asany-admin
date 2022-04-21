@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import classnames from 'classnames';
 
 export type Breakpoint = {
+  default?: number | [number, number];
   /**
    * 超小 < 576px
    */
@@ -29,20 +30,27 @@ export type Breakpoint = {
   xxl?: number | [number, number];
 };
 
-export function useResponsive(prefix: string, config: Breakpoint) {
-  return useMemo(() => {
-    return classnames(
-      ...Object.keys(config).map((name) => {
+export function getResponsiveClassNames(prefix: string, config: Breakpoint) {
+  return classnames(
+    ...Object.keys(config)
+      .filter((name) => ['default', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'].includes(name))
+      .map((name) => {
         const value = config[name];
+        const _name = name == 'default' ? '' : `-${name}`;
         if (typeof value == 'number') {
-          return [`${prefix}-${name}-${config[name]}`];
+          return [`${prefix}${_name}-${config[name]}`];
         }
         return {
-          [`${prefix}x-${name}-${value[0]}`]: value.length > 0,
-          [`${prefix}y-${name}-${value[1]}`]: value.length > 1,
+          [`${prefix}x${_name}-${value[0]}`]: value.length > 0,
+          [`${prefix}y${_name}-${value[1]}`]: value.length > 1,
         };
       }),
-    );
+  );
+}
+
+export function useResponsive(prefix: string, config: Breakpoint) {
+  return useMemo(() => {
+    return getResponsiveClassNames(prefix, config);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.xs, config.sm, config.md, config.lg, config.xl, config.xxl]);
 }

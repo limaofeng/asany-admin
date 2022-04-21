@@ -37,8 +37,8 @@ function Col(props: ColProps) {
   const { children, ...responsive } = props;
 
   const reactive = useResponsive('col', responsive);
-
-  return <div className={classnames('col-md-6 col-xl-4', reactive)}>{children}</div>;
+  // 'col-md-6 col-xl-4',
+  return <div className={classnames(reactive)}>{children}</div>;
 }
 
 export default Col;

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import classnames from 'classnames';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { useLayout, useLayoutSelector } from '../../../../LayoutContext';
 
@@ -36,7 +37,14 @@ function AsideWorkspace(props: AsideWorkspaceProps) {
       style={{ width: !minimize ? asideWidth - 100 : undefined }}
       className={classnames('aside-workspace', className)}
     >
-      <div className="d-flex h-100 flex-column">{children}</div>
+      <OverlayScrollbarsComponent
+        className="d-flex h-100 flex-column custom-scrollbar"
+        options={{
+          scrollbars: { autoHide: 'scroll' },
+        }}
+      >
+        {children}
+      </OverlayScrollbarsComponent>
     </div>
   );
 }

@@ -23,8 +23,8 @@ const sizes = {
   },
   middle: {
     boxClassName: 'my-1',
-    iconClassName: 'svg-icon-1 ms-2',
-    inputClassName: 'ps-15',
+    iconClassName: 'svg-icon-1 ms-3',
+    inputClassName: 'ps-13',
   },
 };
 

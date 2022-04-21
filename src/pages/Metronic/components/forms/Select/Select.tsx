@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import classnames from 'classnames';
 import $ from 'jquery';
@@ -9,7 +9,6 @@ import type { OptionData } from './typings';
 import './Select.scss';
 
 $.fn.select2.defaults.set('theme', 'bootstrap5');
-$.fn.select2.defaults.set('width', '100%');
 $.fn.select2.defaults.set('selectionCssClass', ':all:');
 
 type SelectProps = {
@@ -66,6 +65,7 @@ function Select(props: SelectProps) {
         placeholder,
         minimumResultsForSearch: Infinity,
         width: width as any,
+        dropdownCssClass: 'form-select-dropdown-container',
       })
       .on('select2:select', handleSelect)
       .on('select2:unselect', handleSelect);
@@ -87,21 +87,37 @@ function Select(props: SelectProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, options]);
 
+  const _classNames = useMemo(() => {
+    const classNames = (className || '').split(' ');
+
+    const wrapperClsName = ['me-', 'm-', 'p-', 'w-'];
+
+    const selectClassName = classNames.filter((item) =>
+      wrapperClsName.some((n) => !item.startsWith(n)),
+    );
+    const wrapperClassName = classNames.filter((item) =>
+      wrapperClsName.some((n) => item.startsWith(n)),
+    );
+    return { selectClassName, wrapperClassName };
+  }, [className]);
+
   return (
-    <select
-      {...selectProps}
-      ref={ref}
-      className={classnames('form-select', className, {
-        [`form-select-${size}`]: !!size,
-        'form-select-solid': solid,
-      })}
-    >
-      {options?.map((item) => (
-        <option key={item.value} value={item.value}>
-          {item.label}
-        </option>
-      ))}
-    </select>
+    <div className={classnames('form-select-wrapper', _classNames.wrapperClassName)}>
+      <select
+        {...selectProps}
+        ref={ref}
+        className={classnames('form-select', _classNames.selectClassName, {
+          [`form-select-${size}`]: !!size,
+          'form-select-solid': solid,
+        })}
+      >
+        {options?.map((item) => (
+          <option key={item.value} value={item.value}>
+            {item.label}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
 

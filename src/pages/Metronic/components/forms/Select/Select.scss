@@ -1,5 +1,5 @@
 .form-select.form-select-sm {
-  min-height: calc(1.5em + 1.1rem + 2px);
+  min-height: 24px;
 }
 
 .form-select {
@@ -10,11 +10,21 @@
     display: flex;
     align-items: center;
     width: 100%;
+    padding-right: 24px;
     font-weight: bold;
     cursor: pointer;
-    padding-right: 24px;
     .option-pointer {
       margin: 0 4px;
+    }
+  }
+}
+.form-select-dropdown-container {
+  &.select2-dropdown {
+    padding: 8px 0;
+    .select2-results__option {
+      padding-top: 6px;
+      padding-bottom: 6px;
+      line-height: 20px;
     }
   }
 }

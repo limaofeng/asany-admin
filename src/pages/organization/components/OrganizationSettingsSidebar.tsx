@@ -77,7 +77,7 @@ function OrganizationSettingsSidebar(props: OrganizationSettingsSidebarProps) {
         </div>
       </div>
       <Menu
-        className="menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 px-6 my-5 my-lg-0"
+        className="menu-fit menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 px-6 pb-6 my-5 my-lg-0"
         selectedKeys={routeMatchedMenus.map((item) => item.key!)}
       >
         {menus

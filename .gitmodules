@@ -1,0 +1,3 @@
+[submodule "src/pages/website"]
+	path = src/pages/website
+	url = git@github.com:limaofeng/asany-admin-website.git
