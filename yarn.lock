@@ -14642,6 +14642,11 @@ react-flip-toolkit@^7.0.13:
     flip-toolkit "7.0.13"
     prop-types "^15.5.7"
 
+react-frame-component@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.npmjs.org/react-frame-component/-/react-frame-component-5.2.1.tgz#6bd5ec73ef7d720f57ee8f259546ed926a941267"
+  integrity sha512-nrSh1OZuHlX69eWqJPiUkPT9S6/wxc4PpJV+vOQ4pHQQ8XmIsIT+utWT+nX32ZfANHZuKONA7JsWMUGT36CqaQ==
+
 react-helmet-async@^1.2.2:
   version "1.2.3"
   resolved "https://registry.npmjs.org/react-helmet-async/-/react-helmet-async-1.2.3.tgz#57326a69304ea3293036eafb49475e9ba454cb37"

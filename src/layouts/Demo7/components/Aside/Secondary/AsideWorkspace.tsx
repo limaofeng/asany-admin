@@ -5,6 +5,8 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { useLayout, useLayoutSelector } from '../../../../LayoutContext';
 
+import MenuBar from './MenuBar';
+
 type AsideWorkspaceProps = {
   className?: string;
   width?: number;
@@ -48,5 +50,7 @@ function AsideWorkspace(props: AsideWorkspaceProps) {
     </div>
   );
 }
+
+AsideWorkspace.MenuBar = MenuBar;
 
 export default AsideWorkspace;
