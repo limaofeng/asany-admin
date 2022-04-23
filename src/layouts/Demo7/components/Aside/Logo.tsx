@@ -18,4 +18,6 @@ function Logo(props: LogoProps, ref: any) {
   );
 }
 
-export default React.forwardRef(Logo);
+const LogoForwardRef = React.forwardRef(Logo);
+
+export default LogoForwardRef;

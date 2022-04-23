@@ -225,7 +225,7 @@ class YearView extends DateComponent<ViewProps> {
   }
 }
 
-export default createPlugin({
+const dayGridYearPlugin = createPlugin({
   views: {
     dayGridYear: {
       buttonText: '年',
@@ -237,3 +237,5 @@ export default createPlugin({
     },
   },
 });
+
+export default dayGridYearPlugin;

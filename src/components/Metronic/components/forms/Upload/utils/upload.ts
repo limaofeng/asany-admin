@@ -441,6 +441,9 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       forceRender();
       await sleep(60);
 
+      state.current.state = 'uploading';
+      forceRender();
+
       try {
         if (file.size > partSize!) {
           return await handleMultipartUpload(file, _options);

@@ -47,12 +47,11 @@ export type ButtonColor =
 export type ActiveColor = Variant | ACTIVE_LIGHT_STYLE;
 
 export interface ButtonProps<AsProps = any> {
-  as?: 'button' | 'a' | 'span' | React.ComponentType<AsProps>;
+  as?: 'button' | 'a' | 'span' | string | React.ComponentType<AsProps>;
   id?: string;
   variant?: Variant | 'clean' | false;
   variantStyle?: VariantStyle;
-  dashed?: boolean;
-  type?: 'dashed' | 'link' | 'solid';
+  type?: 'dashed' | 'link' | 'solid' | 'circle';
   disabled?: boolean;
   icon?: React.ReactNode;
   color?: ButtonColor;

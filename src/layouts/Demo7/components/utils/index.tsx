@@ -4,7 +4,7 @@ import AsideWorkspace from '../Aside/Secondary/AsideWorkspace';
 
 import type { MenuData } from '@/.umi/app/typings';
 
-export default function buildMenuRender(menu: MenuData) {
+function buildMenuRender(menu: MenuData) {
   if (menu.component) {
     return <CustomAsideSecondaryContent menu={menu} component={menu.component} />;
   }
@@ -14,3 +14,5 @@ export default function buildMenuRender(menu: MenuData) {
     </AsideWorkspace>
   );
 }
+
+export default buildMenuRender;

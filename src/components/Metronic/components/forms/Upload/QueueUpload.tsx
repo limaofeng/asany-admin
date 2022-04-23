@@ -258,4 +258,6 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
   );
 }
 
-export default React.forwardRef(QueueUpload);
+const QueueUploadForwardRef = React.forwardRef(QueueUpload);
+
+export default QueueUploadForwardRef;

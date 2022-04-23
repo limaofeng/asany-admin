@@ -11,7 +11,7 @@ export default defineConfig({
     id: '6068485332c5fc853a65',
   },
   define: {
-    'process.env.API_URL': '//api.asany.cn',
+    'process.env.STORAGE_URL': '//api.asany.cn',
   },
   hash: true,
   antd: false,
@@ -47,10 +47,6 @@ export default defineConfig({
   webpack5: {},
   exportStatic: {},
   chainWebpack(config, { createCSSRule }) {
-    console.log('xxx');
-
-    config.devServer.hotOnly(true);
-
     config.module
       .rule('wasm-loader')
       .test(/\.wasm(\.bin)?$/)

@@ -12,7 +12,7 @@ import {
   useUpdateMailboxMessageMutation,
 } from '../hooks';
 
-import { Button, Card, Form, Input, Modal, QueueUpload, Tooltip } from '@/components/Metronic';
+import { Button, Card, Form, Input, Modal, Tooltip, Upload } from '@/components/Metronic';
 import type { QueueUploadRef } from '@/components/Metronic';
 import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
 import { toHtml, toPlainText } from '@/components/Metronic/components/utils/format';
@@ -468,7 +468,7 @@ function MessageEditor(props: MessageEditorProps) {
               <ContentEditor mode={mode} />
             </Form.Item>
             <Form.Item noStyle name="attachments">
-              <QueueUpload auto ref={queueUpload} namespace="email" />
+              <Upload.Queue auto ref={queueUpload} namespace="email" />
             </Form.Item>
           </div>
           <div className="d-flex flex-stack flex-wrap gap-2 py-5 ps-8 pe-5 border-top">

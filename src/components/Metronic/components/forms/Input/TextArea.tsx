@@ -145,4 +145,6 @@ function TextArea(props: TextAreaProps, eref: React.ForwardedRef<TextAreaRef | n
   );
 }
 
-export default React.forwardRef(TextArea);
+const TextAreaForwardRef = React.forwardRef(TextArea);
+
+export default TextAreaForwardRef;

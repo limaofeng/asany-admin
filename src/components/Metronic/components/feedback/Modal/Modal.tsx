@@ -1,4 +1,5 @@
-import React from 'react';
+import type { CSSProperties } from 'react';
+import React, { useMemo } from 'react';
 
 import type { SweetAlertIcon, SweetAlertOptions } from 'sweetalert2';
 import Swal from 'sweetalert2';
@@ -6,6 +7,7 @@ import withReactContent from 'sweetalert2-react-content';
 import { Modal as BsModal } from 'react-bootstrap';
 import classnames from 'classnames';
 import Icon, { store } from '@asany/icons';
+import { useDeepCompareMemo } from '@asany/editor';
 
 import type { ButtonProps } from '../../base';
 import { Button } from '../../base';
@@ -43,11 +45,45 @@ type ModalFooterProps = {
   confirmLoading?: boolean;
   okButtonProps?: ButtonProps;
   onOk?: ClickCallback;
+  children?: React.ReactNode;
 };
 
-function ModalFooter(props: ModalFooterProps) {
-  const { className } = props;
+export function ModalFooter(props: ModalFooterProps) {
+  const { children, className } = props;
+  return <BsModal.Footer className={className}>{children}</BsModal.Footer>;
+}
+
+type ModalBodyProps = {
+  visible?: boolean;
+  className?: string;
+  style?: CSSProperties;
+  children: React.ReactNode;
+};
+
+function ModalBody(props: ModalBodyProps) {
+  const { visible, className, children, style } = props;
+
+  const _children =
+    React.Children.count(children) == 1 && React.isValidElement(children)
+      ? React.cloneElement(children as any, { visible })
+      : children;
+
+  return (
+    <BsModal.Body style={style} className={classnames(className)}>
+      {_children}
+    </BsModal.Body>
+  );
+}
+
+function Modal(props: ModalProps) {
   const {
+    centered,
+    visible: show,
+    dialogClassName,
+    closable = true,
+    mask = true,
+    maskClosable = true,
+    footerClassName,
     cancelText = '取 消',
     cancelButtonProps,
     onCancel,
@@ -55,41 +91,76 @@ function ModalFooter(props: ModalFooterProps) {
     confirmLoading,
     okButtonProps,
     onOk,
+    dialogStyle,
   } = props;
-  return (
-    <BsModal.Footer className={className}>
-      <Button variant="light" {...cancelButtonProps} onClick={onCancel}>
-        {cancelText}
-      </Button>
-      <Button loading={confirmLoading} variant="primary" {...okButtonProps} onClick={onOk}>
-        {okText}
-      </Button>
-    </BsModal.Footer>
-  );
-}
 
-function Modal(props: ModalProps) {
-  const {
-    children,
-    centered,
-    visible: show,
-    dialogClassName,
-    bodyClassName,
-    closable = true,
-    title,
+  const _footer = useMemo(() => {
+    if (props.footer === null) {
+      return undefined;
+    }
+    if (props.footer) {
+      return props.footer;
+    }
+    return (
+      <>
+        <Button variant="light" {...cancelButtonProps} onClick={onCancel}>
+          {cancelText}
+        </Button>
+        <Button loading={confirmLoading} variant="primary" {...okButtonProps} onClick={onOk}>
+          {okText}
+        </Button>
+      </>
+    );
+  }, [
+    cancelButtonProps,
+    cancelText,
+    confirmLoading,
+    okButtonProps,
+    okText,
     onCancel,
-    mask = true,
-    maskClosable = true,
-    headerClassName,
+    onOk,
+    props.footer,
+  ]);
+
+  const { header, body, footer } = useMemo(() => {
+    const childs = React.Children.toArray(props.children);
+    const footerNode = childs.find(
+      (item) => React.isValidElement(item) && item.type == ModalFooter,
+    );
+    const headerNode = childs.find(
+      (item) => React.isValidElement(item) && item.type == ModalHeader,
+    );
+    const bodyNode = childs.find((item) => React.isValidElement(item) && item.type == ModalBody);
+    const newChildren = childs.filter((item) => ![footerNode, headerNode].includes(item));
+    return {
+      header: headerNode || (
+        <ModalHeader className={props.headerClassName} closable={closable}>
+          {typeof props.title == 'string' ? (
+            <h5 className="modal-title">{props.title}</h5>
+          ) : (
+            props.title
+          )}
+        </ModalHeader>
+      ),
+      body: bodyNode || <ModalBody className={props.bodyClassName}>{newChildren}</ModalBody>,
+      footer:
+        footerNode || (_footer && <ModalFooter className={footerClassName}>{_footer}</ModalFooter>),
+    };
+  }, [
+    props.children,
+    props.headerClassName,
+    props.title,
+    props.bodyClassName,
+    closable,
+    _footer,
     footerClassName,
-    header = (
-      <ModalHeader className={headerClassName}>
-        {title && <h5 className="modal-title">{title}</h5>}
-      </ModalHeader>
-    ),
-    footer = <ModalFooter className={footerClassName} />,
-    ...footerProps
-  } = props;
+  ]);
+
+  const CustomDialog = useDeepCompareMemo(
+    () => (dialogProps: any) =>
+      <BsModal.Dialog {...dialogProps} style={dialogStyle} className={dialogClassName} />,
+    [dialogStyle, dialogClassName],
+  );
 
   return (
     <BsModal
@@ -98,21 +169,18 @@ function Modal(props: ModalProps) {
       show={show}
       autoFocus={false}
       enforceFocus={false}
-      dialogClassName={dialogClassName}
+      dialogAs={CustomDialog}
       onHide={onCancel as any}
     >
-      {header &&
-        React.isValidElement(header) &&
-        React.cloneElement(header as React.ReactElement, { closable, onCancel })}
-      <BsModal.Body className={classnames(bodyClassName)}>
-        {React.Children.count(children) == 1 && React.isValidElement(children)
-          ? React.cloneElement(children as any, { visible: `${show}` })
-          : children}
-      </BsModal.Body>
-      {footer && React.cloneElement(footer as React.ReactElement, { ...footerProps, onCancel })}
+      {React.cloneElement(header as React.ReactElement, { closable, onCancel })}
+      {React.cloneElement(body as React.ReactElement, { visible: !!show })}
+      {footer && React.cloneElement(footer as React.ReactElement)}
     </BsModal>
   );
 }
+
+Modal.Body = ModalBody;
+Modal.Footer = ModalFooter;
 
 export type ModalOptions = {
   title?: string | React.ReactNode;
@@ -139,7 +207,7 @@ const message = async (options: MessageOptions) => {
     icon,
     onOk,
     confirmButtonText = '知道了',
-    customClass = {},
+    customClass = {} as any,
     ...alertOptions
   } = options;
   const result = await MySwal.fire({

@@ -34,4 +34,6 @@ function Pulse(props: PulseProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
   );
 }
 
-export default React.forwardRef(Pulse);
+const PulseForwardRef = React.forwardRef(Pulse);
+
+export default PulseForwardRef;

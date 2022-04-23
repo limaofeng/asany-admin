@@ -4,6 +4,7 @@ import Dropzone from 'dropzone';
 
 import UploadAvatar from './UploadAvatar';
 import ImageUpload from './ImageUpload';
+import QueueUpload from './QueueUpload';
 
 function Upload() {
   useEffect(() => {
@@ -44,5 +45,6 @@ function Upload() {
 
 Upload.UploadAvatar = UploadAvatar;
 Upload.Image = ImageUpload;
+Upload.Queue = QueueUpload;
 
 export default Upload;

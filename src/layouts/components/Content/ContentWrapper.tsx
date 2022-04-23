@@ -46,4 +46,6 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
   );
 }
 
-export default React.forwardRef(ContentWrapper);
+const ContentForwardRef = React.forwardRef(ContentWrapper);
+
+export default ContentForwardRef;

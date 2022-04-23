@@ -40,10 +40,8 @@ function Button(
 
   const isEmpty = unpack(children).length == 0;
 
-  console.log('______', as, children);
-
   return React.createElement(
-    htmlType ? 'button' : as,
+    htmlType ? 'button' : (as as any),
     {
       ...props,
       onClick,
@@ -56,6 +54,7 @@ function Button(
           active,
           disabled: disabled && as != 'button',
           'btn-link': type == 'link',
+          'btn-circle': type == 'circle',
           [`btn-text-${variant}`]: type == 'link',
           [`btn-${variant}`]: !variantStyle && variant && !type,
           [`btn-${variantStyle}-${variant}`]: variantStyle && variant,

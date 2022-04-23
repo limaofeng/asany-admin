@@ -108,4 +108,6 @@ function ArticleContentEditor(props: ArticleContentEditorProps, editorRef: any) 
   return <div>未实现编辑器: {editorStyle}</div>;
 }
 
-export default React.forwardRef(ArticleContentEditor);
+const ArticleContentEditorForwardRef = React.forwardRef(ArticleContentEditor);
+
+export default ArticleContentEditorForwardRef;

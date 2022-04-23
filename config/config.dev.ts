@@ -6,7 +6,7 @@ export default defineConfig({
     uri: 'http://localhost:8080/graphql',
   },
   define: {
-    'process.env.API_URL': '//localhost:8080',
+    'process.env.STORAGE_URL': '//localhost:8080',
   },
   plugins: [
     // https://github.com/zthxxx/react-dev-inspector

@@ -11,7 +11,7 @@ Holder.addTheme('dark', {
   fontweight: 'normal',
 });
 
-export default function useHolder(images?: string | HTMLElement | RefObject<HTMLElement>) {
+function useHolder(images?: string | HTMLElement | RefObject<HTMLElement>) {
   const ref = useRef<HTMLImageElement>(null);
 
   const _isRef = images && Object.hasOwn(images as any, 'current');
@@ -25,3 +25,5 @@ export default function useHolder(images?: string | HTMLElement | RefObject<HTML
 
   return ref;
 }
+
+export default useHolder;

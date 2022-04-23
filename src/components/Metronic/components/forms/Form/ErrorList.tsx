@@ -34,7 +34,7 @@ export interface ErrorListProps {
   className?: string;
 }
 
-export default function ErrorList({
+function ErrorList({
   help,
   helpStatus,
   errors = EMPTY_LIST,
@@ -80,3 +80,5 @@ export default function ErrorList({
     </div>
   );
 }
+
+export default ErrorList;

@@ -129,7 +129,7 @@ function FileName(props: FileNameProps) {
                 className="svg-icon-2x svg-icon-primary"
               />
             }
-            src={process.env.API_URL + `/thumbnail/${data.id}?size=120x120`}
+            src={process.env.STORAGE_URL + `/thumbnail/${data.id}?size=120x120`}
           />
         ) : (
           <Icon

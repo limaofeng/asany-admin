@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 import type { ButtonProps } from '../../base/Button/typings';
 
 export type ClickCallback = (e: React.MouseEvent) => void;
@@ -8,6 +10,7 @@ export type ModalProps = {
   centered?: boolean;
   closable?: boolean;
   visible?: boolean;
+  dialogStyle?: CSSProperties;
   onOk?: ClickCallback;
   okText?: string;
   confirmLoading?: boolean;
@@ -16,7 +19,7 @@ export type ModalProps = {
   okButtonProps?: ButtonProps;
   cancelButtonProps?: ButtonProps;
   header?: React.ReactNode;
-  footer?: React.ReactNode;
+  footer?: React.ReactNode | null;
   bodyClassName?: string;
   headerClassName?: string;
   dialogClassName?: string;

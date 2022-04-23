@@ -142,4 +142,6 @@ function LibraryControlPanel(props: LibraryControlPanelProps) {
   );
 }
 
-export default memo(LibraryControlPanel);
+const LibraryControlPanelMemo = memo(LibraryControlPanel);
+
+export default LibraryControlPanelMemo;

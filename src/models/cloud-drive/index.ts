@@ -9,7 +9,7 @@ import type { CloudDriveState, DownloadFile, UploadFile } from './typings';
 import type { DownloadFileData, DownloadState } from './download';
 import { useDownload } from './download';
 
-import { useUpload } from '@/components/Metronic';
+import { useUpload } from '@/components/Metronic/hooks';
 import type {
   UploadFileData,
   UploadState,
@@ -29,7 +29,7 @@ const EVENT_NAME_OF_DOWNLOADFILE_CHANGE = 'DOWNLOADFILE_CHANGE';
 const EVENT_NAME_OF_UPLOADFILE_DATA_RELOADED = 'UPLOADFILE_DATA_RELOADED';
 const EVENT_NAME_OF_DOWNLOADFILE_DATA_RELOADED = 'DOWNLOADFILE_DATA_RELOADED';
 
-const FILEOBJECT_DOWNLOAD_URL = process.env.API_URL + '/download';
+const FILEOBJECT_DOWNLOAD_URL = process.env.STORAGE_URL + '/download';
 
 export * from './typings';
 

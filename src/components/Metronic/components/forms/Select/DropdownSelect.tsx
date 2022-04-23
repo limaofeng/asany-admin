@@ -163,4 +163,6 @@ function DropdownSelect(props: SelectProps, ref: React.ForwardedRef<SelectRef | 
   );
 }
 
-export default React.forwardRef(DropdownSelect);
+const DropdownSelectForwardRef = React.forwardRef(DropdownSelect);
+
+export default DropdownSelectForwardRef;
