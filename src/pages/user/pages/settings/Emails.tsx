@@ -10,7 +10,7 @@ import {
   Select,
   Separator,
   Tooltip,
-} from '@/pages/Metronic/components';
+} from '@/components/Metronic';
 
 type EmailListItemProps = {
   state: string;

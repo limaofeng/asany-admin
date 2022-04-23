@@ -4,7 +4,7 @@ import { getMatchMenu } from '@umijs/route-utils';
 import { useLocation } from 'umi';
 
 import type { MenuData } from '@/.umi/app/typings';
-import { Menu } from '@/pages/Metronic/components';
+import { Menu } from '@/components/Metronic';
 
 type MenuPaneProps = {
   title: string;
@@ -55,4 +55,6 @@ function Navigation({ menus, title }: MenuPaneProps) {
   );
 }
 
-export default React.memo(Navigation);
+const NavigationMemo = React.memo(Navigation);
+
+export default NavigationMemo;

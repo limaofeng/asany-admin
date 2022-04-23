@@ -7,7 +7,7 @@ import ContentLoader from 'react-content-loader';
 import { useContactQuery } from '../hooks';
 import type { ContactRouteParams } from '../typings';
 
-import { Button, Card, Dropdown, Menu, Symbol, Tabs } from '@/pages/Metronic/components';
+import { Button, Card, Dropdown, Menu, Symbol, Tabs } from '@/components/Metronic';
 import type { Contact } from '@/types';
 
 type ViewContactProps = RouteComponentProps<ContactRouteParams> & {

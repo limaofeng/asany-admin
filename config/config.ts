@@ -47,6 +47,10 @@ export default defineConfig({
   webpack5: {},
   exportStatic: {},
   chainWebpack(config, { createCSSRule }) {
+    console.log('xxx');
+
+    config.devServer.hotOnly(true);
+
     config.module
       .rule('wasm-loader')
       .test(/\.wasm(\.bin)?$/)

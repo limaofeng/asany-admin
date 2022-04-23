@@ -6,7 +6,7 @@ import { Link } from 'umi';
 import { ChangeUsernameModal, DeleteAccountModal } from '../../components/modals';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card } from '@/pages/Metronic/components';
+import { Button, Card } from '@/components/Metronic';
 
 function Account() {
   const organizations = [];

@@ -17,12 +17,12 @@ import type { EditorStyle } from './components/ArticleContentEditor';
 import ArticleContentEditor from './components/ArticleContentEditor';
 import NavigationPromptModal from './components/NavigationPromptModal';
 
-import { useForm } from '@/pages/Metronic/components/forms/Form/Form';
-import { Button, DatePicker, Form, Input, Select2, Spin } from '@/pages/Metronic/components';
+import { useForm } from '@/components/Metronic/components/forms/Form/Form';
+import { Button, DatePicker, Form, Input, Select2, Spin } from '@/components/Metronic';
 import SettingsMenu from '@/components/SettingsMenu';
 import { delay } from '@/utils';
 import type { Article } from '@/types';
-import { useAutoSave } from '@/pages/Metronic/components/utils';
+import { useAutoSave } from '@/components/Metronic/components/utils';
 
 import './style/ArticleEditor.scss';
 

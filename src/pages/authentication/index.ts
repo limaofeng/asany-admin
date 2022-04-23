@@ -1,6 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import AsideLayoutSignIn from './sign-in/AsideLayoutSignIn';
+import LoadingComponent from '@/components/PageLoading';
 
 @library({
   name: 'authentication',
@@ -9,7 +10,10 @@ import AsideLayoutSignIn from './sign-in/AsideLayoutSignIn';
 })
 class Authentication {
   @component({ name: 'AsideLayoutSignIn' })
-  AsideLayoutSignIn = AsideLayoutSignIn;
+  AsideLayoutSignIn = dynamic({
+    loader: () => import('./sign-in/AsideLayoutSignIn'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Authentication();

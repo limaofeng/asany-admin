@@ -9,8 +9,8 @@ import { useArticleChannelQuery } from '../hooks';
 
 import { NewArticleChannelModal } from './ArticleChannelNew';
 
-import { Button, CountUp, Dropdown, Menu, Nav, Stat } from '@/pages/Metronic/components/base';
-import { User } from '@/pages/Metronic/components';
+import { Button, CountUp, Dropdown, Menu, Nav, Stat } from '@/components/Metronic/components/base';
+import { User } from '@/components/Metronic';
 import { ContentWrapper, Navbar } from '@/layouts/components';
 import type { ArticleChannel as IArticleChannel } from '@/types';
 

@@ -29,10 +29,10 @@ import {
   Modal,
   Table,
   Toast,
-} from '@/pages/Metronic/components';
+} from '@/components/Metronic';
 import type { FileFilter, FileObject } from '@/types';
-import type { DataSource, Sorter } from '@/pages/Metronic/components/base/Table/typings';
-import { fileSize } from '@/pages/Metronic/components/utils/format';
+import type { DataSource, Sorter } from '@/components/Metronic/components/base/Table/typings';
+import { fileSize } from '@/components/Metronic/components/utils/format';
 
 type ListFilesProps = {
   toolbar?: 'default' | 'starred' | 'trash';

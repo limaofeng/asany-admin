@@ -6,7 +6,7 @@ import { generatePath, useLocation, useRouteMatch } from 'react-router-dom';
 
 import type { MenuData } from '@/.umi/app/typings';
 import { AsideWorkspace } from '@/layouts/Demo7';
-import { Menu, Symbol } from '@/pages/Metronic/components';
+import { Menu, Symbol } from '@/components/Metronic';
 
 type OrganizationSettingsSidebarProps = {
   menu: MenuData;

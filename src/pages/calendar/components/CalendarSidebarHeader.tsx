@@ -5,7 +5,7 @@ import { useModel } from 'umi';
 import Icon from '@asany/icons';
 import moment from 'moment';
 
-import { Input } from '@/pages/Metronic/components';
+import { Input } from '@/components/Metronic';
 
 function CalendarSidebarHeader() {
   const quicklyEnter = useRef<HTMLInputElement>(null);

@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useArticleChannelAllQuery, useCreateArticleChannelMutation } from '../hooks';
 
-import type { ClickCallback, FormInstance } from '@/pages/Metronic/components';
-import { Form, Input, Modal, Select2, Upload } from '@/pages/Metronic/components';
+import type { ClickCallback, FormInstance } from '@/components/Metronic';
+import { Form, Input, Modal, Select2, Upload } from '@/components/Metronic';
 import { delay } from '@/utils';
 
 const { UploadAvatar } = Upload;

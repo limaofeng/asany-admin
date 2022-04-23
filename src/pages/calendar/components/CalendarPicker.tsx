@@ -3,9 +3,9 @@ import React from 'react';
 
 import { useCalendarsQuery } from '../hooks';
 
-import type { OptionData } from '@/pages/Metronic/components';
-import { Select } from '@/pages/Metronic/components';
-import { darkenColor } from '@/pages/Metronic/components/utils/color';
+import type { OptionData } from '@/components/Metronic';
+import { Select } from '@/components/Metronic';
+import { darkenColor } from '@/components/Metronic/components/utils/color';
 
 type CalendarPickerProps = {
   solid: boolean;

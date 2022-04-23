@@ -4,7 +4,7 @@ import { useIconLibrariesQuery } from '../hooks';
 import LibraryCreate from '../components/LibraryCreate';
 import LibraryCard from '../components/LibraryCard';
 
-import { Spin } from '@/pages/Metronic/components';
+import { Spin } from '@/components/Metronic';
 import { ContentWrapper } from '@/layouts/components';
 
 import '../style/index.scss';
@@ -46,4 +46,6 @@ function MyLibraries() {
   );
 }
 
-export default React.memo(MyLibraries);
+const MyLibrariesMemo = React.memo(MyLibraries);
+
+export default MyLibrariesMemo;

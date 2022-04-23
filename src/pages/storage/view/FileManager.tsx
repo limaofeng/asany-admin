@@ -6,7 +6,7 @@ import type { RouteComponentProps } from 'react-router';
 import { useStorageQuery } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Card, Nav } from '@/pages/Metronic/components';
+import { Card, Nav } from '@/components/Metronic';
 
 type FileManagerProps = RouteComponentProps<{ id: string }> & {
   children: React.ReactNode;

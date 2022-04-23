@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 
 import { useListFilesLazyQuery } from './api';
 
-import type { UseLazyQuery } from '@/pages/Metronic/hooks';
-import { useLongListLazyQuery } from '@/pages/Metronic/hooks';
+import type { UseLazyQuery } from '@/components/Metronic/hooks';
+import { useLongListLazyQuery } from '@/components/Metronic/hooks';
 import type { FileFilter, FileObject } from '@/types';
 
 type QueryCondition = {

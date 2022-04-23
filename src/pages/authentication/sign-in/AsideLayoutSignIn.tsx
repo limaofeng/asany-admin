@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
 import { useState } from 'react';
 
-import { loginWithUsername, useHistory, useModel } from 'umi';
+import { loginWithUsername, useModel } from 'umi';
+import { useHistory } from 'react-router';
 
-import { Button, Form, Input, Modal } from '@/pages/Metronic/components';
+import { Button, Form, Input, Modal } from '@/components/Metronic/components';
 
 function Aside() {
   return (
@@ -26,7 +27,7 @@ function Aside() {
           {/* --end::Logo--*/}
           {/* --begin::Title--*/}
           <h1 className="fw-bolder fs-2qx pb-5 pb-md-10" style={{ color: '#986923' }}>
-            欢迎使用 榫卯
+            欢迎使用 榫卯 1211
           </h1>
           {/* --end::Title--*/}
           {/* --begin::Description--*/}

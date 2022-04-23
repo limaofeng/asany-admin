@@ -8,7 +8,7 @@ import FileActions from '../components/FileActions';
 import FolderPath from '../components/FolderPath';
 // import { useListFilesQuery } from '../hooks';
 
-import { Badge, Button, Card, Input, Table } from '@/pages/Metronic/components';
+import { Badge, Button, Card, Input, Table } from '@/components/Metronic';
 import type { FileObject, Storage } from '@/types';
 import { sleep } from '@/utils';
 

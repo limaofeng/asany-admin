@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import Icon from '@asany/icons';
 
-import { Button, Card, Dropdown, Input, Menu, Spin } from '@/pages/Metronic/components';
+import { Button, Card, Dropdown, Input, Menu, Spin } from '@/components/Metronic';
 import type { FileObject } from '@/types';
 
 type ShareLinkProps = {

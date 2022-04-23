@@ -236,4 +236,6 @@ function LibraryDetails() {
   );
 }
 
-export default React.memo(LibraryDetails);
+const LibraryDetailsMemo = React.memo(LibraryDetails);
+
+export default LibraryDetailsMemo;

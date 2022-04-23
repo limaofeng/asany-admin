@@ -7,10 +7,10 @@ import moment from 'moment';
 
 import { displayName } from '../utils';
 
-import Avatar from '@/pages/Metronic/components/base/Symbol/Avatar';
+import Avatar from '@/components/Metronic/components/base/Symbol/Avatar';
 import type { MailboxMessage } from '@/types';
-import { Popover, Tooltip } from '@/pages/Metronic/components';
-import { toPlainText } from '@/pages/Metronic/components/utils/format';
+import { Popover, Tooltip } from '@/components/Metronic';
+import { toPlainText } from '@/components/Metronic/components/utils/format';
 
 interface MessageWrapperProps {
   mailbox: string;

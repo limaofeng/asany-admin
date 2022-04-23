@@ -6,7 +6,7 @@ import 'emoji-mart/css/emoji-mart.css';
 
 import { handleBackgroundImage } from '../utils';
 
-import { Button, Checkbox, Input, Modal, Popover, Select } from '@/pages/Metronic/components';
+import { Button, Checkbox, Input, Modal, Popover, Select } from '@/components/Metronic';
 
 interface EditStatusModalProps {
   visible: boolean;

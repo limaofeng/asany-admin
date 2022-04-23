@@ -5,7 +5,7 @@ import { useCurrentuser, useLocation } from 'umi';
 
 import type { MenuData } from '@/.umi/app/typings';
 import { AsideWorkspace } from '@/layouts/Demo7';
-import { Menu, Symbol } from '@/pages/Metronic/components';
+import { Menu, Symbol } from '@/components/Metronic';
 
 type UserSettingsSidebarProps = {
   menu: MenuData;

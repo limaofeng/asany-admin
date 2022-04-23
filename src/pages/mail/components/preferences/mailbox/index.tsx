@@ -7,7 +7,7 @@ import { cloneDeep } from 'lodash';
 
 import MailboxFooter from './MailboxFooter';
 
-import { Checkbox, TreeList } from '@/pages/Metronic/components';
+import { Checkbox, TreeList } from '@/components/Metronic';
 import { useMailboxesQuery, useUpdateMyFavoriteMailboxesMutation } from '@/pages/mail/hooks';
 import { DEFAULT_MAILBOXES_ALL } from '@/pages/mail/utils';
 import type { Mailbox } from '@/types';

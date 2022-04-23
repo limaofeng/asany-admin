@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 import classnames from 'classnames';
 
-import { Alert, Button, Input, Modal } from '@/pages/Metronic/components';
+import { Alert, Button, Input, Modal } from '@/components/Metronic';
 
 type RenameOrganizationModalProps = {
   visible?: boolean;

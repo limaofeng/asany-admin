@@ -2,8 +2,8 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { useCreateMenuMutation, useLoadMenusQuery, useUpdateMenuMutation } from '../hooks';
 
-import type { ClickCallback, FormInstance } from '@/pages/Metronic/components';
-import { Form, Input, Modal, Radio, Select2 } from '@/pages/Metronic/components';
+import type { ClickCallback, FormInstance } from '@/components/Metronic';
+import { Form, Input, Modal, Radio, Select2 } from '@/components/Metronic';
 import { delay, flat, tree } from '@/utils';
 
 type MenuFormProps = {

@@ -9,8 +9,8 @@ import { useAddCalendarEventMutation } from '../hooks';
 
 import CalendarPicker from './CalendarPicker';
 
-import type { OptionData } from '@/pages/Metronic/components';
-import { Button, Checkbox, DatePicker, Form, Input, Select } from '@/pages/Metronic/components';
+import type { OptionData } from '@/components/Metronic';
+import { Button, Checkbox, DatePicker, Form, Input, Select } from '@/components/Metronic';
 import type { CalendarEvent, CalendarSet } from '@/types';
 
 const TextArea = Input.TextArea;

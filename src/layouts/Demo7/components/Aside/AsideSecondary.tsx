@@ -10,4 +10,6 @@ function AsideSecondary(props: AsideSecondaryProps) {
   return <div className="aside-secondary d-flex flex-row-fluid">{children}</div>;
 }
 
-export default React.memo(AsideSecondary);
+const AsideSecondaryMemo = React.memo(AsideSecondary);
+
+export default AsideSecondaryMemo;

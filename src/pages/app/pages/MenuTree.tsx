@@ -6,9 +6,9 @@ import Icon from '@asany/icons';
 import { useDeleteMenuMutation, useLoadMenusQuery } from '../hooks';
 import { EditMenuModal, NewMenuModal } from '../components/MenuModal';
 
-import { Badge, Button, Card, Dropdown, Menu, Modal } from '@/pages/Metronic/components';
+import { Badge, Button, Card, Dropdown, Menu, Modal } from '@/components/Metronic';
 import { tree } from '@/utils';
-import { TreeList } from '@/pages/Metronic/components/base/TreeList';
+import { TreeList } from '@/components/Metronic/components/base/TreeList';
 import type { Menu as IMenu } from '@/types';
 
 type MenuTreeProps = RouteComponentProps<{ id: string }>;

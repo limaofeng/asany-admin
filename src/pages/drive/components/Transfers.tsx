@@ -5,9 +5,9 @@ import Icon from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import classnames from 'classnames';
 
-import { Button, Progress, Tabs } from '@/pages/Metronic/components';
+import { Button, Progress, Tabs } from '@/components/Metronic';
 import type { DownloadFile, UploadFile } from '@/models/cloud-drive';
-import { fileSize } from '@/pages/Metronic/components/utils/format';
+import { fileSize } from '@/components/Metronic/components/utils/format';
 
 function randerFileIcon(file: UploadFile | DownloadFile) {
   if (['zip'].includes(file.extension!)) {

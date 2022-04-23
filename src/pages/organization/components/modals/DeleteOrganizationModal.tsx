@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import classnames from 'classnames';
 import { useCurrentuser } from 'umi';
 
-import { Alert, Button, Form, Input, Modal, Separator } from '@/pages/Metronic/components';
+import { Alert, Button, Form, Input, Modal, Separator } from '@/components/Metronic';
 
 type DeleteOrganizationModalProps = {
   visible?: boolean;

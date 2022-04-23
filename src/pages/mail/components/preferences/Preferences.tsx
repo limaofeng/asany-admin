@@ -4,7 +4,7 @@ import Icon from '@asany/icons';
 
 import MailboxFolder from './mailbox';
 
-import { Modal, Nav } from '@/pages/Metronic/components';
+import { Modal, Nav } from '@/components/Metronic';
 import type { MailSettings, MailUser } from '@/types';
 
 type PreferencesProps = {

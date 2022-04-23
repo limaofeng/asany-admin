@@ -1,4 +1,4 @@
-import { Button, Modal } from '@/pages/Metronic/components';
+import { Button, Modal } from '@/components/Metronic';
 
 interface NavigationPromptModalProps {
   onConfirm: () => void;

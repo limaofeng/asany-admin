@@ -1,8 +1,10 @@
 import { Icon } from '@asany/icons';
 import { Link } from 'umi';
 
+import worldMap from '../../assets/world_map.svg';
+
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card } from '@/pages/Metronic/components';
+import { Button, Card } from '@/components/Metronic';
 
 function SessionDetails() {
   return (
@@ -63,7 +65,7 @@ function SessionDetails() {
               </div>
             </div>
             <div className="map-container mt-4 rounded-2 overflow-hidden">
-              <img src={require('../../assets/world_map.svg')} />
+              <img src={worldMap} />
             </div>
           </div>
           <Button to="/settings/sessions" as={Link} type="link" className="mt-2">

@@ -7,7 +7,7 @@ import Icon from '@asany/icons';
 import EditStatusModal from './modals/EditStatusModal';
 import { handleBackgroundImage } from './utils';
 
-import { Button, Menu, Symbol } from '@/pages/Metronic/components';
+import { Button, Menu, Symbol } from '@/components/Metronic';
 
 type UserAccountMenuProps = {
   close: () => void;

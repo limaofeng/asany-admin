@@ -5,9 +5,9 @@ import classnames from 'classnames';
 
 import { useRenameFileMutation } from '../hooks';
 
-import type { InputRef } from '@/pages/Metronic/components';
-import { Toast } from '@/pages/Metronic/components';
-import { Button, Input, Symbol } from '@/pages/Metronic/components';
+import type { InputRef } from '@/components/Metronic';
+import { Toast } from '@/components/Metronic';
+import { Button, Input, Symbol } from '@/components/Metronic';
 import type { FileObject } from '@/types';
 import { delay, sleep } from '@/utils';
 

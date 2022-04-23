@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { DeleteOrganizationModal, RenameOrganizationModal } from '../../components/modals';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card, Form, Input } from '@/pages/Metronic/components';
+import { Button, Card, Form, Input } from '@/components/Metronic';
 
 function DangerZone() {
   const [renameOrganizationModalVisible, setRenameOrganizationModalVisible] = useState(false);

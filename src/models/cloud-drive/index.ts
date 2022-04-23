@@ -9,11 +9,11 @@ import type { CloudDriveState, DownloadFile, UploadFile } from './typings';
 import type { DownloadFileData, DownloadState } from './download';
 import { useDownload } from './download';
 
-import { useUpload } from '@/pages/Metronic/components';
+import { useUpload } from '@/components/Metronic';
 import type {
   UploadFileData,
   UploadState,
-} from '@/pages/Metronic/components/forms/Upload/utils/upload';
+} from '@/components/Metronic/components/forms/Upload/utils/upload';
 import type { CloudDrive, FileObject } from '@/types';
 
 const initialState = {

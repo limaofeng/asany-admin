@@ -1,8 +1,8 @@
 import { Link } from 'umi';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card } from '@/pages/Metronic/components';
-import { useHolder } from '@/pages/Metronic/hooks';
+import { Button, Card } from '@/components/Metronic';
+import { useHolder } from '@/components/Metronic/hooks';
 
 function OrganizationItem() {
   const imgRef = useHolder();

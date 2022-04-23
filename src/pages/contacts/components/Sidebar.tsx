@@ -6,8 +6,8 @@ import { useModel } from 'umi';
 
 import { useBookQuery, useBooksQuery } from '../hooks';
 
-import type { OptionData } from '@/pages/Metronic/components';
-import { Select, Tabs } from '@/pages/Metronic/components';
+import type { OptionData } from '@/components/Metronic';
+import { Select, Tabs } from '@/components/Metronic';
 import type { ContactBook } from '@/types';
 import * as utils from '@/utils';
 import { AsideWorkspace } from '@/layouts/Demo7';

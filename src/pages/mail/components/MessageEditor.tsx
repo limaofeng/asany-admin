@@ -12,19 +12,11 @@ import {
   useUpdateMailboxMessageMutation,
 } from '../hooks';
 
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  Modal,
-  QueueUpload,
-  Tooltip,
-} from '@/pages/Metronic/components';
-import type { QueueUploadRef } from '@/pages/Metronic/components';
+import { Button, Card, Form, Input, Modal, QueueUpload, Tooltip } from '@/components/Metronic';
+import type { QueueUploadRef } from '@/components/Metronic';
 import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
-import { toHtml, toPlainText } from '@/pages/Metronic/components/utils/format';
-import { useAutoSave } from '@/pages/Metronic/components/utils';
+import { toHtml, toPlainText } from '@/components/Metronic/components/utils/format';
+import { useAutoSave } from '@/components/Metronic/components/utils';
 import { delay } from '@/utils';
 
 const RULE_VERIFY_MAIL = {

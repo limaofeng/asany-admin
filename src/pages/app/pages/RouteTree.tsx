@@ -5,7 +5,7 @@ import Icon from '@asany/icons';
 
 import { useLoadRoutesQuery } from '../hooks';
 
-import { Badge, Button, Card, TreeList } from '@/pages/Metronic/components';
+import { Badge, Button, Card, TreeList } from '@/components/Metronic';
 import { tree } from '@/utils';
 
 type RouteTreeProps = RouteComponentProps<{ id: string }>;

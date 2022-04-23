@@ -13,8 +13,8 @@ import { useClickAway } from 'react-use';
 import CalendarListFooter from './CalendarListFooter';
 
 import type { Calendar, CalendarSet } from '@/types';
-import { Checkbox, Form, Input, Modal, Popover, Select } from '@/pages/Metronic/components';
-import { darkenColor, lightenColor } from '@/pages/Metronic/components/utils/color';
+import { Checkbox, Form, Input, Modal, Popover, Select } from '@/components/Metronic';
+import { darkenColor, lightenColor } from '@/components/Metronic/components/utils/color';
 import {
   useAddCalendarToSetMutation,
   useCalendarsQuery,
@@ -22,7 +22,7 @@ import {
   useUpdateCalendarMutation,
 } from '@/pages/calendar/hooks';
 import { getDropPosition } from '@/pages/calendar/utils';
-import type { InputRef, OptionData } from '@/pages/Metronic/components';
+import type { InputRef, OptionData } from '@/components/Metronic';
 
 interface CalendarListItemProps extends SortableItemProps<any> {
   data: Calendar;

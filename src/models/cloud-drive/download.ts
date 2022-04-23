@@ -3,7 +3,7 @@ import { useCallback, useMemo, useReducer, useRef } from 'react';
 import saveAs from 'file-saver';
 import { debounce, merge } from 'lodash';
 
-import { networkSpeed } from '@/pages/Metronic/components/utils';
+import { networkSpeed } from '@/components/Metronic/components/utils';
 import { sleep } from '@/utils';
 
 type OnDownloadProgress = (e: DownloadProgressEvent) => void;

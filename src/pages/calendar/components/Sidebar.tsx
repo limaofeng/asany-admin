@@ -16,7 +16,7 @@ import CalendarSidebarFooter from './CalendarSidebarFooter';
 import Preferences from './preferences';
 
 import type { CalendarEvent, CalendarSet } from '@/types';
-import { Popover } from '@/pages/Metronic/components';
+import { Popover } from '@/components/Metronic';
 import { sleep } from '@/utils';
 import { AsideWorkspace } from '@/layouts/Demo7';
 
@@ -517,4 +517,6 @@ function Sidebar() {
   );
 }
 
-export default React.memo(Sidebar);
+const SidebarMemo = React.memo(Sidebar);
+
+export default SidebarMemo;

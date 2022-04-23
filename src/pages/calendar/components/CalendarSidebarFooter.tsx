@@ -2,8 +2,8 @@ import { useCallback, useMemo } from 'react';
 
 import { useModel } from 'umi';
 
-import { Select } from '@/pages/Metronic/components';
-import type { OptionData } from '@/pages/Metronic/components/forms/Select/typings';
+import { Select } from '@/components/Metronic';
+import type { OptionData } from '@/components/Metronic/components/forms/Select/typings';
 import type { CalendarSet } from '@/types';
 
 type CalendarSidebarFooterProps = {

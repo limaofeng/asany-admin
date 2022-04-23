@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { Icon } from '@asany/icons';
 
-import type { InputRef } from '@/pages/Metronic/components';
-import { Form, Input, Modal } from '@/pages/Metronic/components';
+import type { InputRef } from '@/components/Metronic';
+import { Form, Input, Modal } from '@/components/Metronic';
 import { useCreateMailboxMutation } from '@/pages/mail/hooks';
 
 type CreateMailboxModalProps = {

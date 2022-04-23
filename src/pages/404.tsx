@@ -1,6 +1,6 @@
 import Icon from '@asany/icons';
 
-import { Card } from './Metronic/components';
+import { Card } from '@/components/Metronic';
 
 const NoFoundPage: React.FC = () => (
   <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
@@ -16,7 +16,7 @@ const NoFoundPage: React.FC = () => (
         <li>
           <a>
             <Icon name="Duotune/fil013" className="svg-icon-2x svg-icon-primary me-4" />
-            首页
+            首页12
           </a>
         </li>
       </ul>

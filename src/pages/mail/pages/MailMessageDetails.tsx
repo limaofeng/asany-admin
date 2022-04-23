@@ -22,7 +22,7 @@ import MessageEditor from '../components/MessageEditor';
 import type { RefreshEvent, RefreshType } from '../typings';
 
 import type { MailboxMessage } from '@/types';
-import { Button, Card, Modal, Tooltip } from '@/pages/Metronic/components';
+import { Button, Card, Modal, Tooltip } from '@/components/Metronic';
 import { sleep } from '@/utils';
 
 export type MailboxRouteParams = {

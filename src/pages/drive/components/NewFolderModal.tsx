@@ -4,9 +4,9 @@ import classnames from 'classnames';
 
 import { useCreateFolderMutation } from '../hooks';
 
-import type { InputRef } from '@/pages/Metronic/components';
-import { Toast } from '@/pages/Metronic/components';
-import { Input, Modal } from '@/pages/Metronic/components';
+import type { InputRef } from '@/components/Metronic';
+import { Toast } from '@/components/Metronic';
+import { Input, Modal } from '@/components/Metronic';
 import { sleep } from '@/utils';
 import type { FileObject } from '@/types';
 

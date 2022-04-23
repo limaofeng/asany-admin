@@ -4,7 +4,7 @@ import Icon from '@asany/icons';
 
 import Calendars from './calendars';
 
-import { Modal, Nav } from '@/pages/Metronic/components';
+import { Modal, Nav } from '@/components/Metronic';
 
 type PreferencesProps = {
   visible: boolean;

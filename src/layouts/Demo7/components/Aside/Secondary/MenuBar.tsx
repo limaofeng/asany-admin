@@ -4,7 +4,7 @@ import { getMatchMenu } from '@umijs/route-utils';
 import { useLocation } from 'umi';
 
 import type { MenuData } from '@/.umi/app/typings';
-import { Menu } from '@/pages/Metronic/components';
+import { Menu } from '@/components/Metronic';
 
 function renderMenuItem(item: MenuData) {
   if (item.type === 'SECTION') {
