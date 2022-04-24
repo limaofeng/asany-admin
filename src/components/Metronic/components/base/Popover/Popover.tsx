@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 import { OverlayTrigger as BsOverlayTrigger, Popover as BsPopover } from 'react-bootstrap';
-import type { OverlayTriggerType } from 'react-bootstrap/esm/OverlayTrigger';
+import type { OverlayDelay, OverlayTriggerType } from 'react-bootstrap/esm/OverlayTrigger';
 import type { Placement } from 'react-bootstrap/esm/types';
 import { useClickAway } from 'react-use';
 
@@ -13,6 +13,7 @@ type PopoverProps = {
   placement?: Placement;
   overlayClassName?: string;
   zIndex?: number;
+  delay?: OverlayDelay;
   onVisibleChange?: (visible: boolean, e?: React.MouseEvent) => void;
   trigger?: OverlayTriggerType | OverlayTriggerType[];
   title?: React.ReactNode;
@@ -28,6 +29,7 @@ function Popover(props: PopoverProps) {
     content,
     trigger = 'click',
     placement = 'right',
+    delay,
     overlayClassName,
     onVisibleChange,
     zIndex,
@@ -99,6 +101,7 @@ function Popover(props: PopoverProps) {
     <BsOverlayTrigger
       trigger={trigger}
       show={visible}
+      delay={delay}
       placement={placement}
       overlay={
         <BsPopover

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import classnames from 'classnames';
 
@@ -34,11 +34,14 @@ function Tabs(props: TabsProps) {
     (key: string) => (e: React.MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
-      setActiveKey(key);
-      onChange && onChange(key);
+      onChange ? onChange(key) : setActiveKey(key);
     },
     [onChange],
   );
+
+  useEffect(() => {
+    setActiveKey(props.activeKey!);
+  }, [props.activeKey]);
 
   return (
     <div
