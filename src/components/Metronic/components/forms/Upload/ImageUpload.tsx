@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import classnames from 'classnames';
 import { useDropzone } from 'react-dropzone';
@@ -11,13 +11,17 @@ import { useUpload } from './utils/upload';
 import { ImageCropperModal } from './ImageCropper';
 import type { CropOptions } from './typings';
 
+import './style/ImageUpload.scss';
+
 type ImageUploadProps = {
+  space?: string;
   className?: string;
   width?: number;
   height?: number;
   accept?: string;
   value?: string;
-  onChange?: (path: string, file: UploadFileData) => void;
+  backgroundImage?: string;
+  onChange?: (id?: string, file?: UploadFileData) => void;
   crop?:
     | false
     | ({
@@ -28,7 +32,7 @@ type ImageUploadProps = {
       } & CropOptions);
 };
 
-const DEFAULT_PREVIEW_URL = '/assets/media/avatars/300-1.jpg';
+const DEFAULT_PREVIEW_URL = '/assets/media/background/mage_icon.png';
 
 function ImageUpload(props: ImageUploadProps) {
   const {
@@ -36,25 +40,45 @@ function ImageUpload(props: ImageUploadProps) {
     width,
     height,
     crop = {},
-    value,
+    space,
+    backgroundImage = DEFAULT_PREVIEW_URL,
     accept = '.png, .jpg, .jpeg',
     onChange,
   } = props;
 
-  const [image, setImage] = useState<File>();
-  const [preview, setPreview] = useState(DEFAULT_PREVIEW_URL);
-  const [imageCropperModalVisible, setImageCropperModalVisible] = useState(false);
+  const state = useRef<{
+    value?: string;
+    image?: File;
+    preview: string;
+    imageCropperModalVisible: boolean;
+  }>({
+    value: props.value,
+    preview: backgroundImage,
+    imageCropperModalVisible: false,
+  });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const [upload, { uploading }] = useUpload({});
+  const setImageCropperModalVisible = useCallback((visible: boolean) => {
+    state.current.imageCropperModalVisible = visible;
+    forceRender();
+  }, []);
+
+  // const [value, setValue] = useState(props.value);
+  // const [image, setImage] = useState<File>();
+  // const [preview, setPreview] = useState(DEFAULT_PREVIEW_URL);
+  // const [imageCropperModalVisible, setImageCropperModalVisible] = useState(false);
+
+  const [upload, { uploading }] = useUpload({ space });
 
   const onDrop = useCallback((acceptedFiles) => {
-    setImage(acceptedFiles[0]);
-    setImageCropperModalVisible(true);
+    state.current.image = acceptedFiles[0];
+    state.current.imageCropperModalVisible = true;
+    forceRender();
   }, []);
 
   const handleCloseImageCropperModal = useCallback(() => {
     setImageCropperModalVisible(false);
-  }, []);
+  }, [setImageCropperModalVisible]);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -63,25 +87,47 @@ function ImageUpload(props: ImageUploadProps) {
   });
   const { role, tabIndex, onClick: browseLocalFiles, ...rootProps } = getRootProps();
 
+  useEffect(() => {
+    if (props.value == state.current.value) {
+      return;
+    }
+    state.current.value = props.value;
+    state.current.preview = process.env.STORAGE_URL + `/preview/${props.value}`;
+    forceRender();
+  }, [props.value]);
+
   const handleCrop = useCallback(
     async (data: Blob) => {
       const [, ext] = data.type.split('/');
-      const lastIndex = image?.name.lastIndexOf('.');
-      const name = lastIndex == -1 ? image?.name : image?.name.substring(0, lastIndex);
+      const lastIndex = state.current.image?.name.lastIndexOf('.');
+      const name =
+        lastIndex == -1
+          ? state.current.image?.name
+          : state.current.image?.name.substring(0, lastIndex);
       const fileData = await upload(
         new File([data], `${name}.${ext}`, {
           type: data.type,
           lastModified: new Date().getTime(),
         }),
       );
+      state.current.value = fileData.id;
+      state.current.preview = process.env.STORAGE_URL + `/preview/${fileData.id}`;
+      state.current.imageCropperModalVisible = false;
+      forceRender();
       onChange && onChange(fileData.id, fileData);
-      setPreview(process.env.STORAGE_URL + fileData.path);
-      setImageCropperModalVisible(false);
     },
-    [image?.name, onChange, upload],
+    [onChange, upload],
   );
 
-  const handleRemove = useCallback(() => {}, []);
+  const { value, preview, imageCropperModalVisible, image } = state.current;
+
+  const handleRemove = useCallback(() => {
+    state.current.value = undefined;
+    state.current.image = undefined;
+    state.current.preview = backgroundImage;
+    onChange && onChange();
+    forceRender();
+  }, [backgroundImage, onChange]);
 
   return (
     <div
