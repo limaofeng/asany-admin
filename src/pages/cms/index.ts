@@ -1,12 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import MyDrafts from './pages/MyDrafts';
-import ArticleList from './components/ArticleList';
-import ArticleView from './article/ArticleView';
-import ArticleSidebar from './article/ArticleSidebar';
-import ArticleChannel from './article/ArticleChannel';
-import { ArticleEdit, ArticleNew } from './article/ArticleEditor';
-import MyPublished from './pages/MyPublished';
+import LoadingComponent from '@/components/PageLoading';
 
 @library({
   name: 'cms',
@@ -15,21 +10,45 @@ import MyPublished from './pages/MyPublished';
 })
 class Cms {
   @component({ name: 'ArticleList' })
-  ArticleList = ArticleList;
+  ArticleList = dynamic({
+    loader: () => import('./components/ArticleList'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'ArticleView' })
-  ArticleView = ArticleView;
+  ArticleView = dynamic({
+    loader: () => import('./article/ArticleView'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'ArticleSidebar' })
-  ArticleSidebar = ArticleSidebar;
+  ArticleSidebar = dynamic({
+    loader: () => import('./article/ArticleSidebar'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'ArticleChannel' })
-  ArticleChannel = ArticleChannel;
+  ArticleChannel = dynamic({
+    loader: () => import('./article/ArticleChannel'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'ArticleNew' })
-  ArticleNew = ArticleNew;
+  ArticleNew = dynamic({
+    loader: async () => (await import('./article/ArticleEditor')).ArticleNew,
+    loading: LoadingComponent,
+  });
   @component({ name: 'ArticleEdit' })
-  ArticleEdit = ArticleEdit;
+  ArticleEdit = dynamic({
+    loader: async () => (await import('./article/ArticleEditor')).ArticleEdit,
+    loading: LoadingComponent,
+  });
   @component({})
-  MyDrafts = MyDrafts;
+  MyDrafts = dynamic({
+    loader: () => import('./pages/MyDrafts'),
+    loading: LoadingComponent,
+  });
   @component({})
-  MyPublished = MyPublished;
+  MyPublished = dynamic({
+    loader: () => import('./pages/MyPublished'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Cms();

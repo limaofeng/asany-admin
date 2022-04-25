@@ -1,9 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import MailMessageDetails from './pages/MailMessageDetails';
-import Sidebar from './components/Sidebar';
-import Mailbox from './pages/Mailbox';
-import ComposeMail from './pages/ComposeMail';
+import LoadingComponent from '@/components/PageLoading';
 
 import './style/index.scss';
 
@@ -14,13 +12,25 @@ import './style/index.scss';
 })
 class Contacts {
   @component()
-  Sidebar = Sidebar;
+  Sidebar = dynamic({
+    loader: () => import('./components/Sidebar'),
+    loading: LoadingComponent,
+  });
   @component()
-  Mailbox = Mailbox;
+  Mailbox = dynamic({
+    loader: () => import('./pages/Mailbox'),
+    loading: LoadingComponent,
+  });
   @component()
-  MailMessageDetails = MailMessageDetails;
+  MailMessageDetails = dynamic({
+    loader: () => import('./pages/MailMessageDetails'),
+    loading: LoadingComponent,
+  });
   @component()
-  Compose = ComposeMail;
+  Compose = dynamic({
+    loader: () => import('./pages/ComposeMail'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Contacts();

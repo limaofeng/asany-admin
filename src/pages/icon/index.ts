@@ -1,7 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import Libraries from './pages/Libraries';
-import LibraryDetails from './pages/LibraryDetails';
+import LoadingComponent from '@/components/PageLoading';
 
 @library({
   name: 'icon',
@@ -10,9 +10,15 @@ import LibraryDetails from './pages/LibraryDetails';
 })
 class IconLibrary {
   @component({ name: 'Libraries' })
-  Libraries = Libraries;
+  Libraries = dynamic({
+    loader: () => import('./pages/Libraries'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'LibraryDetails' })
-  LibraryDetails = LibraryDetails;
+  LibraryDetails = dynamic({
+    loader: () => import('./pages/LibraryDetails'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new IconLibrary();

@@ -1,7 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import Sidebar from './components/Sidebar';
-import MainCalendar from './pages/MainCalendar';
+import LoadingComponent from '@/components/PageLoading';
 
 import './style/index.scss';
 
@@ -12,10 +12,16 @@ import './style/index.scss';
 })
 class Contacts {
   @component()
-  Sidebar = Sidebar;
+  Sidebar = dynamic({
+    loader: () => import('./components/Sidebar'),
+    loading: LoadingComponent,
+  });
 
   @component({ name: 'MainCalendar' })
-  MainCalendar = MainCalendar;
+  MainCalendar = dynamic({
+    loader: () => import('./pages/MainCalendar'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Contacts();

@@ -1,10 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import AppList from './pages/AppList';
-import AppView from './pages/AppView';
-import Overview from './pages/Overview';
-import MenuTree from './pages/MenuTree';
-import RouteTree from './pages/RouteTree';
+import LoadingComponent from '@/components/PageLoading';
 
 import './pages/style/App.scss';
 
@@ -15,15 +12,30 @@ import './pages/style/App.scss';
 })
 class App {
   @component({ name: 'AppList' })
-  AppList = AppList;
+  AppList = dynamic({
+    loader: () => import('./pages/AppList'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'AppView' })
-  AppView = AppView;
+  AppView = dynamic({
+    loader: () => import('./pages/AppView'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'Overview' })
-  Overview = Overview;
+  Overview = dynamic({
+    loader: () => import('./pages/Overview'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'MenuTree' })
-  MenuTree = MenuTree;
+  MenuTree = dynamic({
+    loader: () => import('./pages/MenuTree'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'RouteTree' })
-  RouteTree = RouteTree;
+  RouteTree = dynamic({
+    loader: () => import('./pages/RouteTree'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new App();

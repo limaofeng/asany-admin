@@ -1,6 +1,6 @@
 overwrite: true
-schema: "https://api.asany.cn/graphql"
-# schema: "http://localhost:8080/graphql"
+# schema: "https://api.asany.cn/graphql"
+schema: "http://localhost:8080/graphql"
 generates:
   src/types.ts:
     plugins:
@@ -57,17 +57,6 @@ generates:
         - eslint --fix
   src/pages/calendar/hooks.ts:
     documents: ["src/pages/calendar/**/*.gql"]
-    plugins:
-      - "typescript-operations"
-      - "typescript-react-apollo"
-    config:
-      withHooks: true
-    hooks:
-      afterAllFileWrite:
-        - prettier --write
-        - eslint --fix
-  src/pages/storage/hooks/api.ts:
-    documents: ["src/pages/storage/hooks/*.gql"]
     plugins:
       - "typescript-operations"
       - "typescript-react-apollo"

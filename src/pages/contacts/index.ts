@@ -1,8 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import Sidebar from './components/Sidebar';
-import MainContacts from './pages/MainContacts';
-import ViewContact from './pages/ViewContact';
+import LoadingComponent from '@/components/PageLoading';
 
 import './style/index.scss';
 
@@ -13,11 +12,20 @@ import './style/index.scss';
 })
 class Contacts {
   @component()
-  Sidebar = Sidebar;
+  Sidebar = dynamic({
+    loader: () => import('./components/Sidebar'),
+    loading: LoadingComponent,
+  });
   @component()
-  MainContacts = MainContacts;
+  MainContacts = dynamic({
+    loader: () => import('./pages/MainContacts'),
+    loading: LoadingComponent,
+  });
   @component()
-  ViewContact = ViewContact;
+  ViewContact = dynamic({
+    loader: () => import('./pages/ViewContact'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Contacts();

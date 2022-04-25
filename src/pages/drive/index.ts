@@ -1,9 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import Sidebar from './components/Sidebar';
-import DriveStarred from './pages/DriveStarred';
-import DriveTrash from './pages/DriveTrash';
-import FileList from './pages/FileList';
+import LoadingComponent from '@/components/PageLoading';
 
 import './style/index.scss';
 
@@ -14,13 +12,25 @@ import './style/index.scss';
 })
 class Drive {
   @component({ name: 'Sidebar' })
-  Sidebar = Sidebar;
+  Sidebar = dynamic({
+    loader: () => import('./components/Sidebar'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'FileList' })
-  FileList = FileList;
+  FileList = dynamic({
+    loader: () => import('./pages/FileList'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'DriveStarred' })
-  DriveStarred = DriveStarred;
+  DriveStarred = dynamic({
+    loader: () => import('./pages/DriveStarred'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'DriveTrash' })
-  DriveTrash = DriveTrash;
+  DriveTrash = dynamic({
+    loader: () => import('./pages/DriveTrash'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Drive();

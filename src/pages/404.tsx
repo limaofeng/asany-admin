@@ -1,11 +1,17 @@
-import { Card, Upload } from '@/components/Metronic';
+import { useState } from 'react';
 
-const ImageUpload = Upload.Image;
+import { AreaPicker, Card } from '@/components/Metronic';
 
-const NoFoundPage: React.FC = () => (
-  <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
-    <ImageUpload width={300} height={300} crop={{ height: 450, zoomable: false, aspectRatio: 1 }} />
-  </Card>
-);
+const NoFoundPage: React.FC = () => {
+  const [value, setValue] = useState<string | string[]>(['31', '310104', '310104004']);
+
+  return (
+    <Card flush className="mt-6 mt-xl-9 x" headerClassName="mt-5">
+      value = {typeof value == 'string' ? value : value.join(',')}
+      <br />
+      <AreaPicker value={value} onChange={setValue} className="w-300px" placeholder="--请选择--" />
+    </Card>
+  );
+};
 
 export default NoFoundPage;

@@ -1,6 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import HomeBuilder from './components/builder/HomeBuilder';
+import LoadingComponent from '@/components/PageLoading';
 
 @library({
   name: 'admin',
@@ -9,7 +10,10 @@ import HomeBuilder from './components/builder/HomeBuilder';
 })
 class Admin {
   @component({ name: 'Home' })
-  HomeBuilder = HomeBuilder;
+  HomeBuilder = dynamic({
+    loader: () => import('./components/builder/HomeBuilder'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Admin();

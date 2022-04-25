@@ -1,6 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import MenuSidebar from './MenuSidebar';
+import LoadingComponent from '@/components/PageLoading';
 
 @library({
   name: 'shanhai',
@@ -9,7 +10,10 @@ import MenuSidebar from './MenuSidebar';
 })
 class Shanhai {
   @component({ name: 'MenuSidebar' })
-  MenuSidebar = MenuSidebar;
+  MenuSidebar = dynamic({
+    loader: () => import('./MenuSidebar'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Shanhai();

@@ -1,16 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import UserSettingsSidebar from './components/UserSettingsSidebar';
-import {
-  SessionDetails,
-  UserAccount,
-  UserEmails,
-  UserNotifications,
-  UserOrganizations,
-  UserPreferences,
-  UserProfile,
-  UserSecurity,
-} from './pages/settings';
+import LoadingComponent from '@/components/PageLoading';
 
 import './style/index.scss';
 
@@ -21,23 +12,50 @@ import './style/index.scss';
 })
 class User {
   @component()
-  UserSettingsSidebar = UserSettingsSidebar;
+  UserSettingsSidebar = dynamic({
+    loader: () => import('./components/UserSettingsSidebar'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.Profile' })
-  UserProfile = UserProfile;
+  UserProfile = dynamic({
+    loader: () => import('./pages/settings/Profile'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.Account' })
-  UserAccount = UserAccount;
+  UserAccount = dynamic({
+    loader: () => import('./pages/settings/Account'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.Emails' })
-  UserEmails = UserEmails;
+  UserEmails = dynamic({
+    loader: () => import('./pages/settings/Emails'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.Notifications' })
-  UserNotifications = UserNotifications;
+  UserNotifications = dynamic({
+    loader: () => import('./pages/settings/Notifications'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.Organizations' })
-  UserOrganizations = UserOrganizations;
+  UserOrganizations = dynamic({
+    loader: () => import('./pages/settings/Organizations'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.Preferences' })
-  UserPreferences = UserPreferences;
+  UserPreferences = dynamic({
+    loader: () => import('./pages/settings/Preferences'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.Security' })
-  UserSecurity = UserSecurity;
+  UserSecurity = dynamic({
+    loader: () => import('./pages/settings/Security'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.SessionDetails' })
-  SessionDetails = SessionDetails;
+  SessionDetails = dynamic({
+    loader: () => import('./pages/settings/SessionDetails'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new User();

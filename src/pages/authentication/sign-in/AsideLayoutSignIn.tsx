@@ -27,7 +27,7 @@ function Aside() {
           {/* --end::Logo--*/}
           {/* --begin::Title--*/}
           <h1 className="fw-bolder fs-2qx pb-5 pb-md-10" style={{ color: '#986923' }}>
-            欢迎使用 榫卯 1211
+            欢迎使用 榫卯
           </h1>
           {/* --end::Title--*/}
           {/* --begin::Description--*/}

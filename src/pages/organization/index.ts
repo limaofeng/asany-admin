@@ -1,7 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import OrganizationSettingsSidebar from './components/OrganizationSettingsSidebar';
-import { SettingsProfile, SettingsRoleDetails, SettingsRoles } from './pages/settings';
+import LoadingComponent from '@/components/PageLoading';
 
 import './style/index.scss';
 
@@ -12,13 +12,25 @@ import './style/index.scss';
 })
 class Organization {
   @component({ name: 'OrganizationSettingsSidebar' })
-  OrganizationSettingsSidebar = OrganizationSettingsSidebar;
+  OrganizationSettingsSidebar = dynamic({
+    loader: () => import('./components/OrganizationSettingsSidebar'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.Profile' })
-  SettingsProfile = SettingsProfile;
+  SettingsProfile = dynamic({
+    loader: () => import('./pages/settings/Profile'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.Roles' })
-  SettingsRoles = SettingsRoles;
+  SettingsRoles = dynamic({
+    loader: () => import('./pages/settings/Roles'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.RoleDetails' })
-  SettingsRoleDetails = SettingsRoleDetails;
+  SettingsRoleDetails = dynamic({
+    loader: () => import('./pages/settings/RoleDetails'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Organization();
