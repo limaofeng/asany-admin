@@ -1,6 +1,7 @@
 import { component, library } from 'sunmao';
+import { dynamic } from 'umi';
 
-import Demo7 from './Demo7/Demo7';
+import LoadingComponent from '@/components/PageLoading';
 
 @library({
   name: 'layout',
@@ -9,7 +10,10 @@ import Demo7 from './Demo7/Demo7';
 })
 class Layout {
   @component()
-  Demo7 = Demo7;
+  Demo7 = dynamic({
+    loader: () => import('./Demo7/Demo7'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Layout();
