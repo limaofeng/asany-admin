@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { loginWithUsername, useModel } from 'umi';
 import { useHistory } from 'react-router';
 
-import { Button, Form, Input, Modal } from '@/components/Metronic/components';
+import { Button, Form, Input, Modal } from '@/metronic';
 
 function Aside() {
   return (

@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 
-import { Dropdown, Menu, Modal } from '@/components/Metronic';
+import { Dropdown, Menu, Modal } from '@/metronic';
 import {
   useCalendarAccountsQuery,
   useCreateCalendarMutation,

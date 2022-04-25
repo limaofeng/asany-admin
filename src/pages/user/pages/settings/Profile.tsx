@@ -1,5 +1,5 @@
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card, DatePicker, Form, Input, Radio } from '@/components/Metronic';
+import { Button, Card, DatePicker, Form, Input, Radio } from '@/metronic';
 
 function Profile() {
   return (

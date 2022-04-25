@@ -1,5 +1,5 @@
 function PageLoading() {
-  return <div>123123</div>;
+  return <div>loading...</div>;
 }
 
 export default PageLoading;

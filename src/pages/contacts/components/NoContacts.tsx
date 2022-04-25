@@ -1,4 +1,4 @@
-import { Card } from '@/components/Metronic';
+import { Card } from '@/metronic';
 
 function NoContacts() {
   return (

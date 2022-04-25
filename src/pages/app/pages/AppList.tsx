@@ -1,7 +1,7 @@
 import { useMyAppsQuery } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Badge, Card, Col, Progress, Row, Symbol, Tooltip } from '@/components/Metronic';
+import { Badge, Card, Col, Progress, Row, Symbol, Tooltip } from '@/metronic';
 
 function AppList() {
   const { data = { apps: [] } } = useMyAppsQuery();

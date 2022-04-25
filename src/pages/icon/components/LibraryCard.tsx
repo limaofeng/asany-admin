@@ -7,7 +7,7 @@ import { useDeleteIconLibraryMutation, useUpdateIconLibraryMutation } from '../h
 
 import type { IconLibrary } from '@/types';
 import type { InputRef } from '@/components/Metronic/components/forms/Input';
-import { Card, Dropdown, Input, Menu, Modal, Spin } from '@/components/Metronic';
+import { Card, Dropdown, Input, Menu, Modal, Spin } from '@/metronic';
 
 type LibraryCardProps = {
   library: IconLibrary;

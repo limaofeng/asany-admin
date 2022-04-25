@@ -26,7 +26,7 @@ import {
   Modal,
   Select2,
   Table,
-} from '@/components/Metronic';
+} from '@/metronic';
 import type { Article } from '@/types';
 
 type ArticleActionsProps = {

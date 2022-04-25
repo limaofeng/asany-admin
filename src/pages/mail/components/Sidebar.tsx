@@ -9,7 +9,7 @@ import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL } from '../utils';
 
 import Preferences from './preferences';
 
-import { Badge, Button, Menu } from '@/components/Metronic';
+import { Badge, Button, Menu } from '@/metronic';
 import { AsideWorkspace } from '@/layouts/Demo7';
 
 type SidebarFooterProps = {

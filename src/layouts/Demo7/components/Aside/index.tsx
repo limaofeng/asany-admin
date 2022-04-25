@@ -11,8 +11,8 @@ import AsideSecondary from './AsideSecondary';
 import AsideWorkspace from './Secondary/AsideWorkspace';
 
 import type { MenuData } from '@/.umi/app/typings';
-import { Popover } from '@/components/Metronic';
-import { useScroll } from '@/components/Metronic/components/utils';
+import Popover from '@/metronic/Popover';
+import { useScroll } from '@/metronic/utils';
 import UserAccountMenu from '@/pages/user/components/UserAccountMenu';
 
 export interface AsideProps {

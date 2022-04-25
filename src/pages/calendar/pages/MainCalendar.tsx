@@ -17,7 +17,7 @@ import type { CalendarEventsQuery, CalendarEventsQueryVariables } from '../hooks
 import { CalendarEventsDocument } from '../hooks';
 import { isDoubleClick } from '../utils';
 
-import { Card } from '@/components/Metronic';
+import { Card } from '@/metronic';
 import { ContentWrapper } from '@/layouts/components';
 
 type SuccessCallback = (events: any[]) => void;

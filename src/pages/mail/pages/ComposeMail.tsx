@@ -11,7 +11,7 @@ import {
 } from '../hooks';
 import MessageEditor from '../components/MessageEditor';
 
-import { Button, Card, Modal, Spin, Tabs } from '@/components/Metronic';
+import { Button, Card, Modal, Spin, Tabs } from '@/metronic';
 import type { MailboxMessage } from '@/types';
 import { sleep } from '@/utils';
 import { ContentWrapper } from '@/layouts/components';

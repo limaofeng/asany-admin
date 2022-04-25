@@ -19,20 +19,10 @@ import FileDetails from './FileDetails';
 import FileName from './FileName';
 import NewFolderModal from './NewFolderModal';
 
-import {
-  Alert,
-  Badge,
-  BlockUI,
-  Button,
-  Card,
-  Input,
-  Modal,
-  Table,
-  Toast,
-} from '@/components/Metronic';
+import { Alert, Badge, BlockUI, Button, Card, Input, Modal, Table, Toast } from '@/metronic';
 import type { FileFilter, FileObject } from '@/types';
-import type { DataSource, Sorter } from '@/components/Metronic/components/base/Table/typings';
-import { fileSize } from '@/components/Metronic/components/utils/format';
+import type { DataSource, Sorter } from '@/metronic/typings';
+import { fileSize } from '@/metronic/utils/format';
 
 type ListFilesProps = {
   toolbar?: 'default' | 'starred' | 'trash';

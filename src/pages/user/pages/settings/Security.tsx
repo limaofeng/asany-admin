@@ -2,7 +2,7 @@ import Icon from '@asany/icons';
 import { Link } from 'umi';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card, Form, Input } from '@/components/Metronic';
+import { Button, Card, Form, Input } from '@/metronic';
 
 function TwoFactorAuthentication() {
   return (

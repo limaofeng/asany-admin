@@ -10,7 +10,7 @@ import { extensions } from '../utils';
 
 import { ContentWrapper } from '@/layouts/components';
 import type { CloudDrive, FileObject } from '@/types';
-import type { Sorter } from '@/components/Metronic/components/base/Table/typings';
+import type { Sorter } from '@/metronic/typings';
 
 type FileListRouteParams = {
   id: string;

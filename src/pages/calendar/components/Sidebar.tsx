@@ -16,7 +16,7 @@ import CalendarSidebarFooter from './CalendarSidebarFooter';
 import Preferences from './preferences';
 
 import type { CalendarEvent, CalendarSet } from '@/types';
-import { Popover } from '@/components/Metronic';
+import { Popover } from '@/metronic';
 import { sleep } from '@/utils';
 import { AsideWorkspace } from '@/layouts/Demo7';
 

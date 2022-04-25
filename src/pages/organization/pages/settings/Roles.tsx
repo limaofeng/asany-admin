@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Link } from 'umi';
 
-import { Button, Card, Col, Input, Row, Select2 } from '@/components/Metronic';
+import { Button, Card, Col, Input, Row, Select2 } from '@/metronic';
 import { ContentWrapper } from '@/layouts/components';
 import Controls from '@/components/Controls';
 

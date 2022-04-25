@@ -7,8 +7,8 @@ import ContentLoader from 'react-content-loader';
 
 import type { PaginationType, UseContact } from '../hooks/useContacts';
 
-import type { RowRendererParams, ScrollRowDataEvent } from '@/components/Metronic';
-import { Card, InfiniteScroll, Input, Symbol } from '@/components/Metronic';
+import type { RowRendererParams, ScrollRowDataEvent } from '@/metronic';
+import { Card, InfiniteScroll, Input, Symbol } from '@/metronic';
 
 type ContactItemProps = {
   index: number;

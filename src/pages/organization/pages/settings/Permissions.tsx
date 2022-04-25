@@ -1,5 +1,5 @@
 import { ContentWrapper } from '@/layouts/components';
-import { Table } from '@/components/Metronic';
+import { Table } from '@/metronic';
 
 function Permissions() {
   return (

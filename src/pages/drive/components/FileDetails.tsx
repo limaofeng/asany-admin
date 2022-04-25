@@ -8,9 +8,9 @@ import { Link } from 'umi';
 
 import { useFileQuery } from '../hooks';
 
-import { BlockUI, Symbol, Tabs } from '@/components/Metronic';
+import { BlockUI, Symbol, Tabs } from '@/metronic';
 import type { FileObject } from '@/types';
-import { fileSize } from '@/components/Metronic/components/utils/format';
+import { fileSize } from '@/metronic/utils/format';
 
 type FileDetailsProps = {
   currentFolder?: FileObject;

@@ -7,7 +7,7 @@ import { useArticleChannelAllQuery } from '../hooks';
 
 import { NewArticleChannelModal } from './ArticleChannelNew';
 
-import { Button, Menu } from '@/components/Metronic';
+import { Button, Menu } from '@/metronic';
 import { tree } from '@/utils';
 import type { ArticleChannel } from '@/types';
 import { AsideWorkspace } from '@/layouts/Demo7';

@@ -6,7 +6,7 @@ import CalendarPicker from '../../CalendarPicker';
 import CalendarSets from './CalendarSets';
 import CalendarList from './CalendarList';
 
-import { Form } from '@/components/Metronic';
+import { Form } from '@/metronic';
 
 function Calendars() {
   const [updateCalendarSet] = useUpdateCalendarSetMutation();

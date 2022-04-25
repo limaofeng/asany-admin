@@ -6,8 +6,8 @@ import { getMatchMenu } from '@umijs/route-utils';
 import { useLocation, useParams } from 'umi';
 import { findLast } from 'lodash';
 
-import { Breadcrumb } from '@/components/Metronic';
-import { useSticky } from '@/components/Metronic/hooks';
+import Breadcrumb from '@/metronic/Breadcrumb';
+import { useSticky } from '@/metronic/hooks';
 import { useLayoutSelector } from '@/layouts/LayoutContext';
 
 function Toolbar() {

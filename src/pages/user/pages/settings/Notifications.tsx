@@ -1,5 +1,5 @@
 import { ContentWrapper } from '@/layouts/components';
-import { Card } from '@/components/Metronic';
+import { Card } from '@/metronic';
 
 function Notifications() {
   return (

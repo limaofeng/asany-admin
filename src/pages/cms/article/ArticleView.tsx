@@ -5,7 +5,7 @@ import type { RouteComponentProps } from 'react-router';
 import { QUERY_ARTICLE } from './gql/article.gql';
 import type { IArticle } from './typings';
 
-import { Card } from '@/components/Metronic';
+import { Card } from '@/metronic';
 import { ContentWrapper } from '@/layouts/components';
 
 function ArticleShare() {

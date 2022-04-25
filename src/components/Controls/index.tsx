@@ -1,6 +1,6 @@
 import Icon from '@asany/icons';
 
-import { Button } from '@/components/Metronic';
+import Button from '@/metronic/Button';
 
 type ControlsProps = {
   layout?: boolean;

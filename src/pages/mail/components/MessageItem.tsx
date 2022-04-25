@@ -18,8 +18,8 @@ import {
 } from '../hooks';
 
 import type { MailboxMessage } from '@/types';
-import { toPlainText } from '@/components/Metronic/components/utils/format';
-import { Modal } from '@/components/Metronic';
+import { toPlainText } from '@/metronic/utils/format';
+import { Modal } from '@/metronic';
 
 export type MessageItemProps = {
   index: number;

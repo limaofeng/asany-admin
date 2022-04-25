@@ -4,7 +4,7 @@ import { Link } from 'umi';
 import worldMap from '../../assets/world_map.svg';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card } from '@/components/Metronic';
+import { Button, Card } from '@/metronic';
 
 function SessionDetails() {
   return (

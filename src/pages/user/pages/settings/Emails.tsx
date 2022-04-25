@@ -1,16 +1,7 @@
 import Icon from '@asany/icons';
 
 import { ContentWrapper } from '@/layouts/components';
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  Radio,
-  Select,
-  Separator,
-  Tooltip,
-} from '@/components/Metronic';
+import { Button, Card, Form, Input, Radio, Select, Separator, Tooltip } from '@/metronic';
 
 type EmailListItemProps = {
   state: string;

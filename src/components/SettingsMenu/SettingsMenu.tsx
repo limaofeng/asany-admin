@@ -4,7 +4,7 @@ import React, { forwardRef, useImperativeHandle, useReducer, useRef } from 'reac
 import classnames from 'classnames';
 import Icon from '@asany/icons';
 
-import { sleep } from '../../utils';
+import { sleep } from '@/utils';
 
 import './SettingsMenu.scss';
 

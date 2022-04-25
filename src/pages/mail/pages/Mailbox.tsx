@@ -21,10 +21,10 @@ import type { RefreshEvent, UseMessage } from '../typings';
 
 import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
 
-import type { InfiniteScrollRef, RowRendererParams } from '@/components/Metronic';
-import { Button } from '@/components/Metronic';
-import { Modal } from '@/components/Metronic';
-import { Card, InfiniteScroll, Input, NProgress } from '@/components/Metronic';
+import type { InfiniteScrollRef, RowRendererParams } from '@/metronic';
+import { Button } from '@/metronic';
+import { Modal } from '@/metronic';
+import { Card, InfiniteScroll, Input, NProgress } from '@/metronic';
 import { delay, sleep } from '@/utils';
 import type { MailboxMessage, MailboxMessageConnection } from '@/types';
 import { ContentWrapper } from '@/layouts/components';

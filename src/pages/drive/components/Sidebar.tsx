@@ -8,11 +8,11 @@ import { useCloudDrivesQuery } from '../hooks';
 
 import Transfers from './Transfers';
 
-import type { OptionData } from '@/components/Metronic';
-import { CircleProgress } from '@/components/Metronic';
-import { Popover } from '@/components/Metronic';
-import { Menu } from '@/components/Metronic';
-import { Pulse, Select } from '@/components/Metronic';
+import type { OptionData } from '@/metronic';
+import { CircleProgress } from '@/metronic';
+import { Popover } from '@/metronic';
+import { Menu } from '@/metronic';
+import { Pulse, Select } from '@/metronic';
 import type { CloudDrive } from '@/types';
 import { AsideWorkspace } from '@/layouts/Demo7';
 

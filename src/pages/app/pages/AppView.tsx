@@ -4,7 +4,7 @@ import Icon from '@asany/icons';
 import { useAppQuery } from '../hooks';
 
 import { ContentWrapper, Navbar } from '@/layouts/components';
-import { CountUp, Nav, Stat, Symbol } from '@/components/Metronic';
+import { CountUp, Nav, Stat, Symbol } from '@/metronic';
 
 type AppViewProps = RouteComponentProps<{ id: string }> & {
   children: React.ReactNode;
