@@ -21,7 +21,7 @@ import type { RefreshEvent, UseMessage } from '../typings';
 
 import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
 
-import type { InfiniteScrollRef, RowRendererParams } from '@/metronic';
+import type { InfiniteScrollRef, RowRendererParams } from '@/metronic/typings';
 import { Button } from '@/metronic';
 import { Modal } from '@/metronic';
 import { Card, InfiniteScroll, Input, NProgress } from '@/metronic';

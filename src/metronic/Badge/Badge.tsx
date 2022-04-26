@@ -2,6 +2,8 @@ import React from 'react';
 
 import classnames from 'classnames';
 
+import './style/index.scss';
+
 export type BadgeProps = {
   tag?: 'span' | 'div';
   color?:

@@ -231,7 +231,7 @@ function AreaPicker(props: AreaPickerProps) {
             },
           },
         });
-        _data.children = loadData.dicts
+        _data.children = (loadData?.dicts || [])
           .map((t: AreaData) => ({ ...t }))
           .sort((l: AreaData, r: AreaData) => l.index - r.index);
       }
@@ -310,6 +310,9 @@ function AreaPicker(props: AreaPickerProps) {
   );
 
   const handleVisibleChange = useCallback((visible: boolean) => {
+    if (state.current.popover == visible) {
+      return;
+    }
     state.current.popover = visible;
     forceRender();
   }, []);

@@ -107,7 +107,11 @@ function MenuItem(props: MenuItemProps) {
                 </span>
               )
             )}
-            <span className={classnames('menu-title', titleClassName)}>{children || title}</span>
+            {icon || badge ? (
+              <span className={classnames('menu-title', titleClassName)}>{children || title}</span>
+            ) : (
+              children || title
+            )}
             {badge}
           </>,
         )

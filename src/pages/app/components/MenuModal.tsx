@@ -5,6 +5,7 @@ import { useCreateMenuMutation, useLoadMenusQuery, useUpdateMenuMutation } from 
 import type { FormInstance } from '@/metronic/Form';
 import { Form, Input, Modal, Radio, Select2 } from '@/metronic';
 import { delay, flat, tree } from '@/utils';
+import type { ClickCallback } from '@/metronic/Modal/typings';
 
 type MenuFormProps = {
   appId: string;

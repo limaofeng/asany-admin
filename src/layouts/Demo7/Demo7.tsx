@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
+import { ToastContainer } from 'react-toastify';
 import { useApp } from 'umi';
 import { getMatchMenu, transformRoute } from '@umijs/route-utils';
 import type { RouteComponentProps } from 'react-router';
 import type { Route } from '@umijs/route-utils/dist/types';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { LayoutProvider, useLayoutSelector } from '../LayoutContext';
 
@@ -71,6 +73,7 @@ function InternalLayout(props: LayoutProps) {
       className="theme-metronic header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled"
     >
       <div className="d-flex flex-column flex-root">
+        <ToastContainer />
         <div className="page d-flex flex-row flex-column-fluid">
           <Aside menuRender={menuRender} onSelect={onSelect} activeKey={activeKey} />
           {children}

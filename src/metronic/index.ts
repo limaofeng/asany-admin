@@ -1,5 +1,4 @@
 import './style/index.scss';
-import './style/Form.scss';
 
 export { default as User } from './User';
 export { default as Menu } from './Menu';

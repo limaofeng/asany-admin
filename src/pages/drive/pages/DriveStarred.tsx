@@ -7,7 +7,7 @@ import { useCloudDriveLazyQuery } from '../hooks';
 import ListFiles from '../components/ListFiles';
 
 import type { CloudDrive, FileObject } from '@/types';
-import type { Sorter } from '@/components/Metronic/components/base/Table/typings';
+import type { Sorter } from '@/metronic/Table/typings';
 import { ContentWrapper } from '@/layouts/components';
 
 type DriveStarredRouteParams = {

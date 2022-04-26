@@ -74,6 +74,12 @@ function useDataSourceWrapper<T>(dataSource: T[] | DataSource<T>): DataSource<T>
   return dataSource;
 }
 
+function initEventEmitter() {
+  const emitter = new EventEmitter();
+  emitter.setMaxListeners(1000);
+  return emitter;
+}
+
 function Table<T>(props: TableProps<T>) {
   const {
     responsive = true,
@@ -104,7 +110,12 @@ function Table<T>(props: TableProps<T>) {
     selectedKeys: Set<string>;
     selectedAll: boolean;
     totalCount: number;
+    page: number;
+    pageSize: number;
+    sorter?: Sorter;
   }>({
+    page: pagination?.current || 0,
+    pageSize: pagination?.pageSize || 0,
     totalCount: 0,
     selectedAll: false,
     colgroups: new Map(),
@@ -114,6 +125,8 @@ function Table<T>(props: TableProps<T>) {
 
   const dataSource = useDataSourceWrapper(props.dataSource);
 
+  state.current.page = pagination?.current || 0;
+  state.current.pageSize = pagination?.pageSize || 0;
   state.current.totalCount = useMemo(() => {
     return dataSource.rowCount;
   }, [dataSource]);
@@ -129,12 +142,10 @@ function Table<T>(props: TableProps<T>) {
     items: new Map<string, T>(),
     rowKey,
     REPAIR_OF_SELECTEDALL_RUNNING: false,
-    emitter: new EventEmitter(),
+    emitter: initEventEmitter(),
   });
 
   useEffect(() => {
-    temp.current.emitter.setMaxListeners(1000);
-
     if (!onChange) {
       return;
     }
@@ -284,29 +295,56 @@ function Table<T>(props: TableProps<T>) {
     forceRender();
   }, []);
 
+  const handlePageChange = useCallback(
+    (page: number, pageSize: number) => {
+      state.current.page = page;
+      state.current.pageSize = pageSize;
+      tableOnChange &&
+        tableOnChange(
+          { ...props.pagination!, current: page, pageSize },
+          null,
+          state.current.sorter,
+          {
+            action: 'paginate',
+          },
+        );
+    },
+    [props.pagination, tableOnChange],
+  );
+
   const handleSort = useCallback(
     (sorter: Sorter) => {
-      tableOnChange && tableOnChange(props.pagination, null, sorter, { action: 'sort' });
+      state.current.sorter = sorter;
+      tableOnChange &&
+        tableOnChange(
+          { ...props.pagination!, current: state.current.page, pageSize: state.current.pageSize },
+          null,
+          sorter,
+          { action: 'sort' },
+        );
     },
     [props.pagination, tableOnChange],
   );
 
   const { colgroups } = state.current;
 
-  const newColumns = useMemo(
-    () =>
-      rowSelection
-        ? [
-            { title: '', key: '__rowSelection', width: colgroups.get('__rowSelection') },
-            ...columns.map((col) => ({
-              ...col,
-              key: col.key || col.dataIndex,
-              width: colgroups.get(col.key!)!,
-            })),
-          ]
-        : columns,
-    [rowSelection, columns, colgroups],
-  );
+  const newColumns = useMemo(() => {
+    const _newColumns = [
+      ...columns.map((col) => ({
+        ...col,
+        key: col.key || col.dataIndex,
+        width: colgroups.get(col.key!)!,
+      })),
+    ];
+    if (rowSelection) {
+      _newColumns.unshift({
+        title: '',
+        key: '__rowSelection',
+        width: colgroups.get('__rowSelection')!,
+      });
+    }
+    return _newColumns;
+  }, [rowSelection, columns, colgroups]);
 
   const handleSelectoDragCondition = useCallback((e) => {
     if (!e.inputEvent.path) {
@@ -404,10 +442,10 @@ function Table<T>(props: TableProps<T>) {
           />
         ) : (
           <BsTable
-            hover={hover}
-            striped
-            responsive={responsive}
-            className="table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
+            hover={props.hover}
+            striped={props.striped}
+            responsive={props.responsive}
+            className="dataTable table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
           >
             <Colgroup<T> columns={newColumns} />
             <tbody ref={tableBodyContainer} className="fw-bold text-gray-600">
@@ -462,7 +500,7 @@ function Table<T>(props: TableProps<T>) {
           />
         )}
       </div>
-      {pagination && <Pagination {...pagination} />}
+      {pagination && <Pagination className="py-4" {...pagination} onChange={handlePageChange} />}
     </div>
   );
 }

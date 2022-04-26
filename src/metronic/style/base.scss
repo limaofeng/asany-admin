@@ -1,0 +1,54 @@
+.page-full-content {
+  width: 100%;
+  padding-left: 425px !important;
+  .aside {
+    left: 100px;
+    width: auto;
+  }
+}
+.menu-item .menu-link .menu-title {
+  a {
+    color: inherit;
+  }
+}
+.menu.menu-tree.menu-state-primary .menu-item.show > .menu-link:not(.active):not(:hover) {
+  $color: #7e8299;
+  .menu-title {
+    color: $color;
+  }
+  .menu-icon .svg-icon svg {
+    [fill]:not(.permanent):not(g) {
+      fill: $color;
+    }
+  }
+  .menu-arrow:after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 9' fill='%23A1A5B7'%3e%3cpath fill-rule='evenodd' clip-rule='evenodd' d='M5.93537 4.57889C6.03839 4.77912 6.0191 5.0363 5.87137 5.21403L2.87153 8.82282C2.68598 9.04603 2.36951 9.06026 2.16468 8.8546C1.95985 8.64893 1.94422 8.30126 2.12977 8.07804L4.80594 4.85863L2.15586 1.93583C1.96104 1.72096 1.96165 1.37314 2.15722 1.15895C2.35279 0.944757 2.66927 0.945311 2.86409 1.16018L5.85194 4.45551C5.8859 4.49296 5.91371 4.53459 5.93537 4.57889Z'/%3e%3c/svg%3e");
+  }
+}
+.app-sidebar {
+  .app-sidebar-body {
+    .badge {
+      padding: 0.3em 0.85em;
+    }
+  }
+  .app-sidebar-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    border-top: #f7f7f7 1px solid;
+
+    .form-select {
+      flex: none;
+      width: auto;
+      padding: 0;
+      background-color: transparent;
+      background-size: 21px 9px;
+      border: none;
+      .current-option {
+        padding-right: 36px;
+        font-size: 13px;
+      }
+    }
+  }
+}

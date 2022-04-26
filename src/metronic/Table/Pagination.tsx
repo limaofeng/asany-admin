@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import classnames from 'classnames';
 import { Pagination as BsPagination } from 'react-bootstrap';
@@ -11,6 +11,8 @@ export interface PaginationProps {
   pageSize?: number;
   total: number;
   size?: 'sm' | 'lg';
+  showSizeChanger?: boolean;
+  pageSizeOptions?: number[];
   onChange?: (page: number, pageSize: number) => void;
 }
 
@@ -48,28 +50,42 @@ function Ellipsis(props: EllipsisProps) {
 }
 
 function Pagination(props: PaginationProps) {
-  const { className, total, size } = props;
+  const {
+    className,
+    total,
+    size,
+    onChange,
+    showSizeChanger = false,
+    pageSizeOptions = [10, 20, 50, 100],
+  } = props;
 
   const [current, setCurrent] = useState(props.current);
   const [pageSize, setPageSize] = useState(props.pageSize || 10);
 
-  const handleClick = (page: number) => (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (page > 0) {
-      setCurrent(page);
-    }
-  };
+  const handleClick = useCallback(
+    (page: number) => (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (page > 0) {
+        onChange ? onChange(page, pageSize) : setCurrent(page);
+      }
+    },
+    [onChange, pageSize],
+  );
 
   const handlePageSizeChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setPageSize((prevPageSize) => {
-        const newPageSize = parseInt(e.target.value, 10);
-        setCurrent(getTotalPage(current * prevPageSize, newPageSize));
-        return newPageSize;
-      });
+      const newPageSize = parseInt(e.target.value, 10);
+      if (onChange) {
+        onChange(getTotalPage(current * pageSize, newPageSize), newPageSize);
+      } else {
+        setPageSize((prevPageSize) => {
+          setCurrent(getTotalPage(current * prevPageSize, newPageSize));
+          return newPageSize;
+        });
+      }
     },
-    [current],
+    [current, onChange, pageSize],
   );
 
   const totalPage = useMemo(() => getTotalPage(total, pageSize), [total, pageSize]);
@@ -124,23 +140,38 @@ function Pagination(props: PaginationProps) {
         </BsPagination.Item>
       );
     });
-  }, [totalPage, current]);
+  }, [current, totalPage, handleClick]);
+
+  const pCurrent = props.current;
+  useEffect(() => {
+    setCurrent(pCurrent);
+  }, [pCurrent]);
+
+  useEffect(() => {
+    if (!props.pageSize) {
+      return;
+    }
+    setPageSize(props.pageSize!);
+  }, [props.pageSize]);
 
   return (
-    <div className="row">
+    <div className={classnames('row')}>
       <div className="col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start">
         <div className="dataTables_length">
-          <label>
-            <select
-              onChange={handlePageSizeChange}
-              className="form-select form-select-sm form-select-solid"
-            >
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-          </label>
+          {showSizeChanger && (
+            <label>
+              <select
+                onChange={handlePageSizeChange}
+                className="form-select pe-12 form-select-sm form-select-solid"
+              >
+                {pageSizeOptions.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
       </div>
       <div className="col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end">

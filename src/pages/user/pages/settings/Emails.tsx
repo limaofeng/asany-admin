@@ -167,9 +167,7 @@ function Emails() {
             </Radio>
             <p className="note">我们只会向您发送管理电子邮件，以及您专门订阅的任何电子邮件。</p>
           </div>
-          <Button className="w-150px" disabled>
-            保存电子邮件首选项
-          </Button>
+          <Button disabled>保存电子邮件首选项</Button>
         </Card.Body>
       </Card>
     </ContentWrapper>

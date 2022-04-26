@@ -6,7 +6,7 @@ import Icon from '@asany/icons';
 import { QUEERY_MODELS } from './gql/model.gql';
 
 import { Button, Menu, Modal } from '@/metronic';
-import type { SelectEvent } from '@/components/Metronic/components/base/Menu/typings';
+import type { SelectEvent } from '@/metronic/Menu/typings';
 import { AsideWorkspace } from '@/layouts/Demo7';
 
 import './style/MenuSidebar.scss';

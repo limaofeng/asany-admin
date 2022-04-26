@@ -6,7 +6,7 @@ import Icon from '@asany/icons';
 import { useDeleteIconLibraryMutation, useUpdateIconLibraryMutation } from '../hooks';
 
 import type { IconLibrary } from '@/types';
-import type { InputRef } from '@/components/Metronic/components/forms/Input';
+import type { InputRef } from '@/metronic/Input';
 import { Card, Dropdown, Input, Menu, Modal, Spin } from '@/metronic';
 
 type LibraryCardProps = {

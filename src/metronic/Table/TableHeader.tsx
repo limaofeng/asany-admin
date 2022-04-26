@@ -40,7 +40,7 @@ export function Colgroup<T>({ columns }: ColgroupProps<T>) {
   return <colgroup>{cols}</colgroup>;
 }
 
-type TreeHeaderColumnProps = {
+type TableHeaderColumnProps = {
   className: string;
   col: TableColumn<any>;
   sortOrder?: SortDirection;
@@ -48,13 +48,13 @@ type TreeHeaderColumnProps = {
   onWidthResize: (key: string, width: number) => void;
 };
 
-type TreeHeaderColumnCheckboxProps = {
+type TableHeaderColumnCheckboxProps = {
   checked: boolean;
   onSelect: (selected: boolean) => void;
   onWidthResize: (key: string, width: number) => void;
 };
 
-function TreeHeaderColumnCheckbox(props: TreeHeaderColumnCheckboxProps) {
+function TableHeaderColumnCheckbox(props: TableHeaderColumnCheckboxProps) {
   const { onWidthResize, onSelect } = props;
 
   const [ref, { right, left }] = useMeasure<HTMLTableCellElement>();
@@ -77,7 +77,7 @@ function TreeHeaderColumnCheckbox(props: TreeHeaderColumnCheckboxProps) {
   );
 }
 
-function TreeHeaderColumn(props: TreeHeaderColumnProps) {
+function TableHeaderColumn(props: TableHeaderColumnProps) {
   const { className, col, onSort, onWidthResize, sortOrder } = props;
 
   const sortable = useMemo(
@@ -98,7 +98,7 @@ function TreeHeaderColumn(props: TreeHeaderColumnProps) {
   const [ref, { width, x, y }] = useMeasure<HTMLTableCellElement>();
 
   useEffect(() => {
-    // console.log('TreeHeaderColumn', col.key, width, x, y);
+    // console.log('TableHeaderColumn', col.key, width, x, y);
     onWidthResize(col.key!, width + x);
   }, [col.key, onWidthResize, width, x, y]);
 
@@ -206,7 +206,7 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
           <tr className="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0 table-row-dashed">
             {temp.current.isStats ? (
               <>
-                <TreeHeaderColumnCheckbox
+                <TableHeaderColumnCheckbox
                   checked={selectedAll}
                   onSelect={handleSelect}
                   onWidthResize={handleWidthResize}
@@ -234,14 +234,14 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
               columns.map((col) => {
                 const key = col.key || col.dataIndex;
                 return key == '__rowSelection' ? (
-                  <TreeHeaderColumnCheckbox
+                  <TableHeaderColumnCheckbox
                     key={key}
                     checked={selectedAll}
                     onSelect={handleSelect}
                     onWidthResize={handleWidthResize}
                   />
                 ) : (
-                  <TreeHeaderColumn
+                  <TableHeaderColumn
                     key={`th-${key}`}
                     col={col}
                     sortOrder={sorter?.field == col.key ? sorter?.order : undefined}

@@ -4,6 +4,8 @@ import classnames from 'classnames';
 
 import type { TableColumn } from './typings';
 
+import { getFieldValue } from '@/utils';
+
 type TableCellProps<T> = {
   data: T;
   col: TableColumn<T>;
@@ -13,7 +15,7 @@ type TableCellProps<T> = {
 function TableCell<T>(props: TableCellProps<T>) {
   const { data, col, index } = props;
   const { align } = col;
-  const value = data[(col.dataIndex || col.key) as any];
+  const value = getFieldValue(data, (col.dataIndex || col.key)!);
   const renderResult = col.render ? col.render(value, data, index) : value;
   const isProps = renderResult && !React.isValidElement(renderResult) && renderResult.props;
   const _props = isProps ? renderResult.props : {};

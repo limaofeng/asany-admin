@@ -13,7 +13,7 @@ import {
 } from '../hooks';
 
 import { Button, Card, Form, Input, Modal, Tooltip, Upload } from '@/metronic';
-import type { QueueUploadRef } from '@/metronic';
+import type { QueueUploadRef } from '@/metronic/typings';
 import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
 import { toHtml, toPlainText } from '@/metronic/utils/format';
 import { useAutoSave } from '@/metronic/utils';

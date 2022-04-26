@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import { Toast as BsToast } from 'react-bootstrap';
-import ReactDOM from 'react-dom';
-import classnames from 'classnames';
-import Icon from '@asany/icons';
+import type { ToastOptions as ToastifyOptions } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 import './style.scss';
 
@@ -102,19 +101,16 @@ type Placement =
   | 'bottom-center'
   | 'bottom-end';
 
-const placementClassNames: Record<Placement, string> = {
-  'top-start': 'top-0 start-0',
-  'top-center': 'top-0 start-50 translate-middle-x',
-  'top-end': 'top-0 end-0',
-  'middle-start': 'top-50 start-0 translate-middle-y',
-  'middle-center': 'top-50 start-50 translate-middle',
-  'middle-end': 'top-50 end-0 translate-middle-y',
-  'bottom-start': 'bottom-0 start-0',
-  'bottom-center': 'bottom-0 start-50 translate-middle-x',
-  'bottom-end': 'bottom-0 end-0',
+const placements = {
+  'top-start': toast.POSITION.TOP_LEFT,
+  'top-center': toast.POSITION.TOP_CENTER,
+  'top-end': toast.POSITION.TOP_RIGHT,
+  'bottom-start': toast.POSITION.BOTTOM_LEFT,
+  'bottom-center': toast.POSITION.BOTTOM_CENTER,
+  'bottom-end': toast.POSITION.BOTTOM_RIGHT,
 };
 
-type MessageProps = {
+type ToastOptions = {
   icon?: React.ReactNode;
   title?: string;
   content?: string;
@@ -124,73 +120,52 @@ type MessageProps = {
   progressBar?: boolean;
 };
 
-function message(props: MessageProps) {
-  const { icon, content, className, duration, progressBar, placement = 'top-center' } = props;
-  console.log(props);
-
-  const toastContainer = document.createElement('div');
-  toastContainer.id = 'toastr-container';
-  toastContainer.className = classnames(
-    'toast-container p-3',
-    'position-absolute',
-    placementClassNames[placement],
-  );
-  document.body.appendChild(toastContainer);
-
-  const toast = (
-    <Toast
-      icon={icon}
-      bsPrefix="toastr"
-      content={content!}
-      className={className}
-      delay={duration}
-      progressBar={progressBar}
-      onClose={toastContainer.remove.bind(toastContainer)}
-    />
-  );
-
-  ReactDOM.render(toast, toastContainer);
-}
-
-Toast.info = (content: string, duration?: number, overrides?: MessageProps) => {
-  message({
-    icon: <Icon name="Duotune/gen045" className="svg-icon-light svg-icon-2hx me-2" />,
-    content,
-    className: 'me-2 toastr-info',
-    duration,
-    ...overrides,
+Toast.info = (content: string, duration?: number, overrides?: ToastOptions) => {
+  toast.info(content, {
+    autoClose: duration,
+    ...toToastifyOptions(overrides),
   });
-  // toastr-progress
 };
-Toast.warning = (content: string, duration?: number, overrides?: MessageProps) => {
-  message({
-    icon: <Icon name="Duotune/gen044" className="svg-icon-light svg-icon-2hx me-2" />,
-    content,
-    className: 'me-2 toastr-warning',
-    duration,
-    ...overrides,
+Toast.warning = (content: string, duration?: number, overrides?: ToastOptions) => {
+  toast.warning(content, {
+    autoClose: duration,
+    ...toToastifyOptions(overrides),
   });
 };
 Toast.loading = () => {
   // message();
 };
-Toast.error = (content: string, duration?: number, overrides?: MessageProps) => {
-  message({
-    icon: <Icon name="Duotune/gen040" className="svg-icon-light svg-icon-2hx me-2" />,
-    content,
-    className: 'me-2 toastr-error',
-    duration,
-    ...overrides,
+Toast.error = (content: string, duration?: number, overrides?: ToastOptions) => {
+  toast.error(content, {
+    autoClose: duration,
+    ...toToastifyOptions(overrides),
   });
 };
-Toast.success = (content: string, duration?: number, overrides?: MessageProps) => {
-  message({
-    icon: <Icon name="Duotune/gen043" className="svg-icon-light svg-icon-2hx me-2" />,
-    content,
-    className: 'me-2 toastr-success',
-    duration,
-    ...overrides,
+Toast.success = (content: React.ReactNode, duration?: number, overrides?: ToastOptions) => {
+  toast.success(content, {
+    autoClose: duration,
+    ...toToastifyOptions(overrides),
   });
 };
+
+function toToastifyOptions(options?: ToastOptions): ToastifyOptions {
+  const _options: ToastifyOptions = {
+    hideProgressBar: true,
+  };
+
+  if (!options) {
+    return _options;
+  }
+
+  if (options.placement) {
+    _options.position = placements[options.placement];
+  }
+
+  if (options.progressBar) {
+    _options.hideProgressBar = false;
+  }
+
+  return _options;
+}
 
 export default Toast;

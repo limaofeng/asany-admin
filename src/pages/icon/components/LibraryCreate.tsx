@@ -6,7 +6,7 @@ import Icon from '@asany/icons';
 import { useCreateIconLibraryMutation } from '../hooks';
 
 import { Card, Input, Spin } from '@/metronic';
-import type { InputRef } from '@/components/Metronic/components/forms/Input';
+import type { InputRef } from '@/metronic/Input';
 
 type LibraryCreateProps = {
   onCreated: () => void;
