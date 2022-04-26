@@ -70,11 +70,30 @@ function ImageUpload(props: ImageUploadProps) {
 
   const [upload, { uploading }] = useUpload({ space });
 
-  const onDrop = useCallback((acceptedFiles) => {
-    state.current.image = acceptedFiles[0];
-    state.current.imageCropperModalVisible = true;
-    forceRender();
-  }, []);
+  const handleUpload = useCallback(
+    async (file: File) => {
+      const fileData = await upload(file);
+      state.current.value = fileData.id;
+      state.current.preview = process.env.STORAGE_URL + `/preview/${fileData.id}`;
+      state.current.imageCropperModalVisible = false;
+      forceRender();
+      onChange && onChange(fileData.id, fileData);
+    },
+    [onChange, upload],
+  );
+
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      if (crop) {
+        state.current.image = acceptedFiles[0];
+        state.current.imageCropperModalVisible = true;
+        forceRender();
+      } else {
+        handleUpload(acceptedFiles[0]);
+      }
+    },
+    [crop, handleUpload],
+  );
 
   const handleCloseImageCropperModal = useCallback(() => {
     setImageCropperModalVisible(false);
@@ -104,19 +123,13 @@ function ImageUpload(props: ImageUploadProps) {
         lastIndex == -1
           ? state.current.image?.name
           : state.current.image?.name.substring(0, lastIndex);
-      const fileData = await upload(
-        new File([data], `${name}.${ext}`, {
-          type: data.type,
-          lastModified: new Date().getTime(),
-        }),
-      );
-      state.current.value = fileData.id;
-      state.current.preview = process.env.STORAGE_URL + `/preview/${fileData.id}`;
-      state.current.imageCropperModalVisible = false;
-      forceRender();
-      onChange && onChange(fileData.id, fileData);
+      const newFile = new File([data], `${name}.${ext}`, {
+        type: data.type,
+        lastModified: new Date().getTime(),
+      });
+      handleUpload(newFile);
     },
-    [onChange, upload],
+    [handleUpload],
   );
 
   const { value, preview, imageCropperModalVisible, image } = state.current;

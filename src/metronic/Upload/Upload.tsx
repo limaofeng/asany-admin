@@ -1,44 +1,110 @@
-import { useEffect } from 'react';
+import { useCallback, useReducer, useRef } from 'react';
 
-import Dropzone from 'dropzone';
+import classnames from 'classnames';
+import { Icon } from '@asany/icons';
+import { useDropzone } from 'react-dropzone';
+
+import CirclePlayer from '../MediaPlayer/CirclePlayer';
 
 import UploadAvatar from './UploadAvatar';
 import ImageUpload from './ImageUpload';
 import QueueUpload from './QueueUpload';
+import type { UploadFileData } from './utils/upload';
+import { useUpload } from './utils/upload';
 
-function Upload() {
-  useEffect(() => {
-    const myDropzone = new Dropzone('#kt_dropzonejs_example_1', {
-      url: 'http://localhost:8080/files',
-      paramName: 'file',
-      uploadMultiple: false,
-      addRemoveLinks: true,
-      accept: function (file, done) {
-        if (file.name == 'wow.jpg') {
-          done("Naha, you don't.");
-        } else {
-          done();
-        }
-      },
-      complete: (data) => {
-        console.log(data);
-      },
-    });
-    console.log(myDropzone);
-    return () => {
-      myDropzone.destroy();
-    };
-  }, []);
+import './style/Upload.scss';
+
+type UploadProps = {
+  value?: string;
+  onChange?: (value?: string, fileData?: UploadFileData) => void;
+  preview?: (file: UploadFileData) => React.ReactNode;
+  className?: string;
+  size?: 'xs' | 'sm' | 'lg';
+  accept?: string;
+  space?: string;
+  placeholder?: string;
+  solid?: boolean;
+  transparent?: boolean;
+  bordered?: boolean;
+};
+function Upload(props: UploadProps) {
+  const {
+    className,
+    accept,
+    placeholder = '选择上传文件',
+    size,
+    solid,
+    space,
+    transparent,
+    bordered,
+    onChange,
+  } = props;
+
+  const state = useRef<{
+    value?: string;
+  }>({
+    value: props.value,
+  });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
+
+  const [upload, { uploading }] = useUpload({ space });
+
+  console.log(uploading);
+
+  const onDrop = useCallback(
+    async (acceptedFiles) => {
+      const fileData = await upload(acceptedFiles[0]);
+      state.current.value = fileData.id;
+      // state.current.preview = process.env.STORAGE_URL + `/preview/${fileData.id}`;
+      forceRender();
+      onChange && onChange(fileData.id, fileData);
+    },
+    [onChange, upload],
+  );
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept,
+    maxFiles: 1,
+  });
+
+  const handleClear = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onChange && onChange(undefined);
+    },
+    [onChange],
+  );
+
+  const { role, tabIndex, onClick: browseLocalFiles, ...rootProps } = getRootProps();
+
+  const { value } = state.current;
 
   return (
-    <div className="dropzone" id="kt_dropzonejs_example_1">
-      <div className="dz-message needsclick">
-        <i className="bi bi-file-earmark-arrow-up text-primary fs-3x" />
-        <div className="ms-4">
-          <h3 className="fs-5 fw-bolder text-gray-900 mb-1">Drop files here or click to upload.</h3>
-          <span className="fs-7 fw-bold text-gray-400">Upload up to 10 files</span>
-        </div>
+    <div
+      {...rootProps}
+      className={classnames('file-input-upload form-control', className, {
+        [`form-control-${size}`]: !!size,
+        'form-control-solid': solid,
+        'form-control-transparent': transparent,
+        'form-control-borderless': !bordered,
+        'file-input-empty': !value,
+      })}
+      onClick={!value ? browseLocalFiles : undefined}
+    >
+      <Icon className="indicator svg-icon-2" name="Bootstrap/cloud-arrow-up" />
+      <div className="preview-content" placeholder={placeholder}>
+        <CirclePlayer
+          size={22}
+          src="https://p.scdn.co/mp3-preview/f83458d6611ae9589420f71c447ac9d2e3047cb8"
+        />
+        <div className="ps-2">werwerwerwersdff</div>
       </div>
+      <a className="input-clear" onClick={handleClear}>
+        <Icon className="svg-icon-3" name="Bootstrap/x" />
+      </a>
+      <input {...getInputProps()} value="" />
     </div>
   );
 }

@@ -19,6 +19,7 @@ declare module 'react-fittext';
 declare module 'bizcharts-plugin-slider';
 declare module 'react-owl-carousel3';
 declare module 'react-tabs';
+declare module 'react-media-player';
 
 declare module 'lunar-javascript';
 
