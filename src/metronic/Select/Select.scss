@@ -61,3 +61,10 @@
     padding-left: 4px;
   }
 }
+
+.form-select {
+  &.select2-selection--multiple {
+    padding: 1px 11px 0 11px !important;
+  }
+}
+

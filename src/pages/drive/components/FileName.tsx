@@ -5,7 +5,7 @@ import classnames from 'classnames';
 
 import { useRenameFileMutation } from '../hooks';
 
-import type { InputRef } from '@/metronic';
+import type { InputRef } from '@/metronic/typings';
 import { Toast } from '@/metronic';
 import { Button, Input, Symbol } from '@/metronic';
 import type { FileObject } from '@/types';

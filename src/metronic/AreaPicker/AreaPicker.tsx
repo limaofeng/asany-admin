@@ -1,79 +1,62 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import classnames from 'classnames';
-import { gql, useLazyQuery, useQuery } from '@apollo/client';
 import { isEqual } from 'lodash';
 
 import Popover from '../Popover';
 import Tabs from '../Tabs';
-
-import { tree } from '@/utils';
+import type { AreaData } from '../hooks/useAreas';
+import useAreas from '../hooks/useAreas';
 
 import './style/index.scss';
 
-const QUERY_DICTS = gql(`
-query dicts($filter: DictFilter){
-  dicts(
-    filter:$filter
-  ) {
-    id
-    code
-    type
-    name
-    path
-    index
-    parent {
-      id
-    }
-  }
-}
-`);
+type AreaType = 'province' | 'city' | 'district' | 'street';
 
-const QUERY_DICT = gql(`
-query dict($code: String){
-  dict(code: $code, type: "street") {
-    id
-    code
-    type
-    name
-    path
-  }
-}
-`);
+type Address = {
+  province?: string;
+  city?: string;
+  district?: string;
+  street?: string;
+};
 
-type AreaPickerProps = {
-  value?: string | string[];
-  onChange?: (value: string[], areas: AreaData[]) => void;
+export type AreaValueType = string | string[] | Address;
+
+export type AreaPickerProps = {
+  value?: AreaValueType;
+  onChange?: (value: AreaValueType, areas: AreaData[]) => void;
   className?: string;
   size?: 'xs' | 'sm' | 'lg';
+  ends?: AreaType;
   placeholder?: string;
   solid?: boolean;
   transparent?: boolean;
   bordered?: boolean;
+  resultType?: 'object' | 'array' | 'string';
 };
 
-type AreaData = {
-  id: string;
-  code: string;
-  type: string;
-  name: string;
-  description: string;
-  index: number;
-  parent: {
-    id: string;
-  };
-  children: AreaData[];
-};
+// type AreaData = {
+//   id: string;
+//   code: string;
+//   type: string;
+//   name: string;
+//   description: string;
+//   index: number;
+//   parent: {
+//     id: string;
+//   };
+//   children: AreaData[];
+// };
 
 type AreaContentProps = {
   areas: AreaData[][];
   onSelect: (selectedKeys: string[], writed?: boolean) => void;
   selectedKeys: string[];
+  ends: AreaType;
   onClose: () => void;
 };
 
 function AreaContent(props: AreaContentProps) {
-  const { areas, onSelect, onClose } = props;
+  const { areas, onSelect, onClose, ends } = props;
 
   const state = useRef<{
     value?: string;
@@ -88,7 +71,7 @@ function AreaContent(props: AreaContentProps) {
   const handleClick = useCallback(
     (data: AreaData, level: number) => async () => {
       if (state.current.selectedKeys[level] == data.code) {
-        if (data.type != 'street') {
+        if (data.type != ends) {
           state.current.activeKey = `level_${level + 1}`;
           forceRender();
         } else {
@@ -98,14 +81,14 @@ function AreaContent(props: AreaContentProps) {
       }
       state.current.selectedKeys = state.current.selectedKeys.splice(0, level);
       state.current.selectedKeys.push(data.code);
-      if (data.type != 'street') {
+      if (data.type == ends) {
+        onSelect(state.current.selectedKeys, true);
+      } else {
         state.current.activeKey = `level_${level + 1}`;
         onSelect(state.current.selectedKeys);
-      } else {
-        onSelect(state.current.selectedKeys, true);
       }
     },
-    [onClose, onSelect],
+    [ends, onClose, onSelect],
   );
 
   const { tabs, selectedKeys, activeKey } = state.current;
@@ -131,11 +114,11 @@ function AreaContent(props: AreaContentProps) {
     if (!_item) {
       return;
     }
-    if (_item.type == 'street') {
+    if (_item.type == ends) {
       state.current.activeKey = `level_${props.selectedKeys.length - 1}`;
     }
     forceRender();
-  }, [props.selectedKeys]);
+  }, [props.selectedKeys, ends]);
 
   return (
     <div>
@@ -166,124 +149,87 @@ function AreaContent(props: AreaContentProps) {
   );
 }
 
+function initResultType(value?: AreaValueType) {
+  if (!value || Array.isArray(value)) {
+    return 'array';
+  }
+  if (typeof value == 'string') {
+    return 'string';
+  }
+  return 'object';
+}
+
 function AreaPicker(props: AreaPickerProps) {
-  const { className, size, solid, placeholder, transparent, bordered = true, onChange } = props;
+  const {
+    className,
+    size,
+    solid,
+    placeholder,
+    ends = 'street',
+    transparent,
+    bordered = true,
+    resultType = initResultType(props.value),
+    onChange,
+  } = props;
 
   const state = useRef<{
     value: string[];
     tabs: AreaData[][];
     popover: boolean;
-    loading: boolean;
     selectedItems: AreaData[];
     _selectedItems: AreaData[];
   }>({
     value: [],
     tabs: [],
     popover: false,
-    loading: false,
     selectedItems: [],
     _selectedItems: [],
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const [loadStreet, { loading: singleLoading }] = useLazyQuery(QUERY_DICT, {
-    fetchPolicy: 'cache-and-network',
-  });
-  const [fetchChildren, { loading: childrenLoading }] = useLazyQuery(QUERY_DICTS, {
-    fetchPolicy: 'cache-and-network',
-  });
-  const { data, loading: firstLoading } = useQuery<{ dicts: AreaData[] }>(QUERY_DICTS, {
-    fetchPolicy: 'cache-and-network',
-    variables: {
-      filter: {
-        type_in: ['province', 'city', 'district', 'street'],
-        level_lte: 2,
-      },
-    },
-  });
-
-  useEffect(() => {
-    state.current.loading =
-      (singleLoading || childrenLoading || firstLoading) && !state.current._selectedItems.length;
-    forceRender();
-  }, [singleLoading, childrenLoading, firstLoading]);
-
-  const areas = useMemo(
-    () =>
-      tree(
-        (data?.dicts || []).map((item) => ({ ...item })),
-        {
-          pidKey: 'parent.id',
-          sort: (l, r) => l.index - r.index,
-          converter: (item) => ({ ...item } as AreaData),
-        },
-      ),
-    [data?.dicts],
-  );
-
-  const loadChildren = useCallback(
-    async (_data: AreaData) => {
-      if (!_data.children) {
-        const { data: loadData } = await fetchChildren({
-          variables: {
-            filter: {
-              parent: _data.id,
-            },
-          },
-        });
-        _data.children = (loadData?.dicts || [])
-          .map((t: AreaData) => ({ ...t }))
-          .sort((l: AreaData, r: AreaData) => l.index - r.index);
-      }
-      return _data.children;
-    },
-    [fetchChildren],
-  );
+  const [areas, { waiting, loading, loadAddress }] = useAreas();
 
   useEffect(() => {
     if (!props.value) {
       return;
     }
-    if (Array.isArray(props.value)) {
-      if (!isEqual(state.current.value, props.value)) {
-        state.current.value = props.value;
+    if (resultType == 'object') {
+      const areaObj = props.value as Address;
+      const _newValue = [areaObj.province, areaObj.city, areaObj.district, areaObj.street].filter(
+        (it) => !!it,
+      );
+      if (!isEqual(state.current.value, _newValue)) {
+        state.current.value = _newValue as any;
         forceRender();
       }
       return;
     }
-    const abortController = new AbortController();
-    loadStreet({
-      variables: { code: props.value },
-      context: {
-        fetchOptions: {
-          signal: abortController.signal,
-        },
-      },
-    }).then((result) => {
-      state.current.value = result.data.dict.path.split('/').filter((t: any) => !!t);
+    if (resultType == 'array') {
+      if (!isEqual(state.current.value, props.value)) {
+        state.current.value = props.value as any;
+        forceRender();
+      }
+      return;
+    }
+    loadAddress(props.value as string).then((address) => {
+      state.current.value = address.codes;
       forceRender();
     });
-    return () => {
-      abortController.abort();
-    };
-  }, [loadStreet, props.value]);
+  }, [loadAddress, props.value, resultType]);
 
   const loadTabs = useCallback(
-    async (_value: string[], abortController?: AbortController, writed?: boolean) => {
+    async (_value: string[], writed?: boolean) => {
       let parentData = areas;
-
       const _tabs = [parentData];
       const _selectedItems: AreaData[] = [];
       for (const code of _value) {
         const _data = parentData.find((t) => t.code == code)!;
         _selectedItems.push(_data);
-        if (abortController && abortController.signal.aborted) {
-          return;
+        if (_data.type == ends) {
+          break;
         }
-        if (_data.type != 'street') {
-          const _children = await loadChildren(_data);
-          _tabs.push((parentData = _children));
-        }
+        const _children = await _data.getChildren();
+        _tabs.push((parentData = _children));
       }
       state.current.tabs = _tabs;
       state.current._selectedItems = _selectedItems;
@@ -295,16 +241,28 @@ function AreaPicker(props: AreaPickerProps) {
         if (!isEqual(state.current.value, newValue)) {
           state.current.value = newValue;
         }
-        onChange && onChange(newValue, _selectedItems);
+
+        if (onChange) {
+          let retValue: any = newValue;
+          if (resultType == 'string') {
+            retValue = newValue[newValue.length - 1];
+          } else if (resultType == 'object') {
+            retValue = {};
+            for (const _area of _selectedItems) {
+              retValue[_area.type] = _area.code;
+            }
+          }
+          onChange(retValue, _selectedItems);
+        }
       }
       forceRender();
     },
-    [areas, loadChildren, onChange],
+    [areas, ends, onChange, resultType],
   );
 
   const handleSelect = useCallback(
     (keys: string[], writed) => {
-      loadTabs(keys, undefined, writed);
+      loadTabs(keys, writed);
     },
     [loadTabs],
   );
@@ -317,21 +275,19 @@ function AreaPicker(props: AreaPickerProps) {
     forceRender();
   }, []);
 
-  const { value, tabs, selectedItems, loading, popover } = state.current;
+  const { value, tabs, selectedItems, popover } = state.current;
 
   useEffect(() => {
-    const abortController = new AbortController();
     if (!areas.length) {
       return;
     }
     if (!value.length) {
-      loadTabs([], abortController);
-      return () => abortController.abort();
+      loadTabs([]);
+      return;
     }
-    loadTabs(value, abortController, true);
-    return () => abortController.abort();
+    loadTabs(value, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [firstLoading, value.join('-')]);
+  }, [waiting, value.join('-')]);
 
   const selectedKeys = useMemo(() => {
     return selectedItems.map((item) => item.code);
@@ -352,6 +308,7 @@ function AreaPicker(props: AreaPickerProps) {
       content={
         <AreaContent
           areas={tabs}
+          ends={ends}
           onSelect={handleSelect}
           onClose={handleClose}
           selectedKeys={selectedKeys}

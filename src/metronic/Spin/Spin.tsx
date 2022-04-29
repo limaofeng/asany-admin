@@ -86,7 +86,7 @@ function Spin(props: SpinProps) {
     typeof indicator == 'string'
       ? React.cloneElement(spinkits[indicator], {
           size,
-          className: !!tip ? 'ms-2' : null,
+          className: classnames(!!tip ? 'ms-2' : null),
         })
       : React.cloneElement(indicator, {
           className: classnames(indicator.props.className, {
@@ -111,7 +111,12 @@ function Spin(props: SpinProps) {
     );
   }
   return (
-    <span className={classnames({ 'indicator-progress': !spinning })}>
+    <span
+      className={classnames({
+        [className!]: className && spinning,
+        'indicator-progress': !spinning,
+      })}
+    >
       {tip}
       {indicatorNode}
     </span>

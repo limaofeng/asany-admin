@@ -73,6 +73,7 @@
     "@popperjs/core": "^2.11.2",
     "@tanem/react-nprogress": "^4.0.8",
     "@umijs/route-utils": "^2.0.4",
+    "@yaireo/tagify": "^4.12.0",
     "antd": "^4.18.2",
     "autosize": "^5.0.1",
     "bootstrap": "^5.1.3",

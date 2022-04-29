@@ -80,6 +80,7 @@ function DatePicker(props: DatePickerProps) {
         maxDate: toDate(maxDate),
         timePicker,
         autoApply,
+        autoUpdateInput: false,
         singleDatePicker: true,
         showDropdowns: true,
         locale: { format, ...LOCALE },
@@ -150,7 +151,11 @@ function toMoment(value: string | Moment | undefined): Moment | undefined {
 }
 
 function toDateString(value: string | Moment, format: string) {
-  return toMoment(value)?.format(format) || null;
+  const _m = toMoment(value);
+  if (!_m || !_m.isValid()) {
+    return undefined;
+  }
+  return _m.format(format) || undefined;
 }
 
 export default DatePicker;

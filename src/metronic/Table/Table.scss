@@ -5,12 +5,14 @@
   .table > :not(caption) > * > * {
     padding: 0;
   }
+
   .table td:first-child {
     padding-left: 0;
   }
   .table {
     border-collapse: collapse !important;
     border-spacing: 0;
+
     tr {
       th,
       td {
@@ -37,8 +39,12 @@
 }
 table.dataTable.table-list-body {
   margin-top: 0 !important;
+  table-layout: fixed;
   tr {
     height: 48px;
+  }
+  tr.selected a.btn {
+    color: inherit;
   }
   tr.table-list-item.selected {
     background-color: rgba(220, 253, 253, 0.35) !important;

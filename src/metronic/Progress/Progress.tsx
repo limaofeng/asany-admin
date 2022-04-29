@@ -1,6 +1,8 @@
 import classnames from 'classnames';
 
-import type { MainColor } from '../../typings';
+import type { MainColor } from '../typings';
+
+import Circle from './Circle';
 
 type ProgressProps = {
   className?: string;
@@ -21,5 +23,7 @@ function Progress(props: ProgressProps) {
     />
   );
 }
+
+Progress.Circle = Circle;
 
 export default Progress;

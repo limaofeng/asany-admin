@@ -148,6 +148,7 @@ type UploadResult = {
   progress: number;
   uploadSpeed: string;
   uploading: boolean;
+  reset: () => void;
   abort: () => void;
 };
 
@@ -427,18 +428,22 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
     [executeUploadFile],
   );
 
+  const reset = useCallback(() => {
+    state.current.data = undefined;
+    state.current.error = undefined;
+    state.current.state = 'waiting';
+    state.current.uploadSpeed = '';
+    state.current.progress = 0;
+    forceRender();
+  }, []);
+
   const handleUpload = useCallback(
     async (file: File, overwrites?: UploadOverwriteOptions): Promise<UploadFileData> => {
       const _options = { ...state.current.options, ...overwrites };
 
       const { partSize } = _options;
 
-      state.current.data = undefined;
-      state.current.error = undefined;
-      state.current.state = 'waiting';
-      state.current.uploadSpeed = '';
-      state.current.progress = 0;
-      forceRender();
+      reset();
       await sleep(60);
 
       state.current.state = 'uploading';
@@ -462,7 +467,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         throw e;
       }
     },
-    [handleMultipartUpload, handleOrdinaryUpload],
+    [handleMultipartUpload, handleOrdinaryUpload, reset],
   );
 
   const uploadController = useMemo<UploadController>(
@@ -485,9 +490,10 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       error,
       uploading: uploadState == 'uploading' || uploadState == 'waitingForCompleted',
       state: uploadState,
+      reset,
       abort: uploadController.abort,
     }),
-    [dataFile, progress, uploadSpeed, uploadController.abort, error, uploadState],
+    [dataFile, progress, uploadSpeed, error, uploadState, reset, uploadController.abort],
   );
 
   return [handleUpload, result];

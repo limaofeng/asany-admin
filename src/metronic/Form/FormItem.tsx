@@ -108,6 +108,7 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
     trigger = 'onChange',
     validateTrigger,
     hidden,
+    extra,
     ...restProps
   } = props;
   const { name: formName, requiredMark, size } = useContext(FormContext);

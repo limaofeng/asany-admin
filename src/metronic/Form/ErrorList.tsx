@@ -46,7 +46,7 @@ function ErrorList({
   const baseClassName = `${prefixCls}-item-explain`;
 
   const fullKeyList = React.useMemo(() => {
-    if (help !== undefined && help !== null) {
+    if (!errors.length && help !== undefined && help !== null) {
       return [toErrorEntity(help, helpStatus, 'help')];
     }
 
@@ -64,7 +64,6 @@ function ErrorList({
     <div className={classnames('fv-plugins-message-container', baseClassName, rootClassName)}>
       {fullKeyList.map((itemProps) => {
         const { key, error, errorStatus } = itemProps;
-        // console.log('itemProps', itemProps);
         return (
           <div
             key={key}

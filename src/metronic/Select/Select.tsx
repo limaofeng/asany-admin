@@ -77,10 +77,11 @@ function Select(props: SelectProps) {
   }, []);
 
   useEffect(() => {
+    console.log('multiple', multiple, value);
     if (multiple) {
       $(ref.current!).val(value!).trigger('change');
-      const select2 = $(ref.current!).select2 as any;
-      select2.apply($(ref.current!), ['val', value || []]);
+      // const select2 = $(ref.current!).select2 as any;
+      // select2.apply($(ref.current!), ['val', value || []]);
     } else {
       $(ref.current!).val(value!).trigger('change');
     }

@@ -6,6 +6,7 @@ import { Table as BsTable } from 'react-bootstrap';
 import classnames from 'classnames';
 import type { OnSelect, OnSelectEnd } from 'react-selecto';
 import Selecto from 'react-selecto';
+import { isEqual } from 'lodash';
 
 import type { PaginationProps } from './Pagination';
 import Pagination from './Pagination';
@@ -144,6 +145,7 @@ function Table<T>(props: TableProps<T>) {
     REPAIR_OF_SELECTEDALL_RUNNING: false,
     emitter: initEventEmitter(),
   });
+  temp.current.dataSource = dataSource;
 
   useEffect(() => {
     if (!onChange) {
@@ -257,17 +259,30 @@ function Table<T>(props: TableProps<T>) {
   }, []);
 
   useEffect(() => {
-    if (dataSource.loadedCount == state.current.selectedKeys.size || !state.current.selectedAll) {
-      return;
+    if (dataSource.loadedCount != state.current.selectedKeys.size && state.current.selectedAll) {
+      repairOfSelectedAll();
     }
-    repairOfSelectedAll();
-  }, [dataSource.loadedCount, repairOfSelectedAll]);
+    if (dataSource.type == 'array') {
+      const prevKey = Array.from(state.current.selectedKeys.keys()).join(',');
+      state.current.selectedKeys = new Set(
+        Array.from(state.current.selectedKeys).filter((item) =>
+          temp.current.dataSource.items.some(
+            (data) => getRowKey(data, temp.current.rowKey) == item,
+          ),
+        ),
+      );
+      const nextKey = Array.from(state.current.selectedKeys.keys()).join(',');
+      if (!isEqual(prevKey, nextKey)) {
+        temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
+        forceRender();
+      }
+    }
+  }, [dataSource.loadedCount, dataSource.type, repairOfSelectedAll]);
 
   const useCheck = useMemo(() => {
     return (data: T) => {
       const _key = getRowKey(data, temp.current.rowKey);
       const { selectedKeys } = state.current;
-
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [checked, setChecked] = useState(selectedKeys.has(_key));
 

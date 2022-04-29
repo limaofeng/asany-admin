@@ -127,9 +127,8 @@ function Modal(props: ModalProps) {
     const footerNode = childs.find(
       (item) => React.isValidElement(item) && item.type == ModalFooter,
     );
-    const headerNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == ModalHeader,
-    );
+    const headerNode =
+      props.header || childs.find((item) => React.isValidElement(item) && item.type == ModalHeader);
     const bodyNode = childs.find((item) => React.isValidElement(item) && item.type == ModalBody);
     const newChildren = childs.filter((item) => ![footerNode, headerNode].includes(item));
     return {
@@ -148,6 +147,7 @@ function Modal(props: ModalProps) {
     };
   }, [
     props.children,
+    props.header,
     props.headerClassName,
     props.title,
     props.bodyClassName,

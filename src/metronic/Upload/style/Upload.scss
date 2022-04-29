@@ -14,6 +14,17 @@
     user-select: none;
   }
 
+  .spinner-border {
+    width: 18px;
+    height: 18px;
+  }
+
+  &.file-input-loading {
+    .spinner-border {
+      margin-right: 8px;
+    }
+  }
+
   .indicator {
     padding-right: 8px;
   }
@@ -23,12 +34,23 @@
     flex: 1;
     flex-direction: row;
     align-items: center;
+    overflow: hidden;
 
     &[placeholder]:empty:before {
       color: #a1a5b7 !important;
       font-size: 13px !important;
       background-color: transparent;
       content: attr(placeholder);
+    }
+
+    .file-name-container {
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 22px);
+
+      .file-title {
+        margin-right: -1px;
+      }
     }
   }
 

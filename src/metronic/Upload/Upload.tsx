@@ -1,23 +1,76 @@
-import { useCallback, useReducer, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import classnames from 'classnames';
 import { Icon } from '@asany/icons';
 import { useDropzone } from 'react-dropzone';
 
+import Progress from '../Progress';
 import CirclePlayer from '../MediaPlayer/CirclePlayer';
+import Tooltip from '../Tooltip';
 
 import UploadAvatar from './UploadAvatar';
 import ImageUpload from './ImageUpload';
 import QueueUpload from './QueueUpload';
-import type { UploadFileData } from './utils/upload';
+import type { UploadFileData, UploadState } from './utils/upload';
 import { useUpload } from './utils/upload';
+import { useLoadFile } from './utils/load';
 
 import './style/Upload.scss';
+
+type PreviewComponentProps = {
+  uploadFile: UploadFileData;
+  uploading?: boolean;
+  status: UploadState;
+  progress?: number;
+};
+
+export function PreviewComponent(props: PreviewComponentProps) {
+  const { uploadFile, progress = 0, status } = props;
+
+  const [title, suffix] = useMemo(() => {
+    const index = uploadFile.name.lastIndexOf('.');
+    if (index == -1) {
+      return [uploadFile.name, undefined];
+    }
+    return [uploadFile.name.substring(0, index), uploadFile.name.substring(index + 1)];
+  }, [uploadFile.name]);
+
+  return (
+    <>
+      {status == 'completed' && uploadFile.mimeType.startsWith('audio/') && (
+        <CirclePlayer size={22} src={process.env.STORAGE_URL + `/preview/${uploadFile.id}`} />
+      )}
+      {status == 'error' && (
+        <Tooltip title={<span className="text-danger">上传失败,请重试</span>}>
+          <Icon
+            className="svg-icon-3 text-danger svg-icon-danger"
+            name="Bootstrap/exclamation-triangle-fill"
+          />
+        </Tooltip>
+      )}
+      {status != 'completed' && status != 'error' && (
+        <Progress.Circle width={22} strokeWidth={10} percent={progress} />
+      )}
+      <div className="file-name-container ps-2">
+        <div className={classnames({ 'tw-truncate': !suffix, 'd-flex': suffix })}>
+          {suffix ? (
+            <>
+              <span className="file-title shrink tw-truncate">{title}</span>
+              <span className="file-suffix">.{suffix}</span>
+            </>
+          ) : (
+            title
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
 
 type UploadProps = {
   value?: string;
   onChange?: (value?: string, fileData?: UploadFileData) => void;
-  preview?: (file: UploadFileData) => React.ReactNode;
+  preview?: React.ComponentType<PreviewComponentProps>;
   className?: string;
   size?: 'xs' | 'sm' | 'lg';
   accept?: string;
@@ -37,24 +90,37 @@ function Upload(props: UploadProps) {
     space,
     transparent,
     bordered,
+    preview = PreviewComponent,
     onChange,
   } = props;
 
   const state = useRef<{
     value?: string;
+    uploadFile?: UploadFileData;
+    status: UploadState;
   }>({
     value: props.value,
+    status: 'waiting',
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const [upload, { uploading }] = useUpload({ space });
-
-  console.log(uploading);
+  const [loadFile, { loading }] = useLoadFile();
+  const [upload, { uploading, state: uploadState, reset, progress, abort }] = useUpload({ space });
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
+      const file: File = acceptedFiles[0];
+      state.current.uploadFile = {
+        id: 'upload',
+        path: '',
+        directory: false,
+        mimeType: file.type,
+        name: file.name,
+        size: file.size,
+      } as any;
       const fileData = await upload(acceptedFiles[0]);
       state.current.value = fileData.id;
+      state.current.uploadFile = fileData;
       // state.current.preview = process.env.STORAGE_URL + `/preview/${fileData.id}`;
       forceRender();
       onChange && onChange(fileData.id, fileData);
@@ -72,14 +138,51 @@ function Upload(props: UploadProps) {
     (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      onChange && onChange(undefined);
+
+      const status = state.current.status;
+
+      if (status == 'completed' || status == 'error') {
+        reset();
+        onChange && onChange(undefined);
+      } else {
+        abort();
+      }
+
+      state.current.uploadFile = undefined;
+      forceRender();
     },
-    [onChange],
+    [abort, onChange, reset],
   );
+
+  useEffect(() => {
+    if (state.current.status == uploadState) {
+      return;
+    }
+    state.current.status = uploadState;
+    forceRender();
+  }, [uploadState]);
+
+  useEffect(() => {
+    if (!props.value) {
+      if (state.current.uploadFile) {
+        handleClear(new MouseEvent('click') as any);
+      }
+      return;
+    }
+    if (props.value == state.current.value && state.current.uploadFile) {
+      return;
+    }
+    loadFile(props.value).then((data: UploadFileData) => {
+      state.current.uploadFile = data;
+      state.current.value = props.value;
+      state.current.status = 'completed';
+      forceRender();
+    });
+  }, [handleClear, loadFile, props.value]);
 
   const { role, tabIndex, onClick: browseLocalFiles, ...rootProps } = getRootProps();
 
-  const { value } = state.current;
+  const { status, uploadFile } = state.current;
 
   return (
     <div
@@ -89,21 +192,25 @@ function Upload(props: UploadProps) {
         'form-control-solid': solid,
         'form-control-transparent': transparent,
         'form-control-borderless': !bordered,
-        'file-input-empty': !value,
+        'file-input-empty': !uploadFile,
+        'file-input-loading': loading,
       })}
-      onClick={!value ? browseLocalFiles : undefined}
+      onClick={!uploadFile ? browseLocalFiles : undefined}
     >
-      <Icon className="indicator svg-icon-2" name="Bootstrap/cloud-arrow-up" />
-      <div className="preview-content" placeholder={placeholder}>
-        <CirclePlayer
-          size={22}
-          src="https://p.scdn.co/mp3-preview/f83458d6611ae9589420f71c447ac9d2e3047cb8"
-        />
-        <div className="ps-2">werwerwerwersdff</div>
+      {!uploadFile &&
+        (loading ? (
+          <span className="spinner-border spinner-border align-middle" />
+        ) : (
+          <Icon className="indicator svg-icon-2" name="Bootstrap/cloud-arrow-up" />
+        ))}
+      <div className="preview-content" placeholder={loading ? '加载文件中...' : placeholder}>
+        {uploadFile && React.createElement(preview, { uploadFile, uploading, status, progress })}
       </div>
-      <a className="input-clear" onClick={handleClear}>
-        <Icon className="svg-icon-3" name="Bootstrap/x" />
-      </a>
+      {status != 'waiting' && (
+        <a className="input-clear" onClick={handleClear}>
+          <Icon className="svg-icon-3" name="Bootstrap/x" />
+        </a>
+      )}
       <input {...getInputProps()} value="" />
     </div>
   );
