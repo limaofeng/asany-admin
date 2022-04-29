@@ -74,7 +74,7 @@ function MenuItem(props: MenuItemProps) {
   const isLink = as == Link;
 
   const handleClick = useCallback(
-    (e) => {
+    (e: React.MouseEvent) => {
       menuKey && context.select(menuKey, e);
       !isLink && url && history.push(url);
     },

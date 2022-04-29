@@ -73,7 +73,7 @@ function Dropdown(props: DropdownProps) {
     getPopupContainer,
   } = props;
 
-  const itemRef = useRef();
+  const itemRef = useRef<HTMLElement>();
   const subRef = useRef();
   const [visible, setVisible] = useState(props.visible);
 
@@ -158,7 +158,10 @@ function Dropdown(props: DropdownProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  useClickAway(subRef as any, () => {
+  useClickAway(subRef as any, (e) => {
+    if (itemRef.current!.contains(e.target as any)) {
+      return;
+    }
     setVisible(false);
   });
 
@@ -193,6 +196,8 @@ function Dropdown(props: DropdownProps) {
     const _targetProps: any = {};
     if (trigger == 'click') {
       _targetProps.onClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
         if ((node as any).props.onClick) {
           (node as any).props.onClick(e);
         }
