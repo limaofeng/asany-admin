@@ -40,17 +40,31 @@ type DropdownOverlayProps = {
 
 function DropdownOverlay(props: DropdownOverlayProps) {
   const { visible, children, getPopupContainer } = props;
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
   if (!visible) {
     return <React.Fragment />;
   }
+
+  const childrenWrapper = (
+    <div onClick={handleClick} className="dropdown-overlay">
+      {children}
+    </div>
+  );
+
   if (!getPopupContainer) {
-    return children;
+    return childrenWrapper;
   }
   const container = getPopupContainer();
   if (!container) {
-    return children;
+    return childrenWrapper;
   }
-  return ReactDOM.createPortal(children, container) as any;
+
+  return ReactDOM.createPortal(childrenWrapper, container) as any;
 }
 
 const placementMapping = {
