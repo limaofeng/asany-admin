@@ -1,7 +1,9 @@
 .image-input {
+  .image-input-wrapper {
+    background-position: center;
+  }
   &.image-input-empty {
     .image-input-wrapper {
-      background-position: center;
       background-size: contain;
     }
   }

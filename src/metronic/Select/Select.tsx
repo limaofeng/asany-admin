@@ -64,6 +64,7 @@ function Select(props: SelectProps) {
         multiple,
         placeholder,
         minimumResultsForSearch: Infinity,
+        closeOnSelect: multiple ? false : undefined,
         width: width as any,
         dropdownCssClass: 'form-select-dropdown-container',
       })
@@ -77,7 +78,7 @@ function Select(props: SelectProps) {
   }, []);
 
   useEffect(() => {
-    console.log('multiple', multiple, value);
+    // console.log('multiple', multiple, value);
     if (multiple) {
       $(ref.current!).val(value!).trigger('change');
       // const select2 = $(ref.current!).select2 as any;

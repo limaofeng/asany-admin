@@ -9,7 +9,7 @@ type CustomTabContentProps = {
 
 function CustomAsideSecondaryContent(props: CustomTabContentProps) {
   const { menu, component } = props;
-  console.log('component', component);
+  // console.log('component', component);
   const ReactComponent = useReactComponent<{ menu: MenuData }>(
     component.template,
     component.blocks,

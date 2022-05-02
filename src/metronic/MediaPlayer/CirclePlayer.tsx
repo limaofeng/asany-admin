@@ -28,7 +28,13 @@ function CircleMediaPlayer(props: CircleMediaPlayerProps) {
   return (
     <Media>
       {({ isPlaying, playPause }: any) => (
-        <button className="circle-media-player" onClick={() => playPause()}>
+        <button
+          className="circle-media-player"
+          onClick={(e) => {
+            e.stopPropagation();
+            playPause();
+          }}
+        >
           <Player src={props.src} vendor="audio" onTimeUpdate={handleTimeUpdate} />
           <svg width={size} height={size} viewBox="0 0 32 32">
             <circle cx="16" cy="16" r="14.5" className="circle-media-player__background" />

@@ -39,7 +39,7 @@ export function _getDropdownPopperConfig(item: any, placement: string) {
 
   const altAxis = getItemOption(item, 'flip') !== false ? true : false;
 
-  console.log('offset', offset, strategy);
+  // console.log('offset', offset, strategy);
 
   const popperConfig = {
     placement: placement,

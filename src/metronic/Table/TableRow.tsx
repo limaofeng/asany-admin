@@ -69,7 +69,7 @@ function TableRow<T>(props: TableRowProps<T>) {
       if (e.target.tagName == 'INPUT' && e.type == 'click') {
         return;
       }
-      console.log('row select', e.isPropagationStopped());
+      e.stopPropagation();
       onSelect(data, !checked, e);
     },
     [data, checked, onSelect],
