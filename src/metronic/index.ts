@@ -1,5 +1,3 @@
-import './style/index';
-
 export { default as User } from './User';
 export { default as Menu } from './Menu';
 export { default as CountUp } from './CountUp';
