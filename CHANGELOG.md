@@ -1,3 +1,36 @@
+## [0.2.15](https://github.com/limaofeng/asany-admin/compare/v0.2.14...v0.2.15) (2022-05-03)
+
+### Bug Fixes
+
+- 优化 Dropdown 点击时，中止事件冒泡 ([fce8f22](https://github.com/limaofeng/asany-admin/commit/fce8f229620f500eae792c865841da1c0ed1ccf2))
+- 修复邮件列表样式问题 ([7c34c23](https://github.com/limaofeng/asany-admin/commit/7c34c23275178f34ac211f4d63affb5ad85810b5))
+- 修复邮件详情页，图标样式 ([f186693](https://github.com/limaofeng/asany-admin/commit/f1866932c6e907e6b0113e574791f8ff1e2ed2f2))
+- 音频播放组件,阻止事件冒泡 ([55c7d84](https://github.com/limaofeng/asany-admin/commit/55c7d84a34a7492ef0a7e58a1285997e1fbf03b9))
+
+### Features
+
+- 二级菜单选中效果 ([ca8b56c](https://github.com/limaofeng/asany-admin/commit/ca8b56cf3fcb38c1293461f9edaa2a99de2fc0a6))
+- 添加静态界面 ([00cf313](https://github.com/limaofeng/asany-admin/commit/00cf313b251bb0dcca4a1928ddedca0ec6bd1ba9))
+- 下拉菜单组件，点击优化 ([c490b07](https://github.com/limaofeng/asany-admin/commit/c490b0746c0e8ed4fcf07ac82af1a783a1c6537f))
+- **个人中心:** 完成邮件页面样式 ([4fa3052](https://github.com/limaofeng/asany-admin/commit/4fa305240c7d3520e5e1118a12073a6e2131fdda))
+- 从标准组件中分离布局组件 ([56e1ae3](https://github.com/limaofeng/asany-admin/commit/56e1ae3b64ed01a1c4116abec6d85c1b418bfbd8))
+- 优化 AreaPicker 组件 ([e4d9895](https://github.com/limaofeng/asany-admin/commit/e4d9895f00a2c548c4987362f0fbe769d51d8940))
+- 完善 ImageUpload 组件，支持切图 ([af7d8e8](https://github.com/limaofeng/asany-admin/commit/af7d8e81ae63b9d35a53fb2f3c340c34611bb13a))
+- 完善地区选择组件 ([71f6e6f](https://github.com/limaofeng/asany-admin/commit/71f6e6f09f8535e10f2ff91bf80a02b91edd01c6))
+- 完成图片上传组件 ([0ef2425](https://github.com/limaofeng/asany-admin/commit/0ef242561bd3d310b5130ecbe006edfd3a9e5963))
+- 将 EmailTagsInput 封装成单独的组件使用 ([e4143b5](https://github.com/limaofeng/asany-admin/commit/e4143b50f762a2161c26d7a6f3743cf8aa34a345))
+- 布局组件引用方式 ([34e15df](https://github.com/limaofeng/asany-admin/commit/34e15dfb8c1e9a87369d6637ecb1edadff56c9ec))
+- 手机设备组件 ([80c3d4f](https://github.com/limaofeng/asany-admin/commit/80c3d4ff0fe0cd5d443d6e386ad569957cdb2c0f))
+- 添加地区选择组件 ([ae0d971](https://github.com/limaofeng/asany-admin/commit/ae0d971a2a48d32c0e3051233a0a8852e6f274c3))
+- 添加文件上传组件样式 ([2b7f6c4](https://github.com/limaofeng/asany-admin/commit/2b7f6c4443127e4b1307e6793d488c6f38f1de67))
+- 添加更改用户名界面样式 ([dc3ee2a](https://github.com/limaofeng/asany-admin/commit/dc3ee2a21c8e518f9cd6f6b08dfe19401e011890))
+- 组件优化 ([74de4c1](https://github.com/limaofeng/asany-admin/commit/74de4c19e678ae5557d4b6cd57f7a9084a80b15d))
+- 组件位置调整 ([48824de](https://github.com/limaofeng/asany-admin/commit/48824de690012acf4fc1bcd04de7f85995c854af))
+- 角色与权限页面 ([006a0ca](https://github.com/limaofeng/asany-admin/commit/006a0cafe40dba37a398cad23714e9c9336f7548))
+- 解决组件热更新问题 ([0862112](https://github.com/limaofeng/asany-admin/commit/0862112035ef402a2db256921e9df1e149da5c8c))
+- 调整默认的表单及按钮组件尺寸 ([992e028](https://github.com/limaofeng/asany-admin/commit/992e02848d7236931f3a6cae65017164aa895ffd))
+- 通过菜单与路由生成面包屑导航 ([0e325af](https://github.com/limaofeng/asany-admin/commit/0e325af541b06344d53ada972eb813f312e31bc8))
+
 ## [0.2.14](https://github.com/limaofeng/asany-admin/compare/v0.2.13...v0.2.14) (2022-04-08)
 
 ## [0.2.13](https://github.com/limaofeng/asany-admin/compare/v0.2.12...v0.2.13) (2022-04-08)
