@@ -7,6 +7,7 @@ export default defineConfig({
   },
   define: {
     'process.env.STORAGE_URL': '//localhost:8080',
+    'process.env.MOBILE_URL': '//localhost:8001',
   },
   plugins: [
     // https://github.com/zthxxx/react-dev-inspector

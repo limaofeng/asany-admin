@@ -12,6 +12,7 @@ export default defineConfig({
   },
   define: {
     'process.env.STORAGE_URL': '//api.asany.cn',
+    'process.env.MOBILE_URL': '//wmf.app.asany.cn',
   },
   hash: true,
   antd: false,

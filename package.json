@@ -93,6 +93,7 @@
     "omit.js": "^2.0.2",
     "overlayscrollbars": "^1.13.1",
     "overlayscrollbars-react": "^0.2.3",
+    "qrcode.react": "^3.0.1",
     "rc-field-form": "1.22.1",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.2",
