@@ -1,3 +1,9 @@
+## [0.2.17](https://github.com/limaofeng/asany-admin/compare/v0.2.16...v0.2.17) (2022-05-03)
+
+### Bug Fixes
+
+- 海报预览二维码错误 ([270562f](https://github.com/limaofeng/asany-admin/commit/270562f1c169a9836631c6e922fbaec936a80894))
+
 ## [0.2.16](https://github.com/limaofeng/asany-admin/compare/v0.2.15...v0.2.16) (2022-05-03)
 
 ## [0.2.15](https://github.com/limaofeng/asany-admin/compare/v0.2.14...v0.2.15) (2022-05-03)
