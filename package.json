@@ -125,7 +125,7 @@
   },
   "devDependencies": {
     "@asany/umi-plugin-apollo": "^0.1.8",
-    "@asany/umi-plugin-app": "^0.1.39",
+    "@asany/umi-plugin-app": "^0.1.40",
     "@commitlint/cli": "^15.0.0",
     "@commitlint/config-conventional": "^15.0.0",
     "@graphql-codegen/cli": "^2.3.1",

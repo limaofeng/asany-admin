@@ -184,10 +184,10 @@
     lodash "^4.17.21"
     subscriptions-transport-ws "^0.9.16"
 
-"@asany/umi-plugin-app@^0.1.39":
-  version "0.1.39"
-  resolved "https://registry.npmjs.org/@asany/umi-plugin-app/-/umi-plugin-app-0.1.39.tgz#340c6911c99c8c210eb0039a5152e5ff27872575"
-  integrity sha512-VqT32PoCztNlRtMUilJO1j7Fmgsv+Dcug4Y2y8+R/nL93JSB5neKiC/p1sxs0Z1YBFqPKThc7ce14JrsY7I4JQ==
+"@asany/umi-plugin-app@^0.1.40":
+  version "0.1.40"
+  resolved "https://registry.npmjs.org/@asany/umi-plugin-app/-/umi-plugin-app-0.1.40.tgz#023d94c982c2f0b2f9f825f2a77dd0a0814b3ed5"
+  integrity sha512-8SwruiMt1RIXjBi/jL26GJ1lWQ0wijq5l0O9Pe4gd36bXv8zb79Xo4fZwn0rlrHwsYIIJyGNm58FxWqrvAaf/Q==
   dependencies:
     classnames "^2.3.1"
     lodash "^4.17.21"

@@ -1,8 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { useCurrentuser } from 'umi';
+import { useCurrentuser, useDispatch } from 'umi';
 import { Emoji } from 'emoji-mart';
 import Icon from '@asany/icons';
+
+import { useLogoutMutation } from '../hooks';
 
 import EditStatusModal from './modals/EditStatusModal';
 import { handleBackgroundImage } from './utils';
@@ -16,9 +18,12 @@ type UserAccountMenuProps = {
 function UserAccountMenu(props: UserAccountMenuProps) {
   const { close } = props;
 
+  const dispatch = useDispatch();
   const user = useCurrentuser();
 
   const [editStatusModalVisible, setEditStatusModalVisible] = useState(false);
+
+  const [logout] = useLogoutMutation();
 
   const handleUserStatus = useCallback(() => {
     setEditStatusModalVisible(true);
@@ -29,12 +34,15 @@ function UserAccountMenu(props: UserAccountMenuProps) {
   }, []);
 
   const handleClick = useCallback(
-    (e) => {
+    async (e) => {
       if (['profile', 'organizations', 'user-guide', 'preferences'].includes(e.key)) {
         close();
+      } else if (e.key === 'sign-out') {
+        await logout();
+        dispatch({ type: 'auth/logout' });
       }
     },
-    [close],
+    [close, dispatch, logout],
   );
 
   const emoji = ''; // 'smiley';
