@@ -1,8 +1,13 @@
+import { useCallback } from 'react';
+
 import Icon from '@asany/icons';
 import { Link } from 'umi';
 
+import { useChangePasswordMutation, useSessionsQuery } from '../../hooks';
+
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card, Form, Input } from '@/metronic';
+import { Button, Card, Form, Input, Toast } from '@/metronic';
+import { parseError } from '@/utils';
 
 function TwoFactorAuthentication() {
   return (
@@ -57,6 +62,10 @@ function SessionItem(props: SessionItemProps) {
 }
 
 function Sessions() {
+  const { data } = useSessionsQuery();
+
+  console.log('sessions', data?.sessions);
+
   return (
     <Card className="user-session-list mb-5 mb-xl-10">
       <Card.Header>
@@ -74,6 +83,89 @@ function Sessions() {
   );
 }
 
+function ChangePassword() {
+  const form = Form.useForm();
+
+  const [changePassword, { loading }] = useChangePasswordMutation();
+  const handleUpdatePassword = useCallback(async () => {
+    const { password_confirmation, ...values } = await form.validateFields();
+    try {
+      await changePassword({
+        variables: values,
+      });
+      Toast.success('密码修改成功', 3000, {
+        placement: 'bottom-start',
+        progressBar: true,
+      });
+      form.resetFields();
+    } catch (e) {
+      const err = parseError(e);
+      Toast.error(err.message, 3000, {
+        placement: 'top-center',
+      });
+    }
+  }, [changePassword, form]);
+
+  return (
+    <Card className="mb-5 mb-xl-10">
+      <Card.Header>
+        <Card.Title>更改密码</Card.Title>
+      </Card.Header>
+      <Card.Body>
+        <Form form={form} className="col-12 col-md-8">
+          <Form.Item
+            className="mb-5"
+            name="oldPassword"
+            label="原密码"
+            rules={[{ required: true, message: '原密码必填' }]}
+          >
+            <Input.Password solid className="w-400px" />
+          </Form.Item>
+          <Form.Item
+            className="my-5 w-400px"
+            name="newPassword"
+            label="新密码"
+            rules={[
+              { required: true, message: '密码必填' },
+              {
+                min: 8,
+                message: '密码至少包含 8 个字符',
+              },
+            ]}
+          >
+            <Input.Password meter solid />
+          </Form.Item>
+          <Form.Item
+            className="my-5"
+            name="password_confirmation"
+            label="确认新密码"
+            rules={[
+              {
+                validator: async (_, value) => {
+                  if (form.getFieldValue('newPassword') !== value) {
+                    throw new Error('两次输入的密码不一致');
+                  }
+                },
+              },
+            ]}
+          >
+            <Input.Password solid className="w-400px" />
+          </Form.Item>
+        </Form>
+        <p className="text-small mt-2 mb-1">
+          确保密码至少包含 15 个字符或至少 8 个字符，包括数字 和小写字母。
+        </p>
+        <Button loading={loading} className="me-4" onClick={handleUpdatePassword}>
+          更新密码
+        </Button>
+        <Button type="link" variant={false}>
+          我忘记了自己的密码
+        </Button>
+      </Card.Body>
+    </Card>
+  );
+}
+
 function Security() {
   return (
     <ContentWrapper
@@ -81,32 +173,7 @@ function Security() {
       header={{ title: '密码与安全设置' }}
       footer={false}
     >
-      <Card className="mb-5 mb-xl-10">
-        <Card.Header>
-          <Card.Title>更改密码</Card.Title>
-        </Card.Header>
-        <Card.Body>
-          <Form className="col-12 col-md-8">
-            <Form.Item className="mb-5" name="old_password" label="旧密码">
-              <Input.Password solid className="w-400px" />
-            </Form.Item>
-            <Form.Item className="my-5" name="password" label="新密码">
-              <Input.Password solid className="w-400px" />
-            </Form.Item>
-            <Form.Item className="my-5" name="password_confirmation" label="确认新密码">
-              <Input.Password solid className="w-400px" />
-            </Form.Item>
-          </Form>
-          <p className="text-small mt-2 mb-1">
-            确保密码至少包含 15 个字符或至少 8 个字符，包括数字 和小写字母。
-          </p>
-          <Button className="me-4">更新密码</Button>
-          <Button type="link" variant={false}>
-            我忘记了自己的密码
-          </Button>
-        </Card.Body>
-      </Card>
-
+      <ChangePassword />
       <Sessions />
     </ContentWrapper>
   );

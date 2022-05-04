@@ -47,6 +47,7 @@ export default defineConfig({
   mfsu: {},
   webpack5: {},
   exportStatic: {},
+  extraBabelPlugins: ['babel-plugin-styled-components'],
   chainWebpack(config, { createCSSRule }) {
     config.module
       .rule('wasm-loader')

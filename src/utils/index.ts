@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 
+import { ApolloError } from '@apollo/client';
 import { isEqual } from 'lodash';
+
+import errors from '../errors';
 
 export type ConvolverOptions = {
   parent?: any;
@@ -122,4 +125,17 @@ function useDeepCompareMemoize(value: any) {
 export function useDeepCompareEffect(effect: React.EffectCallback, dependencies?: any) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(effect, useDeepCompareMemoize(dependencies));
+}
+
+type GeneralError = {
+  code: string;
+  message: string;
+};
+
+export function parseError(e: any): GeneralError {
+  if (e instanceof ApolloError) {
+    const code = (e as ApolloError).graphQLErrors[0].extensions.code;
+    return { code, message: errors[code] || e.message };
+  }
+  return { code: '000000', message: e.message };
 }
