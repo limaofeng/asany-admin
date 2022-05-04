@@ -118,13 +118,14 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
 
 const DEFAULT_APP_PATHS = ['/drive', '/calendar', '/contacts', '/mail'];
 
-const MIN_WIDTH = 300;
-const MAX_WIDTH = 500;
+// TODO: 支持侧边栏拖拽调整宽度
+// const MIN_WIDTH = 300;
+// const MAX_WIDTH = 500;
 
 function Aside(props: AsideProps) {
   const { logo, menuRender, activeKey, onSelect } = props;
 
-  const resizeWidth = useRef<{ width: number; resize: 0 }>({ width: 425, resize: 0 });
+  // const resizeWidth = useRef<{ width: number; resize: 0 }>({ width: 425, resize: 0 });
   const wrapperRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
@@ -133,7 +134,7 @@ function Aside(props: AsideProps) {
   useScroll(scrollRef, wrapperRef, [logoRef, footerRef]);
 
   const collapsible = useLayoutSelector((state) => state.aside.collapsible);
-  const asideWidth = useLayoutSelector((state) => state.aside.width);
+  // const asideWidth = useLayoutSelector((state) => state.aside.width);
   const minimize = useLayoutSelector((state) => state.aside.minimize);
   const menus = useLayoutSelector((state) => state.aside.menus || []);
 
@@ -194,13 +195,13 @@ function Aside(props: AsideProps) {
     [menus],
   );
 
-  const width = useMemo(() => {
-    if (minimize) {
-      return undefined;
-    }
-    resizeWidth.current.width = asideWidth;
-    return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, asideWidth));
-  }, [minimize, asideWidth]);
+  // const width = useMemo(() => {
+  //   if (minimize) {
+  //     return undefined;
+  //   }
+  //   resizeWidth.current.width = asideWidth;
+  //   return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, asideWidth));
+  // }, [minimize, asideWidth]);
 
   const hideAside = menuRender == false;
 
@@ -209,7 +210,6 @@ function Aside(props: AsideProps) {
       className={classnames('aside', {
         'aside-extended': !minimize,
       })}
-      style={{ width: !hideAside ? width : undefined }}
     >
       <div className="aside-primary d-flex flex-column align-items-lg-center flex-row-auto">
         <Logo ref={logoRef} url="/" logo={logo} />

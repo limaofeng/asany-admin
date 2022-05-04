@@ -6,6 +6,7 @@ import { getMatchMenu, transformRoute } from '@umijs/route-utils';
 import type { RouteComponentProps } from 'react-router';
 import type { Route } from '@umijs/route-utils/dist/types';
 import 'react-toastify/dist/ReactToastify.css';
+import styled from 'styled-components';
 
 import { LayoutProvider, useLayoutSelector } from '../LayoutContext';
 
@@ -63,12 +64,32 @@ function LayoutInner(props: LayoutInnerProps) {
   );
 }
 
+type RootLayoutProps = {
+  minimize: boolean;
+  width: number;
+};
+
+const RootLayout = styled.div<RootLayoutProps>`
+  .aside {
+    width: ${(props) => (props.minimize ? '100px' : `${props.width}px`)};
+    .aside-workspace {
+      width: ${(props) => `${props.width - 100}px`};
+    }
+  }
+  #kt_wrapper {
+    padding-left: ${(props) => (props.minimize ? '100px' : `${props.width}px`)};
+  }
+`;
+
 function InternalLayout(props: LayoutProps) {
   const { children, menuRender, activeKey, onSelect } = props;
+  const width = useLayoutSelector((state) => state.aside.width);
   const minimize = useLayoutSelector((state) => state.aside.minimize);
 
   return (
-    <div
+    <RootLayout
+      width={width}
+      minimize={minimize || menuRender == false}
       data-kt-aside-minimize={minimize || menuRender == false ? 'on' : 'off'}
       className="theme-metronic header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled"
     >
@@ -79,7 +100,7 @@ function InternalLayout(props: LayoutProps) {
           {children}
         </div>
       </div>
-    </div>
+    </RootLayout>
   );
 }
 

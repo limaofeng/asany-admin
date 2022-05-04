@@ -2,8 +2,6 @@ import React from 'react';
 
 import classnames from 'classnames';
 
-import { useLayoutSelector } from '../../LayoutContext';
-
 import Content from './Content';
 import type { ContentFooterProps } from './ContentFooter';
 import type { ContentHeaderProps } from './ContentHeader';
@@ -27,9 +25,6 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
     children,
   } = props;
 
-  const asideWidth = useLayoutSelector((state) => state.aside.width);
-  const minimize = useLayoutSelector((state) => state.aside.minimize);
-
   return (
     <div
       ref={ref}
@@ -37,7 +32,6 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
       className={classnames('wrapper d-flex flex-column flex-row-fluid', className, {
         'content-mask': mask,
       })}
-      style={{ paddingLeft: !minimize ? asideWidth : undefined }}
     >
       {header && <ContentHeader {...header} />}
       <Content>{children}</Content>
