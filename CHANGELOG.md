@@ -1,3 +1,9 @@
+## [0.2.19](https://github.com/limaofeng/asany-admin/compare/v0.2.18...v0.2.19) (2022-05-04)
+
+### Bug Fixes
+
+- codegen 新增 user 模块 ([e97596e](https://github.com/limaofeng/asany-admin/commit/e97596eb63fabfba85c51663d1bbc67d28d6b8a8))
+
 ## [0.2.18](https://github.com/limaofeng/asany-admin/compare/v0.2.17...v0.2.18) (2022-05-04)
 
 ### Bug Fixes
