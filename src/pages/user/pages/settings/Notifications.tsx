@@ -12,7 +12,6 @@ function Notifications() {
           <div className="table-responsive">
             <table className="table table-row-dashed border-gray-300 align-middle gy-6">
               <tbody className="fs-6 fw-bold">
-                {/*--begin::Table row--*/}
                 <tr>
                   <td className="min-w-250px fs-4 fw-bolder">Notifications</td>
                   <td className="w-125px">
@@ -54,8 +53,6 @@ function Notifications() {
                     </div>
                   </td>
                 </tr>
-                {/*--begin::Table row--*/}
-                {/*--begin::Table row--*/}
                 <tr>
                   <td>Billing Updates</td>
                   <td>
@@ -85,8 +82,6 @@ function Notifications() {
                     </div>
                   </td>
                 </tr>
-                {/*--begin::Table row--*/}
-                {/*--begin::Table row--*/}
                 <tr>
                   <td>New Team Members</td>
                   <td>
@@ -115,8 +110,6 @@ function Notifications() {
                     </div>
                   </td>
                 </tr>
-                {/*--begin::Table row--*/}
-                {/*--begin::Table row--*/}
                 <tr>
                   <td>Completed Projects</td>
                   <td>
@@ -145,8 +138,6 @@ function Notifications() {
                     </div>
                   </td>
                 </tr>
-                {/*--begin::Table row--*/}
-                {/*--begin::Table row--*/}
                 <tr>
                   <td className="border-bottom-0">Newsletters</td>
                   <td className="border-bottom-0">
@@ -174,7 +165,6 @@ function Notifications() {
                     </div>
                   </td>
                 </tr>
-                {/*--begin::Table row--*/}
               </tbody>
             </table>
           </div>

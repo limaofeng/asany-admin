@@ -1,18 +1,20 @@
-mutation changePassword($oldPassword: String!, $newPassword: String!){
+mutation changePassword($oldPassword: String!, $newPassword: String!) {
   changePassword(oldPassword: $oldPassword, newPassword: $newPassword)
 }
 
-query sessions{
+query sessions {
   sessions {
     id
-    device
-    location {
-      id
-      internetProtocolAddress
-      country
-      state
-      city
-    }
+    ip
+    lastIp
+    location
+    lastLocation
     loginTime
+    lastUsedTime
+    device {
+      type
+      browser
+      operatingSystem
+    }
   }
 }
