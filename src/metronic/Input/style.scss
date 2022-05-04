@@ -12,8 +12,11 @@
   }
 }
 .input-group {
-  .input-group-text{
+  .input-group-text {
     padding: 4px 11px;
   }
 }
-
+.password-meter-control > div {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-secondary-rgb), var(--bs-bg-opacity));
+}
