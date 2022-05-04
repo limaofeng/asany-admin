@@ -1,1 +1,0 @@
-(self.webpackChunkasany_admin=self.webpackChunkasany_admin||[]).push([[1185],{31185:function(d,n,t){"use strict";t.r(n);var u=t(95551),_=t(5539),E=t(75468),s=t(85893);function e(){var a=(0,u.ot)();return(0,s.jsx)(E.v,{header:{title:"\u8349\u7A3F\u7BB1"},children:a&&(0,s.jsx)(_.default,{query:{filter:{createdBy:a.uid,status:"DRAFT"}}})})}n.default=e}}]);
