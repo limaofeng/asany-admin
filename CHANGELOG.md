@@ -1,3 +1,15 @@
+## [0.2.18](https://github.com/limaofeng/asany-admin/compare/v0.2.17...v0.2.18) (2022-05-04)
+
+### Bug Fixes
+
+- 优化不同侧边栏状态调整实现 ([1cf946c](https://github.com/limaofeng/asany-admin/commit/1cf946ce7f23a47b06659809b761a8dbbdfd8711))
+
+### Features
+
+- 个人中心 - 修改密码功能 ([b621950](https://github.com/limaofeng/asany-admin/commit/b62195062cf85e01a142fddad9b8ed6111f0afc0))
+- 会话列表 ([4b976be](https://github.com/limaofeng/asany-admin/commit/4b976be57e7a968ad28ad7fc270be5521ec147d7))
+- 密码输入组建支持 meter 与 visibilityToggle 功能 ([418f616](https://github.com/limaofeng/asany-admin/commit/418f616dec5eb342477e900be1d3c1b689c69786))
+
 ## [0.2.17](https://github.com/limaofeng/asany-admin/compare/v0.2.16...v0.2.17) (2022-05-03)
 
 ### Bug Fixes
