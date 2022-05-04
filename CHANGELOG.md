@@ -1,3 +1,9 @@
+## [0.2.20](https://github.com/limaofeng/asany-admin/compare/v0.2.19...v0.2.20) (2022-05-04)
+
+### Features
+
+- 用户登出操作 ([0a1aabb](https://github.com/limaofeng/asany-admin/commit/0a1aabbf5d13a1264fabcf3168711a78013c5d03))
+
 ## [0.2.19](https://github.com/limaofeng/asany-admin/compare/v0.2.18...v0.2.19) (2022-05-04)
 
 ### Bug Fixes
