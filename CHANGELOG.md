@@ -1,3 +1,9 @@
+## [0.2.21](https://github.com/limaofeng/asany-admin/compare/v0.2.20...v0.2.21) (2022-05-05)
+
+### Bug Fixes
+
+- 页面自适应，尺寸小的时候列表错乱 ([beeae5f](https://github.com/limaofeng/asany-admin/commit/beeae5f20927a136a0658f4810a72aad66ba1013))
+
 ## [0.2.20](https://github.com/limaofeng/asany-admin/compare/v0.2.19...v0.2.20) (2022-05-04)
 
 ### Features
