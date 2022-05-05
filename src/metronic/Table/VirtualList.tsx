@@ -34,11 +34,21 @@ type VirtualListProps<T> = {
   dataSource: DataSource<T>;
   rowKey: string | ((record: T) => string);
   recoverer: DataRecoverer<T>;
+  onColgroup?: (numbers: Map<string, number>) => void;
   onSelect: (record: T, selected: boolean, e: any) => void;
 };
 
 function VirtualList<T>(props: VirtualListProps<T>) {
-  const { columns, rowHeight, rowKey, dataSource, recoverer, rowSelection, tableBodyRef } = props;
+  const {
+    columns,
+    onColgroup,
+    rowHeight,
+    rowKey,
+    dataSource,
+    recoverer,
+    rowSelection,
+    tableBodyRef,
+  } = props;
 
   const scrollbar = useRef<OverlayScrollbarsComponent>(null);
 
@@ -220,7 +230,7 @@ function VirtualList<T>(props: VirtualListProps<T>) {
         responsive={props.responsive}
         className="dataTable table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
       >
-        <Colgroup<T> columns={columns} />
+        <Colgroup<T> onColgroup={onColgroup} columns={columns} />
         <tbody ref={tableBodyRef} className="fw-bold text-gray-600">
           {!!beforeTr && <tr style={{ height: beforeTr }} />}
           {items.map((item) => (

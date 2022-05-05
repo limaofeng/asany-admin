@@ -38,13 +38,13 @@ function Toolbar() {
         </a> */}
       </div>
       <div className="d-flex align-items-center ms-3">
-        <div
+        {/* <div
           className="btn btn-icon btn-primary w-40px h-40px pulse pulse-white"
           id="kt_drawer_chat_toggle"
         >
           <Icon name="Duotune/com012" />
           <span className="pulse-ring" />
-        </div>
+        </div> */}
       </div>
     </div>
   );

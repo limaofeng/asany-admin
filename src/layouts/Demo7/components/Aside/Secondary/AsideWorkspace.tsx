@@ -16,7 +16,7 @@ type AsideWorkspaceProps = {
 };
 
 function AsideWorkspace(props: AsideWorkspaceProps) {
-  const { className, width = 325, children, collapsible = true, resizeable } = props;
+  const { className, width = 325, children, collapsible = true } = props;
 
   const layout = useLayout();
 
@@ -28,9 +28,9 @@ function AsideWorkspace(props: AsideWorkspaceProps) {
     layout.aside.collapsible(collapsible);
   }, [layout.aside, collapsible]);
 
-  useEffect(() => {
-    layout.aside.collapsible(!!resizeable);
-  }, [layout.aside, resizeable]);
+  // useEffect(() => {
+  //   layout.aside.collapsible(!!resizeable);
+  // }, [layout.aside, resizeable]);
 
   return (
     <div className={classnames('aside-workspace', className)}>

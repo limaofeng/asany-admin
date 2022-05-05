@@ -194,3 +194,11 @@ export function networkSpeed(
   }
   return fileSize(Math.min(bitrate, e.total));
 }
+
+export const wrapRef = (originalRef: any, localRef: any) => (ref: any) => {
+  if (originalRef) {
+    if (typeof originalRef === 'object') originalRef.current = ref;
+    if (typeof originalRef === 'function') originalRef(ref);
+  }
+  localRef.current = ref;
+};

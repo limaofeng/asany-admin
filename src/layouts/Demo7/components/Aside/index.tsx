@@ -205,6 +205,8 @@ function Aside(props: AsideProps) {
 
   const hideAside = menuRender == false;
 
+  console.log('collapsible', collapsible);
+
   return (
     <div
       className={classnames('aside', {

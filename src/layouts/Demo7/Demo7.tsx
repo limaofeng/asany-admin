@@ -70,15 +70,7 @@ type RootLayoutProps = {
 };
 
 const RootLayout = styled.div<RootLayoutProps>`
-  .aside {
-    width: ${(props) => (props.minimize ? '100px' : `${props.width}px`)};
-    .aside-workspace {
-      width: ${(props) => `${props.width - 100}px`};
-    }
-  }
-  #kt_wrapper {
-    padding-left: ${(props) => (props.minimize ? '100px' : `${props.width}px`)};
-  }
+  --met-aside-width: ${(props) => (props.minimize ? '100px' : `${props.width}px`)};
 `;
 
 function InternalLayout(props: LayoutProps) {

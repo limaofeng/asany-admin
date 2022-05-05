@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import classnames from 'classnames';
 import { useMeasure } from 'react-use';
 
 import Checkbox from '../Checkbox';
+import { wrapRef } from '../utils';
 
 import type {
   DataSource,
+  NewTableColumn,
   RowSelection,
   SortDirection,
   Sorter,
@@ -16,52 +18,58 @@ import type {
 import { getRowKey } from './utils';
 
 type ColgroupProps<T> = {
-  columns: TableColumn<T>[];
+  columns: NewTableColumn<T>[];
+  onColgroup?: (numbers: Map<string, number>) => void;
 };
 
-export function Colgroup<T>({ columns }: ColgroupProps<T>) {
-  const cols = useMemo(() => {
-    const _cols = [];
-    for (let i = columns.length - 1; i >= 0; i--) {
-      if (!_cols.length && !columns[i].width) {
-        continue;
-      }
-      const key = columns[i].key || columns[i].dataIndex;
-      _cols.push(<col key={`colgroup-cols-${key}`} width={columns[i].width} />);
+function getColKey<T>(col: TableColumn<T>): string {
+  return (col.key || col.dataIndex)!;
+}
+
+export function Colgroup<T>({ columns, onColgroup }: ColgroupProps<T>) {
+  const container = useRef<HTMLTableColElement>();
+
+  const temp = useRef<{ columns: TableColumn<T>[] }>({ columns });
+
+  const [ref, { width }] = useMeasure<HTMLTableColElement>();
+
+  useEffect(() => {
+    if (!onColgroup) {
+      return;
     }
-    return _cols.reverse();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [columns.map((item) => item.width).join('-')]);
+    const data = new Map<string, number>();
 
-  if (!cols.length) {
-    return <></>;
-  }
+    const widths = Array.from(container.current!.children).map((item: any) => item.offsetWidth);
+    temp.current.columns.forEach((col, i) => {
+      data.set(getColKey(col), widths[i]);
+    });
 
-  return <colgroup>{cols}</colgroup>;
+    onColgroup(data);
+  }, [onColgroup, width]);
+
+  return (
+    <colgroup ref={wrapRef(ref, container)}>
+      {columns.map((col) => (
+        <col key={`colgroup-cols-${getColKey(col)}`} width={col.width} />
+      ))}
+    </colgroup>
+  );
 }
 
 type TableHeaderColumnProps = {
   className: string;
-  col: TableColumn<any>;
+  col: NewTableColumn<any>;
   sortOrder?: SortDirection;
   onSort: (field: string, order: SortDirection) => void;
-  onWidthResize: (key: string, width: number) => void;
 };
 
 type TableHeaderColumnCheckboxProps = {
   checked: boolean;
   onSelect: (selected: boolean) => void;
-  onWidthResize: (key: string, width: number) => void;
 };
 
 function TableHeaderColumnCheckbox(props: TableHeaderColumnCheckboxProps) {
-  const { onWidthResize, onSelect } = props;
-
-  const [ref, { right, left }] = useMeasure<HTMLTableCellElement>();
-
-  useEffect(() => {
-    onWidthResize('__rowSelection', right + left);
-  }, [left, onWidthResize, right]);
+  const { onSelect } = props;
 
   const handleChange = useCallback(
     (e) => {
@@ -71,14 +79,14 @@ function TableHeaderColumnCheckbox(props: TableHeaderColumnCheckboxProps) {
   );
 
   return (
-    <th ref={ref} className="row-selection w-50px">
+    <th className="row-selection">
       <Checkbox solid checked={props.checked} onChange={handleChange} size="sm" className=" p-0" />
     </th>
   );
 }
 
 function TableHeaderColumn(props: TableHeaderColumnProps) {
-  const { className, col, onSort, onWidthResize, sortOrder } = props;
+  const { className, col, onSort, sortOrder } = props;
 
   const sortable = useMemo(
     () => !!(col.sorter || col.sortDirections || sortOrder),
@@ -95,13 +103,6 @@ function TableHeaderColumn(props: TableHeaderColumnProps) {
     return ['ascend', 'descend'];
   }, [col.sortDirections, sortable]);
 
-  const [ref, { width, x, y }] = useMeasure<HTMLTableCellElement>();
-
-  useEffect(() => {
-    // console.log('TableHeaderColumn', col.key, width, x, y);
-    onWidthResize(col.key!, width + x);
-  }, [col.key, onWidthResize, width, x, y]);
-
   const handleSort = useCallback(() => {
     const _index = sortDirections.findIndex((item) => item == sortOrder) + 1;
 
@@ -110,13 +111,13 @@ function TableHeaderColumn(props: TableHeaderColumnProps) {
 
   return (
     <th
-      ref={ref}
       className={classnames(className, {
         sorting: sortable,
         sorting_desc: sortable && sortOrder == 'descend',
         sorting_asc: sortable && sortOrder == 'ascend',
       })}
       onClick={sortable ? handleSort : undefined}
+      style={{ width: col.width }}
     >
       {col.title}
     </th>
@@ -128,13 +129,12 @@ type TableHeaderProps<T> = {
   selectedKeys: Set<string>;
   rowSelection?: RowSelection<T>;
   dataSource: DataSource<T>;
-  columns: TableColumn<T>[];
+  columns: NewTableColumn<T>[];
   rowKey: string | ((record: T) => string);
   onSelectAll: (selected: boolean) => void;
   renderTitle: (size: number) => React.ReactNode;
   toolbar: TableHeadToolbar;
   onSort: (sorter: Sorter) => void;
-  onColgroup: (numbers: Map<string, number>) => void;
 };
 
 function TableHeader<T>(props: TableHeaderProps<T>) {
@@ -143,18 +143,12 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
     columns,
     selectedKeys,
     toolbar,
-    onColgroup,
     onSort,
     rowKey,
     dataSource,
     selectedAll,
     onSelectAll,
   } = props;
-
-  const state = useRef<{
-    widths: Map<string, number>;
-  }>({ widths: new Map<string, number>() });
-  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const sorter = useMemo(() => {
     const col = columns.find((_col) => !!_col.sortOrder);
@@ -164,23 +158,11 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
   const temp = useRef({
     isStats: toolbar && !!selectedKeys.size,
     count: columns.length,
+    totalWidth: 0,
   });
 
   temp.current.isStats = toolbar && !!selectedKeys.size;
   temp.current.count = columns.length;
-
-  const handleWidthResize = useCallback(
-    (key: string, width: number) => {
-      const { isStats, count } = temp.current;
-      // console.log('selectedKeys', isStats, key, width);
-      state.current.widths.set(key, width);
-      if (!isStats && count == state.current.widths.size) {
-        onColgroup(state.current.widths);
-        forceRender();
-      }
-    },
-    [onColgroup],
-  );
 
   const handleSort = useCallback(
     (field: string, order: SortDirection) => {
@@ -206,11 +188,7 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
           <tr className="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0 table-row-dashed">
             {temp.current.isStats ? (
               <>
-                <TableHeaderColumnCheckbox
-                  checked={selectedAll}
-                  onSelect={handleSelect}
-                  onWidthResize={handleWidthResize}
-                />
+                <TableHeaderColumnCheckbox checked={selectedAll} onSelect={handleSelect} />
                 <th
                   className="row-select px-0 py-0"
                   style={{ verticalAlign: 'middle' }}
@@ -238,7 +216,6 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
                     key={key}
                     checked={selectedAll}
                     onSelect={handleSelect}
-                    onWidthResize={handleWidthResize}
                   />
                 ) : (
                   <TableHeaderColumn
@@ -247,7 +224,6 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
                     sortOrder={sorter?.field == col.key ? sorter?.order : undefined}
                     className={classnames(col.className)}
                     onSort={handleSort}
-                    onWidthResize={handleWidthResize}
                   />
                 );
               })

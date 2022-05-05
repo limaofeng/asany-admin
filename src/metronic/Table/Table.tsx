@@ -13,6 +13,7 @@ import Pagination from './Pagination';
 import TableHeader, { Colgroup } from './TableHeader';
 import type {
   DataSource,
+  NewTableColumn,
   NoContentRenderer,
   RowHeightFunc,
   RowSelection,
@@ -348,18 +349,26 @@ function Table<T>(props: TableProps<T>) {
       ...columns.map((col) => ({
         ...col,
         key: col.key || col.dataIndex,
-        width: colgroups.get(col.key!)!,
       })),
     ];
     if (rowSelection) {
       _newColumns.unshift({
         title: '',
         key: '__rowSelection',
-        width: colgroups.get('__rowSelection')!,
+        width: 50,
       });
     }
-    return _newColumns;
-  }, [rowSelection, columns, colgroups]);
+    return _newColumns as NewTableColumn<T>[];
+  }, [rowSelection, columns]);
+
+  const headerColumns = useMemo(() => {
+    return newColumns.map((col) => ({
+      ...col,
+      key: col.key || col.dataIndex,
+      width: colgroups.get(col.key || col.dataIndex!),
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newColumns, Array.from(colgroups.values()).join(',')]);
 
   const handleSelectoDragCondition = useCallback((e) => {
     if (!e.inputEvent.path) {
@@ -422,8 +431,6 @@ function Table<T>(props: TableProps<T>) {
     temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
   }, [selectedRowKeys]);
 
-  // console.log('selectedKeys', state.current.selectedKeys);
-
   return (
     <div className="dataTables_wrapper dt-bootstrap4 no-footer">
       <TableHeader
@@ -435,8 +442,7 @@ function Table<T>(props: TableProps<T>) {
         selectedKeys={state.current.selectedKeys}
         onSelectAll={handleSelectAll}
         onSort={handleSort}
-        columns={newColumns}
-        onColgroup={handleColgroup}
+        columns={headerColumns}
       />
       <div className="dataTable-body">
         {dataSource.type == 'lazy' ? (
@@ -453,6 +459,7 @@ function Table<T>(props: TableProps<T>) {
             columns={newColumns}
             useCheck={useCheck}
             hover={hover}
+            onColgroup={handleColgroup}
             responsive={responsive}
           />
         ) : (
@@ -462,7 +469,7 @@ function Table<T>(props: TableProps<T>) {
             responsive={props.responsive}
             className="dataTable table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
           >
-            <Colgroup<T> columns={newColumns} />
+            <Colgroup<T> onColgroup={handleColgroup} columns={newColumns} />
             <tbody ref={tableBodyContainer} className="fw-bold text-gray-600">
               {!dataSource.items.length
                 ? noRowsRenderer && (

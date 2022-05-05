@@ -34,6 +34,10 @@ export type RowData = {
   bottom: number;
 };
 
+export interface NewTableColumn<T> extends TableColumn<T> {
+  __width?: number;
+}
+
 export type TableColumn<T> = {
   title: string | React.ReactNode;
   dataIndex?: string;

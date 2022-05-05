@@ -57,3 +57,18 @@ ol {
     min-height: 100vh;
   }
 }
+@media (min-width: 992px) {
+  .aside-secondary-enabled .aside {
+    width: var(--met-aside-width);
+  }
+  .aside-secondary-enabled.aside-fixed .wrapper {
+    padding-left: var(--met-aside-width);
+  }
+  .aside .aside-secondary .aside-workspace {
+    width: calc(var(--met-aside-width) - 100px);
+  }
+  .aside-fixed.aside-secondary-enabled[data-kt-sticky-header='on'] .header {
+    left: var(--met-aside-width);
+    transition: left 0.3s ease;
+  }
+}
