@@ -1,3 +1,9 @@
+## [0.2.25-asany](https://github.com/limaofeng/asany-admin/compare/v0.2.25...v0.2.25-asany) (2022-05-06)
+
+### Bug Fixes
+
+- 使用域名 ([7e16fb8](https://github.com/limaofeng/asany-admin/commit/7e16fb85ac9eb23276cb75171b2d086cac3baa1d))
+
 ## [0.2.25](https://github.com/limaofeng/asany-admin/compare/v0.2.24...v0.2.25) (2022-05-06)
 
 ### Features
