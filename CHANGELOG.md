@@ -1,3 +1,9 @@
+## [0.2.25](https://github.com/limaofeng/asany-admin/compare/v0.2.24...v0.2.25) (2022-05-06)
+
+### Features
+
+- 活动页分享标语维护 ([1b251c2](https://github.com/limaofeng/asany-admin/commit/1b251c2c3f0a9e37932f111c60d28cde01c070f5))
+
 ## [0.2.24](https://github.com/limaofeng/asany-admin/compare/v0.2.23...v0.2.24) (2022-05-05)
 
 ## [0.2.23](https://github.com/limaofeng/asany-admin/compare/v0.2.22...v0.2.23) (2022-05-05)
