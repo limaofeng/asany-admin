@@ -1,4 +1,4 @@
-import type { Badge } from '../Badge';
+import type Badge from '../Badge';
 
 export type Breakpoint = 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
@@ -30,7 +30,6 @@ export type AvatarProps = {
   shape?: 'circle' | 'square';
   size?: SymbolSize;
   src?: string | React.ReactNode;
-  title?: string;
   alt?: string | React.ReactNode;
   gap?: number;
   labelClassName?: string;

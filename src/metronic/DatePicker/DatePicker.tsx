@@ -14,7 +14,7 @@ interface DatePickerProps {
   size?: 'sm' | 'lg';
   placeholder?: string;
   solid?: boolean;
-  value?: string | Moment;
+  value?: string | number | Moment;
   minDate?: string | Moment;
   maxDate?: string | Moment;
   className?: string;
@@ -140,7 +140,10 @@ function toDate(value: string | Moment | undefined): string | Date | undefined {
   return undefined;
 }
 
-function toMoment(value: string | Moment | undefined): Moment | undefined {
+function toMoment(value: string | Moment | number | undefined): Moment | undefined {
+  if (typeof value === 'number') {
+    return moment(value);
+  }
   if (typeof value === 'string' && !!value) {
     return moment(value);
   }
@@ -150,7 +153,7 @@ function toMoment(value: string | Moment | undefined): Moment | undefined {
   return undefined;
 }
 
-function toDateString(value: string | Moment, format: string) {
+function toDateString(value: string | Moment | number, format: string) {
   const _m = toMoment(value);
   if (!_m || !_m.isValid()) {
     return undefined;

@@ -35,49 +35,22 @@ export async function getInitialState(): Promise<{
 }> {
   // 如果是登录页面，不执行
   if (!history.location.pathname.endsWith(loginPath)) {
-    const currentUser = await loadCurrentuser();
-    return {
-      currentUser,
-      settings: {},
-    };
+    try {
+      const currentUser = await loadCurrentuser();
+      return {
+        currentUser,
+        settings: {},
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        currentUser: undefined,
+        settings: {},
+      };
+    }
   }
   return {
     currentUser: undefined,
     settings: {},
   };
 }
-
-// ProLayout 支持的api https://procomponents.ant.design/components/layout
-// export const layout: RunTimeLayoutConfig = ({ initialState }) => {
-//   return {
-//     rightContentRender: () => <RightContent />,
-//     disableContentMargin: false,
-//     waterMarkProps: {
-//       content: initialState?.currentUser?.name,
-//     },
-//     footerRender: () => <Footer />,
-//     onPageChange: () => {
-//       const { location } = history;
-//       // 如果没有登录，重定向到 login
-//       if (!initialState?.currentUser && location.pathname !== loginPath) {
-//         history.push(loginPath);
-//       }
-//     },
-//     links: isDev
-//       ? [
-//           <Link to="/umi/plugin/openapi" target="_blank">
-//             <LinkOutlined />
-//             <span>OpenAPI 文档</span>
-//           </Link>,
-//           <Link to="/~docs">
-//             <BookOutlined />
-//             <span>业务组件文档</span>
-//           </Link>,
-//         ]
-//       : [],
-//     menuHeaderRender: undefined,
-//     // 自定义 403 页面
-//     // unAccessible: <div>unAccessible</div>,
-//     ...initialState?.settings,
-//   };
-// };

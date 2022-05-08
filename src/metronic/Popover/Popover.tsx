@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 import { OverlayTrigger as BsOverlayTrigger, Popover as BsPopover } from 'react-bootstrap';
 import type { OverlayDelay, OverlayTriggerType } from 'react-bootstrap/esm/OverlayTrigger';
 import type { Placement } from 'react-bootstrap/esm/types';
 import { useClickAway } from 'react-use';
+import useMergedRef from '@react-hook/merged-ref';
 
 import './style.scss';
 
@@ -45,16 +46,8 @@ function Popover(props: PopoverProps) {
 
   const [controlled] = useState(props.visible != null);
 
-  const wrapRef = useCallback(
-    (originalRef: any, localRef: any) => (ref: any) => {
-      if (originalRef) {
-        if (typeof originalRef === 'object') originalRef.current = ref;
-        if (typeof originalRef === 'function') originalRef(ref);
-      }
-      localRef.current = ref;
-    },
-    [],
-  );
+  const multiRef = useMergedRef(nodeRef, (children as any).ref);
+
   useEffect(() => {
     setVisible(!!props.visible);
   }, [props.visible]);
@@ -115,7 +108,7 @@ function Popover(props: PopoverProps) {
         </BsPopover>
       }
     >
-      {React.cloneElement(children, { ref: wrapRef((children as any).ref, nodeRef) })}
+      {React.cloneElement(children, { ref: multiRef })}
     </BsOverlayTrigger>
   );
 }

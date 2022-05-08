@@ -4,13 +4,12 @@ import React from 'react';
 import classnames from 'classnames';
 
 import { contrastTextColor, generateBackgroundColor } from '../utils/color';
-import Tooltip from '../Tooltip';
 
 import { useSymbolSize } from './utils';
 import type { AvatarProps } from './typings';
 
-function Avatar(props: AvatarProps) {
-  const { title, onClick, shape, className, labelClassName, src, gap, alt, badge } = props;
+function Avatar(props: AvatarProps, ref: any) {
+  const { onClick, shape, className, labelClassName, src, gap, alt, badge, ...otherProps } = props;
 
   const [loadFailed, setLoadFailed] = useState(false);
 
@@ -34,37 +33,37 @@ function Avatar(props: AvatarProps) {
   const sizeClass = useSymbolSize(props.size);
 
   return (
-    <Tooltip title={title}>
-      <div
-        onClick={onClick}
-        className={classnames(
-          'symbol',
-          {
-            'symbol-circle': shape == 'circle',
-            'symbol-square': shape == 'square',
-          },
-          className,
-          sizeClass,
-        )}
-      >
-        {loadFailed ? (
-          React.isValidElement(alt) ? (
-            alt
-          ) : (
-            <div
-              style={{ backgroundColor, color }}
-              className={classnames(labelClassName, 'symbol-label fw-bold')}
-            >
-              {typeof alt === 'string' &&
-                (isChinese(alt) ? alt.substring(0, 1) : alt.substring(0, 2).toUpperCase())}
-            </div>
-          )
+    <div
+      ref={ref}
+      onClick={onClick}
+      className={classnames(
+        'symbol',
+        {
+          'symbol-circle': shape == 'circle',
+          'symbol-square': shape == 'square',
+        },
+        className,
+        sizeClass,
+      )}
+      {...otherProps}
+    >
+      {loadFailed ? (
+        React.isValidElement(alt) ? (
+          alt
         ) : (
-          renderImg(src, gap, handleError)
-        )}
-        {badge}
-      </div>
-    </Tooltip>
+          <div
+            style={{ backgroundColor, color }}
+            className={classnames(labelClassName, 'symbol-label fw-bold')}
+          >
+            {typeof alt === 'string' &&
+              (isChinese(alt) ? alt.substring(0, 1) : alt.substring(0, 2).toUpperCase())}
+          </div>
+        )
+      ) : (
+        renderImg(src, gap, handleError)
+      )}
+      {badge}
+    </div>
   );
 }
 
@@ -87,4 +86,6 @@ function renderImg(
   return <img src={src as any} className={classnames({ [`p-${gap}`]: !!gap })} onError={onError} />;
 }
 
-export default Avatar;
+const AvatarWrapper = React.forwardRef(Avatar);
+
+export default AvatarWrapper;

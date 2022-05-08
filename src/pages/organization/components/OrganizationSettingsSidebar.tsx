@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 
 import { getMatchMenu } from '@umijs/route-utils';
-import { Link, useCurrentuser } from 'umi';
+import { Link } from 'umi';
 import { generatePath, useLocation, useRouteMatch } from 'react-router-dom';
 
+import { useCurrentuser } from '@/utils/hooks';
 import type { MenuData } from '@/.umi/app/typings';
 import { AsideWorkspace } from '@/layouts/Demo7';
 import { Menu, Symbol } from '@/metronic';
@@ -49,7 +50,7 @@ function OrganizationSettingsSidebar(props: OrganizationSettingsSidebarProps) {
   const menus = menu?.routes || initMenus;
   const location = useLocation();
 
-  const user = useCurrentuser();
+  const { data: user } = useCurrentuser();
 
   const routeMatchedMenus = useMemo(() => {
     return getMatchMenu(location.pathname, menus, true);

@@ -8,6 +8,7 @@ import '@/pages/calendar/hooks';
 import '@/pages/mail/hooks';
 import '@/pages/website/hooks';
 import '@/pages/cms/hooks';
+import '@/utils/hooks';
 import { Card } from '@/metronic';
 
 function PageLoading() {

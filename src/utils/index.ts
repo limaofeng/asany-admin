@@ -139,3 +139,24 @@ export function parseError(e: any): GeneralError {
   }
   return { code: '000000', message: e.message };
 }
+
+export function getFileUrlById(
+  id: string | undefined,
+  options?: {
+    protocol?: boolean;
+  },
+) {
+  const protocol = options?.protocol ? location.protocol : '';
+  return id && protocol + process.env.STORAGE_URL + `/preview/${id}`;
+}
+
+export function getFileThumbnailUrlById(
+  id: string | undefined,
+  options: {
+    size: string;
+    protocol?: boolean;
+  },
+) {
+  const protocol = options?.protocol ? location.protocol : '';
+  return id && protocol + process.env.STORAGE_URL + `/thumbnail/${id}?size=${options.size}`;
+}

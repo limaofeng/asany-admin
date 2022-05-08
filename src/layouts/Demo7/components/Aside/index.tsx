@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import classnames from 'classnames';
-import { Button, Nav, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Nav } from 'react-bootstrap';
 import Icon from '@asany/icons';
 
 import { useLayout, useLayoutSelector } from '../../../LayoutContext';
@@ -14,6 +14,9 @@ import type { MenuData } from '@/.umi/app/typings';
 import Popover from '@/metronic/Popover';
 import { useScroll } from '@/metronic/utils';
 import UserAccountMenu from '@/pages/user/components/UserAccountMenu';
+import { Symbol, Tooltip } from '@/metronic';
+import { useCurrentuser } from '@/utils/hooks';
+import { getFileThumbnailUrlById } from '@/utils';
 
 export interface AsideProps {
   activeKey?: string;
@@ -34,6 +37,8 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
   const { menus, activeKey, onSelect } = props;
 
   const [userMenuVisible, setUserMenuVisible] = useState(false);
+
+  const { data: user } = useCurrentuser();
 
   const handleCloseUserMenu = useCallback(() => {
     setUserMenuVisible(false);
@@ -71,12 +76,8 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
       </div>
       */}
       {menus.map((item) => (
-        <OverlayTrigger
-          key={item.id}
-          placement="right"
-          overlay={<Tooltip id={`tooltip-${item.id}`}>{item.name}</Tooltip>}
-        >
-          <div className="d-flex align-items-center mb-2">
+        <div key={item.id} className="d-flex align-items-center mb-2">
+          <Tooltip title={item.name} placement="right">
             <div
               onClick={handleClick(item)}
               className={classnames(
@@ -87,8 +88,8 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
             >
               <Icon name={item.icon} className="svg-icon-2 svg-icon-lg-1" />
             </div>
-          </div>
-        </OverlayTrigger>
+          </Tooltip>
+        </div>
       ))}
       <div className="d-flex align-items-center mb-2">
         <div
@@ -107,9 +108,14 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
           overlayClassName="overlay-zero-gap overlay-no-arrow"
           content={<UserAccountMenu close={handleCloseUserMenu} />}
         >
-          <div className="cursor-pointer symbol symbol-40px" title="User profile">
-            <img src="/assets/media/avatars/150-26.jpg" alt="image" />
-          </div>
+          <Tooltip title="用户资料" placement="right">
+            <Symbol.Avatar
+              size={40}
+              src={getFileThumbnailUrlById(user?.avatar?.id, { size: '300x300' })}
+              className="cursor-pointer"
+              alt={user?.name}
+            />
+          </Tooltip>
         </Popover>
       </div>
     </div>
@@ -222,20 +228,16 @@ function Aside(props: AsideProps) {
           <div ref={scrollRef} className="hover-scroll-y mb-10">
             <Nav onSelect={handleSelect} activeKey={activeKey} className="flex-column" as="ul">
               {topMenus.map((item) => (
-                <OverlayTrigger
-                  key={item.id}
-                  placement="right"
-                  overlay={<Tooltip id={`tooltip-${item.id}`}>{item.name}</Tooltip>}
-                >
-                  <Nav.Item className="mb-2" as="li">
+                <Nav.Item key={item.id} className="mb-2" as="li">
+                  <Tooltip title={item.name} placement="right">
                     <Nav.Link
                       eventKey={item.id}
                       className="btn btn-icon btn-active-color-primary btn-color-gray-400 btn-active-light"
                     >
                       {item.icon && <Icon name={item.icon} className="svg-icon-2x" />}
                     </Nav.Link>
-                  </Nav.Item>
-                </OverlayTrigger>
+                  </Tooltip>
+                </Nav.Item>
               ))}
             </Nav>
           </div>

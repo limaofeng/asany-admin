@@ -1,11 +1,10 @@
-import { useCurrentuser } from 'umi';
-
 import ArticleList from '../components/ArticleList';
 
+import { useCurrentuser } from '@/utils/hooks';
 import { ContentWrapper } from '@/layouts/components';
 
 function MyDrafts() {
-  const user = useCurrentuser();
+  const { data: user } = useCurrentuser();
   return (
     <ContentWrapper
       header={{

@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 
 import classnames from 'classnames';
-import { useCurrentuser } from 'umi';
 
+import { useCurrentuser } from '@/utils/hooks';
 import { Alert, Button, Form, Input, Modal, Separator } from '@/metronic';
 
 type DeleteOrganizationModalProps = {
@@ -15,7 +15,7 @@ function DeleteOrganizationModal(props: DeleteOrganizationModalProps) {
 
   const [disabled, setDisabled] = useState(true);
 
-  const user = useCurrentuser();
+  const { data: user } = useCurrentuser();
 
   const handleValuesChange = useCallback(
     (_, values) => {
