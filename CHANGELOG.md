@@ -1,3 +1,10 @@
+## [0.2.25-wmf](https://github.com/limaofeng/asany-admin/compare/v0.2.25...v0.2.25-wmf) (2022-05-09)
+
+### Features
+
+- 个人头像展示，退出优化 ([f99b3ab](https://github.com/limaofeng/asany-admin/commit/f99b3abb38a20be9dd8af8c40f6711160bbff687))
+- 设置为 wmf 地址 ([e638a2f](https://github.com/limaofeng/asany-admin/commit/e638a2f6fa1e0d3a09409c707e49c670f692cfdb))
+
 ## [0.2.25](https://github.com/limaofeng/asany-admin/compare/v0.2.24...v0.2.25) (2022-05-06)
 
 ### Features
