@@ -4,15 +4,15 @@ import routes from './routes';
 
 export default defineConfig({
   apollo: {
-    uri: '//47.103.119.188:8000/graphql',
+    uri: '//api.storeservice.wmf.cn/graphql',
     logging: process.env.NODE_ENV === 'development',
   },
   app: {
     id: '6068485332c5fc853a65',
   },
   define: {
-    'process.env.STORAGE_URL': '//47.103.119.188:8000',
-    'process.env.MOBILE_URL': '//47.103.119.188:8002',
+    'process.env.STORAGE_URL': '//api.storeservice.wmf.cn',
+    'process.env.MOBILE_URL': '//storeservice.wmf.cn',
   },
   hash: true,
   antd: false,
