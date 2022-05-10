@@ -8,6 +8,7 @@ import { handleBackgroundImage } from './utils';
 
 import { useCurrentuser, useLogout } from '@/utils/hooks';
 import { Button, Menu, Symbol } from '@/metronic';
+import { getFileThumbnailUrlById } from '@/utils';
 
 type UserAccountMenuProps = {
   close: () => void;
@@ -58,14 +59,19 @@ function UserAccountMenu(props: UserAccountMenuProps) {
       onClick={handleClick}
     >
       <Menu.Item className="px-3" contentClassName="d-flex align-items-center px-3">
-        <Symbol.Avatar size={50} className="me-5" src="/assets/media/avatars/300-1.jpg" />
+        <Symbol.Avatar
+          size={50}
+          className="me-5"
+          src={getFileThumbnailUrlById(user?.avatar?.id, { size: '300x300' })}
+          alt={user?.name}
+        />
         <div className="d-flex flex-column">
           <div className="fw-bolder d-flex align-items-center fs-5">
             {user?.name}
             {/* <span className="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span> */}
           </div>
           <a href="#" className="fw-bold text-muted text-hover-primary fs-7">
-            {user?.email || 'xx'}
+            {user?.email || ' '}
           </a>
         </div>
       </Menu.Item>

@@ -47,3 +47,17 @@ query sessions {
     }
   }
 }
+
+query organizations {
+  organizations {
+    id
+    code
+    name
+    logo
+    role {
+      id
+      code
+      name
+    }
+  }
+}
