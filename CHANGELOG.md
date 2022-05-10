@@ -1,3 +1,10 @@
+## [0.2.25-2-wmf](https://github.com/limaofeng/asany-admin/compare/v0.2.2-5.1-wmf...v0.2.25-2-wmf) (2022-05-10)
+
+### Bug Fixes
+
+- 优化时间选择组件 ([e630d97](https://github.com/limaofeng/asany-admin/commit/e630d970584a7c2984d03265745768d9cf3d990f))
+- 模块更新 ([daa413a](https://github.com/limaofeng/asany-admin/commit/daa413a6a8c43e9bfd99daf51f24d26ba46793b5))
+
 ## [0.2.2-5.1-wmf](https://github.com/limaofeng/asany-admin/compare/v0.2.25-wmf...v0.2.2-5.1-wmf) (2022-05-09)
 
 ## [0.2.25-wmf](https://github.com/limaofeng/asany-admin/compare/v0.2.25...v0.2.25-wmf) (2022-05-09)
