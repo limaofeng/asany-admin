@@ -126,16 +126,12 @@ function DatePicker(props: DatePickerProps) {
     }
   }, []);
 
-  console.log('inputProps', inputProps, toDateString(value, format));
-
   return (
     <Input
       ref={ref}
       {...inputProps}
       onKeyDown={handleKeyDown}
-      onChange={(e) => {
-        console.log('date picker', e.target, e);
-      }}
+      onChange={() => {}}
       value={toDateString(value, format)}
     />
   );
