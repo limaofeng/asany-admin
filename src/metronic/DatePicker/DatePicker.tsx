@@ -23,7 +23,7 @@ interface DatePickerProps {
   autoApply?: boolean;
   format?: string;
   timePicker?: boolean;
-  onChange?: (date: Moment, dateString: string) => void;
+  onChange?: (date?: Moment, dateString?: string) => void;
 }
 
 const LOCALE = {
@@ -66,27 +66,34 @@ function DatePicker(props: DatePickerProps) {
   const ref = useRef<InputRef>(null);
 
   const handleChange = useCallback(
-    (date: Moment) => {
-      onChange && onChange(date, date.format(format));
+    (date?: Moment) => {
+      onChange && onChange(date, date ? toDateString(date, format) : undefined);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
   useEffect(() => {
-    const picker = $(ref.current!.element!).daterangepicker(
-      {
-        minDate: toDate(minDate),
-        maxDate: toDate(maxDate),
-        timePicker,
-        autoApply,
-        autoUpdateInput: false,
-        singleDatePicker: true,
-        showDropdowns: true,
-        locale: { format, ...LOCALE },
-      },
-      handleChange,
-    );
+    const picker = $(ref.current!.element!)
+      .daterangepicker(
+        {
+          minDate: toDate(minDate),
+          maxDate: toDate(maxDate),
+          timePicker,
+          autoApply,
+          autoUpdateInput: false,
+          singleDatePicker: true,
+          showDropdowns: true,
+          locale: { format, ...LOCALE },
+        },
+        handleChange,
+      )
+      .on('cancel.daterangepicker', () => {
+        handleChange();
+      })
+      .on('apply.daterangepicker', (_, _picker) => {
+        handleChange(_picker.startDate);
+      });
     return () => {
       (picker.data('daterangepicker') as any)?.remove();
     };
@@ -119,12 +126,16 @@ function DatePicker(props: DatePickerProps) {
     }
   }, []);
 
+  console.log('inputProps', inputProps, toDateString(value, format));
+
   return (
     <Input
       ref={ref}
       {...inputProps}
       onKeyDown={handleKeyDown}
-      onChange={() => {}}
+      onChange={(e) => {
+        console.log('date picker', e.target, e);
+      }}
       value={toDateString(value, format)}
     />
   );
