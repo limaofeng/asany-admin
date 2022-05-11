@@ -41,4 +41,4 @@ export { default as DatePicker } from './DatePicker';
 export { default as Checkbox } from './Checkbox';
 export { default as Switch } from './Switch';
 export { default as Radio } from './Radio';
-export { default as AreaPicker } from './AreaPicker';
+export { default as RegionPicker } from './AreaPicker';
