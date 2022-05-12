@@ -202,3 +202,17 @@ export const wrapRef = (originalRef: any, localRef: any) => (ref: any) => {
   }
   localRef.current = ref;
 };
+
+export function loadImage(url: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.setAttribute('crossOrigin', 'Anonymous');
+    img.onload = function () {
+      resolve(img);
+    };
+    img.onerror = function () {
+      reject('图片加载失败');
+    };
+    img.src = url;
+  });
+}

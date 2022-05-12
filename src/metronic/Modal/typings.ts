@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 
-import type { ButtonProps } from '../../base/Button/typings';
+import type { ButtonProps } from '../Button/typings';
 
 export type ClickCallback = (e: React.MouseEvent) => void;
 

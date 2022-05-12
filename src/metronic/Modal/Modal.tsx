@@ -95,7 +95,7 @@ function Modal(props: ModalProps) {
   } = props;
 
   const _footer = useMemo(() => {
-    if (props.footer === null) {
+    if (props.footer === false) {
       return undefined;
     }
     if (props.footer) {

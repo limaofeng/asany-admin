@@ -126,7 +126,7 @@ function Profile() {
                     <Upload.Image
                       width={125}
                       height={125}
-                      space="orX8kLOV"
+                      space="7VE4SSrk"
                       crop={{ height: 300, zoomable: false, aspectRatio: 1 }}
                       backgroundImage="/assets/media/svg/avatars/blank.svg"
                     />

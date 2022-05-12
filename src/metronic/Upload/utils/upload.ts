@@ -93,7 +93,7 @@ const INITIATE_MULTIPART_UPLOAD = gql`
 `;
 
 const MUTATION_UPLOAD = gql`
-  mutation upload($file: Upload!, $options: UploadOptions) {
+  mutation upload($file: Upload!, $options: UploadOptions!) {
     upload(file: $file, options: $options) {
       id
       name

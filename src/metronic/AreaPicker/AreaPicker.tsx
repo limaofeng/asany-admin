@@ -5,28 +5,26 @@ import { isEqual } from 'lodash';
 
 import Popover from '../Popover';
 import Tabs from '../Tabs';
-import type { AreaData } from '../hooks/useAreas';
+import type { AreaData, Region } from '../hooks/useAreas';
 import useAreas from '../hooks/useAreas';
 
 import './style/index.scss';
 
 type AreaType = 'province' | 'city' | 'district' | 'street';
 
-type Address = {
-  province?: string;
-  city?: string;
-  district?: string;
-  street?: string;
-};
+export type AreaValueType = string | string[] | Region;
 
-export type AreaValueType = string | string[] | Address;
+type RegionSelectionEnds = AreaType | ((area: AreaData) => boolean);
+
+type TabType = { key: string; name: string; items: AreaData[] };
 
 export type AreaPickerProps = {
   value?: AreaValueType;
   onChange?: (value: AreaValueType, areas: AreaData[]) => void;
   className?: string;
   size?: 'xs' | 'sm' | 'lg';
-  ends?: AreaType;
+  filter?: (area: AreaData) => boolean;
+  ends?: RegionSelectionEnds;
   placeholder?: string;
   solid?: boolean;
   transparent?: boolean;
@@ -48,10 +46,10 @@ export type AreaPickerProps = {
 // };
 
 type AreaContentProps = {
-  areas: AreaData[][];
+  areas: TabType[];
   onSelect: (selectedKeys: string[], writed?: boolean) => void;
   selectedKeys: string[];
-  ends: AreaType;
+  ends: (area: AreaData) => boolean;
   onClose: () => void;
 };
 
@@ -60,7 +58,7 @@ function AreaContent(props: AreaContentProps) {
 
   const state = useRef<{
     value?: string;
-    tabs: AreaData[][];
+    tabs: TabType[];
     selectedKeys: string[];
     activeKey: string;
   }>({ tabs: areas, selectedKeys: props.selectedKeys, activeKey: 'level_0' });
@@ -71,7 +69,7 @@ function AreaContent(props: AreaContentProps) {
   const handleClick = useCallback(
     (data: AreaData, level: number) => async () => {
       if (state.current.selectedKeys[level] == data.code) {
-        if (data.type != ends) {
+        if (!ends(data)) {
           state.current.activeKey = `level_${level + 1}`;
           forceRender();
         } else {
@@ -81,7 +79,7 @@ function AreaContent(props: AreaContentProps) {
       }
       state.current.selectedKeys = state.current.selectedKeys.splice(0, level);
       state.current.selectedKeys.push(data.code);
-      if (data.type == ends) {
+      if (ends(data)) {
         onSelect(state.current.selectedKeys, true);
       } else {
         state.current.activeKey = `level_${level + 1}`;
@@ -110,11 +108,13 @@ function AreaContent(props: AreaContentProps) {
     }
     state.current.selectedKeys = props.selectedKeys;
     const items = state.current.tabs[props.selectedKeys.length - 1];
-    const _item = items?.find((t) => t.code == props.selectedKeys[props.selectedKeys.length - 1]);
+    const _item = items?.items.find(
+      (t) => t.code == props.selectedKeys[props.selectedKeys.length - 1],
+    );
     if (!_item) {
       return;
     }
-    if (_item.type == ends) {
+    if (ends(_item)) {
       state.current.activeKey = `level_${props.selectedKeys.length - 1}`;
     }
     forceRender();
@@ -123,14 +123,10 @@ function AreaContent(props: AreaContentProps) {
   return (
     <div>
       <Tabs activeKey={activeKey} onChange={handleChange} className="nav-line-tabs-2x">
-        {tabs.map((items, i) => (
-          <Tabs.TabPane
-            // eslint-disable-next-line react/no-array-index-key
-            key={`level_${i}`}
-            tab={items.find((t) => t.code == selectedKeys[i])?.name || '请选择'}
-          >
+        {tabs.map((tab, i) => (
+          <Tabs.TabPane key={tab.key} tab={tab.name}>
             <ul className="ui-area-content-list">
-              {items.map((item) => (
+              {tab.items.map((item) => (
                 <li
                   key={item.id}
                   className={classnames({
@@ -165,6 +161,7 @@ function AreaPicker(props: AreaPickerProps) {
     size,
     solid,
     placeholder,
+    filter: areaFilter = () => true,
     ends = 'street',
     transparent,
     bordered = true,
@@ -174,7 +171,7 @@ function AreaPicker(props: AreaPickerProps) {
 
   const state = useRef<{
     value: string[];
-    tabs: AreaData[][];
+    tabs: TabType[];
     popover: boolean;
     selectedItems: AreaData[];
     _selectedItems: AreaData[];
@@ -187,14 +184,14 @@ function AreaPicker(props: AreaPickerProps) {
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const [areas, { waiting, loading, loadAddress }] = useAreas();
+  const [areas, { waiting, loading, loadRegion }] = useAreas();
 
   useEffect(() => {
     if (!props.value) {
       return;
     }
     if (resultType == 'object') {
-      const areaObj = props.value as Address;
+      const areaObj = props.value as Region;
       const _newValue = [areaObj.province, areaObj.city, areaObj.district, areaObj.street].filter(
         (it) => !!it,
       );
@@ -211,25 +208,48 @@ function AreaPicker(props: AreaPickerProps) {
       }
       return;
     }
-    loadAddress(props.value as string).then((address) => {
-      state.current.value = address.codes;
+    loadRegion(props.value as string).then((address) => {
+      state.current.value = address.codes!;
       forceRender();
     });
-  }, [loadAddress, props.value, resultType]);
+  }, [loadRegion, props.value, resultType]);
+
+  const isEnds = useCallback(
+    (area: AreaData) => {
+      if (typeof ends === 'string') {
+        return ends == area.type;
+      }
+      return ends(area);
+    },
+    [ends],
+  );
 
   const loadTabs = useCallback(
     async (_value: string[], writed?: boolean) => {
-      let parentData = areas;
-      const _tabs = [parentData];
+      let level = 0;
+      let parentData: TabType = {
+        key: `level_${level}`,
+        name: '请选择',
+        items: areas.filter(areaFilter),
+      };
+      const _tabs: TabType[] = [parentData];
       const _selectedItems: AreaData[] = [];
       for (const code of _value) {
-        const _data = parentData.find((t) => t.code == code)!;
+        const _data = parentData.items.find((t) => t.code == code)!;
         _selectedItems.push(_data);
-        if (_data.type == ends) {
+        if (isEnds(_data)) {
           break;
         }
         const _children = await _data.getChildren();
-        _tabs.push((parentData = _children));
+        level++;
+        parentData.name = _data.name;
+        _tabs.push(
+          (parentData = {
+            key: `level_${level}`,
+            name: '请选择',
+            items: _children.filter(areaFilter),
+          }),
+        );
       }
       state.current.tabs = _tabs;
       state.current._selectedItems = _selectedItems;
@@ -250,6 +270,7 @@ function AreaPicker(props: AreaPickerProps) {
             retValue = {};
             for (const _area of _selectedItems) {
               retValue[_area.type] = _area.code;
+              retValue[_area.type + 'Name'] = _area.name;
             }
           }
           onChange(retValue, _selectedItems);
@@ -257,7 +278,7 @@ function AreaPicker(props: AreaPickerProps) {
       }
       forceRender();
     },
-    [areas, ends, onChange, resultType],
+    [areaFilter, areas, isEnds, onChange, resultType],
   );
 
   const handleSelect = useCallback(
@@ -308,7 +329,7 @@ function AreaPicker(props: AreaPickerProps) {
       content={
         <AreaContent
           areas={tabs}
-          ends={ends}
+          ends={isEnds}
           onSelect={handleSelect}
           onClose={handleClose}
           selectedKeys={selectedKeys}

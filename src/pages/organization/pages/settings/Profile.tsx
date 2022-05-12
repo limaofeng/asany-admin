@@ -1,11 +1,26 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+import type { RouteComponentProps } from 'react-router';
 
 import { DeleteOrganizationModal, RenameOrganizationModal } from '../../components/modals';
+import {
+  OrganizationDocument,
+  useOrganizationQuery,
+  useUpdateOrganizationProfileMutation,
+} from '../../hooks/api';
+import logo_holder from '../../assets/blank.png';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Card, Form, Input } from '@/metronic';
+import { BlockUI, Button, Card, Form, Input, RegionPicker, Toast, Upload } from '@/metronic';
+import type { Organization } from '@/types';
 
-function DangerZone() {
+type DangerZoneProps = {
+  data: Organization;
+};
+
+function DangerZone(props: DangerZoneProps) {
+  const { data } = props;
+
   const [renameOrganizationModalVisible, setRenameOrganizationModalVisible] = useState(false);
   const [deleteOrganizationModalVisible, setDeleteOrganizationModalVisible] = useState(false);
 
@@ -34,13 +49,14 @@ function DangerZone() {
         <div className="w-800px danger-zone rounded border border-danger">
           <div className="p-5 border-bottom border-secondary d-flex align-items-center">
             <div className="flex-row-fluid">
-              <div className="fw-bolder">重命名组织名称</div>
-              <span className="text-small">重命名组织可能会产生意想不到的副作用</span>
+              <div className="fw-bolder">修改组织代码</div>
+              <span className="text-small">修改组织代码可能会产生意想不到的副作用</span>
             </div>
             <Button onClick={handleRenameOrganization} type="solid" variant="danger">
-              修改组织名称
+              修改组织代码
             </Button>
             <RenameOrganizationModal
+              data={data}
               visible={renameOrganizationModalVisible}
               onCancel={handleCloseRenameOrganizationModal}
             />
@@ -54,6 +70,7 @@ function DangerZone() {
               删除组织
             </Button>
             <DeleteOrganizationModal
+              data={data}
               visible={deleteOrganizationModalVisible}
               onCancel={handleDeleteOrganizationModal}
             />
@@ -64,7 +81,52 @@ function DangerZone() {
   );
 }
 
-function Profile() {
+type ProfileProps = RouteComponentProps<{ id: string }>;
+
+function Profile(props: ProfileProps) {
+  const { match } = props;
+
+  const form = Form.useForm();
+
+  const { data, loading } = useOrganizationQuery({
+    variables: {
+      id: match.params.id,
+    },
+  });
+  const [updateProfile, { loading: submiting }] = useUpdateOrganizationProfileMutation({
+    refetchQueries: [
+      {
+        query: OrganizationDocument,
+        variables: {
+          id: match.params.id,
+        },
+      },
+    ],
+  });
+
+  const organization = data?.organization;
+
+  useEffect(() => {
+    if (!organization) {
+      return;
+    }
+    form.setFieldsValue(organization);
+  }, [organization, form]);
+
+  const handleUpdate = useCallback(async () => {
+    const { ...values } = await form.getFieldsValue();
+    await updateProfile({
+      variables: {
+        id: organization?.id,
+        input: { ...values },
+      },
+    });
+    Toast.success('资料更新成功', 3000, {
+      placement: 'bottom-start',
+      progressBar: true,
+    });
+  }, [form, organization, updateProfile]);
+
   return (
     <ContentWrapper
       className="page-organization-settings-profile"
@@ -76,98 +138,75 @@ function Profile() {
           <Card.Title>通用设置</Card.Title>
         </Card.Header>
         <Card.Body>
-          <Form className="w-800px row d-flex flex-shrink-0 flex-column-reverse flex-md-row">
-            <div className="col-12 col-md-8">
-              <Form.Item className="mb-5" name="displayName" label="显示名称">
-                <Input solid className="w-400px" />
-              </Form.Item>
-              <Form.Item className="my-5" name="email" label="邮箱">
-                <Input solid className="w-400px" />
-              </Form.Item>
-              <Form.Item className="my-5" name="url" label="网址">
-                <Input solid className="w-400px" />
-              </Form.Item>
-              <Form.Item
-                className="my-5"
-                name="description"
-                label="描述"
-                help="请用少于250字符描述"
-              >
-                <Input.TextArea
-                  solid
-                  autoSize={{ minRows: 4, maxRows: 8 }}
-                  showCount
-                  maxLength={250}
-                  className="w-600px"
-                />
-              </Form.Item>
-            </div>
-            <div className="col-12 col-md-4 d-flex justify-content-center">
-              <div className="row">
-                {/* <label className="col-lg-4 col-form-label fw-bold fs-6">Avatar</label> */}
-                <div className="col-lg-8">
-                  {/*--begin::Image input--*/}
-                  <div
-                    className="image-input image-input-outline"
-                    data-kt-image-input="true"
-                    style={{ backgroundImage: "url('/assets/media/svg/avatars/blank.svg')" }}
+          <BlockUI overlayClassName="bg-white bg-opacity-25" loading={loading}>
+            <Form
+              form={form}
+              className="mw-800px row d-flex flex-shrink-0 flex-column-reverse flex-md-row"
+            >
+              <div className="mw-500px col-12 col-md-8">
+                <div className="mw-400px">
+                  <Form.Item className="mb-5" name="name" label="显示名称">
+                    <Input solid />
+                  </Form.Item>
+                  <Form.Item className="my-5" name="email" label="邮箱" help="组织联系邮箱">
+                    <Input solid />
+                  </Form.Item>
+                  <Form.Item
+                    className="my-5"
+                    name="description"
+                    label="描述"
+                    help="请用少于250字符描述组织信息"
                   >
-                    {/*--begin::Preview existing avatar--*/}
-                    <div
-                      className="image-input-wrapper w-125px h-125px"
-                      style={{ backgroundImage: 'url(/assets/media/avatars/300-1.jpg)' }}
+                    <Input.TextArea
+                      solid
+                      autoSize={{ minRows: 4, maxRows: 8 }}
+                      showCount
+                      maxLength={250}
                     />
-                    {/*--end::Preview existing avatar--*/}
-                    {/*--begin::Label--*/}
-                    <label
-                      className="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                      data-kt-image-input-action="change"
-                      data-bs-toggle="tooltip"
-                      title="Change avatar"
-                    >
-                      <i className="bi bi-pencil-fill fs-7" />
-                      {/*--begin::Inputs--*/}
-                      <input type="file" name="avatar" accept=".png, .jpg, .jpeg" />
-                      <input type="hidden" name="avatar_remove" />
-                      {/*--end::Inputs--*/}
-                    </label>
-                    {/*--end::Label--*/}
-                    {/*--begin::Cancel--*/}
-                    <span
-                      className="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                      data-kt-image-input-action="cancel"
-                      data-bs-toggle="tooltip"
-                      title="Cancel avatar"
-                    >
-                      <i className="bi bi-x fs-2" />
-                    </span>
-                    {/*--end::Cancel--*/}
-                    {/*--begin::Remove--*/}
-                    <span
-                      className="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                      data-kt-image-input-action="remove"
-                      data-bs-toggle="tooltip"
-                      title="Remove avatar"
-                    >
-                      <i className="bi bi-x fs-2" />
-                    </span>
-                    {/*--end::Remove--*/}
-                  </div>
-                  {/*--end::Image input--*/}
-                  {/*--begin::Hint--*/}
-                  <div className="form-text">Allowed file types: png, jpg, jpeg.</div>
-                  {/*--end::Hint--*/}
+                  </Form.Item>
+                  <Form.Item className="my-5" name="url" label="URL" help="组织网址">
+                    <Input solid />
+                  </Form.Item>
+                  <Form.Item className="my-5" name="location" label="所在地区">
+                    <RegionPicker
+                      ends={(area) => {
+                        const level = area.path.split('/').filter((item) => !!item).length;
+                        return area.type == 'city' || level == 2;
+                      }}
+                      resultType="object"
+                      solid
+                      placeholder="选择组织所在的地区"
+                    />
+                  </Form.Item>
                 </div>
               </div>
-            </div>
-          </Form>
+              <div className="col-12 col-md-4">
+                <div className="row">
+                  <Form.Item
+                    className="mb-5"
+                    name="logo"
+                    label="组织标志"
+                    help="允许的文件类型:png, jpg, jpeg"
+                  >
+                    <Upload.Image
+                      width={125}
+                      height={125}
+                      space="7VE4SSrk"
+                      crop={{ height: 300, zoomable: false, aspectRatio: 1 }}
+                      backgroundImage={logo_holder}
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+            </Form>
+            <Button loading={submiting} onClick={handleUpdate}>
+              更新资料
+            </Button>
+          </BlockUI>
         </Card.Body>
-        <Card.Footer>
-          <Button>更新个人资料</Button>
-        </Card.Footer>
       </Card>
 
-      <DangerZone />
+      <DangerZone data={organization as Organization} />
     </ContentWrapper>
   );
 }

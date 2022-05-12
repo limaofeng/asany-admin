@@ -9,10 +9,23 @@
 
 ## [0.2.25-wmf](https://github.com/limaofeng/asany-admin/compare/v0.2.25...v0.2.25-wmf) (2022-05-09)
 
+=======
+
+## [0.2.26](https://github.com/limaofeng/asany-admin/compare/v0.2.25...v0.2.26) (2022-05-12)
+
+### Bug Fixes
+
+- test ([ce47c29](https://github.com/limaofeng/asany-admin/commit/ce47c292ba94265447fb9fdeb9b764ada48c6c74))
+- 优化时间选择组件 ([e630d97](https://github.com/limaofeng/asany-admin/commit/e630d970584a7c2984d03265745768d9cf3d990f))
+- 模块更新 ([daa413a](https://github.com/limaofeng/asany-admin/commit/daa413a6a8c43e9bfd99daf51f24d26ba46793b5))
+- 测试提交 ([d905390](https://github.com/limaofeng/asany-admin/commit/d905390f153aa1d59f4a21f1fd9545e61854a365))
+
 ### Features
 
 - 个人头像展示，退出优化 ([f99b3ab](https://github.com/limaofeng/asany-admin/commit/f99b3abb38a20be9dd8af8c40f6711160bbff687))
 - 设置为 wmf 地址 ([e638a2f](https://github.com/limaofeng/asany-admin/commit/e638a2f6fa1e0d3a09409c707e49c670f692cfdb))
+- 我的组织列表 ([0446767](https://github.com/limaofeng/asany-admin/commit/0446767053916ef856588557afd85ee291e5b5a4))
+- 组织资料维护 ([5ab1ebd](https://github.com/limaofeng/asany-admin/commit/5ab1ebd944518d9971cecd3d0ee27acf41a8bed4))
 
 ## [0.2.25](https://github.com/limaofeng/asany-admin/compare/v0.2.24...v0.2.25) (2022-05-06)
 

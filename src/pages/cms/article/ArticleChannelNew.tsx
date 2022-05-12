@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useArticleChannelAllQuery, useCreateArticleChannelMutation } from '../hooks';
 
-import type { ClickCallback, FormInstance } from '@/metronic';
+import type { ClickCallback, FormInstance } from '@/metronic/typings';
 import { Form, Input, Modal, Select2, Upload } from '@/metronic';
 import { delay } from '@/utils';
 

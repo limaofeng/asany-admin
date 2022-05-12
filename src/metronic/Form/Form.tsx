@@ -2,6 +2,7 @@ import React from 'react';
 import { useMemo } from 'react';
 
 import classNames from 'classnames';
+import type { FormInstance } from 'rc-field-form';
 import FieldForm, { List } from 'rc-field-form';
 import type { FormProps as RcFormProps } from 'rc-field-form/lib/Form';
 import type { ValidateErrorEntity } from 'rc-field-form/lib/interface';
@@ -55,7 +56,7 @@ const InternalForm: React.ForwardRefRenderFunction<FormInstance, FormProps> = (p
     className,
   );
 
-  const wrapForm = useForm(form);
+  const wrapForm = useForm(form as any);
   const { __INTERNAL__ } = wrapForm;
   __INTERNAL__.name = name;
 

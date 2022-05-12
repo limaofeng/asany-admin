@@ -49,6 +49,7 @@ function Radio(props: RadioProps) {
           className="form-check-input"
           type="radio"
           value={value}
+          onChange={() => {}}
           checked={checked}
         />
       </span>

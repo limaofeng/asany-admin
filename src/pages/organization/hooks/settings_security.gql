@@ -1,0 +1,28 @@
+query permissionsConnection(
+  $filter: PermissionFilter
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy = "createdAt_desc"
+) {
+  total: permissionsConnection(pageSize: 1) {
+    totalCount
+  }
+  connection: permissionsConnection(
+    filter: $filter
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    totalPage
+    pageSize
+    current: currentPage
+    total: totalCount
+    edges {
+      node {
+        id
+        name
+        description
+      }
+    }
+  }
+}

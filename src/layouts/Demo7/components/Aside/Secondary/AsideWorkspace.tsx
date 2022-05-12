@@ -16,7 +16,7 @@ type AsideWorkspaceProps = {
 };
 
 function AsideWorkspace(props: AsideWorkspaceProps) {
-  const { className, width = 325, children, collapsible = true } = props;
+  const { className, width = 280, children, collapsible = true } = props;
 
   const layout = useLayout();
 

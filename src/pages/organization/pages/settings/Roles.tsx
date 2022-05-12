@@ -8,7 +8,7 @@ import Controls from '@/components/Controls';
 
 function RoleItem() {
   return (
-    <Col md={4}>
+    <Col md={3}>
       <Card flush className="h-md-100">
         <Card.Header>
           <Card.Title>
@@ -86,10 +86,37 @@ function RoleList(props: RoleListProps) {
       enabled: true,
       space: 'xxx',
     },
+    {
+      id: 1,
+      name: '系统管理员',
+      code: 'administrator',
+      description: '',
+      type: 'system',
+      enabled: true,
+      space: 'xxx',
+    },
+    {
+      id: 1,
+      name: '系统管理员',
+      code: 'administrator',
+      description: '',
+      type: 'system',
+      enabled: true,
+      space: 'xxx',
+    },
+    {
+      id: 1,
+      name: '系统管理员',
+      code: 'administrator',
+      description: '',
+      type: 'system',
+      enabled: true,
+      space: 'xxx',
+    },
   ];
 
   return (
-    <Row gutter={{ default: 5, xl: 9 }} cols={{ default: 1, md: 2, xl: 3 }}>
+    <Row gutter={{ default: 5, xl: 9 }} cols={{ default: 1, md: 3, xl: 4 }}>
       {roles.map((item) => (
         <RoleItem key={item.id} />
       ))}
