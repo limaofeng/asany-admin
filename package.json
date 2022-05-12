@@ -1,6 +1,6 @@
 {
   "name": "asany-admin",
-  "version": "0.2.25-2-wmf",
+  "version": "0.2.26-1-wmf",
   "private": true,
   "description": "An out-of-box UI solution for enterprise applications",
   "scripts": {

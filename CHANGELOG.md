@@ -1,3 +1,15 @@
+## [0.2.26-1-wmf](https://github.com/limaofeng/asany-admin/compare/v0.2.26...v0.2.26-1-wmf) (2022-05-12)
+
+## [0.2.25-2-wmf](https://github.com/limaofeng/asany-admin/compare/v0.2.2-5.1-wmf...v0.2.25-2-wmf) (2022-05-10)
+
+## [0.2.2-5.1-wmf](https://github.com/limaofeng/asany-admin/compare/v0.2.25-wmf...v0.2.2-5.1-wmf) (2022-05-09)
+
+## [0.2.25-wmf](https://github.com/limaofeng/asany-admin/compare/v0.2.25...v0.2.25-wmf) (2022-05-09)
+
+### Features
+
+- 设置为 wmf 地址 ([e638a2f](https://github.com/limaofeng/asany-admin/commit/e638a2f6fa1e0d3a09409c707e49c670f692cfdb))
+
 ## [0.2.25-2-wmf](https://github.com/limaofeng/asany-admin/compare/v0.2.2-5.1-wmf...v0.2.25-2-wmf) (2022-05-10)
 
 ### Bug Fixes
