@@ -31,6 +31,11 @@ class Organization {
     loader: () => import('./pages/settings/RoleDetails'),
     loading: LoadingComponent,
   });
+  @component({ name: 'settings.Permissions' })
+  Permissions = dynamic({
+    loader: () => import('./pages/settings/Permissions'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Organization();

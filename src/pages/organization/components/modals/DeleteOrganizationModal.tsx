@@ -2,29 +2,32 @@ import { useCallback, useState } from 'react';
 
 import classnames from 'classnames';
 
-import { useCurrentuser } from '@/utils/hooks';
 import { Alert, Button, Form, Input, Modal, Separator } from '@/metronic';
+import type { Organization } from '@/types';
 
 type DeleteOrganizationModalProps = {
+  data: Organization;
   visible?: boolean;
   onCancel: () => void;
 };
 
 function DeleteOrganizationModal(props: DeleteOrganizationModalProps) {
-  const { visible, onCancel } = props;
+  const { data, visible, onCancel } = props;
 
   const [disabled, setDisabled] = useState(true);
 
-  const { data: user } = useCurrentuser();
-
   const handleValuesChange = useCallback(
     (_, values) => {
-      setDisabled(
-        !(values.account == user?.account && values.verify === '删除我的账户' && values.password),
-      );
+      setDisabled(!(values.code == data?.code));
     },
-    [user?.account],
+    [data],
   );
+
+  const handleSubmit = useCallback(() => {
+    // Toast.warning('占不支持删除组织', 3000, {
+    //   placement: 'top-center',
+    // });
+  }, []);
 
   return (
     <Modal
@@ -37,23 +40,24 @@ function DeleteOrganizationModal(props: DeleteOrganizationModalProps) {
       <Alert type="danger" message="请仔细阅读以下事项" />
       <div className="inner-body">
         <p>
-          您即将永久删除组织 <b>w-asany</b>，以及与组织关联的所有内容。一旦确认
-          删除，此操作便无法撤销和恢复。
+          您即将永久删除组织: <b>{data?.code}</b>
+          ，以及与组织关联的所有内容。一旦确认 删除，此操作便无法撤销和恢复。
         </p>
         <Separator className="my-5" />
-        <Form onValuesChange={handleValuesChange}>
-          <Form.Item className="mb-5" name="account" label="输入组织的名称以确认删除">
+        <Form onFinish={handleSubmit} onValuesChange={handleValuesChange}>
+          <Form.Item className="mb-5" name="code" label="输入组织代码以确认删除">
             <Input solid />
           </Form.Item>
+          <Button
+            htmlType="submit"
+            className="confirm-delete-account"
+            disabled={disabled}
+            variantStyle="light"
+            variant="danger"
+          >
+            删除组织
+          </Button>
         </Form>
-        <Button
-          className="confirm-delete-account"
-          disabled={disabled}
-          variantStyle="light"
-          variant="danger"
-        >
-          删除组织
-        </Button>
       </div>
     </Modal>
   );

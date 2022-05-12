@@ -1,8 +1,33 @@
 query organization($id: ID!) {
   organization(id: $id) {
-    id
-    code
-    name
-    logo
+    ...OrganizationProfile
+  }
+}
+
+mutation updateOrganizationProfile($id: ID!, $input: UpdateOrganizationProfileUpdateInput!) {
+  updateOrganizationProfile(id: $id, input: $input) {
+    ...OrganizationProfile
+  }
+}
+
+mutation renameOrganizationCode($id: ID!, $code: String!) {
+  renameOrganizationCode(id: $id, code: $code) {
+    ...OrganizationProfile
+  }
+}
+
+fragment OrganizationProfile on Organization {
+  id
+  code
+  name
+  logo
+  description
+  email
+  url
+  location {
+    province
+    city
+    district
+    street
   }
 }

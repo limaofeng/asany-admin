@@ -1,8 +1,6 @@
 import { useCallback } from 'react';
 
-import { useModel } from 'umi';
-
-import { logout } from '@/.umi/app/utils';
+import { logout, useModel } from 'umi';
 
 type UseLogoutResult = [() => void, { loading: boolean }];
 

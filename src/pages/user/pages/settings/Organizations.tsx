@@ -14,6 +14,8 @@ type OrganizationItemProps = {
 function OrganizationItem(props: OrganizationItemProps) {
   const { data } = props;
 
+  const isOwner = data.role?.code == 'OWNER';
+
   return (
     <div className="organization-item d-flex align-items-center p-5 border-bottom border-secondary">
       <div className="flex-row-fluid d-flex align-items-center">
@@ -26,20 +28,20 @@ function OrganizationItem(props: OrganizationItemProps) {
         <Link to={`/organizations/${data.code}`} className="fw-bolder text-primary ms-2">
           {data.name}
         </Link>
-        <span className="ms-2 text-small text-gray-700">
-          {data.role?.code == 'OWNER' ? '所有者' : '成员'}
-        </span>
+        <span className="ms-2 text-small text-gray-700">{isOwner ? '所有者' : '成员'}</span>
       </div>
       <div className="organization-item-actions">
-        <Button
-          to={`/organizations/${data.code}/settings/profile`}
-          as={Link}
-          size="sm"
-          className="ms-2"
-          type="solid"
-        >
-          设置
-        </Button>
+        {isOwner && (
+          <Button
+            to={`/organizations/${data.code}/settings/profile`}
+            as={Link}
+            size="sm"
+            className="ms-2"
+            type="solid"
+          >
+            设置
+          </Button>
+        )}
         <Button size="sm" className="ms-2" type="solid">
           离开组织
         </Button>

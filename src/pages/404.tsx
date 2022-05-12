@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { AreaPicker, Card } from '@/metronic';
+import { Card, RegionPicker } from '@/metronic';
 import type { AreaValueType } from '@/metronic/typings';
 import useAreas from '@/metronic/hooks/useAreas';
+import OverviewFlow from '@/components/OverviewFlow';
 
 const NoFoundPage: React.FC = () => {
   // const [value, setValue] = useState<string | string[]>(['310', '310104', '310104004']);
@@ -13,7 +14,7 @@ const NoFoundPage: React.FC = () => {
     street: '310104004',
   });
 
-  const [data, { loadAddress }] = useAreas();
+  const [data, { loadRegion }] = useAreas();
 
   // const loadData = async (data) => {
   //   let _item;
@@ -39,16 +40,17 @@ const NoFoundPage: React.FC = () => {
   useEffect(() => {
     console.log('xxx - 1', data);
 
-    loadAddress('310104004');
+    loadRegion('310104004');
     // loadData(data);
-  }, [data, loadAddress]);
+  }, [data, loadRegion]);
 
   console.log(data);
 
   return (
-    <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
+    <Card flush className="mt-6 mt-xl-9 h-800px" headerClassName="mt-5">
+      <OverviewFlow />
       <br />
-      <AreaPicker
+      <RegionPicker
         resultType="object"
         value={value}
         onChange={setValue}

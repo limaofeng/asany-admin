@@ -34,16 +34,16 @@ query dict($code: String){
 }
 `);
 
-type Address = {
-  province?: string;
-  provinceName?: string;
-  city?: string;
-  cityName?: string;
-  district?: string;
-  districtName?: string;
-  street?: string;
-  streetName?: string;
-  codes: string[];
+export type Region = {
+  province?: string | null;
+  provinceName?: string | null;
+  city?: string | null;
+  cityName?: string | null;
+  district?: string | null;
+  districtName?: string | null;
+  street?: string | null;
+  streetName?: string | null;
+  codes?: string[] | null;
 };
 
 export type AreaData = {
@@ -56,6 +56,7 @@ export type AreaData = {
   parent: {
     id: string;
   };
+  path: string;
   getChildren: () => Promise<AreaData[]>;
 };
 
@@ -66,7 +67,7 @@ type UseAreasResult = [
   {
     waiting: boolean;
     loading: boolean;
-    loadAddress: (code: string) => Promise<Address>;
+    loadRegion: (code: string) => Promise<Region>;
   },
 ];
 
@@ -97,7 +98,6 @@ function useAreas(): UseAreasResult {
           .map((t: AreaData) => ({
             ...t,
             getChildren() {
-              console.log('xxx get', this);
               if (this.type == 'street') {
                 return [];
               }
@@ -139,7 +139,6 @@ function useAreas(): UseAreasResult {
               ({
                 ...item,
                 getChildren() {
-                  console.log('xxx get', this);
                   if (this.type == 'street') {
                     return [];
                   }
@@ -163,7 +162,7 @@ function useAreas(): UseAreasResult {
     });
   }, [fetchChildren, loadChildren]);
 
-  const loadAddress = useCallback(
+  const loadRegion = useCallback(
     async (code: string) => {
       const { data } = await loadAreaData({
         variables: { code },
@@ -172,9 +171,9 @@ function useAreas(): UseAreasResult {
       const codes = data.dict.path.split('/').filter((t: any) => !!t);
 
       let ___areas = _areas;
-      const address: Address = { codes: [] };
+      const address: Region = { codes: [] };
       for (const _code of codes) {
-        address.codes.push(_code);
+        address.codes!.push(_code);
         const item = ___areas.find((_item) => _item.code == _code)!;
         address[item.type] = item.code;
         address[`${item.type}Name`] = item.name;
@@ -186,7 +185,7 @@ function useAreas(): UseAreasResult {
     [loadAreaData],
   );
 
-  return [areas, { loadAddress, waiting: temp.current.waiting, loading }];
+  return [areas, { loadRegion, waiting: temp.current.waiting, loading }];
 }
 
 export default useAreas;
