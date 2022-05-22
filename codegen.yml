@@ -1,5 +1,5 @@
 overwrite: true
-schema: "http://47.103.119.188:8000/graphql"
+schema: ${GRAPHQL_SCHEMA_URL:https://api.asany.cn/graphql}
 generates:
   src/types.ts:
     plugins:
