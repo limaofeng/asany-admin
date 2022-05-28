@@ -517,9 +517,6 @@
   .modal-content {
     background-color: #f2f2f2;
   }
-  .modal-body {
-    height: calc(75vh - 100px);
-  }
   .settings-calendars {
     display: flex;
     flex-direction: column;
@@ -575,7 +572,7 @@
         border-bottom: 1px solid #e6e6e6;
       }
       .calendar-sets-body {
-        height: calc(75vh - 100px - (1.75rem * 2) - 36px - 28px - 23px);
+        height: calc(75vh - 100px - (1.75rem * 2) - 36px - 28px - 16px);
         margin-right: -5px;
         padding: 8px 0;
 

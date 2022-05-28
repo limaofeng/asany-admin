@@ -148,7 +148,7 @@ function ImageUpload(props: ImageUploadProps) {
         'image-input-empty': !value,
       })}
       data-kt-image-input="true"
-      style={{ backgroundImage: "url('/assets/media/svg/avatars/blank.svg')" }}
+      // style={{ backgroundImage: "url('/assets/media/svg/avatars/blank.svg')" }}
     >
       <div
         {...rootProps}

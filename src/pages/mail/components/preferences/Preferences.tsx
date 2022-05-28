@@ -90,7 +90,7 @@ function Preferences(props: PreferencesProps) {
           </Nav>
         </Modal.Header>
       }
-      footer={null}
+      footer={false}
     >
       <MailboxFolder user={mailUser?.name} mailboxes={settings.mailboxes} />
     </Modal>

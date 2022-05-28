@@ -65,7 +65,7 @@ function Preferences(props: PreferencesProps) {
           </Nav>
         </Modal.Header>
       }
-      footer={null}
+      footer={false}
     >
       <Calendars />
     </Modal>
