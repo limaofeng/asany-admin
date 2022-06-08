@@ -21,6 +21,7 @@ declare module 'react-owl-carousel3';
 declare module 'react-tabs';
 declare module 'react-media-player';
 declare module '@yaireo/tagify/dist/react.tagify';
+declare module 'react-quill';
 
 declare module 'lunar-javascript';
 

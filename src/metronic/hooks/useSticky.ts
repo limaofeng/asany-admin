@@ -116,7 +116,6 @@ function useSticky(options: StickyOptions) {
       }
 
       if (!!width) {
-        console.log('123----------', width);
         if (width.target) {
           const targetElement = document.querySelector(width.target);
           if (targetElement) {

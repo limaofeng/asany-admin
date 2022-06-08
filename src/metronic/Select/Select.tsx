@@ -72,7 +72,8 @@ function Select(props: SelectProps) {
       .on('select2:unselect', handleSelect);
     const select2 = instance.data('select2') as any;
     return () => {
-      select2.destroy();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      ref.current && select2.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

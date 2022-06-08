@@ -10,7 +10,7 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
-  src/pages/cms/hooks.ts:
+  src/pages/cms/hooks/api.ts:
     documents: ["src/pages/cms/**/*.gql"]
     plugins:
       - "typescript-operations"

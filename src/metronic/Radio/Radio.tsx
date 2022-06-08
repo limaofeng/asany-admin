@@ -11,11 +11,21 @@ export interface RadioProps {
   checked?: boolean;
   children: React.ReactNode;
   className?: string;
+  inputClassName?: string;
   onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
 }
 
 function Radio(props: RadioProps) {
-  const { onClick, solid, size, value, checked: defaultChecked, children, className } = props;
+  const {
+    onClick,
+    solid,
+    size,
+    value,
+    checked: defaultChecked,
+    children,
+    className,
+    inputClassName,
+  } = props;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [checked, setChecked] = useState(defaultChecked);
@@ -46,7 +56,7 @@ function Radio(props: RadioProps) {
       <span className="form-radio">
         <input
           ref={inputRef}
-          className="form-check-input"
+          className={classnames('form-check-input', inputClassName)}
           type="radio"
           value={value}
           onChange={() => {}}
@@ -63,11 +73,13 @@ interface RadioGroupProps {
   value?: string;
   size?: 'sm' | 'lg';
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  options: { label: string; value: string }[];
+  options?: { label: string; value: string }[];
+  children?: React.ReactNode;
+  className?: string;
 }
 
 function RadioGroup(props: RadioGroupProps) {
-  const { onChange, options, size, value: defaultValue, solid } = props;
+  const { onChange, options = [], size, value: defaultValue, solid, children, className } = props;
 
   const [value, setValue] = useState(defaultValue);
 
@@ -86,7 +98,7 @@ function RadioGroup(props: RadioGroupProps) {
   }, [defaultValue]);
 
   return (
-    <div className="form-radio-group d-flex">
+    <div className={classnames('form-radio-group', className)}>
       {options.map((item) => (
         <Radio
           onClick={handleClick}
@@ -99,6 +111,7 @@ function RadioGroup(props: RadioGroupProps) {
           {item.label}
         </Radio>
       ))}
+      {children}
     </div>
   );
 }

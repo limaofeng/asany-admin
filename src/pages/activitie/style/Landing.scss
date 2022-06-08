@@ -1,0 +1,11 @@
+.list-music-preview {
+  padding-right: 8px;
+  overflow: hidden;
+
+  .file-name-container {
+    width: calc(100% - 22px);
+    .file-title {
+      text-overflow: clip;
+    }
+  }
+}

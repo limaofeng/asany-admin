@@ -3,6 +3,12 @@
     border-color: #f1416c;
   }
 }
+.form-item-help {
+  min-height: 17px;
+  margin: 4px 0 2px;
+  color: #57606a;
+  font-size: 12px;
+}
 .asany-form-item.fv-row {
   &.form-item-with-help {
     .form-item-explain.form-explain-connected {

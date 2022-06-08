@@ -22,7 +22,7 @@ type Cols = {
 type RowProps = {
   wrap?: boolean;
   gutter?: Gutter;
-  cols: number | Cols;
+  cols?: number | Cols;
   align?: 'top' | 'middle' | 'bottom';
   justify?: 'start' | 'end' | 'center' | 'space-around' | 'space-between';
   children: React.ReactNode;

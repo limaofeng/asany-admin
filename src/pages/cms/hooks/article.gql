@@ -1,3 +1,10 @@
+query articleStoreTemplates {
+  articleStoreTemplates {
+    id
+    name
+  }
+}
+
 query articles($filter: ArticleFilter, $page: Int, $pageSize: Int) {
   articles(filter: $filter, page: $page, pageSize: $pageSize) {
     total: totalCount
@@ -106,6 +113,7 @@ query article($id: ID!) {
   article(id: $id) {
     id
     title
+    status
     channels {
       id
     }

@@ -11,7 +11,7 @@ import LoadingComponent from '@/components/PageLoading';
 class Cms {
   @component({ name: 'ArticleList' })
   ArticleList = dynamic({
-    loader: () => import('./components/ArticleList'),
+    loader: () => import('./pages/ArticleList'),
     loading: LoadingComponent,
   });
   @component({ name: 'ArticleView' })
@@ -37,6 +37,11 @@ class Cms {
   @component({ name: 'ArticleEdit' })
   ArticleEdit = dynamic({
     loader: async () => (await import('./article/ArticleEditor')).ArticleEdit,
+    loading: LoadingComponent,
+  });
+  @component({ name: 'ArticleChannelNew' })
+  ArticleChannelNew = dynamic({
+    loader: () => import('./pages/ArticleChannelNew'),
     loading: LoadingComponent,
   });
   @component({})

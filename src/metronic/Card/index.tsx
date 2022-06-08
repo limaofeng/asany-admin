@@ -78,7 +78,7 @@ function CardHeader(props: CardHeaderProps) {
     } else if (props.title) {
       _children.push(
         typeof props.title === 'string' ? (
-          <CardTitle as="h3" className={props.titleClassName}>
+          <CardTitle key="card-title" as="h3" className={props.titleClassName}>
             {props.title}
           </CardTitle>
         ) : (
@@ -91,7 +91,9 @@ function CardHeader(props: CardHeaderProps) {
     } else if (props.toolbar) {
       _children.push(props.toolbar);
     }
-    _children.push(newChildren);
+    if (!!newChildren.length) {
+      _children.push(newChildren);
+    }
     return _children;
   }, [props.children, props.title, props.titleClassName, props.toolbar]);
 
@@ -112,11 +114,12 @@ function randerHeader(
   const props: CardHeaderProps = {};
   className && (props.className = className);
   toolbar && (props.toolbar = toolbar);
+  title && (props.title = title);
   titleClassName && (props.titleClassName = titleClassName);
   if (!!header) {
     return React.cloneElement(header, props);
   }
-  return title && <CardHeader {...props} />;
+  return title && <CardHeader key="card-header" {...props} />;
 }
 
 type CardBodyProps = {
@@ -152,7 +155,7 @@ function Card(props: CardProps & { to?: string }) {
       title:
         titleNode ||
         (props.title && (
-          <CardTitle as="h3" className={props.titleClassName}>
+          <CardTitle key="card-title" as="h3" className={props.titleClassName}>
             {props.title}
           </CardTitle>
         )),
@@ -164,7 +167,7 @@ function Card(props: CardProps & { to?: string }) {
       as={as == 'a' ? Link : as}
       to={props.to}
       style={style}
-      className={classnames(className, 'x1221', {
+      className={classnames(className, {
         [`shadow-${shadow}`]: shadow,
         'card-flush': flush,
       })}

@@ -13,8 +13,8 @@ import { useLayoutSelector } from '@/layouts/LayoutContext';
 function Toolbar() {
   return (
     <div className="d-flex flex-shrink-0">
-      <div className="d-flex ms-3">
-        {/* <a
+      {/* <div className="d-flex ms-3">
+        <a
           href="#"
           className="btn btn-flex flex-center bg-body btn-color-gray-700 btn-active-color-primary w-40px w-md-auto h-40px px-0 px-md-6"
           data-bs-toggle="modal"
@@ -22,10 +22,10 @@ function Toolbar() {
         >
           <Icon name="Duotune/arr075" />
           <span className="d-none d-md-inline">New Member</span>
-        </a> */}
-      </div>
-      <div className="d-flex ms-3">
-        {/* <a
+        </a>
+      </div> */}
+      {/* <div className="d-flex ms-3">
+        <a
           href="#"
           className="btn btn-flex flex-center bg-body btn-color-gray-700 btn-active-color-primary w-40px w-md-auto h-40px px-0 px-md-6"
           // tooltip="New App"
@@ -35,17 +35,14 @@ function Toolbar() {
         >
           <Icon name="Duotune/gen005" />
           <span className="d-none d-md-inline">New App</span>
-        </a> */}
-      </div>
-      <div className="d-flex align-items-center ms-3">
-        {/* <div
-          className="btn btn-icon btn-primary w-40px h-40px pulse pulse-white"
-          id="kt_drawer_chat_toggle"
-        >
-          <Icon name="Duotune/com012" />
+        </a>
+      </div> */}
+      {/*    <div className="d-flex align-items-center ms-3">
+        <Button className="w-40px h-40px btn-icon pulse pulse-white">
+          <Icon className="svg-icon-2" name="Duotune/com012" />
           <span className="pulse-ring" />
-        </div> */}
-      </div>
+        </Button>
+      </div> */}
     </div>
   );
 }

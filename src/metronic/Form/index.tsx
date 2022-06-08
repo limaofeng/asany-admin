@@ -10,6 +10,7 @@ import type { FormListProps } from './FormList';
 import List from './FormList';
 import { FormProvider } from './context';
 import type { FormInstance } from './hooks/useForm';
+import FormRepeater from './FormRepeater';
 
 type InternalFormType = typeof InternalForm;
 
@@ -19,6 +20,7 @@ interface FormInterface extends InternalFormType {
   List: typeof List;
   ErrorList: typeof ErrorList;
   Provider: typeof FormProvider;
+  Repeater: typeof FormRepeater;
 
   /** @deprecated Only for warning usage. Do not use. */
   create: () => void;
@@ -31,6 +33,7 @@ XForm.List = List;
 XForm.ErrorList = ErrorList;
 XForm.useForm = useForm;
 XForm.Provider = FormProvider;
+XForm.Repeater = FormRepeater;
 
 export type {
   FormInstance,

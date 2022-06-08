@@ -4,7 +4,7 @@ import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import ArticleList from '../components/ArticleList';
+import ArticleList from '../pages/ArticleList';
 import { useArticleChannelQuery } from '../hooks';
 
 import { NewArticleChannelModal } from './ArticleChannelNew';

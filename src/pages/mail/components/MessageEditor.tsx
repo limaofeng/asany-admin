@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import type { ValidateErrorEntity } from 'rc-field-form/lib/interface';
 import Icon from '@asany/icons';
-import ReactQuill, { Quill } from 'react-quill';
 import TagsInput, { emailValidator, parseEmailTag } from '@asany/tags-input';
 
 import {
@@ -12,7 +11,7 @@ import {
   useUpdateMailboxMessageMutation,
 } from '../hooks';
 
-import { Button, Card, Form, Input, Modal, Tooltip, Upload } from '@/metronic';
+import { Button, Card, Form, Input, Modal, QuillEditor, Tooltip, Upload } from '@/metronic';
 import type { QueueUploadRef } from '@/metronic/typings';
 import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
 import { toHtml, toPlainText } from '@/metronic/utils/format';
@@ -28,45 +27,6 @@ const RULE_VERIFY_MAIL = {
     }
   },
 };
-
-const Size = Quill.import('attributors/style/size');
-const Font = Quill.import('attributors/style/font');
-
-const fontSize = [
-  '9px',
-  '10px',
-  '11px',
-  '12px',
-  '13px',
-  false,
-  '16px',
-  '18px',
-  '24px',
-  '36px',
-  '48px',
-  '64px',
-  '72px',
-  '96px',
-  '144px',
-  '288px',
-];
-
-Size.whitelist = fontSize;
-
-const fontFamily = [
-  'SimSun',
-  'SimHei',
-  'Microsoft-YaHei',
-  'KaiTi',
-  'FangSong',
-  'Arial',
-  'pingfang',
-];
-
-Font.whitelist = fontFamily;
-
-Quill.register(Size, true);
-Quill.register(Font, true);
 
 type ContentEditorProps = {
   mode: 'html' | 'plain';
@@ -90,59 +50,7 @@ function EmailTagsInput(props: EmailTagsInputProps) {
 }
 
 function ContentEditor(props: ContentEditorProps) {
-  const { mode, onChange } = props;
-
-  const valueRef = useRef(props.value || '');
-
-  const handleChange = useCallback(
-    (_value) => {
-      onChange && onChange((valueRef.current = _value));
-    },
-    [onChange],
-  );
-
-  const handleTextChange = useCallback(
-    function (e) {
-      onChange && onChange(e.target.value);
-    },
-    [onChange],
-  );
-
-  if (mode == 'html') {
-    return (
-      <ReactQuill
-        id="kt_inbox_form_editor"
-        className="quill-zh_hans"
-        modules={{
-          toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ font: fontFamily }],
-            [{ size: fontSize }],
-            [{ color: [] }, { background: [] }],
-            [{ list: 'bullet' }, { list: 'ordered' }],
-            [{ indent: '-1' }, { indent: '+1' }],
-            [{ align: [] }],
-            ['clean'],
-          ],
-        }}
-        placeholder="输入正文"
-        theme="snow"
-        value={props.value}
-        onChange={handleChange}
-      />
-    );
-  }
-  return (
-    <div id="kt_inbox_form_editor" className="bg-transparent border-0 px-3">
-      <Input.TextArea
-        bordered={false}
-        value={props.value}
-        onChange={handleTextChange}
-        className="editor_mode_text"
-        placeholder="输入正文"
-      />
-    </div>
-  );
+  return <QuillEditor {...props} />;
 }
 
 type MessageEditorProps = {

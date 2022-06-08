@@ -1,6 +1,6 @@
 .page-full-content {
   width: 100%;
-  padding-left: 425px !important;
+  padding-left: var(--met-aside-width);
   .aside {
     left: 100px;
     width: auto;

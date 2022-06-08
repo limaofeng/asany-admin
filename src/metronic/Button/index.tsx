@@ -30,6 +30,7 @@ function Button(
     activeTextColor,
     disabled,
     onClick,
+    style,
     ...props
   }: ButtonProps<any>,
   ref: any,
@@ -52,7 +53,7 @@ function Button(
         'btn',
         {
           active,
-          disabled: disabled && as != 'button',
+          disabled: disabled || loading,
           'btn-link': type == 'link',
           'btn-circle': type == 'circle',
           [`btn-text-${variant}`]: type == 'link',
@@ -76,6 +77,7 @@ function Button(
         },
         className,
       ),
+      style,
     },
     !loading ? (
       <>

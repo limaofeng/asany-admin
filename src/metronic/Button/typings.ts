@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'styled-components';
+
 export type Variant =
   | 'white'
   | 'primary'
@@ -69,4 +71,5 @@ export interface ButtonProps<AsProps = any> {
   loading?: boolean;
   onClick?: (e: React.MouseEvent) => void;
   to?: string;
+  style?: CSSProperties;
 }

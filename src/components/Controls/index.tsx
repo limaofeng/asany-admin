@@ -3,13 +3,13 @@ import Icon from '@asany/icons';
 import Button from '@/metronic/Button';
 
 type ControlsProps = {
-  layout?: boolean;
+  layout?: 'card' | 'table';
   children?: React.ReactNode;
   onLayout?: (key: 'card' | 'table') => void;
 };
 
 function Controls(props: ControlsProps) {
-  const { layout, children } = props;
+  const { layout, children, onLayout } = props;
   return (
     <div className="d-flex flex-wrap my-1">
       {layout && (
@@ -18,18 +18,21 @@ function Controls(props: ControlsProps) {
             <Button
               variant="light"
               color="muted"
-              active
+              active={layout == 'card'}
               activeColor="primary"
-              icon={<Icon name="Duotune/gen024" className="svg-icon-2" />}
+              onClick={onLayout?.bind(null, 'card')}
+              icon={<Icon name="Duotune/gen024" className="svg-icon-1" />}
             />
           </li>
           <li className="nav-item m-0">
             <Button
               variant="light"
               color="muted"
+              active={layout == 'table'}
+              onClick={onLayout?.bind(null, 'table')}
               activeColor="primary"
               className="me-3"
-              icon={<Icon name="Duotune/abs015" className="svg-icon-2" />}
+              icon={<Icon name="Duotune/abs015" className="svg-icon-1" />}
             />
           </li>
         </ul>

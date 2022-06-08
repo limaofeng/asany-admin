@@ -33,6 +33,7 @@ export { default as Modal } from './Modal';
 export { default as Tooltip } from './Tooltip';
 
 export { default as Upload } from './Upload';
+export { QuillEditor } from './Editor';
 export { default as Input } from './Input';
 export { default as Form } from './Form';
 export { default as Select, Select2 } from './Select';

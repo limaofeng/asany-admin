@@ -1,12 +1,11 @@
 import Icon from '@asany/icons';
-import { useQuery } from '@apollo/client';
 import type { RouteComponentProps } from 'react-router';
 
-import { QUERY_ARTICLE } from './gql/article.gql';
-import type { IArticle } from './typings';
+import { useArticleQuery } from '../hooks';
 
 import { Card } from '@/metronic';
 import { ContentWrapper } from '@/layouts/components';
+import type { Article } from '@/types';
 
 function ArticleShare() {
   return (
@@ -96,14 +95,14 @@ function AuthorsProfile() {
 function ArticleView(props: RouteComponentProps<any>) {
   const { id } = props.match.params;
 
-  const { data, loading } = useQuery<{ article: IArticle }, any>(QUERY_ARTICLE, {
+  const { data, loading } = useArticleQuery({
     variables: { id },
     fetchPolicy: 'no-cache',
   });
 
   console.log('ArticleEdit', data, loading);
 
-  const article = data?.article || {};
+  const article = data?.article || ({} as Article);
 
   return (
     <ContentWrapper

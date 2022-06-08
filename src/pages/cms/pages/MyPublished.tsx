@@ -1,4 +1,4 @@
-import ArticleList from '../components/ArticleList';
+import ArticleList from './ArticleList';
 
 import { useCurrentuser } from '@/utils/hooks';
 import { ContentWrapper } from '@/layouts/components';

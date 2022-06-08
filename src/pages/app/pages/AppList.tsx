@@ -14,11 +14,11 @@ function AppList() {
         title: '应用管理',
       }}
     >
-      <Row gutter={6} xl={9}>
+      <Row gutter={{ default: 6, xl: 9 }}>
         {apps.map((item) => (
           <Col key={item.id} md={6} xl={4}>
             {/*----begin::Card--*/}
-            <Card as="a" to={`/apps/${item.id}`} className="border-hover-primary">
+            <Card as="a" to={`/website/${item.id}`} className="border-hover-primary">
               <Card.Header border={false} className="pt-9">
                 <Card.Title className="m-0">
                   <Symbol.Avatar

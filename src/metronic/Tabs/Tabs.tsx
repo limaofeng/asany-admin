@@ -10,13 +10,14 @@ interface TabsProps {
   className?: string;
   activeKey?: string;
   tabPosition?: 'left' | 'top';
+  renderContainer?: boolean;
   defaultActiveKey?: string;
   children: React.ReactElement | React.ReactElement[];
   onChange?: (activeKey: string) => void;
 }
 
 function Tabs(props: TabsProps) {
-  const { children, className, onChange, tabPosition = 'top' } = props;
+  const { children, className, onChange, tabPosition = 'top', renderContainer = true } = props;
 
   const panes = useMemo(() => {
     return React.Children.map(children, (item) => ({
@@ -30,6 +31,8 @@ function Tabs(props: TabsProps) {
     props.activeKey || props.defaultActiveKey || panes[0].id,
   );
 
+  console.log('activeKey', activeKey);
+
   const handleSelect = useCallback(
     (key: string) => (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -40,16 +43,16 @@ function Tabs(props: TabsProps) {
   );
 
   useEffect(() => {
+    if (!props.activeKey) {
+      return;
+    }
     setActiveKey(props.activeKey!);
   }, [props.activeKey]);
 
-  return (
-    <div
-      className={classnames('tabs-container', {
-        'd-flex flex-column flex-md-row': tabPosition == 'left',
-      })}
-    >
+  const body = (
+    <>
       <ul
+        key="nav-tabs"
         className={classnames('nav nav-tabs', className, {
           'nav-line-tabs': tabPosition == 'top',
           'nav-pills flex-row flex-md-column  border-bottom-0': tabPosition == 'left',
@@ -76,9 +79,23 @@ function Tabs(props: TabsProps) {
           </li>
         ))}
       </ul>
-      <div className="tab-content">
+      <div key="tab-content" className="tab-content">
         {panes.map((item) => React.cloneElement(item.content, { active: activeKey == item.id }))}
       </div>
+    </>
+  );
+
+  if (!renderContainer) {
+    return body;
+  }
+
+  return (
+    <div
+      className={classnames('tabs-container', {
+        'd-flex flex-column flex-md-row': tabPosition == 'left',
+      })}
+    >
+      {body}
     </div>
   );
 }
