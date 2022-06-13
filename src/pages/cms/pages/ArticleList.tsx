@@ -208,7 +208,7 @@ function ArticleList(props: ArticleListProps) {
     return query;
   }, [location, categoryId]);
 
-  const { data, refetch } = useArticlesQuery({
+  const { data, refetch, loading } = useArticlesQuery({
     variables,
     fetchPolicy: 'cache-and-network',
   });
@@ -242,6 +242,7 @@ function ArticleList(props: ArticleListProps) {
 
   return (
     <ContentWrapper
+      loading={loading}
       header={{
         title: '新闻动态',
       }}

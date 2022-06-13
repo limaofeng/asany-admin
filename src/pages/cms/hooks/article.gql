@@ -79,10 +79,10 @@ mutation createArticle($input: ArticleCreateInput!) {
       id
       name
     }
-    content {
+    body {
       id
       __typename
-      ... on HtmlContent {
+      ... on ArticleContent {
         text
       }
     }
@@ -103,10 +103,11 @@ mutation updateArticle($id: ID!, $input: ArticleUpdateInput!) {
       id
       name
     }
-    content {
+    body {
       id
       __typename
-      ... on HtmlContent {
+      ... on ArticleContent {
+        type
         text
       }
     }
@@ -134,10 +135,11 @@ query article($id: ID!) {
       id
       name
     }
-    content {
+    body {
       id
       __typename
-      ... on HtmlContent {
+      ... on ArticleContent {
+        type
         text
       }
     }

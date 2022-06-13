@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Icon } from '@asany/icons';
 import TagsInput from '@asany/tags-input';
@@ -7,7 +7,7 @@ import classnames from 'classnames';
 import type { RouteComponentProps } from 'react-router';
 import { Link } from 'umi';
 
-import { useArticleQuery, useCreateArticleMutation } from '../hooks';
+import { useArticleQuery, useUpdateArticleMutation } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -74,18 +74,61 @@ function ArticleEdit(props: ArticleEditProps) {
     );
   }, [categories]);
 
-  const [createArticle] = useCreateArticleMutation();
+  const [updateArticle] = useUpdateArticleMutation();
+
+  const [storeTemplate, setStoreTemplate] = useState<string | undefined>();
+
+  const handleChangeCategory = useCallback(
+    (cid) => {
+      const category = categories.find((item) => item.id == cid);
+      setStoreTemplate(category?.storeTemplate?.id);
+    },
+    [categories],
+  );
+
+  useEffect(() => {
+    if (!categories || !categories.length || !article) {
+      return;
+    }
+    setStoreTemplate(categories.find((item) => item.id == article.category?.id)?.storeTemplate?.id);
+  }, [article, categories]);
 
   const handleFinish = useCallback(async () => {
     await queueUpload.current?.uploadAll();
-    const { channel, ...values } = await form.validateFields();
-    const _data = await createArticle({
+    const { meta, category, body, ...values } = await form.validateFields();
+
+    const types: any = {
+      seo_title: 'single_line_text_field',
+      seo_description: 'multi_line_text_field',
+      seo_keywords: 'list.single_line_text_field',
+    };
+
+    const metafields = [];
+    for (const namespace of Object.keys(meta)) {
+      for (const key of Object.keys(meta[namespace])) {
+        metafields.push({
+          namespace,
+          key,
+          value: meta[namespace][key],
+          type: types[namespace + '_' + key],
+        });
+      }
+    }
+
+    console.log('submit', values, metafields);
+    const _data = await updateArticle({
       variables: {
-        input: { ...values, channels: [channel] },
+        id,
+        input: {
+          ...values,
+          metafields,
+          category: category.id,
+          body: { type: 'HTML', text: body.text },
+        },
       },
     });
     console.log(_data);
-  }, [createArticle, form]);
+  }, [form, updateArticle, id]);
 
   useEffect(() => {
     if (!article) {
@@ -95,6 +138,8 @@ function ArticleEdit(props: ArticleEditProps) {
       ...article,
     });
   }, [article, form]);
+
+  console.log('storeTemplate', storeTemplate);
 
   return (
     <ContentWrapper
@@ -150,7 +195,11 @@ function ArticleEdit(props: ArticleEditProps) {
                   >
                     <Input placeholder="文章标题" className="mw-400px" />
                   </Form.Item>
-                  <Form.Item name="content" label="正文" help="您可以选择适合自己的，编辑方式">
+                  <Form.Item
+                    name={['body', 'text']}
+                    label="正文"
+                    help="您可以选择适合自己的，编辑方式"
+                  >
                     <QuillEditor className="h-300px" />
                   </Form.Item>
                 </Card>
@@ -205,7 +254,7 @@ function ArticleEdit(props: ArticleEditProps) {
             <Tabs.TabPane key="meta" tab="元数据" forceRender>
               <Card flush className="py-4" title="SEO" bodyClassName="pt-0">
                 <Form.Item
-                  name={['meta', 'title']}
+                  name={['meta', 'seo', 'title']}
                   className="mb-8"
                   label="标题"
                   help="设置元数据标题, 建议关键词要简单, 准确"
@@ -214,7 +263,7 @@ function ArticleEdit(props: ArticleEditProps) {
                 </Form.Item>
 
                 <Form.Item
-                  name={['meta', 'description']}
+                  name={['meta', 'seo', 'description']}
                   className="mb-8"
                   label="描述"
                   help="设置元数据描述, 以提高排名"
@@ -222,7 +271,7 @@ function ArticleEdit(props: ArticleEditProps) {
                   <QuillEditor className="h-300px" />
                 </Form.Item>
                 <Form.Item
-                  name={['meta', 'keywords']}
+                  name={['meta', 'seo', 'keywords']}
                   label="关键字"
                   help={
                     <>
@@ -252,7 +301,7 @@ function ArticleEdit(props: ArticleEditProps) {
         </div>
         <div className="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7">
           <Card flush className="py-4" title="封面图" bodyClassName="text-center pt-0">
-            <Form.Item name="cover">
+            <Form.Item name="image">
               <Upload.Image
                 width={150}
                 height={150}
@@ -276,6 +325,7 @@ function ArticleEdit(props: ArticleEditProps) {
                 rules={[{ required: true, message: '所属栏目不能为空' }]}
               >
                 <TreeSelect
+                  onChange={handleChangeCategory}
                   style={{ width: '100%' }}
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                   treeData={categoryTreeData}
