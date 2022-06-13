@@ -2,8 +2,8 @@ import type { RouteComponentProps } from 'react-router-dom';
 
 import { usePermissionsConnectionQuery } from '../../hooks';
 
-import { ContentWrapper } from '@/layouts/components';
 import GeneralList from '@/components/GeneralList';
+import { ContentWrapper } from '@/layouts/components';
 
 type PermissionsProps = RouteComponentProps<any>;
 

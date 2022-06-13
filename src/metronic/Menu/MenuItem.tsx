@@ -1,5 +1,4 @@
-import { useCallback, useEffect } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
@@ -14,7 +13,7 @@ import { useMenuContext, useSelector } from './MenuContext';
 export type MenuItemProps = {
   url?: string;
   icon?: string | React.ReactNode;
-  title?: string;
+  title?: string | React.ReactNode;
   className?: string;
   as?: string | React.ComponentType<any>;
   titleClassName?: string;

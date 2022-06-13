@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { Circle as RCCircle } from 'rc-progress';
 import classnames from 'classnames';
+import { Circle as RCCircle } from 'rc-progress';
 
 import type { ProgressProps } from './typings';
 import { validProgress } from './utils';

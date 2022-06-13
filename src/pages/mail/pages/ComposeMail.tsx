@@ -1,20 +1,20 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
-import NavigationPrompt from 'react-router-navigation-prompt';
 import type { RouteComponentProps } from 'react-router';
+import NavigationPrompt from 'react-router-navigation-prompt';
 import { useHistory } from 'umi';
 
+import MessageEditor from '../components/MessageEditor';
 import {
   MailboxesDocument,
   useDeleteMailboxMessageMutation,
   useMailboxMessageLazyQuery,
 } from '../hooks';
-import MessageEditor from '../components/MessageEditor';
 
+import { ContentWrapper } from '@/layouts/components';
 import { Button, Card, Modal, Spin, Tabs } from '@/metronic';
 import type { MailboxMessage } from '@/types';
 import { sleep } from '@/utils';
-import { ContentWrapper } from '@/layouts/components';
 
 const { TabPane } = Tabs;
 
@@ -92,7 +92,7 @@ function ComposeMail(props: ComposeMailProps) {
   }, []);
 
   const handleDoNotStore = useCallback(
-    (onConfirm) => async () => {
+    (onConfirm: () => void) => async () => {
       await deleteMessage({ variables: { id: state.current.message!.id } });
       onConfirm();
     },

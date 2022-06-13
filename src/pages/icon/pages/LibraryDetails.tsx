@@ -1,14 +1,14 @@
 import React, { forwardRef, memo, useCallback, useMemo, useRef, useState } from 'react';
 
-import type { IconDefinition, IconLibraryDefinition } from '@asany/icons/types';
+import { LoadingOutlined } from '@ant-design/icons';
 import Icon from '@asany/icons';
+import type { IconDefinition, IconLibraryDefinition } from '@asany/icons/types';
 import type { SortableItemProps } from '@asany/sortable';
 import Sortable from '@asany/sortable';
 import { Dropdown, Input, Menu, Spin } from 'antd';
 import classnames from 'classnames';
 import { useParams } from 'react-router-dom';
 import Selecto from 'react-selecto';
-import { LoadingOutlined } from '@ant-design/icons';
 
 import LibraryControlPanel from '../components/LibraryControlPanel';
 import { useIconLibraryQuery } from '../hooks';

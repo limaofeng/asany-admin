@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import classnames from 'classnames';
 import { Link } from 'umi';
 
@@ -12,7 +14,14 @@ type BreadcrumbItemProps = {
 };
 
 function BreadcrumbItem(props: BreadcrumbItemProps) {
-  const { children, className, href } = props;
+  const { children, className, href, overlay } = props;
+
+  useEffect(() => {
+    if (overlay) {
+      console.warn('overlay 还未实现');
+    }
+  }, [overlay]);
+
   return (
     <li className={classnames('breadcrumb-item', className)}>
       {href ? (

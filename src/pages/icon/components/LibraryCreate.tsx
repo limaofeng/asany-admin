@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 
-import classnames from 'classnames';
 import Icon from '@asany/icons';
+import classnames from 'classnames';
 
 import { useCreateIconLibraryMutation } from '../hooks';
 

@@ -1,2 +1,2 @@
 export { default } from './MicroApp';
-export { useMicroApp, MicroAppActionKind } from './MicroAppContext';
+export { MicroAppActionKind, useMicroApp } from './MicroAppContext';

@@ -3,8 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useCalendarSetsQuery, useUpdateCalendarSetMutation } from '../../../hooks';
 import CalendarPicker from '../../CalendarPicker';
 
-import CalendarSets from './CalendarSets';
 import CalendarList from './CalendarList';
+import CalendarSets from './CalendarSets';
 
 import { Form } from '@/metronic';
 

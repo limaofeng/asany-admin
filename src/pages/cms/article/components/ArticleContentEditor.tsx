@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { BalloonBlockEditor, ClassicEditor } from '@asany/ckeditor5';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
 
 export type EditorStyle = 'ClassicEditor' | 'BalloonBlockEditor';
 

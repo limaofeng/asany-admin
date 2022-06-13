@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
-import { useHistory, useModel } from 'umi';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 import { useDropzone } from 'react-dropzone';
+import { useHistory, useModel } from 'umi';
 
 import FolderPath from '../components/FolderPath';
 import {
@@ -20,9 +20,9 @@ import FileName from './FileName';
 import NewFolderModal from './NewFolderModal';
 
 import { Alert, Badge, BlockUI, Button, Card, Input, Modal, Table, Toast } from '@/metronic';
-import type { FileFilter, FileObject } from '@/types';
 import type { DataSource, Sorter } from '@/metronic/typings';
 import { fileSize } from '@/metronic/utils/format';
+import type { FileFilter, FileObject } from '@/types';
 
 type ListFilesProps = {
   toolbar?: 'default' | 'starred' | 'trash';

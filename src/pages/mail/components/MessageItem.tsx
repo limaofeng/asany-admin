@@ -1,14 +1,12 @@
 import type { CSSProperties } from 'react';
 import { useCallback } from 'react';
 
-import moment from 'moment';
-import classnames from 'classnames';
 import { Icon } from '@asany/icons';
-import { useHistory } from 'umi';
+import classnames from 'classnames';
+import moment from 'moment';
 import ContentLoader from 'react-content-loader';
+import { useHistory } from 'umi';
 
-import type { RefreshEvent, UseMessage } from '../typings';
-import { DEFAULT_MAILBOXES, displayName } from '../utils';
 import {
   CountUnreadDocument,
   MailboxesDocument,
@@ -16,10 +14,12 @@ import {
   useMoveMailboxMessageToFolderMutation,
   useUpdateMailboxMessageFlagsMutation,
 } from '../hooks';
+import type { RefreshEvent, UseMessage } from '../typings';
+import { DEFAULT_MAILBOXES, displayName } from '../utils';
 
-import type { MailboxMessage } from '@/types';
-import { toPlainText } from '@/metronic/utils/format';
 import { Modal } from '@/metronic';
+import { toPlainText } from '@/metronic/utils/format';
+import type { MailboxMessage } from '@/types';
 
 export type MessageItemProps = {
   index: number;

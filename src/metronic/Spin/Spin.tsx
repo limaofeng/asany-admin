@@ -1,7 +1,7 @@
 import React from 'react';
 
-import classnames from 'classnames';
 import type { IconProps } from '@asany/icons/dist/Icon';
+import classnames from 'classnames';
 
 import Bounce from './components/Bounce';
 import Chase from './components/Chase';

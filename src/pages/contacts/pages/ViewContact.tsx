@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
 
 import Icon from '@asany/icons';
-import type { RouteComponentProps } from 'react-router-dom';
 import ContentLoader from 'react-content-loader';
+import type { RouteComponentProps } from 'react-router-dom';
 
 import { useContactQuery } from '../hooks';
 import type { ContactRouteParams } from '../typings';

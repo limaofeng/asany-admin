@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { useHistory, useModel } from 'umi';
 import Icon from '@asany/icons';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import classnames from 'classnames';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import { useHistory, useModel } from 'umi';
 
 import { Button, Progress, Tabs } from '@/metronic';
-import type { DownloadFile, UploadFile } from '@/models/cloud-drive';
 import { fileSize } from '@/metronic/utils/format';
+import type { DownloadFile, UploadFile } from '@/models/cloud-drive';
 
 function randerFileIcon(file: UploadFile | DownloadFile) {
   if (['zip'].includes(file.extension!)) {

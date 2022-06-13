@@ -1,14 +1,14 @@
 import { useEffect, useMemo } from 'react';
 
-import { useModel } from 'umi';
 import type { RouteComponentProps } from 'react-router-dom';
+import { useModel } from 'umi';
 
-import { useCloudDriveLazyQuery } from '../hooks';
 import ListFiles from '../components/ListFiles';
+import { useCloudDriveLazyQuery } from '../hooks';
 
-import type { CloudDrive, FileObject } from '@/types';
-import type { Sorter } from '@/metronic/Table/typings';
 import { ContentWrapper } from '@/layouts/components';
+import type { Sorter } from '@/metronic/Table/typings';
+import type { CloudDrive, FileObject } from '@/types';
 
 type DriveStarredRouteParams = {
   id: string;

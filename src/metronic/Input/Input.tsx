@@ -1,7 +1,5 @@
 import type { DOMAttributes } from 'react';
-import { useMemo } from 'react';
-import { useImperativeHandle, useRef } from 'react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 

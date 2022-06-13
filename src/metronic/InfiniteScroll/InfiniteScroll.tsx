@@ -10,8 +10,8 @@ import React, {
 
 import { Shortcuts } from '@asany/shortcuts';
 import classnames from 'classnames';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import type OverlayScrollbars from 'overlayscrollbars';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { uuid } from '../utils';
 

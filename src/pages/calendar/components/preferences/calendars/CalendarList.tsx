@@ -1,18 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { ColorResult } from 'react-color';
-import { SketchPicker } from 'react-color';
-import classnames from 'classnames';
+import { Shortcuts } from '@asany/shortcuts';
 import type { SortableItemProps } from '@asany/sortable';
 import Sortable from '@asany/sortable';
-import { Shortcuts } from '@asany/shortcuts';
+import classnames from 'classnames';
 import { debounce } from 'lodash';
+import type { ColorResult } from 'react-color';
+import { SketchPicker } from 'react-color';
 import { useClickAway } from 'react-use';
 
 import CalendarListFooter from './CalendarListFooter';
 
-import type { Calendar, CalendarSet } from '@/types';
+import type { InputRef, OptionData } from '@/metronic';
 import { Checkbox, Form, Input, Modal, Popover, Select } from '@/metronic';
 import { darkenColor, lightenColor } from '@/metronic/utils/color';
 import {
@@ -22,7 +21,7 @@ import {
   useUpdateCalendarMutation,
 } from '@/pages/calendar/hooks';
 import { getDropPosition } from '@/pages/calendar/utils';
-import type { InputRef, OptionData } from '@/metronic';
+import type { Calendar, CalendarSet } from '@/types';
 
 interface CalendarListItemProps extends SortableItemProps<any> {
   data: Calendar;

@@ -6,10 +6,10 @@ import { useDropzone } from 'react-dropzone';
 import Button from '../Button';
 import Tooltip from '../Tooltip';
 
-import type { UploadFileData } from './utils/upload';
-import { useUpload } from './utils/upload';
 import { ImageCropperModal } from './ImageCropper';
 import type { CropOptions } from './typings';
+import type { UploadFileData } from './utils/upload';
+import { useUpload } from './utils/upload';
 
 import './style/ImageUpload.scss';
 

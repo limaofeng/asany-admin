@@ -1,8 +1,8 @@
 import ReactFlow, {
+  addEdge,
   Background,
   Controls,
   MiniMap,
-  addEdge,
   useEdgesState,
   useNodesState,
 } from 'react-flow-renderer';

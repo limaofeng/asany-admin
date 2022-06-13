@@ -1,5 +1,4 @@
-import React from 'react';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import classNames from 'classnames';
 import type { FormInstance } from 'rc-field-form';

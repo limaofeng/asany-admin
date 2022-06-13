@@ -1,8 +1,8 @@
 import React from 'react';
 
-import type { ValidateStatus } from './FormItem';
 import { FormContext, FormItemPrefixContext } from './context';
 import ErrorList from './ErrorList';
+import type { ValidateStatus } from './FormItem';
 
 interface FormItemInputMiscProps {
   prefixCls: string;

@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
-import classnames from 'classnames';
 import { Icon } from '@asany/icons';
+import classnames from 'classnames';
 import { useDropzone } from 'react-dropzone';
 
-import Progress from '../Progress';
 import CirclePlayer from '../MediaPlayer/CirclePlayer';
+import Progress from '../Progress';
 import Tooltip from '../Tooltip';
 
-import UploadAvatar from './UploadAvatar';
 import ImageUpload from './ImageUpload';
 import QueueUpload from './QueueUpload';
+import UploadAvatar from './UploadAvatar';
+import { useLoadFile } from './utils/load';
 import type { UploadFileData, UploadState } from './utils/upload';
 import { useUpload } from './utils/upload';
-import { useLoadFile } from './utils/load';
 
 import './style/Upload.scss';
 
@@ -83,7 +83,7 @@ type UploadProps = {
 function Upload(props: UploadProps) {
   const {
     className,
-    accept,
+    accept = {},
     placeholder = '选择上传文件',
     size,
     solid,
@@ -108,7 +108,7 @@ function Upload(props: UploadProps) {
   const [upload, { uploading, state: uploadState, reset, progress, abort }] = useUpload({ space });
 
   const onDrop = useCallback(
-    async (acceptedFiles) => {
+    async (acceptedFiles: File[]) => {
       const file: File = acceptedFiles[0];
       state.current.uploadFile = {
         id: 'upload',

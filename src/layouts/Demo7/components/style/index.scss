@@ -14,4 +14,9 @@
       pointer-events: none;
     }
   }
+  & > .blockui {
+    .blockui-overlay {
+      height: calc(100vh);
+    }
+  }
 }

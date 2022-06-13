@@ -1,54 +1,45 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import jquery from 'jquery';
 import Icon from '@asany/icons';
-import { Link } from 'react-router-dom';
-import { useHistory } from 'react-router';
+import jquery from 'jquery';
 import moment from 'moment';
+import type { RouteComponentProps } from 'react-router';
+import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 
-import type { ArticlesQueryVariables } from '../hooks';
+import type { IArticle } from '../article/typings';
 import {
   useArticlesQuery,
   useDeleteArticleMutation,
   useDeleteManyArticlesMutation,
 } from '../hooks';
-import type { IArticle } from '../article/typings';
 
-import {
-  Badge,
-  Button,
-  Card,
-  Dropdown,
-  Empty,
-  Input,
-  Menu,
-  Modal,
-  Select2,
-  Table,
-} from '@/metronic';
-import type { Article } from '@/types';
 import { ContentWrapper } from '@/layouts/components';
+import { Badge, Button, Card, Dropdown, Empty, Input, Menu, Modal, Table } from '@/metronic';
+import type { Article } from '@/types';
+
+import '../style/article-list.scss';
 
 type ArticleActionsProps = {
+  baseUrl: string;
   data: IArticle;
   refetch: () => void;
 };
 
 type DeleteOptions = {
-  title: string;
-  content: string;
+  title: string | React.ReactNode;
+  content: string | React.ReactNode;
   width?: string;
 };
 
 function useDelete(options: DeleteOptions, execute: () => Promise<void>) {
   const onDelete = useCallback(async () => {
-    const { width = 550 } = options;
+    const { width } = options;
     const data = await Modal.confirm({
       ...options,
       width,
       okText: '删 除',
-      cancelClassName: 'btn btn-secondary btn-sm',
-      okClassName: 'btn btn-danger btn-sm',
+      okClassName: 'btn-danger',
     });
     if (data.isConfirmed) {
       await execute();
@@ -60,7 +51,7 @@ function useDelete(options: DeleteOptions, execute: () => Promise<void>) {
 }
 
 type DeleteManyProps = {
-  selectedRows: IArticle[];
+  selectedRows: Article[];
   refetch: () => void;
 };
 
@@ -77,26 +68,39 @@ function DeleteMany(props: DeleteManyProps) {
 
   const [onDelete] = useDelete(
     {
-      title: `你确定要删除这${
-        selectedRows.length > 1 ? `“<strong>${selectedRows.length}</strong>“` : ''
-      }篇文章吗？`,
+      title: (
+        <>
+          你确定要删除这
+          {selectedRows.length > 1 && (
+            <>
+              “<strong>{selectedRows.length}</strong>“`
+            </>
+          )}
+          篇文章吗？
+        </>
+      ),
       content:
-        selectedRows.length > 1
-          ? `您即将删除以下文章:<ul className="py-2">${selectedRows
-              .map(
-                (item, index) =>
-                  `<li ${
-                    index >= 4 ? 'style="display: none !important;"' : ''
-                  } className="d-flex align-items-center text-gray-800 mb-1 fs-6"><span className="bullet bullet-dot me-2"></span><strong>${
-                    item.title
-                  }</strong></li>`,
-              )
-              .join('')}
+        selectedRows.length > 1 ? (
+          `您即将删除以下文章:<ul className="py-2">${selectedRows
+            .map(
+              (item, index) =>
+                `<li ${
+                  index >= 4 ? 'style="display: none !important;"' : ''
+                } className="d-flex align-items-center text-gray-800 mb-1 fs-6"><span className="bullet bullet-dot me-2"></span><strong>${
+                  item.title
+                }</strong></li>`,
+            )
+            .join('')}
               <li ${
                 selectedRows.length <= 4 ? 'style="display: none !important;"' : ''
               } className="d-flex align-items-center text-gray-800 fs-6"><a href="javascript:void(0)" onClick="_MoreshowOrhide(this)">更多</a></li></ul> `
-          : `您即将删除“<strong>${selectedRows[0].title}</strong>”。` +
-            '删除操作不可逆转，请谨慎操作，您确定删除吗？',
+        ) : (
+          <>
+            您即将删除“<strong>{selectedRows[0].title}</strong>”。
+            <br />
+            删除操作不可逆转，请谨慎操作，您确定删除吗？
+          </>
+        ),
     },
     async () => {
       await deleteManyArticles({ variables: { ids: selectedRows.map((item) => item.id!) } });
@@ -105,14 +109,14 @@ function DeleteMany(props: DeleteManyProps) {
   );
 
   return (
-    <Button onClick={onDelete} size="sm" className="px-4 py-2" variant="danger">
+    <Button color="danger" onClick={onDelete} variant={false} size="sm" className="px-4 py-2">
       批量删除
     </Button>
   );
 }
 
 function ArticleActions(props: ArticleActionsProps) {
-  const { data, refetch } = props;
+  const { data, refetch, baseUrl } = props;
   const history = useHistory();
   const [visible, setVisible] = useState(false);
 
@@ -121,7 +125,11 @@ function ArticleActions(props: ArticleActionsProps) {
   const [onDelete] = useDelete(
     {
       title: '你确定要删除这篇文章吗？',
-      content: `您即将删除“<strong>${data.title}</strong>”。删除操作不可逆转，请谨慎操作，您确定删除吗？`,
+      content: (
+        <>
+          您即将删除“<strong>${data.title}</strong>”。删除操作不可逆转，请谨慎操作，您确定删除吗？
+        </>
+      ),
     },
     async () => {
       await deleteArticle({ variables: { id: data.id! } });
@@ -129,9 +137,9 @@ function ArticleActions(props: ArticleActionsProps) {
     },
   );
 
-  const handleClick = useCallback(({ key }) => {
+  const handleClick = useCallback(({ key }: any) => {
     if (key == 'edit') {
-      history.push(`/cms/articles/${data.id}/edit`);
+      history.push(`${baseUrl}/articles/${data.id}`);
     } else if (key == 'delete') {
       setVisible(false);
       onDelete();
@@ -161,7 +169,7 @@ function ArticleActions(props: ArticleActionsProps) {
       onVisibleChange={setVisible}
       visible={visible}
     >
-      <Button variant="light" activeColor="light-primary" size="sm">
+      <Button variant="light" activeColor="light-primary">
         操 作
         <Icon className="ms-2 svg-icon-5 m-0" name="Duotune/arr072" />
       </Button>
@@ -169,36 +177,68 @@ function ArticleActions(props: ArticleActionsProps) {
   );
 }
 
-type ArticleListProps = {
-  style?: 'small' | 'normal';
-  query: ArticlesQueryVariables;
-};
+type ArticleListProps = RouteComponentProps<
+  { id: string },
+  any,
+  {
+    rootCategoryId: string;
+    baseUrl: string;
+  }
+>;
 
 function ArticleList(props: ArticleListProps) {
-  const { query, style = 'normal' } = props;
+  const {
+    match: {
+      params: { id: categoryId },
+    },
+    location,
+  } = props;
+
+  const rootCategoryId = location.state.rootCategoryId;
+
+  const variables = useMemo(() => {
+    const { q, ...query } = (location as any).query;
+    if (!query.filter) {
+      query.filter = {};
+    }
+    if (q) {
+      query.filter = { name_contains: q };
+    }
+    query.filter.category = { id: categoryId, subColumns: true };
+    return query;
+  }, [location, categoryId]);
+
   const { data, refetch } = useArticlesQuery({
-    variables: { ...query },
+    variables,
     fetchPolicy: 'cache-and-network',
   });
 
   const pagination = (data || {}).articles || { edges: [], current: 0, total: 0 };
 
   const articles = useMemo(() => {
-    return pagination.edges.map((item) => item.node);
+    return pagination.edges.map((item) => item.node as Article);
   }, [pagination.edges]);
 
-  const handleSearch = useCallback((value) => {
+  const handleSearch = useCallback((value: any) => {
     console.log(value);
   }, []);
 
   const [selectedRows, setSelectedRows] = useState<Article[]>([]);
 
   const handleSelectedRows = useCallback(
-    (_, _selectedRows) => {
+    (_: any, _selectedRows: Article[]) => {
       setSelectedRows(_selectedRows);
     },
     [setSelectedRows],
   );
+
+  const tableToolbar = useMemo(() => {
+    return (selectedRowKeys: string[], _selectedRows: Article[]) => {
+      return <DeleteMany selectedRows={_selectedRows} refetch={refetch} />;
+    };
+  }, [refetch]);
+
+  const baseUrl = location.state.baseUrl || '';
 
   return (
     <ContentWrapper
@@ -207,129 +247,54 @@ function ArticleList(props: ArticleListProps) {
       }}
     >
       <div className="tab-content">
-        {style == 'small' && (
-          <div className="d-flex flex-wrap flex-stack pb-7">
-            {/*--begin::Title--*/}
-            <div className="d-flex flex-wrap align-items-center my-1">
-              <h3 className="fw-bolder me-5 my-1">文章 ({pagination.total})</h3>
-              {/*--begin::Search--*/}
-              <Input.Search
-                size="sm"
-                placeholder="搜索"
-                boxClassName="my-1"
-                className="form-control-white  w-150px ps-9"
-              />
-              {/*--end::Search--*/}
-            </div>
-            {/*--end::Title--*/}
-            {/*--begin::Controls--*/}
-            <div className="d-flex flex-wrap my-1">
-              {/*--begin::Tab nav--*/}
-              <ul style={{ display: 'none' }} className="nav nav-pills me-6 mb-2 mb-sm-0">
-                <li className="nav-item m-0">
-                  <a
-                    className="btn btn-sm btn-icon btn-light btn-color-muted btn-active-primary me-3"
-                    href="#kt_project_users_card_pane"
-                  >
-                    <Icon name="Duotune/gen024" className="svg-icon-2" />
-                  </a>
-                </li>
-                <li className="nav-item m-0">
-                  <a
-                    className="btn btn-sm btn-icon btn-light btn-color-muted btn-active-primary active"
-                    href="#kt_project_users_table_pane"
-                  >
-                    <Icon name="Duotune/abs015" className="svg-icon-2" />
-                  </a>
-                </li>
-              </ul>
-              {/*--end::Tab nav--*/}
-              {/*--begin::Actions--*/}
-              <div className="d-flex my-0">
-                {/*--begin::Select--*/}
-                <Select2
-                  size="sm"
-                  className="form-select-white w-125px me-5"
-                  placeholder="发布时间"
-                  options={[
-                    { label: '全部时间', value: 'all' },
-                    { label: '今年', value: 'thisyear' },
-                    { label: '这个月', value: 'thismonth' },
-                    { label: '最近一个月', value: 'lastmonth' },
-                    { label: '最近90天', value: 'last90days' },
-                  ]}
-                />
-                {/*--end::Select--*/}
-                {/*--begin::Select--*/}
-                <Select2
-                  size="sm"
-                  className="form-select-white w-125px"
-                  placeholder="状态"
-                  options={[
-                    { label: '全部状态', value: 'all' },
-                    { label: '草稿', value: 'DRAFT' },
-                    { label: '已发布', value: 'PUBLISHED' },
-                    { label: '等待发布', value: 'SCHEDULED' },
-                  ]}
-                />
-                {/*--end::Select--*/}
-              </div>
-              {/*--end::Actions--*/}
-            </div>
-            {/*--end::Controls--*/}
-          </div>
-        )}
         <Card flush headerClassName="mt-5">
-          {style === 'normal' && (
-            <Card.Header className="pt-8">
-              <Card.Title className="flex-column">
-                <Input.Search
-                  solid
-                  className="w-250px"
-                  placeholder="搜索文章"
-                  onSearch={handleSearch}
-                />
-              </Card.Title>
-              <Card.Toolbar>
-                <div className="d-flex justify-content-end">
-                  {!!selectedRows.length && (
-                    <>
-                      <Button
-                        variant="primary"
-                        icon={<Icon className="svg-icon-2" name="Duotune/gen016" />}
-                        className="me-3"
-                      >
-                        批量发布
-                      </Button>
-                      <Button
-                        variant="danger"
-                        icon={<Icon className="svg-icon-2" name="Duotune/gen027" />}
-                      >
-                        批量删除
-                      </Button>
-                    </>
-                  )}
-                  {!selectedRows.length && (
-                    <>
-                      <Button
-                        variant="primary"
-                        className="me-3"
-                        icon={<Icon className="svg-icon-2" name="Duotune/gen031" />}
-                      >
-                        过滤筛选
-                      </Button>
-                      <Button
-                        as={Link}
-                        variant="primary"
-                        icon={<Icon className="svg-icon-2" name="Duotune/arr075" />}
-                        to="/cms/articles/new"
-                      >
-                        新建文章
-                      </Button>
-                    </>
-                  )}
-                </div>
-                {/* <div className="me-4 my-1">
+          <Card.Header className="pt-8">
+            <Card.Title className="flex-column">
+              <Input.Search
+                solid
+                className="w-250px"
+                placeholder="搜索文章"
+                onSearch={handleSearch}
+              />
+            </Card.Title>
+            <Card.Toolbar>
+              <div className="d-flex justify-content-end">
+                {/**
+                  // <>
+                  //   <Button
+                  //     variant="primary"
+                  //     icon={<Icon className="svg-icon-2" name="Duotune/gen016" />}
+                  //     className="me-3"
+                  //   >
+                  //     批量发布
+                  //   </Button>
+                  //   <Button
+                  //     variant="danger"
+                  //     icon={<Icon className="svg-icon-2" name="Duotune/gen027" />}
+                  //   >
+                  //     批量删除
+                  //   </Button>
+                  // </>
+                   */}
+                <Button
+                  variantStyle="light"
+                  variant="primary"
+                  className="me-3"
+                  icon={<Icon className="svg-icon-2" name="Duotune/gen031" />}
+                >
+                  过滤筛选
+                </Button>
+                <Button
+                  as={Link}
+                  variant="primary"
+                  className="me-3"
+                  icon={<Icon className="svg-icon-2" name="Duotune/arr075" />}
+                  to={`${baseUrl}/cms/categories/${categoryId}/articles/new`}
+                >
+                  新建文章
+                </Button>
+              </div>
+              {/* <div className="me-4 my-1">
           <Select
             solid
             size="sm"
@@ -356,9 +321,8 @@ function ArticleList(props: ArticleListProps) {
             ]}
           />
         </div> */}
-              </Card.Toolbar>
-            </Card.Header>
-          )}
+            </Card.Toolbar>
+          </Card.Header>
           <Card.Body className="pt-0">
             {!pagination.total ? (
               <Empty
@@ -366,7 +330,10 @@ function ArticleList(props: ArticleListProps) {
                 description="该栏目还是空的，没有任何文章"
                 image="/assets/media/illustrations/sigma-1/4.png"
               >
-                <Button as={Link} variant="primary" to="/cms/articles/new">
+                <Button as={Link} className="me-2" variant="light" to={`${baseUrl}/settings`}>
+                  查看栏目信息
+                </Button>
+                <Button as={Link} variant="primary" to={`${baseUrl}/articles/new`}>
                   新建文章
                 </Button>
               </Empty>
@@ -382,13 +349,11 @@ function ArticleList(props: ArticleListProps) {
                       已选中<span className="mx-2">{size}</span>篇文章
                     </>
                   ),
-                  toolbar:
-                    style == 'small' &&
-                    ((_, _selectedRows) =>
-                      (<DeleteMany selectedRows={_selectedRows} refetch={refetch} />) as any),
+                  toolbar: tableToolbar,
                 }}
                 pagination={pagination}
                 dataSource={articles}
+                rowHeight={136}
                 columns={[
                   {
                     title: '标题',
@@ -396,21 +361,55 @@ function ArticleList(props: ArticleListProps) {
                     key: 'title',
                     render: (title, record) => {
                       return (
-                        <div className="d-flex flex-column">
+                        <div className="d-flex flex-column  align-items-start">
+                          <div className="meta-container no-selecto-drag">
+                            <Link to="/xx/12" className="user-message">
+                              林暮春
+                            </Link>
+                            <span className="created-at">{moment(record.createdAt).fromNow()}</span>
+                            <div className="category_list">
+                              {record.categories
+                                .filter((item) => item.id !== rootCategoryId)
+                                .map((category) => (
+                                  <Link
+                                    key={category.id}
+                                    to={`${baseUrl}/cms/categories/${category.id}/articles`}
+                                    className="tag"
+                                  >
+                                    {category.name}
+                                  </Link>
+                                ))}
+                            </div>
+                          </div>
                           <Link
-                            to={`/cms/articles/${record.id}/edit`}
-                            className="text-gray-800 text-hover-primary mb-1"
+                            onClick={(e) => e.stopPropagation()}
+                            to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}`}
+                            className="mt-2 mb-2 text-gray-800 no-selecto-drag fs-4 text-hover-primary mb-1"
                           >
                             {title}
                           </Link>
-                          <span className="text-gray-500">
-                            {record.channels.map((item) => (
-                              <Badge className="me-2" key={item.id}>
-                                {item.fullName}
-                              </Badge>
-                            ))}
-                            {moment(record.createdAt).fromNow()}
-                          </span>
+                          <div className="summary mb-2">
+                            <span className="text-muted fs-base no-selecto-drag">
+                              曾经我用过，写过一些挺骚的东西，但是我忘得一干二净 方法一 【换肤】
+                              在页面一定用link标签引入less样式的文件, 比如
+                            </span>
+                          </div>
+                          <div className="fs-base ">
+                            <Link
+                              className="text-muted no-selecto-drag text-hover-primary me-8"
+                              to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}`}
+                            >
+                              <Icon className="svg-icon-4 me-2" name="Bootstrap/eye" />
+                              41W
+                            </Link>
+                            <Link
+                              className="text-muted no-selecto-drag text-hover-primary me-8"
+                              to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}#comments`}
+                            >
+                              <Icon className="svg-icon-6 me-2" name="Bootstrap/chat" />
+                              41W
+                            </Link>
+                          </div>
                         </div>
                       );
                     },
@@ -435,7 +434,13 @@ function ArticleList(props: ArticleListProps) {
                     key: 'action',
                     width: 140,
                     render: (_, record: any) => {
-                      return <ArticleActions data={record} refetch={refetch} />;
+                      return (
+                        <ArticleActions
+                          baseUrl={`${baseUrl}/cms/categories/${categoryId}`}
+                          data={record}
+                          refetch={refetch}
+                        />
+                      );
                     },
                   },
                 ]}

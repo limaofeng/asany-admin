@@ -31,17 +31,22 @@ class Cms {
   });
   @component({ name: 'ArticleNew' })
   ArticleNew = dynamic({
-    loader: async () => (await import('./article/ArticleEditor')).ArticleNew,
+    loader: () => import('./pages/ArticleNew'),
     loading: LoadingComponent,
   });
   @component({ name: 'ArticleEdit' })
   ArticleEdit = dynamic({
-    loader: async () => (await import('./article/ArticleEditor')).ArticleEdit,
+    loader: () => import('./pages/ArticleEdit'),
     loading: LoadingComponent,
   });
   @component({ name: 'ArticleChannelNew' })
   ArticleChannelNew = dynamic({
-    loader: () => import('./pages/ArticleChannelNew'),
+    loader: () => import('./pages/ArticleCategoryNew'),
+    loading: LoadingComponent,
+  });
+  @component({ name: 'ArticleChannelEdit' })
+  ArticleChannelEdit = dynamic({
+    loader: () => import('./pages/ArticleCategoryEdit'),
     loading: LoadingComponent,
   });
   @component({})

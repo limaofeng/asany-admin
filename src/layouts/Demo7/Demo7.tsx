@@ -1,21 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
-import { ToastContainer } from 'react-toastify';
-import { useApp } from 'umi';
 import { getMatchMenu, transformRoute } from '@umijs/route-utils';
-import type { RouteComponentProps } from 'react-router';
 import type { Route } from '@umijs/route-utils/dist/types';
+import type { RouteComponentProps } from 'react-router';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
+import { useApp } from 'umi';
 
 import { LayoutProvider, useLayoutSelector } from '../LayoutContext';
 
 import Aside from './components/Aside';
-import getLayoutRenderConfig from './utils';
 import buildMenuRender from './components/utils';
+import getLayoutRenderConfig from './utils';
 
-import * as utils from '@/utils';
 import type { MenuData } from '@/.umi/app/typings';
+import * as utils from '@/utils';
 
 import './style.scss';
 

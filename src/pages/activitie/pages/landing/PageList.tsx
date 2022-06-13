@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { QRCodeCanvas } from 'qrcode.react';
-import { Link } from 'umi';
-import type { History } from 'history';
-import type { RouteComponentProps } from 'react-router';
-import qs from 'qs';
 import { Icon } from '@asany/icons';
+import type * as H from 'history';
+import { QRCodeCanvas } from 'qrcode.react';
+import qs from 'qs';
+import type { RouteComponentProps } from 'react-router';
+import { Link } from 'umi';
 
 import { LandingPagesDocument, useDeletePageMutation, useLandingPagesQuery } from '../../hooks';
 
@@ -23,11 +23,11 @@ import {
   Table,
   Toast,
 } from '@/metronic';
-import type { LandingPage, LandingStore } from '@/types';
 import type { Sorter } from '@/metronic/typings';
+import type { LandingPage, LandingStore } from '@/types';
 
 type ActionsProps = {
-  history: History;
+  history: H.History;
   data: LandingPage;
   onShowQRCode: (url: string) => void;
   onDelete: (...ids: string[]) => Promise<number>;

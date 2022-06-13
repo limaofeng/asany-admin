@@ -2,13 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { RouteComponentProps } from 'react-router';
 
+import logo_holder from '../../assets/blank.png';
 import { DeleteOrganizationModal, RenameOrganizationModal } from '../../components/modals';
 import {
   OrganizationDocument,
   useOrganizationQuery,
   useUpdateOrganizationProfileMutation,
 } from '../../hooks/api';
-import logo_holder from '../../assets/blank.png';
 
 import { ContentWrapper } from '@/layouts/components';
 import { BlockUI, Button, Card, Form, Input, RegionPicker, Toast, Upload } from '@/metronic';

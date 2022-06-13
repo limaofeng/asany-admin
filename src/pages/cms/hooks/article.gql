@@ -20,9 +20,9 @@ query articles($filter: ArticleFilter, $page: Int, $pageSize: Int) {
           id
           name
         }
-        channels {
+        categories {
           id
-          fullName
+          name
         }
         createdBy
         createdAt
@@ -33,8 +33,8 @@ query articles($filter: ArticleFilter, $page: Int, $pageSize: Int) {
   }
 }
 
-query articleChannelAll {
-  channels: articleChannels {
+query articleCategories($id: ID!) {
+  categories: articleCategories(filter: { parent: { id: $id, subColumns: true } }) {
     id
     icon
     name
@@ -42,20 +42,20 @@ query articleChannelAll {
     path
     index
     level
-    cover
+    image
     parent {
       id
     }
   }
 }
 
-query articleChannel($id: ID!) {
-  channel: articleChannel(id: $id) {
+query articleCategory($id: ID!) {
+  category: articleCategory(id: $id) {
     id
     icon
     name
     description
-    cover
+    image
     path
     index
     level
@@ -70,8 +70,14 @@ mutation createArticle($input: ArticleCreateInput!) {
     id
     title
     status
-    channels {
+    category {
       id
+      name
+      __typename
+    }
+    categories {
+      id
+      name
     }
     content {
       id
@@ -88,8 +94,14 @@ mutation updateArticle($id: ID!, $input: ArticleUpdateInput!) {
     id
     title
     status
-    channels {
+    category {
       id
+      name
+      __typename
+    }
+    categories {
+      id
+      name
     }
     content {
       id
@@ -114,8 +126,13 @@ query article($id: ID!) {
     id
     title
     status
-    channels {
+    category {
       id
+      name
+    }
+    categories {
+      id
+      name
     }
     content {
       id
@@ -127,8 +144,14 @@ query article($id: ID!) {
   }
 }
 
-mutation createArticleChannel($input: ArticleChannelCreateInput!) {
-  createArticleChannel(input: $input) {
+mutation createArticleCategory($input: ArticleCategoryCreateInput!) {
+  createArticleCategory(input: $input) {
+    id
+  }
+}
+
+mutation updateArticleCategory($id: ID!, $input: ArticleCategoryUpdateInput!) {
+  updateArticleCategory(id: $id, input: $input) {
     id
   }
 }

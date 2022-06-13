@@ -4,10 +4,10 @@ import EventEmitter from 'events';
 
 import saveAs from 'file-saver';
 
-import database from './TransferDatabase';
-import type { CloudDriveState, DownloadFile, UploadFile } from './typings';
 import type { DownloadFileData, DownloadState } from './download';
 import { useDownload } from './download';
+import database from './TransferDatabase';
+import type { CloudDriveState, DownloadFile, UploadFile } from './typings';
 
 import { useUpload } from '@/metronic/hooks';
 import type { UploadFileData, UploadState } from '@/metronic/Upload/utils/upload';

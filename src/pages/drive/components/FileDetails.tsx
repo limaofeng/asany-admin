@@ -1,16 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import Icon from '@asany/icons';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import classnames from 'classnames';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { Link } from 'umi';
 
 import { useFileQuery } from '../hooks';
 
 import { BlockUI, Symbol, Tabs } from '@/metronic';
-import type { FileObject } from '@/types';
 import { fileSize } from '@/metronic/utils/format';
+import type { FileObject } from '@/types';
 
 type FileDetailsProps = {
   currentFolder?: FileObject;

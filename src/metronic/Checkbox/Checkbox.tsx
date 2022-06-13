@@ -1,5 +1,5 @@
-import { useCallback, useRef } from 'react';
 import type { CSSProperties } from 'react';
+import { useCallback, useRef } from 'react';
 
 import classnames from 'classnames';
 

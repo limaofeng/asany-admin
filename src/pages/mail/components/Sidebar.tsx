@@ -1,16 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
-import { Link, useRouteMatch } from 'umi';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import { Link, useRouteMatch } from 'umi';
 
-import { useCountUnreadQuery, useMailUserQuery, useMailboxesQuery } from '../hooks';
+import { useCountUnreadQuery, useMailboxesQuery, useMailUserQuery } from '../hooks';
 import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL } from '../utils';
 
 import Preferences from './preferences';
 
-import { Badge, Button, Menu } from '@/metronic';
 import { AsideWorkspace } from '@/layouts/Demo7';
+import { Badge, Button, Menu } from '@/metronic';
 
 type SidebarFooterProps = {
   onAction: () => void;

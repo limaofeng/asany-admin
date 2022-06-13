@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Link, useHistory } from 'react-router-dom';
 import Icon from '@asany/icons';
+import { Link, useHistory } from 'react-router-dom';
 
 import { useDeleteIconLibraryMutation, useUpdateIconLibraryMutation } from '../hooks';
 
-import type { IconLibrary } from '@/types';
-import type { InputRef } from '@/metronic/Input';
 import { Card, Dropdown, Input, Menu, Modal, Spin } from '@/metronic';
+import type { InputRef } from '@/metronic/Input';
+import type { IconLibrary } from '@/types';
 
 type LibraryCardProps = {
   library: IconLibrary;

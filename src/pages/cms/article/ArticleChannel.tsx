@@ -1,18 +1,14 @@
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import ArticleList from '../pages/ArticleList';
-import { useArticleChannelQuery } from '../hooks';
+import { useArticleCategoryQuery } from '../hooks';
 
-import { NewArticleChannelModal } from './ArticleChannelNew';
-
-import { Button, CountUp, Dropdown, Menu, Nav, Stat } from '@/metronic';
-import { User } from '@/metronic';
 import { ContentWrapper, Navbar } from '@/layouts/components';
-import type { ArticleChannel as IArticleChannel } from '@/types';
+import { Button, CountUp, Dropdown, Menu, Nav, Stat, User } from '@/metronic';
+import type { ArticleCategory } from '@/types';
 
 type ArticleChannelProps = RouteComponentProps<{ id: string }>;
 
@@ -23,27 +19,18 @@ function ArticleChannel(props: ArticleChannelProps) {
     },
   } = props;
 
-  const temp = useRef<IArticleChannel>({} as any);
+  const temp = useRef<ArticleCategory>({} as any);
 
-  const [visible, setVisible] = useState(false);
   const [visibleMoreActions, setVisibleMoreActions] = useState(false);
 
-  const { data, loading } = useArticleChannelQuery({
+  const { data, loading } = useArticleCategoryQuery({
     variables: { id },
   });
 
-  const handleNewChannel = useCallback(() => {
-    setVisible(true);
-  }, []);
-
-  const handleCloseNewChannel = useCallback(() => {
-    setVisible(false);
-  }, []);
-
-  const { channel } = data || { channel: temp.current };
+  const { category } = data || { category: temp.current };
 
   if (!loading) {
-    temp.current = channel as any;
+    temp.current = category as any;
   }
 
   return (
@@ -55,10 +42,10 @@ function ArticleChannel(props: ArticleChannelProps) {
       <Navbar>
         <Navbar.Title>
           <span className="text-gray-800 text-hover-primary fs-2 fw-bolder me-3">
-            {channel?.name}
+            {category?.name}
           </span>
         </Navbar.Title>
-        <Navbar.Description>{channel?.description}</Navbar.Description>
+        <Navbar.Description>{category?.description}</Navbar.Description>
         <Navbar.Cover>
           <img
             className="mw-50px mw-lg-75px"
@@ -78,15 +65,9 @@ function ArticleChannel(props: ArticleChannelProps) {
           >
             新建信息
           </Button>
-          <Button onClick={handleNewChannel} className="me-3" size="sm">
+          <Button className="me-3" size="sm">
             添加子栏目
           </Button>
-          <NewArticleChannelModal
-            // onSuccess={refetch}
-            data={{ parent: channel?.id }}
-            visible={visible}
-            onCancel={handleCloseNewChannel}
-          />
           {/*--begin::Menu--*/}
           <div className="me-0">
             <Dropdown
@@ -154,7 +135,7 @@ function ArticleChannel(props: ArticleChannelProps) {
           </Nav>
         </Navbar.Footer>
       </Navbar>
-      <ArticleList query={{ filter: { channel_startsWith: id } }} style="small" />
+      {/*  <ArticleList {...props} /> */}
     </ContentWrapper>
   );
 }

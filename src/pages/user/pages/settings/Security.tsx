@@ -7,8 +7,8 @@ import { useChangePasswordMutation, useSessionsQuery } from '../../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
 import { Button, Card, Form, Input, Toast } from '@/metronic';
-import { parseError } from '@/utils';
 import type { Session } from '@/types';
+import { parseError } from '@/utils';
 
 // function TwoFactorAuthentication() {
 //   return (

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
-import type { RouteComponentProps } from 'react-router';
 import Icon from '@asany/icons';
+import type { RouteComponentProps } from 'react-router';
 
 import { useLoadRoutesQuery } from '../hooks';
 

@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
-import type { RouteComponentProps } from 'react-router';
 import classnames from 'classnames';
-import { useHoverDirty } from 'react-use';
+import type { RouteComponentProps } from 'react-router';
 import NavigationPrompt from 'react-router-navigation-prompt';
+import { useHoverDirty } from 'react-use';
 
 import {
-  useArticleChannelAllQuery,
+  useArticleCategoriesQuery,
   useArticleQuery,
   useCreateArticleMutation,
   useUpdateArticleMutation,
@@ -17,11 +17,11 @@ import type { EditorStyle } from './components/ArticleContentEditor';
 import ArticleContentEditor from './components/ArticleContentEditor';
 import NavigationPromptModal from './components/NavigationPromptModal';
 
-import { Button, DatePicker, Form, Input, Select2, Spin } from '@/metronic';
 import SettingsMenu from '@/components/SettingsMenu';
-import { delay } from '@/utils';
-import type { Article } from '@/types';
+import { Button, DatePicker, Form, Input, Select2, Spin } from '@/metronic';
 import { useAutoSave } from '@/metronic/utils';
+import type { Article } from '@/types';
+import { delay } from '@/utils';
 
 import './style/ArticleEditor.scss';
 
@@ -48,7 +48,7 @@ const STATUS_MAPPINGS = {
 
 function ArticleSettings({ isNew, onChange }: ArticleSettingsProps) {
   const handleChange = useCallback(
-    (_, values) => {
+    (_: any, values: any) => {
       onChange(values);
     },
     [onChange],
@@ -149,15 +149,17 @@ function ArticleEditor(props: ArticleEditorProps) {
   const [editor, setEditor] = useState<EditorStyle>('BalloonBlockEditor');
   const [wordCount, setWordCount] = useState<number>(0);
 
-  const { data: { channels: _channels } = {} } = useArticleChannelAllQuery();
+  const { data: { categories: _categories } = {} } = useArticleCategoriesQuery({
+    variables: {},
+  });
 
-  const handleWordCount = useCallback((wc) => {
+  const handleWordCount = useCallback((wc: { characters: number }) => {
     setWordCount(wc.characters);
   }, []);
 
-  const channels = useMemo(
-    () => (_channels || []).map((item) => ({ label: item.fullName, value: item.id })),
-    [_channels],
+  const categories = useMemo(
+    () => (_categories || []).map((item) => ({ label: item.fullName, value: item.id })),
+    [_categories],
   );
 
   useEffect(() => {
@@ -165,7 +167,7 @@ function ArticleEditor(props: ArticleEditorProps) {
       return;
     }
     const state = stateRef.current;
-    state.data = { ...props.data, channels: props.data.channels.map((item: any) => item.id) };
+    state.data = { ...props.data, categories: props.data.categories.map((item: any) => item.id) };
     state.temp = {} as any;
     state.status = STATUS_MAPPINGS[state.data!.status!] as IArticleStatus;
     forceRender();
@@ -245,7 +247,7 @@ function ArticleEditor(props: ArticleEditorProps) {
   }, [history]);
 
   const handleSettingsData = useCallback(
-    async (values) => {
+    async (values: any) => {
       const state = stateRef.current;
       if (state.status == 'New') {
         state.saved = 'Saving';
@@ -301,7 +303,7 @@ function ArticleEditor(props: ArticleEditorProps) {
   }, []);
 
   const handleChange = useCallback(
-    (_, values) => {
+    (_: any, values: any) => {
       const state = stateRef.current;
       state.saved = 'NotSaved';
       forceRender();
@@ -403,7 +405,7 @@ function ArticleEditor(props: ArticleEditorProps) {
                     multiple
                     placeholder="选择栏目"
                     width="auto"
-                    options={channels}
+                    options={categories}
                   />
                 </Form.Item>
               </div>

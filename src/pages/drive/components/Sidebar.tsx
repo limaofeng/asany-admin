@@ -1,20 +1,17 @@
 import { useCallback, useEffect, useMemo } from 'react';
 
-import { useModel, useRouteMatch } from 'umi';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import Icon from '@asany/icons';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import { useModel, useRouteMatch } from 'umi';
 
 import { useCloudDrivesQuery } from '../hooks';
 
 import Transfers from './Transfers';
 
-import type { OptionData } from '@/metronic';
-import { CircleProgress } from '@/metronic';
-import { Popover } from '@/metronic';
-import { Menu } from '@/metronic';
-import { Pulse, Select } from '@/metronic';
-import type { CloudDrive } from '@/types';
 import { AsideWorkspace } from '@/layouts/Demo7';
+import type { OptionData } from '@/metronic';
+import { CircleProgress, Menu, Popover, Pulse, Select } from '@/metronic';
+import type { CloudDrive } from '@/types';
 
 type SidebarFooterProps = {
   drives: CloudDrive[];

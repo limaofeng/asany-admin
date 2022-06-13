@@ -1,9 +1,9 @@
 /* eslint-disable graphql/template-strings */
 import { useCallback, useMemo, useReducer, useRef } from 'react';
 
+import { gql, useMutation } from '@apollo/client';
 import CryptoJs from 'crypto-js';
 import encHex from 'crypto-js/enc-hex';
-import { gql, useMutation } from '@apollo/client';
 import { debounce } from 'lodash';
 
 import { networkSpeed } from '../../utils';

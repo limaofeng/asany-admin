@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
-import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
+import Cropper from 'react-cropper';
 
-import Modal from '../Modal';
 import Button from '../Button';
+import Modal from '../Modal';
 
 import type { CropOptions } from './typings';
 

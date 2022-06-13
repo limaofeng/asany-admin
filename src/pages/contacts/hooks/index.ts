@@ -1,2 +1,2 @@
-export * from './useContacts';
 export * from './api';
+export * from './useContacts';

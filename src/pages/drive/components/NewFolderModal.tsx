@@ -5,10 +5,9 @@ import classnames from 'classnames';
 import { useCreateFolderMutation } from '../hooks';
 
 import type { InputRef } from '@/metronic';
-import { Toast } from '@/metronic';
-import { Input, Modal } from '@/metronic';
-import { sleep } from '@/utils';
+import { Input, Modal, Toast } from '@/metronic';
 import type { FileObject } from '@/types';
+import { sleep } from '@/utils';
 
 type NewFolderModalProps = {
   parentFolder: string;

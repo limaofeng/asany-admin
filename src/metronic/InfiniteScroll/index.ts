@@ -1,7 +1,7 @@
 export { default } from './InfiniteScroll';
 export type {
-  ShortcutEvent,
   InfiniteScrollRef,
   RowRendererParams,
   ScrollRowDataEvent,
+  ShortcutEvent,
 } from './InfiniteScroll';

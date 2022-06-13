@@ -1,12 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import classnames from 'classnames';
 
 import { contrastTextColor, generateBackgroundColor } from '../utils/color';
 
-import { useSymbolSize } from './utils';
 import type { AvatarProps } from './typings';
+import { useSymbolSize } from './utils';
 
 function Avatar(props: AvatarProps, ref: any) {
   const { onClick, shape, className, labelClassName, src, gap, alt, badge, ...otherProps } = props;

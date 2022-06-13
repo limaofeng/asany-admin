@@ -1,9 +1,9 @@
 import React from 'react';
 
-import iPhoneX from './iPhoneX';
+import GalaxyNote8 from './GalaxyNote8';
 import iPhone8 from './iPhone8';
 import iPhone8Plus from './iPhone8Plus';
-import GalaxyNote8 from './GalaxyNote8';
+import iPhoneX from './iPhoneX';
 import type { DeviceGeneralProps } from './typings';
 
 import './style/devices.scss';

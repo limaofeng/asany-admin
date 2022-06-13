@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 
-import classnames from 'classnames';
-import type { Route } from 'umi';
 import type { MenuDataItem } from '@umijs/route-utils';
+import classnames from 'classnames';
 import { generatePath } from 'react-router';
+import type { Route } from 'umi';
 
 import BreadcrumbItem from './BreadcrumbItem';
 
@@ -54,5 +54,7 @@ function Breadcrumb(props: BreadcrumbProps) {
     </ol>
   );
 }
+
+Breadcrumb.Item = BreadcrumbItem;
 
 export default Breadcrumb;

@@ -3,8 +3,8 @@ import type { RouteComponentProps } from 'react-router';
 
 import { useArticleQuery } from '../hooks';
 
-import { Card } from '@/metronic';
 import { ContentWrapper } from '@/layouts/components';
+import { Card } from '@/metronic';
 import type { Article } from '@/types';
 
 function ArticleShare() {

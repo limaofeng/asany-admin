@@ -3,8 +3,8 @@ import React, { useCallback, useEffect, useImperativeHandle, useMemo, useState }
 import classnames from 'classnames';
 
 import Dropdown from '../Dropdown';
-import Menu from '../Menu';
 import type { Placement } from '../Dropdown/Dropdown';
+import Menu from '../Menu';
 import { uuid } from '../utils';
 
 import type { OptionData, OptionItemRender } from './typings';

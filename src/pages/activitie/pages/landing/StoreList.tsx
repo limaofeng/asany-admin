@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react';
 
-import type { History } from 'history';
-import { Link } from 'umi';
 import { Icon } from '@asany/icons';
-import type { RouteComponentProps } from 'react-router';
+import type { History } from 'history';
 import qs from 'qs';
+import type { RouteComponentProps } from 'react-router';
+import { Link } from 'umi';
 
 import { LandingStoresDocument, useDeleteStoreMutation, useLandingStoresQuery } from '../../hooks';
 
@@ -22,8 +22,8 @@ import {
   Table,
   Toast,
 } from '@/metronic';
-import type { LandingStore } from '@/types';
 import type { Sorter } from '@/metronic/typings';
+import type { LandingStore } from '@/types';
 
 type ActionsProps = {
   history: History;

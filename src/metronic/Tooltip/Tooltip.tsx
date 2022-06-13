@@ -1,13 +1,14 @@
 import React, { useRef } from 'react';
 
-import { OverlayTrigger as BsOverlayTrigger, Tooltip as BsTooltip } from 'react-bootstrap';
-import type { Placement } from '@restart/ui/usePopper';
-import type { OverlayTriggerType } from 'react-bootstrap/esm/OverlayTrigger';
 import useMergedRef from '@react-hook/merged-ref';
+import type { Placement } from '@restart/ui/usePopper';
+import { OverlayTrigger as BsOverlayTrigger, Tooltip as BsTooltip } from 'react-bootstrap';
+import type { OverlayTriggerType } from 'react-bootstrap/esm/OverlayTrigger';
 
 export type TooltipProps = {
   title?: React.ReactNode;
   placement?: Placement;
+  stopPropagation?: boolean;
   children: React.ReactElement;
   trigger?: OverlayTriggerType | OverlayTriggerType[];
 };

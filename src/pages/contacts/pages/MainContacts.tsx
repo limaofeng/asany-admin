@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useReducer, useRef } from 'react';
 
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import { useModel, useRouteMatch } from 'umi';
 import type { RouteComponentProps } from 'react-router-dom';
+import { useModel, useRouteMatch } from 'umi';
 
-import UserList from '../components/UserList';
 import NoContacts from '../components/NoContacts';
+import UserList from '../components/UserList';
 import { useContacts } from '../hooks';
 import type { ContactListState, ContactRouteParams } from '../typings';
 

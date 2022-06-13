@@ -1,17 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Shortcuts } from '@asany/shortcuts';
-import { useModel } from 'umi';
-import classnames from 'classnames';
 import type { SortableItemProps } from '@asany/sortable';
 import Sortable from '@asany/sortable';
+import classnames from 'classnames';
 import { debounce } from 'lodash';
+import { useModel } from 'umi';
 
 import CalendarSetsFooter from './CalendarSetsFooter';
 
-import type { CalendarSet } from '@/types';
 import { useUpdateCalendarSetMutation } from '@/pages/calendar/hooks';
 import { getDropPosition } from '@/pages/calendar/utils';
+import type { CalendarSet } from '@/types';
 
 interface CalendarSetItemProps extends SortableItemProps<any> {
   actived: boolean;

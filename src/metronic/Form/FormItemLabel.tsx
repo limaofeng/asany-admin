@@ -1,15 +1,14 @@
 import React from 'react';
 
-import classNames from 'classnames';
-import classnames from 'classnames';
+import { default as classNames, default as classnames } from 'classnames';
 
-import type { TooltipProps } from '../Tooltip/Tooltip';
 import Tooltip from '../Tooltip';
+import type { TooltipProps } from '../Tooltip/Tooltip';
 
-import type { FormLabelAlign } from './typings';
 import type { FormContextProps } from './context';
 import { FormContext } from './context';
 import type { RequiredMark } from './Form';
+import type { FormLabelAlign } from './typings';
 
 export type WrapperTooltipProps = TooltipProps & {
   icon?: React.ReactElement;

@@ -3,11 +3,11 @@ import { useMemo } from 'react';
 import { getMatchMenu } from '@umijs/route-utils';
 import { useLocation } from 'react-router';
 
-import { useCurrentuser } from '@/utils/hooks';
 import type { MenuData } from '@/.umi/app/typings';
 import { AsideWorkspace } from '@/layouts/Demo7';
 import { Menu, Symbol } from '@/metronic';
 import { getFileThumbnailUrlById } from '@/utils';
+import { useCurrentuser } from '@/utils/hooks';
 
 type UserSettingsSidebarProps = {
   menu: MenuData;

@@ -1,8 +1,7 @@
-import { useCallback } from 'react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import { loginWithUsername, useModel } from 'umi';
 import { useHistory } from 'react-router';
+import { loginWithUsername, useModel } from 'umi';
 
 import { Button, Form, Input, Modal } from '@/metronic';
 

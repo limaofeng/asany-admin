@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
 import type { CSSProperties } from 'react';
+import React, { useMemo } from 'react';
 
 import classnames from 'classnames';
 import { Card as BsCard } from 'react-bootstrap';

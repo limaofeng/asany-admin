@@ -1,9 +1,9 @@
+import Group from './Group';
 import type { InputProps, InputRef } from './Input';
 import { internalInput as InternalInput } from './Input';
-import TextArea from './TextArea';
 import Password from './Password';
 import Search from './Search';
-import Group from './Group';
+import TextArea from './TextArea';
 
 InternalInput.Password = Password;
 InternalInput.TextArea = TextArea;

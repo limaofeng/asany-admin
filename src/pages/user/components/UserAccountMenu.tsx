@@ -1,14 +1,14 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { Emoji } from 'emoji-mart';
 import Icon from '@asany/icons';
+import { Emoji } from 'emoji-mart';
 
 import EditStatusModal from './modals/EditStatusModal';
 import { handleBackgroundImage } from './utils';
 
-import { useCurrentuser, useLogout } from '@/utils/hooks';
 import { Button, Menu, Symbol } from '@/metronic';
 import { getFileThumbnailUrlById } from '@/utils';
+import { useCurrentuser, useLogout } from '@/utils/hooks';
 
 type UserAccountMenuProps = {
   close: () => void;

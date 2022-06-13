@@ -8,7 +8,7 @@ type MenuData = {
   key: string;
   icon?: string | React.ReactNode;
   path: string;
-  title?: string;
+  title?: string | React.ReactNode;
 };
 
 export type SelectableType = 'MenuItem' | 'AllMenu';

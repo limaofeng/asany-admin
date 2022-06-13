@@ -1,11 +1,12 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
-import TagsInput from '@asany/tags-input';
 import { Icon } from '@asany/icons';
-import { Affix } from 'antd';
+import TagsInput from '@asany/tags-input';
+import { Affix, TreeSelect } from 'antd';
 import classnames from 'classnames';
+import type { RouteComponentProps } from 'react-router';
 
-import { useArticleStoreTemplatesQuery } from '../hooks';
+import { useArticleStoreTemplatesQuery, useCreateArticleCategoryMutation } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -20,15 +21,51 @@ import {
   Tabs,
   Upload,
 } from '@/metronic';
+import type { ArticleCategory } from '@/types';
+import { tree } from '@/utils';
 
-function ArticleChannelNew() {
+type ArticleChannelNewProps = RouteComponentProps<
+  { id: string },
+  any,
+  { rootCategoryId: string; categories: ArticleCategory[] }
+>;
+
+function ArticleChannelNew(props: ArticleChannelNewProps) {
+  const {
+    location: {
+      state: { categories },
+    },
+  } = props;
+
   const { data: storeTemplatesData } = useArticleStoreTemplatesQuery();
 
   const storeTemplates = storeTemplatesData?.articleStoreTemplates || [];
 
-  const handleFinish = useCallback((...args) => {
-    console.log('finish', args);
-  }, []);
+  const categoryTreeData = useMemo(() => {
+    if (!categories || !categories.length) {
+      return [];
+    }
+    return tree<any, { value: string; title: string }>(
+      categories.map((item: any) => ({ ...item, value: item.id, title: item.name })),
+      {
+        idKey: 'id',
+        childrenKey: 'children',
+        pidKey: 'parent.id',
+        sort: (left: any, right: any) => left.index - right.index,
+      },
+    );
+  }, [categories]);
+
+  const [createChannel] = useCreateArticleCategoryMutation();
+
+  const handleFinish = useCallback(
+    (values: any) => {
+      console.log('finish', values, createChannel);
+    },
+    [createChannel],
+  );
+
+  console.log('ArticleChannelNew -> ', categories);
 
   return (
     <ContentWrapper
@@ -36,7 +73,14 @@ function ArticleChannelNew() {
         title: '新增栏目',
       }}
     >
-      <Form onFinish={handleFinish} className="form d-flex flex-column flex-lg-row">
+      <Form
+        onFinish={handleFinish}
+        initialValues={{
+          storeTemplate: '1',
+          parent: (props.location as any).query.parent_category_id,
+        }}
+        className="form d-flex flex-column flex-lg-row"
+      >
         <div className="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7 me-lg-10">
           <Card flush className="py-4" title="缩略图" bodyClassName="text-center pt-0">
             <Form.Item name="cover">
@@ -57,17 +101,25 @@ function ArticleChannelNew() {
           <Card flush className="py-4" title="上级栏目">
             <Card.Body className="pt-0">
               <Form.Item className="mb-3" name="parent">
-                <Select2 options={[]} />
+                <TreeSelect
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  treeData={categoryTreeData}
+                  placeholder="选择上级栏目"
+                  treeDefaultExpandAll
+                  allowClear
+                  transitionName=""
+                />
               </Form.Item>
-              <div className="text-muted fs-7">选择上级栏目</div>
-              <div className="d-none mt-10">
+              <div className="text-muted fs-7">选择上级栏目,未选择将添加到根目录</div>
+              {/* <div className="d-none mt-10">
                 <label className="form-label">Select publishing date and time</label>
                 <input
                   className="form-control"
                   id="kt_ecommerce_add_category_status_datepicker"
                   placeholder="Pick date &amp; time"
                 />
-              </div>
+              </div> */}
             </Card.Body>
           </Card>
           <Card flush className="py-4" title="存储模板" bodyClassName="pt-0">
@@ -96,13 +148,13 @@ function ArticleChannelNew() {
                     label="名称"
                     required
                     help="名称是必需的，建议是唯一的"
+                    rules={[{ required: true, message: '名称不能为空' }]}
                   >
                     <Input placeholder="栏目名称" className="mw-400px" />
                   </Form.Item>
                   <Form.Item
                     name="description"
                     label="描述"
-                    required
                     help="为栏目设置描述以获得更好的可见性。"
                   >
                     <QuillEditor className="h-300px" />
@@ -217,8 +269,12 @@ function ArticleChannelNew() {
               </Card>
             </Tabs.TabPane>
           </Tabs>
-          <Affix offsetBottom={10}>
-            <div className={classnames('d-flex justify-content-end')}>
+          <Affix offsetBottom={16}>
+            <div
+              className={classnames(
+                'd-flex bg-body-color p-5 mx-4 tw-rounded-2xl justify-content-end',
+              )}
+            >
               <Button variant="light" className="me-5">
                 取消
               </Button>

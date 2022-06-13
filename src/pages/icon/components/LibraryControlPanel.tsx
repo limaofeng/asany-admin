@@ -1,10 +1,9 @@
 import { memo, useCallback, useMemo, useRef } from 'react';
 
 import { useMutation } from '@apollo/client';
-import gql from 'graphql-tag';
+import { ComponentPropertyType, createDynaActionForm } from '@asany/editor';
 import { parseIconFile } from '@asany/icons';
-import { ComponentPropertyType } from '@asany/editor';
-import { createDynaActionForm } from '@asany/editor';
+import gql from 'graphql-tag';
 
 import type { IconLibrary } from '@/types';
 

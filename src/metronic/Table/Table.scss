@@ -43,7 +43,7 @@ table.dataTable.table-list-body {
   tr {
     height: 48px;
   }
-  tr.selected a.btn {
+  tr.selected a.btn:not(:hover) {
     color: inherit;
   }
   tr.table-list-item.selected {

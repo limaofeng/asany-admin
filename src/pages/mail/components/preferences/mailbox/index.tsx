@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Shortcuts } from '@asany/shortcuts';
 import classnames from 'classnames';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { cloneDeep } from 'lodash';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import MailboxFooter from './MailboxFooter';
 

@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react';
 
-import { Link } from 'umi';
-import type { History } from 'history';
-import type { RouteComponentProps } from 'react-router';
-import qs from 'qs';
 import { Icon } from '@asany/icons';
+import type { History } from 'history';
+import qs from 'qs';
+import type { RouteComponentProps } from 'react-router';
+import { Link } from 'umi';
 
 import {
   LandingPostersDocument,
@@ -26,9 +26,9 @@ import {
   Table,
   Toast,
 } from '@/metronic';
-import type { LandingPoster } from '@/types';
 import type { Sorter } from '@/metronic/typings';
 import { PreviewComponent } from '@/metronic/Upload/Upload';
+import type { LandingPoster } from '@/types';
 
 type ActionsProps = {
   history: History;

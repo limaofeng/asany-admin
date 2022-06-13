@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import classnames from 'classnames';
 import { isEqual } from 'lodash';
 
-import Popover from '../Popover';
-import Tabs from '../Tabs';
 import type { AreaData, Region } from '../hooks/useAreas';
 import useAreas from '../hooks/useAreas';
+import Popover from '../Popover';
+import Tabs from '../Tabs';
 
 import './style/index.scss';
 

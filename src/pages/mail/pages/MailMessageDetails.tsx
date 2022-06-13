@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { Icon } from '@asany/icons';
+import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import ContentLoader from 'react-content-loader';
 import type { RouteComponentProps } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'umi';
-import classnames from 'classnames';
-import ContentLoader from 'react-content-loader';
 
+import MessageDetails from '../components/MessageDetails';
+import MessageEditor from '../components/MessageEditor';
 import {
   CountUnreadDocument,
   MailboxesDocument,
@@ -16,13 +18,11 @@ import {
   useMoveMailboxMessageToFolderMutation,
   useUpdateMailboxMessageFlagsMutation,
 } from '../hooks';
-import { DEFAULT_MAILBOXES } from '../utils';
-import MessageDetails from '../components/MessageDetails';
-import MessageEditor from '../components/MessageEditor';
 import type { RefreshEvent, RefreshType } from '../typings';
+import { DEFAULT_MAILBOXES } from '../utils';
 
-import type { MailboxMessage } from '@/types';
 import { Button, Card, Modal, Tooltip } from '@/metronic';
+import type { MailboxMessage } from '@/types';
 import { sleep } from '@/utils';
 
 export type MailboxRouteParams = {

@@ -6,11 +6,11 @@ import { useModel } from 'umi';
 
 import { useBookQuery, useBooksQuery } from '../hooks';
 
+import { AsideWorkspace } from '@/layouts/Demo7';
 import type { OptionData } from '@/metronic';
 import { Select, Tabs } from '@/metronic';
 import type { ContactBook } from '@/types';
 import * as utils from '@/utils';
-import { AsideWorkspace } from '@/layouts/Demo7';
 
 const { TabPane } = Tabs;
 

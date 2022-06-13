@@ -31,7 +31,7 @@ function AppSidebar(props: AppSidebarProps) {
   return (
     <div className={classnames('app-aside aside')}>
       <AsideSecondary>
-        <AsideWorkspace resizeable className="app-sidebar app-contacts-sidebar">
+        <AsideWorkspace resizeable className="app-sidebar">
           {children}
         </AsideWorkspace>
       </AsideSecondary>

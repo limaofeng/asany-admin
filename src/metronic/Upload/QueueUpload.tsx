@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useImperativeHandle, useReducer, useRef } from 'react';
-import React from 'react';
+import React, { useCallback, useEffect, useImperativeHandle, useReducer, useRef } from 'react';
 
+import classnames from 'classnames';
+import { isEqual } from 'lodash';
 import { useDropzone } from 'react-dropzone';
 import SparkMD5 from 'spark-md5';
-import { isEqual } from 'lodash';
-import classnames from 'classnames';
 
 import { uuid } from '../utils';
 import { fileSize } from '../utils/format';
@@ -20,6 +19,7 @@ type QueueUploadProps = {
   auto?: boolean;
   namespace?: string;
   value?: FileObject[];
+  className?: string;
   onChange?: (files: FileObject[]) => void;
 };
 
@@ -47,7 +47,7 @@ function getMD5(file: File): Promise<string> {
 }
 
 function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploadRef | null>) {
-  const { namespace, auto, value, onChange } = props;
+  const { namespace, className, auto, value, onChange } = props;
 
   const state = useRef<{
     value?: FileObject[];
@@ -86,7 +86,7 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
           isDirectory: false,
           size: item.size,
           type: item.type,
-          md5: await getMD5(item),
+          etag: await getMD5(item),
           status: 'waiting',
           source: item,
           isRootFolder: false,
@@ -125,10 +125,19 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
     const { attachments } = state.current;
     const newValue = attachments.filter((item) => item.status == 'success');
     if (isEqual(newValue, state.current.value)) {
+      forceRender();
       return;
     }
     state.current.onChange && state.current.onChange(newValue);
   }, []);
+
+  const buildHandleDelete = useCallback(
+    (id: string) => () => {
+      state.current.attachments = state.current.attachments.filter((item) => item.id != id);
+      handleChange();
+    },
+    [handleChange],
+  );
 
   const buildHandleUpload = useCallback(
     (id: string) => async () => {
@@ -177,14 +186,6 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
     }
   }, [handleUpload, handleChange]);
 
-  const buildHandleDelete = useCallback(
-    (id: string) => () => {
-      state.current.attachments = state.current.attachments.filter((item) => item.id != id);
-      handleChange();
-    },
-    [handleChange],
-  );
-
   const { onClick, ...rootProps } = getRootProps();
 
   useImperativeHandle(ref, () => ({
@@ -210,16 +211,16 @@ function QueueUpload(props: QueueUploadProps, ref: React.ForwardedRef<QueueUploa
   }, [auto, handleUploadAll]);
 
   return (
-    <div
-      {...rootProps}
-      className={classnames('dropzone dropzone-queue px-8', {
-        'py-4': attachments.length != 0,
-      })}
-    >
+    <div {...rootProps} className={classnames('dropzone dropzone-queue', className)}>
       <input {...getInputProps()} />
       <div className="dropzone-items">
-        {attachments.map((item) => (
-          <div key={item.id} className="dropzone-item">
+        {attachments.map((item, i) => (
+          <div
+            key={item.id}
+            className={classnames('dropzone-item', {
+              'mt-0': i == 0,
+            })}
+          >
             <div className="dropzone-file">
               <div className="dropzone-filename" title={item.name}>
                 {/* <Icon className="svg-icon-2" name="Material/pdf" /> */}

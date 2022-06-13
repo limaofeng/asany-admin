@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
-import type { ValidateErrorEntity } from 'rc-field-form/lib/interface';
 import Icon from '@asany/icons';
 import TagsInput, { emailValidator, parseEmailTag } from '@asany/tags-input';
+import type { ValidateErrorEntity } from 'rc-field-form/lib/interface';
 
 import {
   MailboxesDocument,
@@ -13,9 +13,9 @@ import {
 
 import { Button, Card, Form, Input, Modal, QuillEditor, Tooltip, Upload } from '@/metronic';
 import type { QueueUploadRef } from '@/metronic/typings';
-import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
-import { toHtml, toPlainText } from '@/metronic/utils/format';
 import { useAutoSave } from '@/metronic/utils';
+import { toHtml, toPlainText } from '@/metronic/utils/format';
+import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
 import { delay } from '@/utils';
 
 const RULE_VERIFY_MAIL = {
@@ -376,7 +376,7 @@ function MessageEditor(props: MessageEditorProps) {
               <ContentEditor mode={mode} />
             </Form.Item>
             <Form.Item noStyle name="attachments">
-              <Upload.Queue auto ref={queueUpload} namespace="email" />
+              <Upload.Queue className="px-8 py-4" auto ref={queueUpload} namespace="email" />
             </Form.Item>
           </div>
           <div className="d-flex flex-stack flex-wrap gap-2 py-5 ps-8 pe-5 border-top">

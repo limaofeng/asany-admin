@@ -2,9 +2,9 @@ import { useState } from 'react';
 
 import { Link } from 'umi';
 
-import { Button, Card, Col, Input, Row, Select2 } from '@/metronic';
-import { ContentWrapper } from '@/layouts/components';
 import Controls from '@/components/Controls';
+import { ContentWrapper } from '@/layouts/components';
+import { Button, Card, Col, Input, Row, Select2 } from '@/metronic';
 
 function RoleItem() {
   return (

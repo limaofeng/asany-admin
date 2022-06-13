@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import useMergedRef from '@react-hook/merged-ref';
 import classnames from 'classnames';
 import { OverlayTrigger as BsOverlayTrigger, Popover as BsPopover } from 'react-bootstrap';
 import type { OverlayDelay, OverlayTriggerType } from 'react-bootstrap/esm/OverlayTrigger';
 import type { Placement } from 'react-bootstrap/esm/types';
 import { useClickAway } from 'react-use';
-import useMergedRef from '@react-hook/merged-ref';
 
 import './style.scss';
 

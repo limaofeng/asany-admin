@@ -1,14 +1,14 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import type { RouteComponentProps } from 'react-router';
 import Icon from '@asany/icons';
+import type { RouteComponentProps } from 'react-router';
 
-import { useDeleteMenuMutation, useLoadMenusQuery } from '../hooks';
 import { EditMenuModal, NewMenuModal } from '../components/MenuModal';
+import { useDeleteMenuMutation, useLoadMenusQuery } from '../hooks';
 
 import { Badge, Button, Card, Dropdown, Menu, Modal, TreeList } from '@/metronic';
-import { tree } from '@/utils';
 import type { Menu as IMenu } from '@/types';
+import { tree } from '@/utils';
 
 type MenuTreeProps = RouteComponentProps<{ id: string }>;
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Nav as BsNav } from 'react-bootstrap';
 import classnames from 'classnames';
+import { Nav as BsNav } from 'react-bootstrap';
 import { useHistory } from 'react-router';
 
 type NavItemProps = {

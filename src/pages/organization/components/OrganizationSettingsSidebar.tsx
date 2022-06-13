@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
 import { getMatchMenu } from '@umijs/route-utils';
-import { Link } from 'umi';
 import { generatePath, useLocation, useRouteMatch } from 'react-router-dom';
+import { Link } from 'umi';
 
 import { useOrganizationQuery } from '../hooks/api';
 

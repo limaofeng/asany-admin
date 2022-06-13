@@ -1,16 +1,15 @@
 import { useCallback, useState } from 'react';
 
-import $ from 'jquery';
-import classnames from 'classnames';
 import { Icon } from '@asany/icons';
+import classnames from 'classnames';
+import $ from 'jquery';
 import moment from 'moment';
 
 import { displayName } from '../utils';
 
-import { Symbol } from '@/metronic';
-import type { MailboxMessage } from '@/types';
-import { Popover, Tooltip } from '@/metronic';
+import { Popover, Symbol, Tooltip } from '@/metronic';
 import { toPlainText } from '@/metronic/utils/format';
+import type { MailboxMessage } from '@/types';
 
 const { Avatar } = Symbol;
 

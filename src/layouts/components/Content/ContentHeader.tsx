@@ -3,12 +3,12 @@ import { useMemo } from 'react';
 import Icon from '@asany/icons';
 import type { MenuDataItem } from '@umijs/route-utils';
 import { getMatchMenu } from '@umijs/route-utils';
-import { useLocation, useParams } from 'umi';
 import { findLast } from 'lodash';
+import { useLocation, useParams } from 'umi';
 
+import { useLayoutSelector } from '@/layouts/LayoutContext';
 import Breadcrumb from '@/metronic/Breadcrumb';
 import { useSticky } from '@/metronic/hooks';
-import { useLayoutSelector } from '@/layouts/LayoutContext';
 
 function Toolbar() {
   return (
@@ -49,6 +49,7 @@ function Toolbar() {
 
 export type ContentHeaderProps = {
   title?: string;
+  breadcrumb?: React.ReactElement<typeof Breadcrumb>;
 };
 
 function ContentHeader(props: ContentHeaderProps) {
@@ -63,7 +64,10 @@ function ContentHeader(props: ContentHeaderProps) {
   const allMenus = useLayoutSelector((_state) => _state.menus);
   const allRoutes = useLayoutSelector((_state) => _state.routes);
 
-  const { routes, title } = useMemo(() => {
+  const { breadcrumb, title } = useMemo(() => {
+    if (props.breadcrumb) {
+      return { breadcrumb: props.breadcrumb, title: props.title };
+    }
     const _matchMenus = getMatchMenu(location.pathname, allMenus, true);
     const _matchRoutes = getMatchMenu(location.pathname, allRoutes, true);
 
@@ -91,9 +95,12 @@ function ContentHeader(props: ContentHeaderProps) {
         item.key == last!.key ? { ...last, name: props.title } : item,
       );
     }
-
-    return { routes: breadcrumbData, title: last?.name };
-  }, [location.pathname, allMenus, allRoutes, props.title]);
+    const _routes = breadcrumbData;
+    return {
+      title: last?.name,
+      breadcrumb: <Breadcrumb params={params} routes={_routes} className="fw-bold fs-base my-1" />,
+    };
+  }, [props.breadcrumb, props.title, location.pathname, allMenus, allRoutes, params]);
 
   return (
     <div id="kt_header" ref={ref} className="header">
@@ -103,7 +110,7 @@ function ContentHeader(props: ContentHeaderProps) {
       >
         <div className="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-2 pb-2 pb-lg-0">
           <h1 className="text-dark fw-bolder my-0 fs-2">{props.title || title}</h1>
-          <Breadcrumb params={params} routes={routes} className="fw-bold fs-base my-1" />
+          {breadcrumb}
         </div>
         {/* --begin::Wrapper-- */}
         <div className="d-flex d-lg-none align-items-center ms-n2 me-2">

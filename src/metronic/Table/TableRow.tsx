@@ -1,15 +1,12 @@
 import type { CSSProperties } from 'react';
-import { useRef } from 'react';
-import { useMemo } from 'react';
-import { useEffect } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import classnames from 'classnames';
 
 import Checkbox from '../Checkbox';
 
 import TableCell from './TableCell';
-import type { DataRecoverer, RowSelection, TableColumn } from './typings';
+import type { DataRecoverer, RowHeightFunc, RowSelection, TableColumn } from './typings';
 import { getRowKey } from './utils';
 
 type TableRowProps<T> = {
@@ -18,6 +15,7 @@ type TableRowProps<T> = {
   columns: TableColumn<T>[];
   recoverer: DataRecoverer<T>;
   className: string;
+  rowHeight?: number | RowHeightFunc;
   onSelect: (record: T, selected: boolean, e: any) => void;
   rowSelection?: RowSelection<T>;
   useCheck: (record: T) => boolean;
@@ -36,6 +34,7 @@ function TableRow<T>(props: TableRowProps<T>) {
     useCheck,
     rowKey,
     style,
+    rowHeight,
     onSelect,
   } = props;
 
@@ -58,7 +57,7 @@ function TableRow<T>(props: TableRowProps<T>) {
   );
 
   const handleSelect = useCallback(
-    (e) => {
+    (e: any) => {
       if (ref.current?.dataset.ignore_click == 'on') {
         return;
       }
@@ -89,7 +88,11 @@ function TableRow<T>(props: TableRowProps<T>) {
     >
       {columns.map((col) =>
         col.key == '__rowSelection' ? (
-          <td key="row-select" className="row-selection">
+          <td
+            style={{ height: typeof rowHeight === 'function' ? rowHeight({ index }) : rowHeight }}
+            key="row-select"
+            className="row-selection"
+          >
             <Checkbox
               {...handleCheckboxProps(data)}
               checked={checked}

@@ -1,33 +1,30 @@
-import React, { useCallback, useMemo, useReducer, useRef } from 'react';
-import { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import EventEmitter from 'events';
 
-import { useRouteMatch } from 'react-router-dom';
 import { Resizer } from '@asany/editor';
-import classnames from 'classnames';
 import Icon from '@asany/icons';
+import classnames from 'classnames';
 import { debounce } from 'lodash';
+import { useRouteMatch } from 'react-router-dom';
 import { useHistory } from 'umi';
 
+import MessageItem from '../components/MessageItem';
 import {
   MailboxesDocument,
   useClearTrashMailboxMutation,
   useMailboxMessagesLazyQuery,
 } from '../hooks';
-import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL } from '../utils';
-import MessageItem from '../components/MessageItem';
 import type { RefreshEvent, UseMessage } from '../typings';
+import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL } from '../utils';
 
 import type { MailboxProps, MailboxRouteParams } from './MailMessageDetails';
 
-import type { InfiniteScrollRef, RowRendererParams } from '@/metronic/typings';
-import { Button } from '@/metronic';
-import { Modal } from '@/metronic';
-import { Card, InfiniteScroll, Input, NProgress } from '@/metronic';
-import { delay, sleep } from '@/utils';
-import type { MailboxMessage, MailboxMessageConnection } from '@/types';
 import { ContentWrapper } from '@/layouts/components';
+import { Button, Card, InfiniteScroll, Input, Modal, NProgress } from '@/metronic';
+import type { InfiniteScrollRef, RowRendererParams } from '@/metronic/typings';
+import type { MailboxMessage, MailboxMessageConnection } from '@/types';
+import { delay, sleep } from '@/utils';
 
 interface MailboxState {
   width: number;

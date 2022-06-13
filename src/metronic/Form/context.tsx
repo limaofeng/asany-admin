@@ -1,9 +1,9 @@
 import React from 'react';
 
-import omit from 'rc-util/lib/omit';
-import type { Meta } from 'rc-field-form/lib/interface';
 import { FormProvider as RcFormProvider } from 'rc-field-form';
 import type { FormProviderProps as RcFormProviderProps } from 'rc-field-form/lib/FormContext';
+import type { Meta } from 'rc-field-form/lib/interface';
+import omit from 'rc-util/lib/omit';
 
 import type { RequiredMark, SizeType } from './Form';
 import type { ValidateStatus } from './FormItem';

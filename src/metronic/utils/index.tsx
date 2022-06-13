@@ -1,12 +1,10 @@
-import React from 'react';
-import { useMemo, useReducer, useRef } from 'react';
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import type { Dictionary } from 'lodash';
 import { clone, isEqual, uniq, zipObject } from 'lodash';
 
-import * as KTUtil from './KTUtil';
 import { fileSize } from './format';
+import * as KTUtil from './KTUtil';
 
 import { sleep } from '@/utils';
 

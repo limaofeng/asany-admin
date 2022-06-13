@@ -1,13 +1,15 @@
 import type { CSSProperties, RefObject } from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import classnames from 'classnames';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { Table as BsTable } from 'react-bootstrap';
 import ContentLoader from 'react-content-loader';
 
 import { uuid } from '../utils';
 
+import { Colgroup } from './TableHeader';
+import TableRow from './TableRow';
 import type {
   DataRecoverer,
   DataSource,
@@ -17,8 +19,6 @@ import type {
   RowSelection,
   TableColumn,
 } from './typings';
-import { Colgroup } from './TableHeader';
-import TableRow from './TableRow';
 
 type VirtualListProps<T> = {
   tableBodyRef: RefObject<HTMLTableSectionElement>;

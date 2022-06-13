@@ -2,6 +2,7 @@
 
 :root {
   --bs-body-font-size: 14px;
+  --bg-body: #f3f6f9;
 }
 
 html,
@@ -33,9 +34,13 @@ body {
     'Segoe UI Symbol', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
     'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-variant: tabular-nums;
-  background-color: #f3f6f9;
+  background-color: var(--bg-body);
   font-feature-settings: 'tnum';
   -webkit-font-smoothing: antialiased;
+}
+
+.bg-body-color {
+  background-color: var(--bg-body);
 }
 
 ul,

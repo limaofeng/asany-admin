@@ -15,7 +15,7 @@ export default defineConfig({
     'process.env.MOBILE_URL': '//47.103.119.188:8002',
   },
   hash: true,
-  antd: false,
+  antd: {},
   dva: {
     hmr: true,
   },

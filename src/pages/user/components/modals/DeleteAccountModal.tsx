@@ -2,8 +2,8 @@ import { useCallback, useState } from 'react';
 
 import classnames from 'classnames';
 
-import { useCurrentuser } from '@/utils/hooks';
 import { Alert, Button, Form, Input, Modal, Separator } from '@/metronic';
+import { useCurrentuser } from '@/utils/hooks';
 
 type DeleteAccountModalProps = {
   visible?: boolean;

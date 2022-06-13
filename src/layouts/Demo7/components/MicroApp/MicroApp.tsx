@@ -2,15 +2,16 @@ import React from 'react';
 
 import classnames from 'classnames';
 
-import { AppProvider, useMicroApp } from './MicroAppContext';
 import AppSidebar from './AppSidebar';
+import { AppProvider, useMicroApp } from './MicroAppContext';
 
 type AppContainerProps = {
+  className?: string;
   children: React.ReactNode;
 };
 
 function AppContainer(props: AppContainerProps) {
-  const { children } = props;
+  const { children, className } = props;
 
   const {
     state: {
@@ -20,7 +21,7 @@ function AppContainer(props: AppContainerProps) {
 
   return (
     <div
-      className={classnames('micro-app-container page-full-content', {
+      className={classnames('micro-app-container page-full-content', className, {
         'aside-minimize': minimize,
       })}
     >
@@ -30,11 +31,11 @@ function AppContainer(props: AppContainerProps) {
 }
 
 function App(props: AppContainerProps) {
-  const { children } = props;
+  const { children, className } = props;
 
   return (
     <AppProvider>
-      <AppContainer>{children}</AppContainer>
+      <AppContainer className={className}>{children}</AppContainer>
     </AppProvider>
   );
 }

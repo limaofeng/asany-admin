@@ -3,14 +3,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Icon from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import { useArticleChannelAllQuery } from '../hooks';
+import { useArticleCategoriesQuery } from '../hooks';
 
-import { NewArticleChannelModal } from './ArticleChannelNew';
-
-import { Button, Menu } from '@/metronic';
-import { tree } from '@/utils';
-import type { ArticleChannel } from '@/types';
 import { AsideWorkspace } from '@/layouts/Demo7';
+import { Button, Menu } from '@/metronic';
+import type { ArticleCategory } from '@/types';
+import { tree } from '@/utils';
 
 import './style/ArticleSidebar.scss';
 
@@ -36,22 +34,18 @@ function renderChannel(item: any) {
 }
 
 function ArticleSidebar() {
-  const {
-    data = { channels: [] },
-    refetch,
-    loading,
-  } = useArticleChannelAllQuery({
+  const { data = { categories: [] }, loading } = useArticleCategoriesQuery({
     fetchPolicy: 'cache-and-network',
   });
 
   const [selectedKey, setSelectedKey] = useState<string>('draft');
 
-  const channels: ArticleChannel[] = useMemo(() => {
-    if (!data.channels || !data.channels.length) {
+  const categories: ArticleCategory[] = useMemo(() => {
+    if (!data.categories || !data.categories.length) {
       return [];
     }
     return tree(
-      data.channels.map((item: any) => ({ ...item })),
+      data.categories.map((item: any) => ({ ...item })),
       {
         idKey: 'id',
         childrenKey: 'children',
@@ -59,32 +53,22 @@ function ArticleSidebar() {
         sort: (left: any, right: any) => left.index - right.index,
       },
     );
-  }, [data.channels]);
+  }, [data.categories]);
 
-  const [openKeys, setOpenKeys] = useState<string[]>(channels.map((item) => item.id));
+  const [openKeys, setOpenKeys] = useState<string[]>(categories.map((item) => item.id));
 
-  const handleSelect = useCallback((e) => {
+  const handleSelect = useCallback((e: any) => {
     setSelectedKey(e.key);
   }, []);
 
-  const handleOpenChange = useCallback((keys) => {
+  const handleOpenChange = useCallback((keys: string[]) => {
     setOpenKeys(keys);
   }, []);
 
-  const [visible, setVisible] = useState(false);
-
-  const handleNewChannel = useCallback(() => {
-    setVisible(true);
-  }, []);
-
-  const handleCloseNewChannel = useCallback(() => {
-    setVisible(false);
-  }, []);
-
   useEffect(() => {
-    setOpenKeys(channels.map((item) => item.id));
+    setOpenKeys(categories.map((item) => item.id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channels.map((item) => item.id).join(',')]);
+  }, [categories.map((item) => item.id).join(',')]);
 
   return (
     <AsideWorkspace>
@@ -123,12 +107,11 @@ function ArticleSidebar() {
               size="sm"
               variant="white"
               className="py-1 px-3 me-n4"
-              onClick={handleNewChannel}
             >
               新增
             </Button>
           </Menu.Section>
-          {channels.map(renderChannel)}
+          {categories.map(renderChannel)}
           <Menu.Section>其他</Menu.Section>
           <Menu.Item icon="Duotune/elc001" key="banner">
             大图管理
@@ -145,11 +128,6 @@ function ArticleSidebar() {
           </Menu.Item>
         </Menu>
       </OverlayScrollbarsComponent>
-      <NewArticleChannelModal
-        onSuccess={refetch}
-        visible={visible}
-        onCancel={handleCloseNewChannel}
-      />
     </AsideWorkspace>
   );
 }

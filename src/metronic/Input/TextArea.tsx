@@ -8,11 +8,11 @@ import React, {
   useState,
 } from 'react';
 
-import classnames from 'classnames';
 import autosize from 'autosize';
+import classnames from 'classnames';
 
-import * as KTUtil from '../utils/KTUtil';
 import * as format from '../utils/format';
+import * as KTUtil from '../utils/KTUtil';
 
 type AutoSize = {
   minRows?: number;

@@ -2,15 +2,16 @@ import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } 
 
 import EventEmitter from 'events';
 
-import { Table as BsTable } from 'react-bootstrap';
 import classnames from 'classnames';
+import { isEqual } from 'lodash';
+import { Table as BsTable } from 'react-bootstrap';
 import type { OnSelect, OnSelectEnd } from 'react-selecto';
 import Selecto from 'react-selecto';
-import { isEqual } from 'lodash';
 
 import type { PaginationProps } from './Pagination';
 import Pagination from './Pagination';
 import TableHeader, { Colgroup } from './TableHeader';
+import TableRow from './TableRow';
 import type {
   DataSource,
   NewTableColumn,
@@ -20,9 +21,8 @@ import type {
   Sorter,
   TableColumn,
 } from './typings';
-import VirtualList from './VirtualList';
-import TableRow from './TableRow';
 import { getRowKey } from './utils';
+import VirtualList from './VirtualList';
 
 import './Table.scss';
 
@@ -370,7 +370,7 @@ function Table<T>(props: TableProps<T>) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newColumns, Array.from(colgroups.values()).join(',')]);
 
-  const handleSelectoDragCondition = useCallback((e) => {
+  const handleSelectoDragCondition = useCallback((e: any) => {
     if (!e.inputEvent.path) {
       return true;
     }
@@ -493,6 +493,7 @@ function Table<T>(props: TableProps<T>) {
                         rowSelection={rowSelection}
                         onSelect={handleSelect}
                         key={key}
+                        rowHeight={props.rowHeight}
                         index={index}
                         data={data}
                         columns={newColumns}

@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect } from 'react';
-import { useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 import { useHistory } from 'react-router-dom';
 
-import * as KTUtil from '../utils/KTUtil';
 import type { BulletProps } from '../Bullet';
 import Bullet from '../Bullet';
 import Dropdown from '../Dropdown/Dropdown';
+import * as KTUtil from '../utils/KTUtil';
 
 import { useMenuContext, useSelector } from './MenuContext';
 
@@ -27,7 +26,7 @@ const defaultOptions = {
 interface SubMenuProps {
   url?: string;
   icon?: string | React.ReactNode;
-  title: string;
+  title: string | React.ReactNode;
   className?: string;
   titleClassName?: string;
   bodyClassName?: string;
@@ -111,7 +110,7 @@ function SubMenu(props: SubMenuProps) {
   }, [context, menuKey, icon, title, path]);
 
   const handleSelect = useCallback(
-    (e) => {
+    (e: any) => {
       menuKey && context.select(menuKey, e);
       url && history.push(url);
     },

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import * as KTUtil from '../utils/KTUtil';
 import KTEventHandler from '../utils/KTEventHandler';
+import * as KTUtil from '../utils/KTUtil';
 
 type OffsetValue = number | false;
 

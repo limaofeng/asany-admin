@@ -1,0 +1,41 @@
+.theme-metronic {
+  .ant-select {
+    &:not(.ant-select-disabled):hover {
+      .ant-select-selector {
+        border-color: #b5b5c3;
+      }
+    }
+    &.ant-select-focused:not(.ant-select-disabled) {
+      .ant-select-selector {
+        border-color: #b5b5c3;
+        box-shadow: none;
+      }
+    }
+    &.ant-select-focused:not(.ant-select-disabled):not(.ant-select-customize-input)
+      .ant-select-selector {
+      border-color: #b5b5c3;
+      border-right-width: 1px;
+      outline: 0;
+      box-shadow: none;
+    }
+    &:not(.ant-select-customize-input) {
+      .ant-select-selector {
+        border-radius: 6px;
+      }
+    }
+    &.ant-select-single .ant-select-selector .ant-select-selection-item {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #a1a5b7;
+    }
+    .ant-select-arrow {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%237E8299' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+      .anticon {
+        opacity: 0;
+      }
+    }
+    .ant-select-clear {
+      display: flex;
+    }
+  }
+}
