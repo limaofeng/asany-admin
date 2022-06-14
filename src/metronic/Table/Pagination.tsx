@@ -30,7 +30,7 @@ function Ellipsis(props: EllipsisProps) {
 
   return (
     <li className="page-item ellipsis">
-      <a href="#" onClick={onClick} className="page-link">
+      <a onClick={onClick} className="page-link">
         <span className={classnames('page-fast-forward', { 'double-right': forward === 'right' })}>
           <svg
             viewBox="64 64 896 896"
@@ -177,17 +177,13 @@ function Pagination(props: PaginationProps) {
       <div className="col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end">
         <BsPagination className={className} size={size}>
           <li className={classnames('page-item previous', { disabled: current == 1 })}>
-            <a href="#" onClick={handleClick(Math.max(current - 1, 1))} className="page-link">
+            <a onClick={handleClick(Math.max(current - 1, 1))} className="page-link">
               <i className="previous" />
             </a>
           </li>
           {pages}
           <li className={classnames('page-item next', { disabled: current == totalPage })}>
-            <a
-              href="#"
-              onClick={handleClick(Math.min(current + 1, totalPage))}
-              className="page-link"
-            >
+            <a onClick={handleClick(Math.min(current + 1, totalPage))} className="page-link">
               <i className="next" />
             </a>
           </li>
