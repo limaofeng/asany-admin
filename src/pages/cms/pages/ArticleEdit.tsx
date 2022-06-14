@@ -35,7 +35,7 @@ function ArticleEdit(props: ArticleEditProps) {
 
   const form = Form.useForm();
 
-  const { data } = useArticleQuery({
+  const { data, loading } = useArticleQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
       id,
@@ -145,6 +145,7 @@ function ArticleEdit(props: ArticleEditProps) {
 
   return (
     <ContentWrapper
+      loading={loading}
       header={{
         title: '编辑文章',
       }}

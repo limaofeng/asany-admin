@@ -3,7 +3,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { Affix } from 'antd';
 import classnames from 'classnames';
 import type { RouteComponentProps } from 'react-router';
-import { history } from 'umi';
+import { history, Link } from 'umi';
 
 import ArticleFormSidebar from '../components/ArticleFormSidebar';
 import { Advanced, General, Metadata } from '../components/bodys/classic';
@@ -66,10 +66,10 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
 
   const breadcrumbCategories = useMemo(() => {
     const category = categories.find((item) => item.id == categoryId);
-    return category?.path?.split('/') || [];
+    return (category?.path?.split('/') || [])
+      .map((_categoryId) => categories.find((item) => item.id == _categoryId)!)
+      .filter((item) => item);
   }, [categories, categoryId]);
-
-  console.log('categories', breadcrumbCategories);
 
   const handleFinish = useCallback(async () => {
     await queueUpload.current?.uploadAll();
@@ -132,25 +132,30 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
       }}
       breadcrumb={
         <Breadcrumb className="fw-bold fs-base text-muted my-1">
-          {/*article ? (
+          {breadcrumbCategories ? (
             <>
-              {article.categories
+              {breadcrumbCategories
                 .filter((item) => item.id != rootCategoryId)
-                .map((item) => (
-                  <Breadcrumb.Item key={item.id}>
-                    <Link
-                      to={`${baseUrl}/cms/categories/${item.id}/articles`}
-                      className="text-muted"
-                    >
+                .map((item) =>
+                  item.id == categoryId ? (
+                    <Breadcrumb.Item key={item.id} className="text-dark">
                       {item.name}
-                    </Link>
-                  </Breadcrumb.Item>
-                ))}
-              <Breadcrumb.Item className="text-dark">{article?.title}</Breadcrumb.Item>
+                    </Breadcrumb.Item>
+                  ) : (
+                    <Breadcrumb.Item key={item.id}>
+                      <Link
+                        to={`${baseUrl}/cms/categories/${item.id}/articles`}
+                        className="text-muted"
+                      >
+                        {item.name}
+                      </Link>
+                    </Breadcrumb.Item>
+                  ),
+                )}
             </>
           ) : (
             <Breadcrumb.Item>加载中...</Breadcrumb.Item>
-          )*/}
+          )}
         </Breadcrumb>
       }
     >

@@ -16,8 +16,20 @@ import {
 } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Badge, Button, Card, Dropdown, Empty, Input, Menu, Modal, Table, Toast } from '@/metronic';
-import type { Article } from '@/types';
+import {
+  Badge,
+  Breadcrumb,
+  Button,
+  Card,
+  Dropdown,
+  Empty,
+  Input,
+  Menu,
+  Modal,
+  Table,
+  Toast,
+} from '@/metronic';
+import type { Article, ArticleCategory } from '@/types';
 import { delay } from '@/utils';
 
 import '../style/article-list.scss';
@@ -211,10 +223,7 @@ function ArticleActions(props: ArticleActionsProps) {
 type ArticleListProps = RouteComponentProps<
   { id: string },
   any,
-  {
-    rootCategoryId: string;
-    baseUrl: string;
-  }
+  { rootCategoryId: string; categories: ArticleCategory[]; baseUrl: string }
 >;
 
 function ArticleList(props: ArticleListProps) {
@@ -222,13 +231,20 @@ function ArticleList(props: ArticleListProps) {
     match: {
       params: { id: categoryId },
     },
-    location,
+    location: {
+      state: { rootCategoryId, categories, baseUrl },
+    },
   } = props;
 
-  const rootCategoryId = location.state.rootCategoryId;
+  const breadcrumbCategories = useMemo(() => {
+    const category = categories.find((item) => item.id == categoryId);
+    return (category?.path?.split('/') || [])
+      .map((_categoryId) => categories.find((item) => item.id == _categoryId)!)
+      .filter((item) => item);
+  }, [categories, categoryId]);
 
   const variables = useMemo(() => {
-    const { q, ...query } = (location as any).query;
+    const { q, ...query } = (props.location as any).query;
     if (!query.filter) {
       query.filter = {};
     }
@@ -237,7 +253,7 @@ function ArticleList(props: ArticleListProps) {
     }
     query.filter.category = { id: categoryId, subColumns: true };
     return query;
-  }, [location, categoryId]);
+  }, [props.location, categoryId]);
 
   const { data, refetch, loading, previousData } = useArticlesQuery({
     variables,
@@ -271,7 +287,7 @@ function ArticleList(props: ArticleListProps) {
       _query.page = _pagination.current;
       history.replace(location.pathname + '?' + qs.stringify(_query));
     },
-    [location.pathname, variables.filter?.name_contains],
+    [variables.filter?.name_contains],
   );
 
   const [selectedRows, setSelectedRows] = useState<Article[]>([]);
@@ -289,14 +305,40 @@ function ArticleList(props: ArticleListProps) {
     };
   }, [refetch]);
 
-  const baseUrl = location.state.baseUrl || '';
-
   return (
     <ContentWrapper
       loading={loading}
       header={{
-        title: '新闻动态',
+        title: categories.find((item) => item.id == categoryId)?.name,
       }}
+      breadcrumb={
+        <Breadcrumb className="fw-bold fs-base text-muted my-1">
+          {breadcrumbCategories ? (
+            <>
+              {breadcrumbCategories
+                .filter((item) => item.id != rootCategoryId)
+                .map((item) =>
+                  item.id == categoryId ? (
+                    <Breadcrumb.Item key={item.id} className="text-dark">
+                      {item.name}
+                    </Breadcrumb.Item>
+                  ) : (
+                    <Breadcrumb.Item key={item.id}>
+                      <Link
+                        to={`${baseUrl}/cms/categories/${item.id}/articles`}
+                        className="text-muted"
+                      >
+                        {item.name}
+                      </Link>
+                    </Breadcrumb.Item>
+                  ),
+                )}
+            </>
+          ) : (
+            <Breadcrumb.Item>加载中...</Breadcrumb.Item>
+          )}
+        </Breadcrumb>
+      }
     >
       <div className="tab-content">
         <Card flush headerClassName="mt-5">
