@@ -1,11 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
 import jquery from 'jquery';
 import moment from 'moment';
+import qs from 'qs';
 import type { RouteComponentProps } from 'react-router';
-import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
+import { history } from 'umi';
 
 import type { IArticle } from '../article/typings';
 import {
@@ -15,8 +16,9 @@ import {
 } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Badge, Button, Card, Dropdown, Empty, Input, Menu, Modal, Table } from '@/metronic';
+import { Badge, Button, Card, Dropdown, Empty, Input, Menu, Modal, Table, Toast } from '@/metronic';
 import type { Article } from '@/types';
+import { delay } from '@/utils';
 
 import '../style/article-list.scss';
 
@@ -33,19 +35,41 @@ type DeleteOptions = {
 };
 
 function useDelete(options: DeleteOptions, execute: () => Promise<void>) {
+  const deleting = useRef(false);
+
   const onDelete = useCallback(async () => {
     const { width } = options;
-    const data = await Modal.confirm({
+    const result = await Modal.confirm({
       ...options,
       width,
       okText: '删 除',
       okClassName: 'btn-danger',
+      allowOutsideClick: () => {
+        return !deleting.current;
+      },
+      preConfirm: async () => {
+        deleting.current = true;
+        try {
+          const okButton = document.querySelector('.swal2-confirm')!;
+          okButton.textContent = '删除中...';
+          const spinner = document.createElement('span');
+          spinner.classList.add('spinner-border-sm', 'ms-2', 'spinner-border', 'align-middle');
+          okButton.appendChild(spinner);
+          const _result = await delay(execute(), 350);
+          console.log(_result);
+        } finally {
+          deleting.current = false;
+        }
+      },
     });
-    if (data.isConfirmed) {
-      await execute();
+    if (!result.isConfirmed) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [options.title, options.content]);
+    Toast.success('删除成功', 2000, {
+      placement: 'top-center',
+      progressBar: true,
+    });
+  }, [execute, options]);
 
   return [onDelete];
 }
@@ -104,12 +128,16 @@ function DeleteMany(props: DeleteManyProps) {
     },
     async () => {
       await deleteManyArticles({ variables: { ids: selectedRows.map((item) => item.id!) } });
-      await refetch();
     },
   );
 
+  const handleDelete = useCallback(async () => {
+    await onDelete();
+    await refetch();
+  }, [onDelete, refetch]);
+
   return (
-    <Button color="danger" onClick={onDelete} variant={false} size="sm" className="px-4 py-2">
+    <Button color="danger" onClick={handleDelete} variant={false} size="sm" className="px-4 py-2">
       批量删除
     </Button>
   );
@@ -117,7 +145,6 @@ function DeleteMany(props: DeleteManyProps) {
 
 function ArticleActions(props: ArticleActionsProps) {
   const { data, refetch, baseUrl } = props;
-  const history = useHistory();
   const [visible, setVisible] = useState(false);
 
   const [deleteArticle] = useDeleteArticleMutation();
@@ -127,22 +154,26 @@ function ArticleActions(props: ArticleActionsProps) {
       title: '你确定要删除这篇文章吗？',
       content: (
         <>
-          您即将删除“<strong>${data.title}</strong>”。删除操作不可逆转，请谨慎操作，您确定删除吗？
+          您即将删除“<strong>{data.title}</strong>”。删除操作不可逆转，请谨慎操作，您确定删除吗？
         </>
       ),
     },
     async () => {
       await deleteArticle({ variables: { id: data.id! } });
-      await refetch();
     },
   );
+
+  const handleDelete = useCallback(async () => {
+    await onDelete();
+    await refetch();
+  }, [onDelete, refetch]);
 
   const handleClick = useCallback(({ key }: any) => {
     if (key == 'edit') {
       history.push(`${baseUrl}/articles/${data.id}`);
     } else if (key == 'delete') {
       setVisible(false);
-      onDelete();
+      handleDelete();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -208,12 +239,17 @@ function ArticleList(props: ArticleListProps) {
     return query;
   }, [location, categoryId]);
 
-  const { data, refetch, loading } = useArticlesQuery({
+  const { data, refetch, loading, previousData } = useArticlesQuery({
     variables,
     fetchPolicy: 'cache-and-network',
   });
 
-  const pagination = (data || {}).articles || { edges: [], current: 0, total: 0 };
+  const pagination = useMemo(() => {
+    if (loading) {
+      return previousData?.articles || { edges: [], total: 0, current: 1 };
+    }
+    return data?.articles || { edges: [], total: 0, current: 1 };
+  }, [data?.articles, loading, previousData?.articles]);
 
   const articles = useMemo(() => {
     return pagination.edges.map((item) => item.node as Article);
@@ -222,6 +258,21 @@ function ArticleList(props: ArticleListProps) {
   const handleSearch = useCallback((value: any) => {
     console.log(value);
   }, []);
+
+  const handleChange = useCallback(
+    (_pagination, _filters, _sorter) => {
+      const _query: any = {};
+      if (variables.filter?.name_contains) {
+        _query.q = variables.filter?.name_contains;
+      }
+      if (!!_sorter) {
+        _query.orderBy = _sorter.field + '_' + (_sorter.order == 'ascend' ? 'asc' : 'desc');
+      }
+      _query.page = _pagination.current;
+      history.replace(location.pathname + '?' + qs.stringify(_query));
+    },
+    [location.pathname, variables.filter?.name_contains],
+  );
 
   const [selectedRows, setSelectedRows] = useState<Article[]>([]);
 
@@ -354,6 +405,7 @@ function ArticleList(props: ArticleListProps) {
                 }}
                 pagination={pagination}
                 dataSource={articles}
+                onChange={handleChange}
                 rowHeight={136}
                 columns={[
                   {
@@ -362,7 +414,7 @@ function ArticleList(props: ArticleListProps) {
                     key: 'title',
                     render: (title, record) => {
                       return (
-                        <div className="d-flex flex-column  align-items-start">
+                        <div className="d-flex flex-column align-items-start tw-truncate overflow-hidden">
                           <div className="meta-container no-selecto-drag">
                             <Link to="/xx/12" className="user-message">
                               林暮春
@@ -389,13 +441,12 @@ function ArticleList(props: ArticleListProps) {
                           >
                             {title}
                           </Link>
-                          <div className="summary mb-2">
+                          <div className="summary mb-2 w-100 tw-text-ellipsis tw-truncate w-100 pe-4">
                             <span className="text-muted fs-base no-selecto-drag">
-                              曾经我用过，写过一些挺骚的东西，但是我忘得一干二净 方法一 【换肤】
-                              在页面一定用link标签引入less样式的文件, 比如
+                              {record.summary || '没有任何内容...'}
                             </span>
                           </div>
-                          <div className="fs-base ">
+                          <div className="fs-base">
                             <Link
                               className="text-muted no-selecto-drag text-hover-primary me-8"
                               to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}`}

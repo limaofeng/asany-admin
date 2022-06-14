@@ -23,6 +23,17 @@ type TableRowProps<T> = {
   style?: CSSProperties;
 };
 
+function isNoSelectoDrag(dom?: HTMLElement, container?: HTMLElement): boolean {
+  if (dom == container || !dom || !container) {
+    return false;
+  }
+  const isOff = Array.from(dom.classList).includes('no-selecto-drag');
+  if (isOff) {
+    return true;
+  }
+  return isNoSelectoDrag(dom.parentNode, container);
+}
+
 function TableRow<T>(props: TableRowProps<T>) {
   const {
     index,
@@ -59,6 +70,9 @@ function TableRow<T>(props: TableRowProps<T>) {
   const handleSelect = useCallback(
     (e: any) => {
       if (ref.current?.dataset.ignore_click == 'on') {
+        return;
+      }
+      if (isNoSelectoDrag(e.target, ref.current!)) {
         return;
       }
       if (e.target.type == 'checkbox' && e.type == 'click') {

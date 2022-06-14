@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import { Toast as BsToast } from 'react-bootstrap';
-import type { ToastOptions as ToastifyOptions } from 'react-toastify';
+import type { ToastOptions as ToastifyOptions, ToastPromiseParams } from 'react-toastify';
 import { toast } from 'react-toastify';
 
 import './style.scss';
@@ -132,8 +132,15 @@ Toast.warning = (content: string, duration?: number, overrides?: ToastOptions) =
     ...toToastifyOptions(overrides),
   });
 };
-Toast.loading = () => {
-  // message();
+Toast.promise = function <T>(
+  content: Promise<T> | (() => Promise<T>),
+  params: ToastPromiseParams,
+  overrides?: ToastOptions,
+): Promise<T> {
+  return toast.promise(content, params, {
+    autoClose: overrides?.duration,
+    ...toToastifyOptions(overrides),
+  });
 };
 Toast.error = (content: string, duration?: number, overrides?: ToastOptions) => {
   toast.error(content, {

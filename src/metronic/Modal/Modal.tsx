@@ -195,6 +195,7 @@ export type ModalOptions = {
   timer?: number;
   timerProgressBar?: boolean;
   showLoaderOnConfirm?: boolean;
+  allowOutsideClick?: (() => boolean) | boolean;
   preConfirm?: (inputValue: any) => any;
 };
 
@@ -217,7 +218,7 @@ const message = async (options: MessageOptions) => {
     html: content as any,
     confirmButtonText,
     buttonsStyling: false,
-    allowOutsideClick: () => !Swal.isLoading(),
+    backdrop: true,
     customClass: {
       ...customClass,
       confirmButton: customClass.confirmButton || 'btn btn-primary',
@@ -260,7 +261,6 @@ Modal.confirm = async (options: ModalOptions) => {
         {content}
       </>
     ),
-    allowOutsideClick: true,
     confirmButtonText: okText || '确 认',
     cancelButtonText: cancelText || '取 消',
     reverseButtons: true,
