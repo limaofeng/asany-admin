@@ -1,35 +1,125 @@
-import TagsInput from '@asany/tags-input';
-import { TreeSelect } from 'antd';
+import { useCallback, useState } from 'react';
 
-import { Card, Form, Select2, Upload } from '@/metronic';
+import { Icon } from '@asany/icons';
+import { TreeSelect } from 'antd';
+import classnames from 'classnames';
+import type { Moment } from 'moment';
+import moment from 'moment';
+import { history } from 'umi';
+
+import { useDeleteArticleMutation } from '../hooks';
+import useDelete from '../hooks/useDelete';
+
+import PublishDatePicker from './PublishDatePicker';
+
+import { Button, Card, Form, Input, Upload } from '@/metronic';
+import type { Article } from '@/types';
 
 type ArticleFormSidebarProps = {
+  baseUrl: string;
+  article?: Article;
   onChangeCategory: (category: string) => void;
   categoryTreeData: { value: string; title: string }[];
 };
 
 function ArticleFormSidebar(props: ArticleFormSidebarProps) {
-  const { categoryTreeData, onChangeCategory } = props;
+  const { article, categoryTreeData, onChangeCategory, baseUrl } = props;
+
+  const [publishedAt, setPublishedAt] = useState<Moment | undefined>();
+
+  const handlePublishedAtChange = useCallback((datetime: any) => {
+    setPublishedAt(datetime);
+  }, []);
+
+  const disabledDate = useCallback((current: Moment) => {
+    return current.isAfter(moment());
+  }, []);
+
+  const disabledTime = useCallback(
+    (current: Moment) => {
+      return {
+        disabledHours: (): number[] => {
+          if (!(publishedAt || current).isSame(moment(), 'days')) {
+            return [];
+          }
+          const hours = [];
+          for (let i = moment().hours() + 1; i < 24; i++) {
+            hours.push(i);
+          }
+          return hours;
+        },
+        disabledMinutes: (selectedHour: number): number[] => {
+          if (!(publishedAt || current).isSame(moment(), 'days')) {
+            return [];
+          }
+          if (!current.set('hours', selectedHour).isSame(moment(), 'hours')) {
+            return [];
+          }
+          const minutes = [];
+          for (let i = moment().minutes() + 1; i < 60; i++) {
+            minutes.push(i);
+          }
+          return minutes;
+        },
+      };
+    },
+    [publishedAt],
+  );
+
+  const [deleteArticle] = useDeleteArticleMutation();
+
+  const [onDelete] = useDelete(
+    {
+      title: '你确定要删除这篇文章吗？',
+      content: (
+        <>
+          您即将删除“<strong>{article?.title}</strong>
+          ”。删除操作不可逆转，请谨慎操作，您确定删除吗？
+        </>
+      ),
+    },
+    async () => {
+      await deleteArticle({ variables: { id: article!.id! } });
+    },
+  );
+
+  const handleDelete = useCallback(async () => {
+    if (await onDelete()) {
+      history.replace(`${baseUrl}/cms/categories/${article!.category!.id}/articles`);
+    }
+  }, [onDelete, baseUrl, article]);
+
   return (
     <div className="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7">
-      <Card flush className="py-4" title="封面图" bodyClassName="text-center pt-0">
-        <Form.Item name="image">
-          <Upload.Image
-            width={150}
-            height={150}
-            className="mb-3"
-            space="orX8kLOV"
-            accept=".png, .jpg, .jpeg"
-            crop={{ height: 300, zoomable: false, aspectRatio: 1 }}
-            backgroundImage="/assets/media/svg/files/blank-image.svg"
-          />
-        </Form.Item>
-        <div className="text-muted fs-7">
-          设置文章封面图。仅接受 *.png、*.jpg 和 *.jpeg 格式的图片
-        </div>
-      </Card>
-      <Card flush className="py-4">
-        <Card.Body>
+      <Card flush>
+        <Card.Header className="ribbon ribbon-top ribbon-vertical">
+          {!!article?.status && article?.status !== 'DRAFT' && (
+            <div
+              className={classnames('ribbon-label', {
+                'bg-primary': article?.status == 'PUBLISHED',
+                'bg-success': article?.status == 'SCHEDULED',
+                'bg-danger': article?.status == 'INACTIVE',
+              })}
+            >
+              {renderStateText(article.status)}
+            </div>
+          )}
+          <Card.Title>文章设置</Card.Title>
+        </Card.Header>
+        <Card.Body className=" pt-0">
+          <Form.Item name="image" className="text-center">
+            <Upload.Image
+              width={240}
+              height={150}
+              className="mb-3"
+              space="Ohc2OaZ4"
+              accept=".png, .jpg, .jpeg"
+              backgroundImage="/assets/media/svg/files/blank-image.svg"
+            />
+          </Form.Item>
+          <div className="text-muted fs-7 mb-6">
+            设置文章封面图。仅接受 *.png、*.jpg 和 *.jpeg 格式的图片
+          </div>
           <Form.Item
             className="mb-3"
             label="所属栏目"
@@ -46,38 +136,53 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
               transitionName=""
             />
           </Form.Item>
-          <div className="text-muted fs-7 mb-8">您的文章必须发布在一个栏目中</div>
-          <Form.Item className="mb-3" label="标签" name="tags">
-            <TagsInput />
-          </Form.Item>
-          <div className="text-muted fs-7">选择上级栏目,未选择将添加到根目录</div>
-        </Card.Body>
-      </Card>
-      <Card flush className="py-4" title="状态">
-        <Card.Body className="pt-0">
-          <Form.Item className="mb-3" name="status">
-            <Select2
-              options={[
-                { value: 'PUBLISHED', label: '发布' },
-                { value: 'DRAFT', label: '草稿' },
-                { value: 'SCHEDULED', label: '定时发布' },
-                { value: 'INACTIVE', label: '无效的' },
-              ]}
+          <div className="text-muted fs-7 mb-6">您的文章必须发布在一个栏目中</div>
+
+          <Form.Item name="publishedAt" label="发布时间" className="mb-6">
+            <PublishDatePicker
+              onChange={handlePublishedAtChange}
+              disabled={article?.status == 'SCHEDULED'}
+              disabledDate={disabledDate}
+              disabledTime={disabledTime}
             />
           </Form.Item>
-          <div className="text-muted fs-7">选择上级栏目,未选择将添加到根目录</div>
-          <div className="mt-8">
-            <label className="form-label">选择发布日期和时间</label>
-            <input
-              className="form-control"
-              id="kt_ecommerce_add_category_status_datepicker"
-              placeholder="Pick date &amp; time"
-            />
-          </div>
+
+          <Form.Item name="summary" label="摘要" className="mb-6">
+            <Input.TextArea autoSize={{ minRows: 6 }} />
+          </Form.Item>
+          <Form.Item name="authors" label="作者">
+            <Input />
+          </Form.Item>
         </Card.Body>
       </Card>
+      {article && (
+        <Card flush className="py-4">
+          <Card.Body>
+            <Button
+              onClick={handleDelete}
+              className="mb-3"
+              variantStyle="light"
+              variant="danger"
+              icon={<Icon className="svg-icon-2" name="Bootstrap/trash" />}
+            >
+              删除
+            </Button>
+            <div className="text-muted fs-7 mb-6">文章删除后，不可恢复</div>
+          </Card.Body>
+        </Card>
+      )}
     </div>
   );
+}
+
+function renderStateText(status: 'PUBLISHED' | 'SCHEDULED' | 'INACTIVE') {
+  if (status == 'PUBLISHED') {
+    return '已发布';
+  }
+  if (status == 'SCHEDULED') {
+    return '计划中';
+  }
+  return '已失效';
 }
 
 export default ArticleFormSidebar;

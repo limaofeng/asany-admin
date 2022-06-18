@@ -258,7 +258,7 @@ function InfiniteScroll(props: InfiniteScrollProps, ref: React.ForwardedRef<Infi
   }, []);
 
   const handleShortcut = useCallback(
-    (action, event?: React.KeyboardEvent) => {
+    (action: string, event?: React.KeyboardEvent) => {
       event && event.preventDefault();
       const { index, rowCount: _rowCount } = state.current;
       if (!_rowCount || index == -1) {

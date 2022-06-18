@@ -67,7 +67,12 @@ function DatePicker(props: DatePickerProps) {
 
   const handleChange = useCallback(
     (date?: Moment) => {
-      onChange && onChange(date, date ? toDateString(date, format) : undefined);
+      if (onChange) {
+        onChange(date, date ? toDateString(date, format) : undefined);
+      } else {
+        debugger;
+        $(ref.current!).val(toDateString(date, format)!);
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -84,6 +89,7 @@ function DatePicker(props: DatePickerProps) {
           autoUpdateInput: false,
           singleDatePicker: true,
           showDropdowns: true,
+          drops: 'up',
           locale: { format, ...LOCALE },
         },
         handleChange,
@@ -160,7 +166,7 @@ function toMoment(value: string | Moment | number | undefined): Moment | undefin
   return undefined;
 }
 
-function toDateString(value: string | Moment | number, format: string) {
+function toDateString(value: string | Moment | number | undefined, format: string) {
   const _m = toMoment(value);
   if (!_m || !_m.isValid()) {
     return undefined;

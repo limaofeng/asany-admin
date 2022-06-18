@@ -15,6 +15,7 @@ query articles($filter: ArticleFilter, $page: Int, $pageSize: Int) {
       node {
         id
         title
+        image
         summary
         authors {
           id
@@ -94,6 +95,9 @@ mutation updateArticle($id: ID!, $input: ArticleUpdateInput!) {
     id
     title
     status
+    image
+    summary
+    publishedAt
     category {
       id
       name
@@ -127,6 +131,9 @@ query article($id: ID!) {
     id
     title
     status
+    image
+    summary
+    publishedAt
     category {
       id
       name

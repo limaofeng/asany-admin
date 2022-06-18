@@ -3,6 +3,9 @@
 :root {
   --bs-body-font-size: 14px;
   --bg-body: #f3f6f9;
+  --bs-body-font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji', 'Segoe UI Emoji',
+  'Segoe UI Symbol', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+  'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 html,
@@ -30,9 +33,7 @@ body {
   color: #404040;
   font-weight: 400;
   font-size: var(--bs-body-font-size) !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: var(--bs-body-font-family);
   font-variant: tabular-nums;
   background-color: var(--bg-body);
   font-feature-settings: 'tnum';

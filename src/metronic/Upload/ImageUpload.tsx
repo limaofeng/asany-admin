@@ -39,7 +39,7 @@ function ImageUpload(props: ImageUploadProps) {
     className,
     width,
     height,
-    crop = {},
+    crop = false,
     space,
     backgroundImage = DEFAULT_PREVIEW_URL,
     accept = '.png, .jpg, .jpeg',

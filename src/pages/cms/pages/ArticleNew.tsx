@@ -1,19 +1,24 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useReducer, useRef, useState } from 'react';
 
 import { Affix } from 'antd';
 import classnames from 'classnames';
+import type { Moment } from 'moment';
+import moment from 'moment';
 import type { RouteComponentProps } from 'react-router';
 import { history, Link } from 'umi';
 
 import ArticleFormSidebar from '../components/ArticleFormSidebar';
-import { Advanced, General, Metadata } from '../components/bodys/classic';
+import { Advanced, General, Metadata, PublishButton } from '../components/bodys/classic';
+import type { PublishAction } from '../components/bodys/classic/PublishButton';
 import { useCreateArticleMutation } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
 import { Breadcrumb, Button, Form, Tabs, Toast } from '@/metronic';
 import type { QueueUploadRef } from '@/metronic/typings';
-import type { ArticleCategory } from '@/types';
-import { tree } from '@/utils';
+import type { Article, ArticleCategory } from '@/types';
+import { delay, tree } from '@/utils';
+
+import '../style/ArticleForm.scss';
 
 type ArticleCategoryNewProps = RouteComponentProps<
   { cid: string; id: string },
@@ -31,7 +36,15 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
     },
   } = props;
 
-  console.log('rootCategoryId', rootCategoryId);
+  const temp = useRef<{
+    publishedAt: Moment;
+    action?: PublishAction | 'draft';
+    article?: Article;
+  }>({
+    action: 'draft',
+    publishedAt: moment(),
+  });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const queueUpload = useRef<QueueUploadRef>(null);
 
@@ -57,7 +70,7 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
   const [storeTemplate, setStoreTemplate] = useState<string | undefined>();
 
   const handleChangeCategory = useCallback(
-    (cid) => {
+    (cid: string) => {
       const category = categories.find((item) => item.id == cid);
       setStoreTemplate(category?.storeTemplate?.id);
     },
@@ -71,59 +84,104 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
       .filter((item) => item);
   }, [categories, categoryId]);
 
-  const handleFinish = useCallback(async () => {
-    await queueUpload.current?.uploadAll();
-    const { meta, category, body, ...values } = await form.validateFields();
+  const handleSubmit = useCallback(
+    async (action: PublishAction | 'draft') => {
+      temp.current.action = action;
 
-    const types: any = {
-      seo_title: 'single_line_text_field',
-      seo_description: 'multi_line_text_field',
-      seo_keywords: 'list.single_line_text_field',
-    };
+      await queueUpload.current?.uploadAll();
+      const {
+        meta,
+        category,
+        body,
+        publishedAt: _publishedAt,
+        ...values
+      } = await form.validateFields();
 
-    const metafields = [];
-    for (const namespace of Object.keys(meta)) {
-      for (const key of Object.keys(meta[namespace])) {
-        metafields.push({
-          namespace,
-          key,
-          value: meta[namespace][key],
-          type: types[namespace + '_' + key],
-        });
+      const types: any = {
+        seo_title: 'single_line_text_field',
+        seo_description: 'multi_line_text_field',
+        seo_keywords: 'list.single_line_text_field',
+      };
+
+      const metafields = [];
+      for (const namespace of Object.keys(meta)) {
+        for (const key of Object.keys(meta[namespace])) {
+          metafields.push({
+            namespace,
+            key,
+            value: meta[namespace][key],
+            type: types[namespace + '_' + key],
+          });
+        }
       }
-    }
 
-    const createArticleAwait = createArticle({
-      variables: {
-        input: {
-          ...values,
-          metafields,
-          category: category.id,
-          body: { type: 'HTML', text: body.text },
+      const input = {
+        ...values,
+        metafields,
+        category: category.id,
+        body: { type: 'HTML', text: body.text },
+      };
+
+      if (action == 'publish') {
+        input.status = 'PUBLISHED';
+      } else if (action == 'schedule') {
+        input.status = 'SCHEDULED';
+        input.publishedAt = _publishedAt;
+      } else {
+        input.status = 'DRAFT';
+      }
+
+      const createArticleAwait = createArticle({
+        variables: {
+          input,
         },
-      },
-    });
-    const _data = await Toast.promise(
-      createArticleAwait,
-      {
-        pending: '提交中...',
-        success: `“${values.title}” 修改成功`,
-        error: '提交出错',
-      },
-      {
-        duration: 2000,
-        placement: 'top-center',
-      },
-    );
-    if (!history.length) {
-      history.replace(`${baseUrl}/cms/categories/${category.id}/articles`);
-    } else {
-      history.goBack();
-    }
-    console.log('submit result set', _data);
-  }, [baseUrl, createArticle, form]);
+      });
+      const _data = await Toast.promise(
+        delay(createArticleAwait, 350),
+        {
+          pending: '提交中...',
+          success: `“${values.title}” 修改成功`,
+          error: '提交出错',
+        },
+        {
+          duration: 2000,
+          placement: 'top-center',
+        },
+      );
+      history.replace(`${baseUrl}/cms/categories/${category.id}/articles/${_data.data.article.id}`);
+      console.log('submit result set', _data);
+    },
+    [baseUrl, createArticle, form],
+  );
 
-  console.log('storeTemplate', storeTemplate);
+  const handleSaveDraft = useCallback(() => {
+    handleSubmit('draft');
+  }, [handleSubmit]);
+
+  const handlePublish = useCallback(
+    (action: PublishAction) => {
+      handleSubmit(action);
+    },
+    [handleSubmit],
+  );
+
+  const publishedAt = temp.current.publishedAt;
+  const handlePublishedAtChange = useCallback(
+    (_publishedAt: Moment) => {
+      temp.current.publishedAt = _publishedAt;
+      form.setFieldsValue({ publishedAt: _publishedAt });
+      forceRender();
+    },
+    [form],
+  );
+
+  const handlePublishCancel = useCallback(() => {
+    temp.current.publishedAt = moment();
+    forceRender();
+    form.setFieldsValue({ publishedAt: temp.current.publishedAt });
+  }, [form]);
+
+  console.log('storeTemplate', storeTemplate, publishedAt);
 
   return (
     <ContentWrapper
@@ -160,9 +218,8 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
       }
     >
       <Form
-        onFinish={handleFinish}
         form={form}
-        initialValues={{ status: 'DRAFT', category: { id: categoryId } }}
+        initialValues={{ status: 'DRAFT', publishedAt, category: { id: categoryId } }}
         className="form d-flex flex-column flex-lg-row"
       >
         <div className="d-flex flex-column flex-row-fluid gap-7 gap-lg-10  me-lg-10">
@@ -187,16 +244,26 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
                 'd-flex bg-body-color p-5 mx-4 tw-rounded-2xl justify-content-end',
               )}
             >
-              <Button variant="light" className="me-5">
-                取消
+              <Button
+                variant="light"
+                loading={temp.current.action == 'draft' && submitting}
+                onClick={handleSaveDraft}
+                className="me-5"
+              >
+                {!temp.current.action && submitting ? '保存中...' : '保存草稿'}
               </Button>
-              <Button as="button" htmlType="submit" loading={submitting}>
-                {false ? '保存中...' : '新增文章'}
-              </Button>
+              <PublishButton
+                onPublish={handlePublish}
+                publishedAt={publishedAt}
+                submitting={temp.current.action != 'draft' && submitting}
+                setPublishedAt={handlePublishedAtChange}
+                onCancel={handlePublishCancel}
+              />
             </div>
           </Affix>
         </div>
         <ArticleFormSidebar
+          baseUrl={baseUrl}
           categoryTreeData={categoryTreeData}
           onChangeCategory={handleChangeCategory}
         />

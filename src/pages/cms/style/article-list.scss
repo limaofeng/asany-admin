@@ -75,3 +75,12 @@
     }
   }
 }
+.article-image {
+  border-radius: 2px;
+  .symbol-label,
+  img {
+    width: 120px;
+    height: 80px;
+    border-radius: 2px;
+  }
+}

@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import classnames from 'classnames';
+
+import { unpack } from '../utils';
 
 import './style.scss';
 
@@ -31,7 +33,9 @@ function Radio(props: RadioProps) {
   const [checked, setChecked] = useState(defaultChecked);
 
   const handleClick = useCallback(
-    (e) => {
+    (e: any) => {
+      e.preventDefault();
+      e.stopPropagation();
       setChecked(true);
       onClick && onClick({ ...e, target: inputRef.current! });
     },
@@ -79,15 +83,20 @@ interface RadioGroupProps {
 }
 
 function RadioGroup(props: RadioGroupProps) {
-  const { onChange, options = [], size, value: defaultValue, solid, children, className } = props;
+  const { onChange, options, size, value: defaultValue, solid, children, className } = props;
 
   const [value, setValue] = useState(defaultValue);
 
-  const handleClick = useCallback((e) => {
-    onChange && onChange(e);
-    setValue(e.target.value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleClick = useCallback(
+    (e: any) => {
+      if (onChange) {
+        onChange(e);
+      } else {
+        setValue(e.target.value);
+      }
+    },
+    [onChange],
+  );
 
   useEffect(() => {
     if (value == defaultValue) {
@@ -97,9 +106,9 @@ function RadioGroup(props: RadioGroupProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValue]);
 
-  return (
-    <div className={classnames('form-radio-group', className)}>
-      {options.map((item) => (
+  const radios = useMemo(() => {
+    if (!!options) {
+      return options.map((item) => (
         <Radio
           onClick={handleClick}
           size={size}
@@ -110,10 +119,25 @@ function RadioGroup(props: RadioGroupProps) {
         >
           {item.label}
         </Radio>
-      ))}
-      {children}
-    </div>
-  );
+      ));
+    }
+    return unpack(children).map((item: React.ReactElement<RadioProps>) => {
+      if (!React.isValidElement(item)) {
+        return item;
+      }
+      if (item.type != Radio) {
+        return item;
+      }
+      return React.cloneElement(item, {
+        onClick: handleClick,
+        size,
+        solid,
+        checked: value === item.props.value,
+      });
+    });
+  }, [children, handleClick, options, size, solid, value]);
+
+  return <div className={classnames('form-radio-group', className)}>{radios}</div>;
 }
 
 Radio.Group = RadioGroup;

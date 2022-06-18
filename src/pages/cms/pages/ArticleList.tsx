@@ -1,6 +1,7 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import Icon from '@asany/icons';
+import classnames from 'classnames';
 import jquery from 'jquery';
 import moment from 'moment';
 import qs from 'qs';
@@ -14,6 +15,7 @@ import {
   useDeleteArticleMutation,
   useDeleteManyArticlesMutation,
 } from '../hooks';
+import useDelete from '../hooks/useDelete';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -25,12 +27,10 @@ import {
   Empty,
   Input,
   Menu,
-  Modal,
+  Symbol,
   Table,
-  Toast,
 } from '@/metronic';
 import type { Article, ArticleCategory } from '@/types';
-import { delay } from '@/utils';
 
 import '../style/article-list.scss';
 
@@ -39,52 +39,6 @@ type ArticleActionsProps = {
   data: IArticle;
   refetch: () => void;
 };
-
-type DeleteOptions = {
-  title: string | React.ReactNode;
-  content: string | React.ReactNode;
-  width?: string;
-};
-
-function useDelete(options: DeleteOptions, execute: () => Promise<void>) {
-  const deleting = useRef(false);
-
-  const onDelete = useCallback(async () => {
-    const { width } = options;
-    const result = await Modal.confirm({
-      ...options,
-      width,
-      okText: '删 除',
-      okClassName: 'btn-danger',
-      allowOutsideClick: () => {
-        return !deleting.current;
-      },
-      preConfirm: async () => {
-        deleting.current = true;
-        try {
-          const okButton = document.querySelector('.swal2-confirm')!;
-          okButton.textContent = '删除中...';
-          const spinner = document.createElement('span');
-          spinner.classList.add('spinner-border-sm', 'ms-2', 'spinner-border', 'align-middle');
-          okButton.appendChild(spinner);
-          const _result = await delay(execute(), 350);
-          console.log(_result);
-        } finally {
-          deleting.current = false;
-        }
-      },
-    });
-    if (!result.isConfirmed) {
-      return;
-    }
-    Toast.success('删除成功', 2000, {
-      placement: 'top-center',
-      progressBar: true,
-    });
-  }, [execute, options]);
-
-  return [onDelete];
-}
 
 type DeleteManyProps = {
   selectedRows: Article[];
@@ -276,7 +230,7 @@ function ArticleList(props: ArticleListProps) {
   }, []);
 
   const handleChange = useCallback(
-    (_pagination, _filters, _sorter) => {
+    (_pagination: any, _filters: any, _sorter: any) => {
       const _query: any = {};
       if (variables.filter?.name_contains) {
         _query.q = variables.filter?.name_contains;
@@ -370,14 +324,33 @@ function ArticleList(props: ArticleListProps) {
                   //   </Button>
                   // </>
                    */}
-                <Button
-                  variantStyle="light"
-                  variant="primary"
-                  className="me-3"
-                  icon={<Icon className="svg-icon-2" name="Duotune/gen031" />}
+                <Dropdown
+                  overlay={
+                    <Menu className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold w-125px py-4">
+                      <Menu.Item key="edit" className="px-3">
+                        最新
+                      </Menu.Item>
+                      <Menu.Item key="publish" className="px-3">
+                        最晚
+                      </Menu.Item>
+                      <Menu.Item key="delete" className="px-3 actions-delete">
+                        最近更新的
+                      </Menu.Item>
+                      <Menu.Item key="delete" className="px-3 actions-delete">
+                        点击量
+                      </Menu.Item>
+                    </Menu>
+                  }
+                  placement="bottomLeft"
                 >
-                  过滤筛选
-                </Button>
+                  <Button
+                    variant="white"
+                    className="me-3"
+                    // icon={<Icon className="svg-icon-2" name="Duotune/gen031" />}
+                  >
+                    排序: 最新
+                  </Button>
+                </Dropdown>
                 <Button
                   as={Link}
                   variant="primary"
@@ -456,54 +429,73 @@ function ArticleList(props: ArticleListProps) {
                     key: 'title',
                     render: (title, record) => {
                       return (
-                        <div className="d-flex flex-column align-items-start tw-truncate overflow-hidden">
-                          <div className="meta-container no-selecto-drag">
-                            <Link to="/xx/12" className="user-message">
-                              林暮春
+                        <div className="d-flex flex-row tw-truncate overflow-hidden">
+                          <div className="d-flex flex-column align-items-start tw-truncate overflow-hidden">
+                            <div className="meta-container no-selecto-drag">
+                              <Link to="/xx/12" className="user-message">
+                                林暮春
+                              </Link>
+                              <span className="created-at">
+                                {moment(record.createdAt).fromNow()}
+                              </span>
+                              <div className="category_list">
+                                {record.categories
+                                  .filter((item) => item.id !== rootCategoryId)
+                                  .map((category) => (
+                                    <Link
+                                      key={category.id}
+                                      to={`${baseUrl}/cms/categories/${category.id}/articles`}
+                                      className="tag"
+                                    >
+                                      {category.name}
+                                    </Link>
+                                  ))}
+                              </div>
+                            </div>
+                            <Link
+                              onClick={(e) => e.stopPropagation()}
+                              to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}`}
+                              className="mt-2 mb-2 text-gray-800 no-selecto-drag fs-4 text-hover-primary mb-1"
+                            >
+                              {title}
                             </Link>
-                            <span className="created-at">{moment(record.createdAt).fromNow()}</span>
-                            <div className="category_list">
-                              {record.categories
-                                .filter((item) => item.id !== rootCategoryId)
-                                .map((category) => (
-                                  <Link
-                                    key={category.id}
-                                    to={`${baseUrl}/cms/categories/${category.id}/articles`}
-                                    className="tag"
-                                  >
-                                    {category.name}
-                                  </Link>
-                                ))}
+                            <div
+                              className={classnames(
+                                'summary mb-2 w-100 tw-text-ellipsis tw-truncate w-100',
+                                {
+                                  'pe-8': !record.image,
+                                },
+                              )}
+                            >
+                              <span className="text-muted fs-base no-selecto-drag">
+                                {record.summary || '没有任何内容...'}
+                              </span>
+                            </div>
+                            <div className="fs-base">
+                              <Link
+                                className="text-muted no-selecto-drag text-hover-primary me-8"
+                                to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}`}
+                              >
+                                <Icon className="svg-icon-4 me-2" name="Bootstrap/eye" />
+                                41W
+                              </Link>
+                              <Link
+                                className="text-muted no-selecto-drag text-hover-primary me-8"
+                                to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}#comments`}
+                              >
+                                <Icon className="svg-icon-6 me-2" name="Bootstrap/chat" />
+                                41W
+                              </Link>
                             </div>
                           </div>
-                          <Link
-                            onClick={(e) => e.stopPropagation()}
-                            to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}`}
-                            className="mt-2 mb-2 text-gray-800 no-selecto-drag fs-4 text-hover-primary mb-1"
-                          >
-                            {title}
-                          </Link>
-                          <div className="summary mb-2 w-100 tw-text-ellipsis tw-truncate w-100 pe-4">
-                            <span className="text-muted fs-base no-selecto-drag">
-                              {record.summary || '没有任何内容...'}
-                            </span>
-                          </div>
-                          <div className="fs-base">
-                            <Link
-                              className="text-muted no-selecto-drag text-hover-primary me-8"
-                              to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}`}
-                            >
-                              <Icon className="svg-icon-4 me-2" name="Bootstrap/eye" />
-                              41W
-                            </Link>
-                            <Link
-                              className="text-muted no-selecto-drag text-hover-primary me-8"
-                              to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}#comments`}
-                            >
-                              <Icon className="svg-icon-6 me-2" name="Bootstrap/chat" />
-                              41W
-                            </Link>
-                          </div>
+                          {record.image && (
+                            <div className="px-8 d-flex align-items-end">
+                              <Symbol
+                                className="article-image"
+                                src={process.env.STORAGE_URL + `/preview/${record.image?.id}`}
+                              />
+                            </div>
+                          )}
                         </div>
                       );
                     },
