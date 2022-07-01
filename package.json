@@ -1,6 +1,6 @@
 {
   "name": "asany-admin",
-  "version": "0.2.27",
+  "version": "0.2.28",
   "private": true,
   "description": "An out-of-box UI solution for enterprise applications",
   "scripts": {

@@ -1,3 +1,12 @@
+## [0.2.28](https://github.com/limaofeng/asany-admin/compare/v0.2.27...v0.2.28) (2022-07-01)
+
+
+### Features
+
+* 网站模块 ([cb893fe](https://github.com/limaofeng/asany-admin/commit/cb893fe5969bef2a6ac8558203de96752a1f4ca1))
+
+
+
 ## [0.2.27](https://github.com/limaofeng/asany-admin/compare/v0.2.26...v0.2.27) (2022-07-01)
 
 
