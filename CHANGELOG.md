@@ -1,3 +1,7 @@
+## [0.2.29](https://github.com/limaofeng/asany-admin/compare/v0.2.28...v0.2.29) (2022-07-01)
+
+
+
 ## [0.2.28](https://github.com/limaofeng/asany-admin/compare/v0.2.27...v0.2.28) (2022-07-01)
 
 
