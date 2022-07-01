@@ -6,6 +6,7 @@ export default defineConfig({
     uri: 'http://localhost:8080/graphql',
   },
   define: {
+    'process.env.WEBSITE_URL': '//localhost:8001',
     'process.env.STORAGE_URL': '//localhost:8080',
     'process.env.MOBILE_URL': '//localhost:8001',
   },

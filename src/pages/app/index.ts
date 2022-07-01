@@ -21,19 +21,29 @@ class App {
     loader: () => import('./pages/AppView'),
     loading: LoadingComponent,
   });
-  @component({ name: 'Overview' })
+  @component({ name: 'settings.Overview' })
   Overview = dynamic({
-    loader: () => import('./pages/Overview'),
+    loader: () => import('./pages/settings/Overview'),
     loading: LoadingComponent,
   });
-  @component({ name: 'MenuTree' })
+  @component({ name: 'settings.Profile' })
+  Profile = dynamic({
+    loader: () => import('./pages/settings/Profile'),
+    loading: LoadingComponent,
+  });
+  @component({ name: 'settings.ClientSecrets' })
+  ClientSecrets = dynamic({
+    loader: () => import('./pages/settings/ClientSecrets'),
+    loading: LoadingComponent,
+  });
+  @component({ name: 'settings.MenuTree' })
   MenuTree = dynamic({
-    loader: () => import('./pages/MenuTree'),
+    loader: () => import('./pages/settings/MenuTree'),
     loading: LoadingComponent,
   });
-  @component({ name: 'RouteTree' })
+  @component({ name: 'settings.RouteTree' })
   RouteTree = dynamic({
-    loader: () => import('./pages/RouteTree'),
+    loader: () => import('./pages/settings/RouteTree'),
     loading: LoadingComponent,
   });
 }

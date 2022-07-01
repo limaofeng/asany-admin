@@ -13,6 +13,7 @@ export default defineConfig({
   define: {
     'process.env.STORAGE_URL': '//47.103.119.188:8000',
     'process.env.MOBILE_URL': '//47.103.119.188:8002',
+    'process.env.WEBSITE_URL': '//47.103.119.188:8001',
   },
   hash: true,
   antd: {},

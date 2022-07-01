@@ -40,9 +40,9 @@
   }
 }
 .antd-theme-custom {
-  a {
-    color: var(--bs-primary);
-  }
+  // a:not(.btn) {
+  //   color: var(--bs-primary);
+  // }
   .ant-picker-today-btn:hover {
     color: var(--bs-primary);
   }

@@ -1,21 +1,19 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import Icon from '@asany/icons';
+import { Icon } from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 
-import { EditMenuModal, NewMenuModal } from '../components/MenuModal';
-import { useDeleteMenuMutation, useLoadMenusQuery } from '../hooks';
-
-import { Badge, Button, Card, Dropdown, Menu, Modal, TreeList } from '@/metronic';
-import type { Menu as IMenu } from '@/types';
+import { ContentWrapper } from '@/layouts/components';
+import { Badge, Breadcrumb, Button, Card, Dropdown, Menu, Modal, TreeList } from '@/metronic';
+import { useDeleteMenuMutation, useLoadMenusQuery } from '@/pages/app/hooks';
 import { tree } from '@/utils';
 
-type MenuTreeProps = RouteComponentProps<{ id: string }>;
+type WebsiteNavigationProps = RouteComponentProps<{ id: string }>;
 
 interface MenuActionsProps {
-  data: IMenu;
+  data: Menu;
   refetch: () => void;
-  onEdit: (data: IMenu) => void;
+  onEdit: (data: Menu) => void;
 }
 
 function MenuActions(props: MenuActionsProps) {
@@ -27,7 +25,7 @@ function MenuActions(props: MenuActionsProps) {
   });
 
   const handleClick = useCallback(
-    async ({ key, domEvent }) => {
+    async ({ key, domEvent }: any) => {
       domEvent.preventDefault();
       domEvent.stopPropagation();
       setVisible(false);
@@ -92,16 +90,16 @@ function MenuActions(props: MenuActionsProps) {
   );
 }
 
-function MenuTree(props: MenuTreeProps) {
-  const {
-    match: {
-      params: { id },
-    },
-  } = props;
+function WebsiteNavigation(props: WebsiteNavigationProps) {
+  const { match } = props;
 
-  const [modal, setModal] = useState<{ visible: boolean; data?: IMenu }>({
-    visible: false,
-  });
+  console.log('match', match.params);
+
+  // const [modal, setModal] = useState<{ visible: boolean; data?: any }>({
+  //   visible: false,
+  // });
+
+  const id = 352;
 
   const { data, refetch } = useLoadMenusQuery({ variables: { id } });
 
@@ -127,28 +125,40 @@ function MenuTree(props: MenuTreeProps) {
   );
 
   const handleOpenMenuModal = useCallback(() => {
-    setModal({ visible: true });
+    // setModal({ visible: true });
   }, []);
 
-  const handleCloseMenuModal = useCallback(() => {
-    setModal({ visible: false });
-  }, []);
+  // const handleCloseMenuModal = useCallback(() => {
+  //   setModal({ visible: false });
+  // }, []);
 
-  const handleEdit = useCallback((_data) => {
-    setModal({ visible: true, data: _data });
+  const handleEdit = useCallback(() => {
+    //   setModal({ visible: true, data: _data });
   }, []);
 
   return (
-    <>
+    <ContentWrapper
+      header={{
+        title: '导航菜单',
+      }}
+      breadcrumb={
+        <Breadcrumb className="fw-bold fs-base text-muted my-1">
+          <Breadcrumb.Item>设置</Breadcrumb.Item>
+          <Breadcrumb.Item>导航菜单</Breadcrumb.Item>
+        </Breadcrumb>
+      }
+      loading={false}
+      footer={false}
+    >
       <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
         <Card.Header className="pt-8">
           <Card.Title />
           <Card.Toolbar>
             <div className="d-flex justify-content-end">
-              <Button size="sm" variant="danger" className="me-3">
+              <Button variant="danger" className="me-3">
                 删除
               </Button>
-              <Button onClick={handleOpenMenuModal} size="sm" variant="primary">
+              <Button onClick={handleOpenMenuModal} variant="primary">
                 新建菜单
               </Button>
             </div>
@@ -158,7 +168,7 @@ function MenuTree(props: MenuTreeProps) {
           <TreeList
             className="app-treelist"
             rowKey="id"
-            draggable={false}
+            draggable={true}
             columns={[
               {
                 key: 'title',
@@ -217,7 +227,7 @@ function MenuTree(props: MenuTreeProps) {
           />
         </Card.Body>
       </Card>
-      {modal.data ? (
+      {/* {modal.data ? (
         <EditMenuModal
           onSuccess={refetch}
           data={modal.data}
@@ -233,9 +243,9 @@ function MenuTree(props: MenuTreeProps) {
           visible={modal.visible}
           onCancel={handleCloseMenuModal}
         />
-      )}
-    </>
+      )} */}
+    </ContentWrapper>
   );
 }
 
-export default MenuTree;
+export default WebsiteNavigation;

@@ -1,5 +1,7 @@
 import classnames from 'classnames';
 
+import './style.scss';
+
 type SwitchProps = {
   label?: string;
   solid?: boolean;
@@ -11,7 +13,7 @@ function Switch(props: SwitchProps) {
   const { label, checked, value, solid } = props;
   return (
     <label
-      className={classnames('form-check form-switch form-check-custom', {
+      className={classnames('form-switch form-check-custom', {
         [`form-check-${solid}`]: !!solid,
       })}
     >

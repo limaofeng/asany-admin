@@ -2,6 +2,7 @@ query myApps {
   apps: applications {
     id
     name
+    title
     description
   }
 }
@@ -10,7 +11,25 @@ query app($id: ID!) {
   app: application(id: $id) {
     id
     name
+    title
     description
+  }
+}
+
+query appWithClientSecret($id: ID!) {
+  app: application(id: $id) {
+    id
+    name
+    title
+    description
+    clientId
+    clientSecrets {
+      id
+      secret
+      createdAt
+      createdBy
+      lastUseTime
+    }
   }
 }
 

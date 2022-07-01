@@ -6,6 +6,7 @@ import locale from '@fullcalendar/core/locales/zh-cn';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
+import '@fullcalendar/react/dist/vdom';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { Lunar } from 'lunar-javascript';
 import moment from 'moment';
@@ -75,7 +76,7 @@ function MainCalendar() {
     [changeState],
   );
 
-  const handleNavLink = useCallback((e) => {
+  const handleNavLink = useCallback((e: any) => {
     fullCalendar.current?.getApi().changeView('timeGridDay', new Date(e.target.dataset.date));
   }, []);
 
@@ -181,7 +182,9 @@ function MainCalendar() {
 
   return (
     <Shortcuts
-      tag={<ContentWrapper header={false} footer={false} mask={isNew} className="main-calendar" />}
+      tag={
+        <ContentWrapper header={false} footer={false} loading={isNew} className="main-calendar" />
+      }
       name="CALENDAR"
       handler={handleMove}
     >

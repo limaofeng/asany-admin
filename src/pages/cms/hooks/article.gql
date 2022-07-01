@@ -63,6 +63,19 @@ query articleCategory($id: ID!) {
     parent {
       id
     }
+    storeTemplate {
+      id
+    }
+    page {
+      enabled
+      route {
+        path
+      }
+      component {
+        id
+        template
+      }
+    }
   }
 }
 
@@ -141,6 +154,12 @@ query article($id: ID!) {
     categories {
       id
       name
+    }
+    metafields {
+      id
+      key
+      namespace
+      value
     }
     body {
       id

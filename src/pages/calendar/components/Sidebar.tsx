@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
+import type { DayValue } from '@amir04lm26/react-modern-calendar-date-picker';
+import { Calendar } from '@amir04lm26/react-modern-calendar-date-picker';
+import '@amir04lm26/react-modern-calendar-date-picker/lib/DatePicker.css';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
-import type { DayValue } from 'react-modern-calendar-datepicker';
-import { Calendar } from 'react-modern-calendar-datepicker';
-import 'react-modern-calendar-datepicker/lib/DatePicker.css';
 import { useModel } from 'umi';
 
 import { useCalendarEventsWithDaysLazyQuery, useCalendarSetsQuery } from '../hooks';

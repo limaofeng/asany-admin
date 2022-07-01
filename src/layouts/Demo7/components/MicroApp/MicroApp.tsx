@@ -6,6 +6,7 @@ import AppSidebar from './AppSidebar';
 import { AppProvider, useMicroApp } from './MicroAppContext';
 
 type AppContainerProps = {
+  loading?: boolean;
   className?: string;
   children: React.ReactNode;
 };

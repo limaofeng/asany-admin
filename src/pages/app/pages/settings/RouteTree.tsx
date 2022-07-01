@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 
-import { useLoadRoutesQuery } from '../hooks';
+import { useLoadRoutesQuery } from '../../hooks';
 
 import { Badge, Button, Card, TreeList } from '@/metronic';
 import { tree } from '@/utils';

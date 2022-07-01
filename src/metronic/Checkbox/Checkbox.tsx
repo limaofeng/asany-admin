@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import classnames from 'classnames';
 
@@ -18,16 +18,30 @@ type CheckboxProps = {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   className?: string;
+  inputClassName?: string;
+  children?: React.ReactNode;
 };
 
 function Checkbox(props: CheckboxProps) {
-  const { solid, size, label, style, disabled, value = '1', className, onChange, onClick } = props;
+  const {
+    solid,
+    size,
+    children,
+    label = children,
+    style,
+    disabled,
+    value = '1',
+    className,
+    inputClassName,
+    onChange,
+    onClick,
+  } = props;
 
   const id = useRef<string>(uuid());
   const ref = useRef<HTMLInputElement>(null);
 
-  const handleClick = useCallback(
-    (e) => {
+  const handleChange = useCallback(
+    (e: any) => {
       e.target = ref.current!;
       if (props.checked !== undefined) {
         e.stopPropagation();
@@ -50,12 +64,12 @@ function Checkbox(props: CheckboxProps) {
         id={id.current}
         disabled={disabled}
         style={style}
-        className="form-check-input"
+        className={classnames('form-check-input', inputClassName)}
         type="checkbox"
         checked={onChange ? props.checked || false : undefined}
         value={value}
         onClick={onClick}
-        onChange={handleClick}
+        onChange={handleChange}
       />
       {label && (
         <label htmlFor={id.current} style={{ userSelect: 'none' }} className="form-check-label">

@@ -4,7 +4,7 @@ import { ContentWrapper } from '@/layouts/components';
 import { Badge, Card, Col, Progress, Row, Symbol, Tooltip } from '@/metronic';
 
 function AppList() {
-  const { data = { apps: [] } } = useMyAppsQuery();
+  const { data = { apps: [] }, loading } = useMyAppsQuery();
 
   const apps = data.apps;
 
@@ -13,12 +13,13 @@ function AppList() {
       header={{
         title: '应用管理',
       }}
+      loading={loading}
     >
       <Row gutter={{ default: 6, xl: 9 }}>
         {apps.map((item) => (
           <Col key={item.id} md={6} xl={4}>
             {/*----begin::Card--*/}
-            <Card as="a" to={`/website/${item.id}`} className="border-hover-primary">
+            <Card as="a" to={`/apps/${item.id}`} className="border-hover-primary">
               <Card.Header border={false} className="pt-9">
                 <Card.Title className="m-0">
                   <Symbol.Avatar
@@ -36,7 +37,7 @@ function AppList() {
                 </Card.Toolbar>
               </Card.Header>
               <Card.Body className="p-9">
-                <div className="fs-3 fw-bolder text-dark">{item.name}</div>
+                <div className="fs-3 fw-bolder text-dark">{item.title}</div>
                 <p className="text-gray-400 fw-bold fs-5 mt-1 mb-7">{item.description}</p>
                 <div className="d-flex flex-wrap mb-5">
                   <div className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-7 mb-3">
