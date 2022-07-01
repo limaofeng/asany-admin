@@ -27,7 +27,7 @@ function MenuActions(props: MenuActionsProps) {
   });
 
   const handleClick = useCallback(
-    async ({ key, domEvent }) => {
+    async ({ key, domEvent }: any) => {
       domEvent.preventDefault();
       domEvent.stopPropagation();
       setVisible(false);
@@ -126,17 +126,17 @@ function MenuTree(props: MenuTreeProps) {
     [routes],
   );
 
-  // const handleOpenMenuModal = useCallback(() => {
-  //   setModal({ visible: true });
-  // }, []);
+  const handleOpenMenuModal = useCallback(() => {
+    //   setModal({ visible: true });
+  }, []);
 
   // const handleCloseMenuModal = useCallback(() => {
   //   setModal({ visible: false });
   // }, []);
 
-  // const handleEdit = useCallback((_data) => {
-  //   setModal({ visible: true, data: _data });
-  // }, []);
+  const handleEdit = useCallback(() => {
+    //   setModal({ visible: true, data: _data });
+  }, []);
 
   return (
     <ContentWrapper
