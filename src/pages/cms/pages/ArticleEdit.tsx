@@ -224,6 +224,8 @@ function ArticleEdit(props: ArticleEditProps) {
       }}
       breadcrumb={
         <Breadcrumb className="fw-bold fs-base text-muted my-1">
+          <Breadcrumb.Item key="website">互升官网</Breadcrumb.Item>
+          <Breadcrumb.Item key="column">栏目</Breadcrumb.Item>
           {article ? (
             <>
               {article.categories

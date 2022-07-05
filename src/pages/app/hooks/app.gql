@@ -47,6 +47,10 @@ query loadMenus($id: ID!) {
     id
     menus {
       ...MenuParts
+      hideInBreadcrumb
+      hideChildrenInMenu
+      hideInMenu
+      authority
     }
   }
 }
@@ -54,12 +58,32 @@ query loadMenus($id: ID!) {
 mutation createMenu($input: MenuCreateInput!) {
   createMenu(input: $input) {
     ...MenuParts
+    hideInBreadcrumb
+    hideChildrenInMenu
+    hideInMenu
+    authority
+    application {
+      id
+    }
+    component {
+      id
+    }
   }
 }
 
 mutation updateMenu($id: ID!, $input: MenuUpdateInput!) {
   updateMenu(id: $id, input: $input) {
     ...MenuParts
+    hideInBreadcrumb
+    hideChildrenInMenu
+    hideInMenu
+    authority
+    application {
+      id
+    }
+    component {
+      id
+    }
   }
 }
 

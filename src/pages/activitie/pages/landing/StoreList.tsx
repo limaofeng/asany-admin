@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
 import { Icon } from '@asany/icons';
-import type { History } from 'history';
 import qs from 'qs';
 import type { RouteComponentProps } from 'react-router';
 import { Link } from 'umi';
@@ -26,7 +25,7 @@ import type { Sorter } from '@/metronic/typings';
 import type { LandingStore } from '@/types';
 
 type ActionsProps = {
-  history: History;
+  history: any;
   data: LandingStore;
   onDelete: (...ids: string[]) => Promise<number>;
 };
@@ -60,7 +59,7 @@ function Actions({ data, history, onDelete }: ActionsProps) {
   );
 
   const handleMenuClick = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.key == 'view') {
         history.push(`/website/landing/stores/${data.id}`);
       } else if (event.key == 'delete') {
@@ -150,14 +149,14 @@ function StoreList(props: StoreListProps) {
   }, [data?.landingStores, loading, previousData?.landingStores]);
 
   const handleSearch = useCallback(
-    (text) => {
+    (text: string) => {
       history.replace(location.pathname + '?' + qs.stringify({ q: text }));
     },
     [history, location.pathname],
   );
 
   const handleChange = useCallback(
-    (_pagination, _filters, _sorter) => {
+    (_pagination: any, _filters: any, _sorter: any) => {
       const _query: any = {};
       if (variables.filter?.name_contains) {
         _query.q = variables.filter?.name_contains;

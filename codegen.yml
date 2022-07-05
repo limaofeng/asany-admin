@@ -110,7 +110,7 @@ generates:
         - prettier --write
         - eslint --fix
   src/pages/activitie/hooks/api.ts:
-    documents: ["src/pages/website/hooks/*.gql"]
+    documents: ["src/pages/activitie/hooks/*.gql"]
     plugins:
       - "typescript-operations"
       - "typescript-react-apollo"

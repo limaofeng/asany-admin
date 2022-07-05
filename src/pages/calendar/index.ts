@@ -1,3 +1,4 @@
+import '@fullcalendar/react/dist/vdom';
 import { component, library } from 'sunmao';
 import { dynamic } from 'umi';
 

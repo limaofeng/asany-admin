@@ -146,6 +146,8 @@ function LayoutWrapper(props: LayoutProps) {
 
   const currentMenu = useMemo(() => {
     const matchMenus = getMatchMenu(location.pathname, menus, true);
+    console.log('currentMenu', matchMenus, menus, location.pathname);
+    console.log('>>>>', getMatchMenu('/activities', menus, true));
     return matchMenus[0];
   }, [location.pathname, menus]);
 
@@ -156,6 +158,8 @@ function LayoutWrapper(props: LayoutProps) {
     state.current.activeMenuKey = currentMenu.id;
     forceRender();
   }, [currentMenu]);
+
+  console.log('menuRender', currentMenu);
 
   const menuRender = useMemo(() => {
     if (layoutRestProps.menuRender == false) {

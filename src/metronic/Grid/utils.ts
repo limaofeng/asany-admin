@@ -33,7 +33,11 @@ export type Breakpoint = {
 export function getResponsiveClassNames(prefix: string, config: Breakpoint) {
   return classnames(
     ...Object.keys(config)
-      .filter((name) => ['default', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'].includes(name))
+      .filter(
+        (name) =>
+          ['default', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'].includes(name) &&
+          config[name] != undefined,
+      )
       .map((name) => {
         const value = config[name];
         const _name = name == 'default' ? '' : `-${name}`;

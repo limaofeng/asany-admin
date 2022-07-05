@@ -6,7 +6,6 @@ import locale from '@fullcalendar/core/locales/zh-cn';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
-import '@fullcalendar/react/dist/vdom';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { Lunar } from 'lunar-javascript';
 import moment from 'moment';

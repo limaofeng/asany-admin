@@ -4,6 +4,7 @@ import { dynamic } from 'umi';
 import LoadingComponent from '@/components/PageLoading';
 
 import './pages/style/App.scss';
+import './style/index.scss';
 
 @library({
   name: 'app',

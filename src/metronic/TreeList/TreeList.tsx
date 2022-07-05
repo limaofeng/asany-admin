@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 
 import Icon from '@asany/icons';
 import Tree from '@asany/tree';
-import type { IconRender, TreeNode } from '@asany/tree/dist/typings';
+import type { EventCallback, IconRender, SelectEvent, TreeNode } from '@asany/tree/dist/typings';
 import classnames from 'classnames';
 import { useMeasure } from 'react-use';
 
@@ -17,12 +17,15 @@ import './style/TreeList.scss';
 type TreeListProps<T> = {
   className?: string;
   expandedKeys?: string[];
+  selectedKeys?: string[];
   rowKey?: string | ((record: T & TreeNode) => string);
   rowSelection?: RowSelection<T>;
   dataSource?: (T & TreeNode)[];
   draggable?: boolean;
   columns: TableColumn<T & TreeNode>[];
   iconRender?: false | IconRender;
+  onDrop?: (e: any) => void;
+  onSelect?: EventCallback<SelectEvent>;
 };
 
 function hasWidth<T>(col: TableColumn<T>) {
@@ -59,7 +62,7 @@ function TreeListRowCol<T>(props: TreeListRowColProps<T>) {
 
   const [width, setWidth] = useState(state.widths.get(col.key!));
 
-  const handleChangeWidth = useCallback((_width) => {
+  const handleChangeWidth = useCallback((_width: number) => {
     setWidth(_width);
   }, []);
 
@@ -139,12 +142,15 @@ type TreeListState = {
 function TreeList<T>(props: TreeListProps<T>) {
   const {
     draggable,
+    selectedKeys,
     expandedKeys,
     columns,
     className,
     dataSource,
     iconRender,
     rowKey = 'key',
+    onDrop,
+    onSelect,
   } = props;
 
   const state = useRef<TreeListState>(
@@ -203,9 +209,19 @@ function TreeList<T>(props: TreeListProps<T>) {
     state.current.emitter.emit(`${key}_width`, width);
   }, []);
 
-  const handleDrop = useCallback((e) => {
-    console.log('handleDrop', e);
-  }, []);
+  const handleSelect = useCallback(
+    (e: any) => {
+      onSelect && onSelect(e);
+    },
+    [onSelect],
+  );
+
+  const handleDrop = useCallback(
+    (e: any) => {
+      onDrop && onDrop(e);
+    },
+    [onDrop],
+  );
 
   return (
     <div className={classnames('tree-list', className)}>
@@ -225,10 +241,12 @@ function TreeList<T>(props: TreeListProps<T>) {
       <Tree
         className="tree-list-body"
         draggable={draggable}
+        selectedKeys={selectedKeys}
         expandedKeys={expandedKeys}
         iconRender={handleIconRender}
         contentRender={handleContentRender}
         treeData={dataSource!}
+        onSelect={handleSelect}
         onDrop={handleDrop}
       />
     </div>

@@ -64,7 +64,7 @@
     "@asany/shortcuts": "^0.1.5",
     "@asany/sortable": "^0.1.36",
     "@asany/tags-input": "^0.1.2",
-    "@asany/tree": "^0.1.23",
+    "@asany/tree": "^0.1.26",
     "@ckeditor/ckeditor5-react": "^3.0.3",
     "@fullcalendar/core": "^5.11.0",
     "@fullcalendar/daygrid": "^5.11.0",

@@ -1,0 +1,39 @@
+.drawer {
+  &.drawer.drawer-on {
+    box-shadow: -6px 0 16px -8px rgb(0 0 0 / 8%), -9px 0 28px 0 rgb(0 0 0 / 5%),
+      -12px 0 48px 16px rgb(0 0 0 / 3%) !important;
+  }
+  & > .card {
+    & > .card-header {
+      height: auto;
+      min-height: auto;
+      margin: 0;
+      padding-top: 0;
+      padding-right: 0;
+      padding-left: 0;
+
+      .card-title {
+        margin: 0;
+        padding: 16px 24px;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 22px;
+      }
+
+      // .btn.btn-icon {
+      //   width: auto;
+      //   height: auto;
+      // }
+
+      // .card-toolbar {
+      //   // margin: 0;
+      // }
+    }
+    & > .card-body {
+      padding: 24px;
+    }
+    & > .card-footer {
+      padding: 10px 16px;
+    }
+  }
+}

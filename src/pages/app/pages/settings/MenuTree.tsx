@@ -3,10 +3,12 @@ import { useCallback, useMemo, useState } from 'react';
 import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 
-import { useDeleteMenuMutation, useLoadMenusQuery } from '../../hooks';
+import MenuDrawer from '../../components/MenuDrawer';
+import { LoadMenusDocument, useLoadMenusQuery, useUpdateMenuMutation } from '../../hooks';
+import useMenuDelete from '../../hooks/useMenuDelete';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Badge, Breadcrumb, Button, Card, Dropdown, Menu, Modal, TreeList } from '@/metronic';
+import { Badge, Breadcrumb, Button, Card, Toast, TreeList } from '@/metronic';
 import type { Menu as IMenu } from '@/types';
 import { tree } from '@/utils';
 
@@ -14,79 +16,29 @@ type MenuTreeProps = RouteComponentProps<{ id: string }>;
 
 interface MenuActionsProps {
   data: IMenu;
-  refetch: () => void;
-  onEdit: (data: IMenu) => void;
+  onDeleteSuccess: (data: IMenu) => void;
 }
 
 function MenuActions(props: MenuActionsProps) {
-  const { data: menu, refetch, onEdit } = props;
-  const [visible, setVisible] = useState(false);
+  const { data: menu, onDeleteSuccess } = props;
 
-  const [deleteMenu] = useDeleteMenuMutation({
-    variables: { id: menu.id },
-  });
-
-  const handleClick = useCallback(
-    async ({ key, domEvent }: any) => {
-      domEvent.preventDefault();
-      domEvent.stopPropagation();
-      setVisible(false);
-      if (key === 'update') {
-        onEdit(menu);
-      } else if (key === 'delete') {
-        const result = await Modal.confirm({
-          title: `你确定要删除该菜单吗？`,
-          content: `您即将删除“<strong>${menu.name}</strong>”。删除操作不可逆转，请谨慎操作，您确定删除吗？`,
-          okText: '删 除',
-          cancelClassName: 'btn btn-secondary btn-sm',
-          okClassName: 'btn btn-danger btn-sm',
-        });
-        if (result.isConfirmed) {
-          await deleteMenu();
-          await refetch();
-        }
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [menu],
-  );
+  const [handleDelete] = useMenuDelete(menu, onDeleteSuccess);
 
   return (
-    <div className="d-flex justify-content-end">
+    <div
+      className="d-flex flex-row-fluid justify-content-center"
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+    >
       <div className="ms-2">
-        <Dropdown
-          overlay={
-            <Menu
-              onClick={handleClick}
-              className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold w-125px py-4"
-            >
-              {/* <Menu.Item key="rename" className="px-3">
-                重命名
-              </Menu.Item>
-              <Menu.Item key="moveToFolder" className="px-3">
-                移动
-              </Menu.Item> */}
-              <Menu.Item key="update" className="px-3">
-                编辑
-              </Menu.Item>
-              <Menu.Item key="delete" className="px-3 actions-delete">
-                删除
-              </Menu.Item>
-            </Menu>
-          }
-          placement="bottomRight"
-          onVisibleChange={setVisible}
-          visible={visible}
-        >
-          <Button
-            as="button"
-            size="sm"
-            variant="light"
-            activeColor="light-primary"
-            className="me-2"
-            icon={<Icon className="svg-icon-5 m-0" name="Duotune/gen052" />}
-          />
-        </Dropdown>
+        <Button
+          variant="danger"
+          variantStyle="light"
+          icon={<Icon className="svg-icon-2" name="Duotune/arr088" />}
+          onClick={handleDelete}
+        />
       </div>
     </div>
   );
@@ -99,18 +51,30 @@ function MenuTree(props: MenuTreeProps) {
     },
   } = props;
 
-  // const [modal, setModal] = useState<{ visible: boolean; data?: IMenu }>({
-  //   visible: false,
-  // });
+  const [state, setState] = useState<{ menu?: IMenu; visible: boolean }>({
+    visible: false,
+  });
 
-  const { data, refetch } = useLoadMenusQuery({ variables: { id } });
+  const [updateMenu] = useUpdateMenuMutation({
+    fetchPolicy: 'no-cache',
+    refetchQueries: [
+      {
+        query: LoadMenusDocument,
+        variables: {
+          id,
+        },
+      },
+    ],
+  });
 
-  const routes = data?.app?.menus;
+  const { data, loading } = useLoadMenusQuery({ variables: { id } });
+
+  const menus = data?.app?.menus;
 
   const treeData = useMemo(
     () =>
       tree(
-        (routes || []).map((item) => ({ ...item })),
+        (menus || []).map((item) => ({ ...item, children: [] })),
         {
           pidKey: 'parent.id',
           sort: (l, r) => l.index - r.index,
@@ -120,23 +84,103 @@ function MenuTree(props: MenuTreeProps) {
             title: item.name!,
             menuType: item.type,
             type: 'directory',
+            application: {
+              id,
+            },
           }),
         },
       ),
-    [routes],
+    [id, menus],
   );
 
-  const handleOpenMenuModal = useCallback(() => {
-    //   setModal({ visible: true });
+  const handleCloseDrawer = useCallback(() => {
+    setState((prevState) => ({ ...prevState, visible: false }));
   }, []);
 
-  // const handleCloseMenuModal = useCallback(() => {
-  //   setModal({ visible: false });
-  // }, []);
+  const handleNewMenu = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      visible: true,
+      menu: {
+        index: 0,
+        icon: 'Duotune/abs005',
+        type: 'MENU',
+        application: { id },
+      } as any,
+    }));
+  }, [id]);
 
-  const handleEdit = useCallback(() => {
-    //   setModal({ visible: true, data: _data });
+  const handleSelect = useCallback((e: any) => {
+    setState((prevState) => {
+      if (prevState.menu?.id == e.node.id && prevState.visible) {
+        return {
+          ...prevState,
+          visible: false,
+        };
+      }
+      return {
+        ...prevState,
+        visible: true,
+        menu: { ...e.node, type: e.node.menuType, parentMenu: e.node.parentKey },
+      };
+    });
   }, []);
+
+  const handleDrop = useCallback(
+    async (e: any) => {
+      console.log(e);
+      if (e.dragNode.parent?.id == e.node.parent?.id && e.dragNode.index == e.toIndex) {
+        return;
+      }
+      await Toast.promise(
+        updateMenu({
+          variables: {
+            id: e.dragNode.id,
+            input: {
+              parentMenu: e.node.parent?.id,
+              index: e.toIndex,
+            },
+          },
+        }),
+        {
+          pending: '更新排序...',
+          success: '排序调整成功',
+          error: '提交出错',
+        },
+        {
+          duration: 2000,
+          placement: 'top-center',
+        },
+      );
+    },
+    [updateMenu],
+  );
+
+  const handleDeleteSuccess = useCallback(
+    (_data: IMenu) => {
+      setState((prevState) => {
+        if (prevState.menu?.id != _data.id) {
+          return prevState;
+        }
+        return {
+          ...prevState,
+          visible: false,
+          menu: undefined,
+        };
+      });
+    },
+    [setState],
+  );
+
+  const handleSuccess = useCallback(
+    (_data: IMenu) => {
+      setState((prevState) => ({
+        ...prevState,
+        menu: _data,
+      }));
+    },
+    [setState],
+  );
 
   return (
     <ContentWrapper
@@ -149,18 +193,14 @@ function MenuTree(props: MenuTreeProps) {
           <Breadcrumb.Item>导航菜单</Breadcrumb.Item>
         </Breadcrumb>
       }
-      loading={false}
-      footer={false}
+      loading={loading}
     >
-      <Card flush className="mt-6 mt-xl-9" headerClassName="mt-5">
+      <Card flush>
         <Card.Header className="pt-8">
           <Card.Title />
           <Card.Toolbar>
             <div className="d-flex justify-content-end">
-              <Button variant="danger" className="me-3">
-                删除
-              </Button>
-              <Button onClick={handleOpenMenuModal} variant="primary">
+              <Button onClick={handleNewMenu} variant="primary">
                 新建菜单
               </Button>
             </div>
@@ -171,6 +211,9 @@ function MenuTree(props: MenuTreeProps) {
             className="app-treelist"
             rowKey="id"
             draggable={true}
+            onSelect={handleSelect}
+            selectedKeys={state.menu?.id ? [state.menu.id] : []}
+            onDrop={handleDrop}
             columns={[
               {
                 key: 'title',
@@ -219,9 +262,9 @@ function MenuTree(props: MenuTreeProps) {
               {
                 key: 'actions',
                 title: '操作',
-                className: 'min-w-125px',
+                className: 'min-w-125px text-center',
                 render(_, record) {
-                  return <MenuActions onEdit={handleEdit} data={record as any} refetch={refetch} />;
+                  return <MenuActions data={record as any} onDeleteSuccess={handleDeleteSuccess} />;
                 },
               },
             ]}
@@ -229,23 +272,13 @@ function MenuTree(props: MenuTreeProps) {
           />
         </Card.Body>
       </Card>
-      {/* {modal.data ? (
-      <EditMenuModal
-        onSuccess={refetch}
-        data={modal.data}
-        appId={id}
-        visible={modal.visible}
-        onCancel={handleCloseMenuModal}
+      <MenuDrawer
+        menu={state.menu}
+        onClose={handleCloseDrawer}
+        onSuccess={handleSuccess}
+        onDeleteSuccess={handleDeleteSuccess}
+        visible={state.visible}
       />
-    ) : (
-      <NewMenuModal
-        onSuccess={refetch}
-        appId={id}
-        data={modal.data}
-        visible={modal.visible}
-        onCancel={handleCloseMenuModal}
-      />
-    )} */}
     </ContentWrapper>
   );
 }

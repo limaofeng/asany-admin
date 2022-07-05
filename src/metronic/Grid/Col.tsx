@@ -3,6 +3,7 @@ import classnames from 'classnames';
 import { useResponsive } from './utils';
 
 export type ColResponsive = {
+  span?: number;
   /**
    * 超小 < 576px
    */
@@ -30,15 +31,15 @@ export type ColResponsive = {
 };
 
 type ColProps = {
+  className?: string;
   children: React.ReactNode;
 } & ColResponsive;
 
 function Col(props: ColProps) {
-  const { children, ...responsive } = props;
+  const { children, className, ...responsive } = props;
 
-  const reactive = useResponsive('col', responsive);
-  // 'col-md-6 col-xl-4',
-  return <div className={classnames(reactive)}>{children}</div>;
+  const reactive = useResponsive('col', { ...responsive, default: responsive.span });
+  return <div className={classnames(reactive, className)}>{children}</div>;
 }
 
 export default Col;

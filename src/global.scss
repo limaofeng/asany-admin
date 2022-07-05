@@ -29,6 +29,10 @@ canvas {
   display: block;
 }
 
+.asany-treeview-node .monaco-tl-twistie {
+  padding-right: 14px;
+}
+
 body {
   color: #404040;
   font-weight: 400;
@@ -78,3 +82,4 @@ ol {
     transition: left 0.3s ease;
   }
 }
+

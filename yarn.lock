@@ -190,10 +190,10 @@
     classnames "^2.3.1"
     react-use "^17.3.2"
 
-"@asany/tree@^0.1.23":
-  version "0.1.23"
-  resolved "https://registry.npmjs.org/@asany/tree/-/tree-0.1.23.tgz#0c0f5bddaf1999b714442c55424c6f0d20e58216"
-  integrity sha512-+IGtJkrnTMbLhl1uyn57MVvZsdlgOk1jVK91EktjzNlDAZx7lg4LtCYZmCjemIPTsvXFIaPdOSWCLUUN2OHsbA==
+"@asany/tree@^0.1.26":
+  version "0.1.26"
+  resolved "https://registry.npmjs.org/@asany/tree/-/tree-0.1.26.tgz#1457473aedf0593ac677a607b5b11fd5804c4f3a"
+  integrity sha512-cWTBOJr8R1rtI7UlOlu9KxqFuujsRbhrzIhNR/wyTVFJlLkvHVec0MCVvEDo0Y38C2Ejlhm9M9weaMc9TXRovA==
   dependencies:
     "@asany/sortable" "^0.1.36"
     classnames "^2.3.1"

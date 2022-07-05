@@ -22,6 +22,7 @@ type Cols = {
 type RowProps = {
   wrap?: boolean;
   gutter?: Gutter;
+  className?: string;
   cols?: number | Cols;
   align?: 'top' | 'middle' | 'bottom';
   justify?: 'start' | 'end' | 'center' | 'space-around' | 'space-between';
@@ -29,7 +30,7 @@ type RowProps = {
 };
 
 function Row(props: RowProps) {
-  const { wrap, gutter, align, justify, children, cols } = props;
+  const { wrap, gutter, align, justify, className, children, cols } = props;
 
   (wrap || align || justify) && console.warn('暂不支持 wrap, align, justify 设置');
 
@@ -59,7 +60,9 @@ function Row(props: RowProps) {
     return getResponsiveClassNames('row-cols', cols);
   }, [cols]);
 
-  return <div className={classnames('row', gutterStyle, colsClassNames)}>{children}</div>;
+  return (
+    <div className={classnames('row', gutterStyle, className, colsClassNames)}>{children}</div>
+  );
 }
 
 export default Row;
