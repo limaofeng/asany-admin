@@ -12,7 +12,7 @@ interface LayoutModelType {
   namespace: 'layout';
   state: LayoutState;
   reducers: Record<string, Reducer<LayoutState>>;
-  subscriptions: Record<string, Subscription>;
+  subscriptions?: Record<string, Subscription>;
 }
 
 const LayoutModel: LayoutModelType = {
@@ -25,11 +25,11 @@ const LayoutModel: LayoutModelType = {
       return { ...state, application: app, organization: app.organization };
     },
   },
-  subscriptions: {
-    setup({ dispatch }) {
-      console.log('dispatch', dispatch);
-    },
-  },
+  // subscriptions: {
+  //   setup({ dispatch }) {
+  //     console.log('dispatch', dispatch);
+  //   },
+  // },
 };
 
 export default LayoutModel;

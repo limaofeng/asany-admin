@@ -8,14 +8,14 @@ import { useWebsiteArticleCategoriesLazyQuery, useWebsiteQuery } from '../hooks'
 import { MicroApp } from '@/layouts/Demo7';
 import type { ArticleCategory } from '@/types';
 
-type WebsiteManageProps = RouteComponentProps<{ id: string }> & {
+type WebsiteManageProps = RouteComponentProps<{ sid: string }> & {
   children: React.ReactNode;
 };
 
 function WebsiteManage(props: WebsiteManageProps) {
   const { match, children, location } = props;
 
-  const id = match.params.id;
+  const id = match.params.sid;
 
   const { data, loading } = useWebsiteQuery({
     fetchPolicy: 'cache-and-network',
@@ -53,7 +53,7 @@ function WebsiteManage(props: WebsiteManageProps) {
           website={website as any}
           categories={categories}
           location={location as any}
-          id={match.params.id}
+          id={match.params.sid}
           loading={loading || categoriesLoading}
         />
       </MicroApp.Sidebar>

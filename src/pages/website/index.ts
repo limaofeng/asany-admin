@@ -31,6 +31,11 @@ class Website {
     loader: () => import('./pages/settings/WebsiteNavigation'),
     loading: LoadingComponent,
   });
+  @component({ name: 'breadcrumb.WebsiteBreadcrumbItem' })
+  WebsiteBreadcrumbItem = dynamic({
+    loader: () => import('./components/breadcrumb/WebsiteBreadcrumbItem'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Website();

@@ -78,8 +78,6 @@ function FormRepeater(props: FormRepeaterProps) {
     dispatch({ type: FormRepeaterKind.REMOVE, payload: key });
   }, []);
 
-  console.log('dispatch', state, dispatch);
-
   const { items } = state;
 
   return (

@@ -92,7 +92,6 @@ function AppSidebar(props: AppSidebarProps) {
       exact: false,
       strict: true,
     });
-    console.log('channelMatch', channelMatch);
     if (channelMatch) {
       return `category_${channelMatch.params.cid}`;
     }
@@ -183,6 +182,7 @@ function AppSidebar(props: AppSidebarProps) {
         <Menu.Item bullet={true} icon="" title="会话管理" url={`/apps/${app.id}/sessions`} />
         <Menu.Item bullet={true} icon="" title="菜单设置" url={`/apps/${app.id}/menus`} />
         <Menu.Item bullet={true} icon="" title="路由设置" url={`/apps/${app.id}/routes`} />
+        <Menu.Item bullet={true} icon="" title="组件管理" url={`/apps/${app.id}/components`} />
       </Menu>
     </BlockUI>
   );

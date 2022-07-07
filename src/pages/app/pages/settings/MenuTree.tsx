@@ -218,6 +218,7 @@ function MenuTree(props: MenuTreeProps) {
               {
                 key: 'title',
                 title: '名称',
+                width: 'auto',
                 render: (_, record) => {
                   const menuTypes = {
                     SECTION: { color: 'info' },

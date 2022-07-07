@@ -5,7 +5,6 @@ import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import type { RouteComponentProps } from 'react-router';
-import { Link } from 'umi';
 
 import ArticleFormSidebar from '../components/ArticleFormSidebar';
 import { Advanced, General, Metadata, PublishButton } from '../components/bodys/classic';
@@ -13,7 +12,7 @@ import type { PublishAction } from '../components/bodys/classic/PublishButton';
 import { useArticleQuery, useUpdateArticleMutation } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Breadcrumb, Button, Form, Tabs, Toast } from '@/metronic';
+import { Button, Form, Tabs, Toast } from '@/metronic';
 import type { QueueUploadRef } from '@/metronic/typings';
 import type { Article, ArticleCategory } from '@/types';
 import { delay, tree } from '@/utils';
@@ -32,7 +31,7 @@ function ArticleEdit(props: ArticleEditProps) {
       params: { cid: channelId, id },
     },
     location: {
-      state: { rootCategoryId, categories, baseUrl },
+      state: { categories, baseUrl },
     },
   } = props;
 
@@ -222,31 +221,31 @@ function ArticleEdit(props: ArticleEditProps) {
       header={{
         title: '编辑文章',
       }}
-      breadcrumb={
-        <Breadcrumb className="fw-bold fs-base text-muted my-1">
-          <Breadcrumb.Item key="website">互升官网</Breadcrumb.Item>
-          <Breadcrumb.Item key="column">栏目</Breadcrumb.Item>
-          {article ? (
-            <>
-              {article.categories
-                .filter((item) => item.id != rootCategoryId)
-                .map((item) => (
-                  <Breadcrumb.Item key={item.id}>
-                    <Link
-                      to={`${baseUrl}/cms/categories/${item.id}/articles`}
-                      className="text-muted"
-                    >
-                      {item.name}
-                    </Link>
-                  </Breadcrumb.Item>
-                ))}
-              <Breadcrumb.Item className="text-dark">{article?.title}</Breadcrumb.Item>
-            </>
-          ) : (
-            <Breadcrumb.Item>加载中...</Breadcrumb.Item>
-          )}
-        </Breadcrumb>
-      }
+      // breadcrumb={
+      //   <Breadcrumb className="fw-bold fs-base text-muted my-1">
+      //     <Breadcrumb.Item key="website">互升官网</Breadcrumb.Item>
+      //     <Breadcrumb.Item key="column">栏目</Breadcrumb.Item>
+      //     {article ? (
+      //       <>
+      //         {article.categories
+      //           .filter((item) => item.id != rootCategoryId)
+      //           .map((item) => (
+      //             <Breadcrumb.Item key={item.id}>
+      //               <Link
+      //                 to={`${baseUrl}/cms/categories/${item.id}/articles`}
+      //                 className="text-muted"
+      //               >
+      //                 {item.name}
+      //               </Link>
+      //             </Breadcrumb.Item>
+      //           ))}
+      //         <Breadcrumb.Item className="text-dark">{article?.title}</Breadcrumb.Item>
+      //       </>
+      //     ) : (
+      //       <Breadcrumb.Item>加载中...</Breadcrumb.Item>
+      //     )}
+      //   </Breadcrumb>
+      // }
     >
       <Form
         form={form}

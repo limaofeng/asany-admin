@@ -27,10 +27,11 @@ import type { LandingStore } from '@/types';
 type ActionsProps = {
   history: any;
   data: LandingStore;
+  baseUrl: string;
   onDelete: (...ids: string[]) => Promise<number>;
 };
 
-function Actions({ data, history, onDelete }: ActionsProps) {
+function Actions({ data, history, baseUrl, onDelete }: ActionsProps) {
   const handleDelete = useCallback(
     async (_data: LandingStore) => {
       const message = `确定删除门店 “${_data.name}” 吗？`;
@@ -61,12 +62,12 @@ function Actions({ data, history, onDelete }: ActionsProps) {
   const handleMenuClick = useCallback(
     (event: any) => {
       if (event.key == 'view') {
-        history.push(`/website/landing/stores/${data.id}`);
+        history.push(`${baseUrl}/${data.id}`);
       } else if (event.key == 'delete') {
         handleDelete(data);
       }
     },
-    [data, handleDelete, history],
+    [baseUrl, data, handleDelete, history],
   );
 
   return (
@@ -98,6 +99,8 @@ type StoreListProps = RouteComponentProps<any>;
 
 function StoreList(props: StoreListProps) {
   const { history, location } = props;
+
+  const baseUrl = location.pathname;
 
   const variables = useMemo(() => {
     const { q, ...query } = (props.location as any).query;
@@ -234,7 +237,7 @@ function StoreList(props: StoreListProps) {
         </div>
         <Controls>
           <div className="d-flex my-0">
-            <Button as={Link} to="/website/landing/stores/new">
+            <Button as={Link} to={`${baseUrl}/new`}>
               新增门店
             </Button>
           </div>
@@ -247,7 +250,7 @@ function StoreList(props: StoreListProps) {
             description="马上添加一个门店试试"
             image="/assets/media/illustrations/sigma-1/4.png"
           >
-            <Button as={Link} variant="primary" to="/website/landing/stores/new">
+            <Button as={Link} variant="primary" to={`${baseUrl}/new`}>
               新增门店
             </Button>
           </Empty>
@@ -291,10 +294,7 @@ function StoreList(props: StoreListProps) {
                       render(name, record) {
                         return (
                           <div>
-                            <Link
-                              className="text-gray-700"
-                              to={`/website/landing/stores/${record.id}`}
-                            >
+                            <Link className="text-gray-700" to={`${baseUrl}/${record.id}`}>
                               {name}
                             </Link>
                           </div>
@@ -337,7 +337,12 @@ function StoreList(props: StoreListProps) {
                       width: 100,
                       render: (_, record) => {
                         return (
-                          <Actions onDelete={handleDelete} history={props.history} data={record} />
+                          <Actions
+                            baseUrl={baseUrl}
+                            onDelete={handleDelete}
+                            history={props.history}
+                            data={record}
+                          />
                         );
                       },
                     },

@@ -18,18 +18,7 @@ import {
 import useDelete from '../hooks/useDelete';
 
 import { ContentWrapper } from '@/layouts/components';
-import {
-  Badge,
-  Breadcrumb,
-  Button,
-  Card,
-  Dropdown,
-  Empty,
-  Input,
-  Menu,
-  Symbol,
-  Table,
-} from '@/metronic';
+import { Badge, Button, Card, Dropdown, Empty, Input, Menu, Symbol, Table } from '@/metronic';
 import type { Article, ArticleCategory } from '@/types';
 
 import '../style/article-list.scss';
@@ -175,7 +164,7 @@ function ArticleActions(props: ArticleActionsProps) {
 }
 
 type ArticleListProps = RouteComponentProps<
-  { id: string },
+  { cid: string },
   any,
   { rootCategoryId: string; categories: ArticleCategory[]; baseUrl: string }
 >;
@@ -183,19 +172,19 @@ type ArticleListProps = RouteComponentProps<
 function ArticleList(props: ArticleListProps) {
   const {
     match: {
-      params: { id: categoryId },
+      params: { cid: categoryId },
     },
     location: {
       state: { rootCategoryId, categories, baseUrl },
     },
   } = props;
 
-  const breadcrumbCategories = useMemo(() => {
-    const category = categories.find((item) => item.id == categoryId);
-    return (category?.path?.split('/') || [])
-      .map((_categoryId) => categories.find((item) => item.id == _categoryId)!)
-      .filter((item) => item);
-  }, [categories, categoryId]);
+  // const breadcrumbCategories = useMemo(() => {
+  //   const category = categories.find((item) => item.id == categoryId);
+  //   return (category?.path?.split('/') || [])
+  //     .map((_categoryId) => categories.find((item) => item.id == _categoryId)!)
+  //     .filter((item) => item);
+  // }, [categories, categoryId]);
 
   const variables = useMemo(() => {
     const { q, ...query } = (props.location as any).query;
@@ -265,36 +254,36 @@ function ArticleList(props: ArticleListProps) {
       header={{
         title: categories.find((item) => item.id == categoryId)?.name,
       }}
-      breadcrumb={
-        <Breadcrumb className="fw-bold fs-base text-muted my-1">
-          <Breadcrumb.Item key="website">互升官网</Breadcrumb.Item>
-          <Breadcrumb.Item key="column">栏目</Breadcrumb.Item>
-          {breadcrumbCategories ? (
-            <>
-              {breadcrumbCategories
-                .filter((item) => item.id != rootCategoryId)
-                .map((item) =>
-                  item.id == categoryId ? (
-                    <Breadcrumb.Item key={item.id} className="text-dark">
-                      {item.name}
-                    </Breadcrumb.Item>
-                  ) : (
-                    <Breadcrumb.Item key={item.id}>
-                      <Link
-                        to={`${baseUrl}/cms/categories/${item.id}/articles`}
-                        className="text-muted"
-                      >
-                        {item.name}
-                      </Link>
-                    </Breadcrumb.Item>
-                  ),
-                )}
-            </>
-          ) : (
-            <Breadcrumb.Item>加载中...</Breadcrumb.Item>
-          )}
-        </Breadcrumb>
-      }
+      // breadcrumb={
+      //   <Breadcrumb className="fw-bold fs-base text-muted my-1">
+      //     <Breadcrumb.Item key="website">互升官网</Breadcrumb.Item>
+      //     <Breadcrumb.Item key="column">栏目</Breadcrumb.Item>
+      //     {breadcrumbCategories ? (
+      //       <>
+      //         {breadcrumbCategories
+      //           .filter((item) => item.id != rootCategoryId)
+      //           .map((item) =>
+      //             item.id == categoryId ? (
+      //               <Breadcrumb.Item key={item.id} className="text-dark">
+      //                 {item.name}
+      //               </Breadcrumb.Item>
+      //             ) : (
+      //               <Breadcrumb.Item key={item.id}>
+      //                 <Link
+      //                   to={`${baseUrl}/cms/categories/${item.id}/articles`}
+      //                   className="text-muted"
+      //                 >
+      //                   {item.name}
+      //                 </Link>
+      //               </Breadcrumb.Item>
+      //             ),
+      //           )}
+      //       </>
+      //     ) : (
+      //       <Breadcrumb.Item>加载中...</Breadcrumb.Item>
+      //     )}
+      //   </Breadcrumb>
+      // }
     >
       <div className="tab-content">
         <Card flush headerClassName="mt-5">
@@ -402,7 +391,11 @@ function ArticleList(props: ArticleListProps) {
                 <Button as={Link} className="me-2" variant="light" to={`${baseUrl}/settings`}>
                   查看栏目信息
                 </Button>
-                <Button as={Link} variant="primary" to={`${baseUrl}/articles/new`}>
+                <Button
+                  as={Link}
+                  variant="primary"
+                  to={`${baseUrl}/cms/categories/${categoryId}/articles/new`}
+                >
                   新建文章
                 </Button>
               </Empty>

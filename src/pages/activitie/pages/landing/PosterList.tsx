@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
 import { Icon } from '@asany/icons';
-import type { History } from 'history';
 import qs from 'qs';
 import type { RouteComponentProps } from 'react-router';
 import { Link } from 'umi';
@@ -31,12 +30,13 @@ import { PreviewComponent } from '@/metronic/Upload/Upload';
 import type { LandingPoster } from '@/types';
 
 type ActionsProps = {
-  history: History;
+  history: any;
   data: LandingPoster;
+  baseUrl: string;
   onDelete: (...ids: string[]) => Promise<number>;
 };
 
-function Actions({ data, history, onDelete }: ActionsProps) {
+function Actions({ data, baseUrl, history, onDelete }: ActionsProps) {
   const handleDelete = useCallback(
     async (_data: LandingPoster) => {
       const message = `确定删除海报 “${_data.name}” 吗？`;
@@ -65,14 +65,14 @@ function Actions({ data, history, onDelete }: ActionsProps) {
   );
 
   const handleMenuClick = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.key == 'view') {
-        history.push(`/website/landing/posters/${data.id}`);
+        history.push(`${baseUrl}/${data.id}`);
       } else if (event.key == 'delete') {
         handleDelete(data);
       }
     },
-    [data, handleDelete, history],
+    [baseUrl, data, handleDelete, history],
   );
 
   return (
@@ -104,6 +104,8 @@ type PosterListProps = RouteComponentProps<any>;
 
 function PosterList(props: PosterListProps) {
   const { history, location } = props;
+
+  const baseUrl = location.pathname;
 
   const variables = useMemo(() => {
     const { q, ...query } = (props.location as any).query;
@@ -155,14 +157,14 @@ function PosterList(props: PosterListProps) {
   }, [data?.landingPosters, loading, previousData?.landingPosters]);
 
   const handleSearch = useCallback(
-    (text) => {
+    (text: any) => {
       history.replace(location.pathname + '?' + qs.stringify({ q: text }));
     },
     [history, location.pathname],
   );
 
   const handleChange = useCallback(
-    (_pagination, _filters, _sorter) => {
+    (_pagination: any, _filters: any, _sorter: any) => {
       const _query: any = {};
       if (variables.filter?.name_contains) {
         _query.q = variables.filter?.name_contains;
@@ -240,7 +242,7 @@ function PosterList(props: PosterListProps) {
         </div>
         <Controls>
           <div className="d-flex my-0">
-            <Button as={Link} to="/website/landing/posters/new">
+            <Button as={Link} to={`${baseUrl}/new`}>
               新建海报
             </Button>
           </div>
@@ -253,7 +255,7 @@ function PosterList(props: PosterListProps) {
             description="马上添加一个海报试试"
             image="/assets/media/illustrations/sigma-1/4.png"
           >
-            <Button as={Link} variant="primary" to="/website/landing/posters/new">
+            <Button as={Link} variant="primary" to={`${baseUrl}/new`}>
               新建海报
             </Button>
           </Empty>
@@ -290,10 +292,7 @@ function PosterList(props: PosterListProps) {
                       render(name, record) {
                         return (
                           <div className="ps-2">
-                            <Link
-                              className="text-gray-700"
-                              to={`/website/landing/posters/${record.id}`}
-                            >
+                            <Link className="text-gray-700" to={`${baseUrl}/${record.id}`}>
                               {name}
                             </Link>
                           </div>
@@ -346,7 +345,12 @@ function PosterList(props: PosterListProps) {
                       width: 100,
                       render: (_, record) => {
                         return (
-                          <Actions onDelete={handleDelete} history={props.history} data={record} />
+                          <Actions
+                            baseUrl={baseUrl}
+                            onDelete={handleDelete}
+                            history={props.history}
+                            data={record}
+                          />
                         );
                       },
                     },

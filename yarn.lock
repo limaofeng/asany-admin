@@ -190,10 +190,10 @@
     classnames "^2.3.1"
     react-use "^17.3.2"
 
-"@asany/tree@^0.1.26":
-  version "0.1.26"
-  resolved "https://registry.npmjs.org/@asany/tree/-/tree-0.1.26.tgz#1457473aedf0593ac677a607b5b11fd5804c4f3a"
-  integrity sha512-cWTBOJr8R1rtI7UlOlu9KxqFuujsRbhrzIhNR/wyTVFJlLkvHVec0MCVvEDo0Y38C2Ejlhm9M9weaMc9TXRovA==
+"@asany/tree@^0.1.28":
+  version "0.1.28"
+  resolved "https://npm.thuni-h.com/@asany%2ftree/-/tree-0.1.28.tgz#b46435dd8f85219893d5883024697d08f84cec97"
+  integrity sha512-qN3YyX/vnADVJ559sx9Eb38lJWziLkcah9gflmLa2ggQ1orUCdnfgkUAwV2OBX8kJtRy1espNbxSVYBzhwxcHA==
   dependencies:
     "@asany/sortable" "^0.1.36"
     classnames "^2.3.1"
@@ -215,10 +215,10 @@
     lodash "^4.17.21"
     subscriptions-transport-ws "^0.9.16"
 
-"@asany/umi-plugin-app@^0.1.50":
-  version "0.1.50"
-  resolved "https://registry.yarnpkg.com/@asany/umi-plugin-app/-/umi-plugin-app-0.1.50.tgz#bc7fa599ff64a3bddda74494d9b9d56cb50081e6"
-  integrity sha512-L+wpx3F9bdGEtIeWMBK3TnJsxHbrapBPrJ3t175ves+FD74iknhGzJIGxuJzyiE+oA4mDqK7TbEcc7CuafZH9Q==
+"@asany/umi-plugin-app@^0.1.52":
+  version "0.1.52"
+  resolved "https://npm.thuni-h.com/@asany%2fumi-plugin-app/-/umi-plugin-app-0.1.52.tgz#038ff9e0d1bdfe4e5fed9b42d31189b3a8d81474"
+  integrity sha512-NmmswCySSmXka4EQYy/O2iiQwcVnbyRrB9909HbdBsZFRXIJePU0RdbQ58E62trNTMqCmVyOBEp7hFqDqe0JfQ==
   dependencies:
     classnames "^2.3.1"
     lodash "^4.17.21"
@@ -12916,9 +12916,9 @@ path-to-regexp@1.x, path-to-regexp@^1.7.0:
   dependencies:
     isarray "0.0.1"
 
-path-to-regexp@^6.2.0:
+path-to-regexp@^6.2.0, path-to-regexp@^6.2.1:
   version "6.2.1"
-  resolved "https://registry.npmmirror.com/path-to-regexp/-/path-to-regexp-6.2.1.tgz#d54934d6798eb9e5ef14e7af7962c945906918e5"
+  resolved "https://npm.thuni-h.com/path-to-regexp/-/path-to-regexp-6.2.1.tgz#d54934d6798eb9e5ef14e7af7962c945906918e5"
   integrity sha512-JLyh7xT1kizaEvcaXOQwOc2/Yhw6KZOvPf1S8401UyLk86CU79LN3vl7ztXGm/pZ+YjoyAJ4rxmHwbkBXJX+yw==
 
 path-type@^3.0.0:

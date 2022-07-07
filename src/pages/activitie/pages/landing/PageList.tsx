@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
-import type * as H from 'history';
 import { QRCodeCanvas } from 'qrcode.react';
 import qs from 'qs';
 import type { RouteComponentProps } from 'react-router';
@@ -27,13 +26,14 @@ import type { Sorter } from '@/metronic/typings';
 import type { LandingPage, LandingStore } from '@/types';
 
 type ActionsProps = {
-  history: H.History;
+  history: any;
+  baseUrl: string;
   data: LandingPage;
   onShowQRCode: (url: string) => void;
   onDelete: (...ids: string[]) => Promise<number>;
 };
 
-function Actions({ data, history, onDelete, onShowQRCode }: ActionsProps) {
+function Actions({ data, history, onDelete, onShowQRCode, baseUrl }: ActionsProps) {
   const handleDelete = useCallback(
     async (_data: LandingPage) => {
       const message = `确定删除活动 “${_data.name}” 吗？`;
@@ -62,16 +62,16 @@ function Actions({ data, history, onDelete, onShowQRCode }: ActionsProps) {
   );
 
   const handleMenuClick = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.key == 'view') {
-        history.push(`/website/landing/pages/${data.id}`);
+        history.push(`${baseUrl}/${data.id}`);
       } else if (event.key == 'delete') {
         handleDelete(data);
       } else if (event.key == 'preview') {
         onShowQRCode(location.protocol + process.env.MOBILE_URL + '/lps/' + data.id);
       }
     },
-    [data, handleDelete, history, onShowQRCode],
+    [baseUrl, data, handleDelete, history, onShowQRCode],
   );
 
   return (
@@ -125,6 +125,8 @@ type PageListProps = RouteComponentProps<any>;
 
 function PageList(props: PageListProps) {
   const { history, location } = props;
+
+  const baseUrl = location.pathname;
 
   const [qrCode, setQrCode] = useState<string>();
 
@@ -186,14 +188,14 @@ function PageList(props: PageListProps) {
   }, [data?.landingPages, loading, previousData?.landingPages]);
 
   const handleSearch = useCallback(
-    (text) => {
+    (text: string) => {
       history.replace(location.pathname + '?' + qs.stringify({ q: text }));
     },
     [history, location.pathname],
   );
 
   const handleChange = useCallback(
-    (_pagination, _filters, _sorter) => {
+    (_pagination: any, _filters: any, _sorter: any) => {
       const _query: any = {};
       if (variables.filter?.name_contains) {
         _query.q = variables.filter?.name_contains;
@@ -276,7 +278,7 @@ function PageList(props: PageListProps) {
               placeholder="状态"
               options={[{ label: '全部', value: 'all' }, ...allStatus]}
             />
-            <Button as={Link} variant="primary" to="/website/landing/pages/new">
+            <Button as={Link} variant="primary" to="${baseUrl}/new">
               新增活动
             </Button> */}
           </div>
@@ -289,7 +291,7 @@ function PageList(props: PageListProps) {
             description="马上添加一个活动试试"
             image="/assets/media/illustrations/sigma-1/4.png"
           >
-            <Button as={Link} variant="primary" to="/website/landing/pages/new">
+            <Button as={Link} variant="primary" to="${baseUrl}/new">
               新建活动
             </Button>
           </Empty>
@@ -326,10 +328,7 @@ function PageList(props: PageListProps) {
                       render(name, record) {
                         return (
                           <div className="ps-2">
-                            <Link
-                              className="text-gray-700"
-                              to={`/website/landing/pages/${record.id}`}
-                            >
+                            <Link className="text-gray-700" to={`${baseUrl}/${record.id}`}>
                               {name}
                             </Link>
                           </div>
@@ -388,6 +387,7 @@ function PageList(props: PageListProps) {
                       render: (_, record) => {
                         return (
                           <Actions
+                            baseUrl={baseUrl}
                             onDelete={handleDelete}
                             onShowQRCode={handleOpenQRCode}
                             history={props.history}

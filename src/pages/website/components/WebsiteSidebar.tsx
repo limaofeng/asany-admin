@@ -92,7 +92,6 @@ function WebsiteSidebar(props: WebsiteSidebarProps) {
       exact: false,
       strict: true,
     });
-    console.log('channelMatch', channelMatch);
     if (channelMatch) {
       return `category_${channelMatch.params.cid}`;
     }

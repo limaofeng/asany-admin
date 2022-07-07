@@ -56,7 +56,7 @@ function MenuForm(props: MenuFormProps) {
     if (!props.data.id) {
       form.resetFields();
     }
-    form.setFieldsValue({ ...values, parent: parent ? { id: parent.id } : undefined });
+    form.setFieldsValue({ ...values, parentMenu: parent ? parent.id : undefined });
   }, [form, props.data]);
 
   return (
@@ -156,9 +156,9 @@ function MenuForm(props: MenuFormProps) {
           );
         }}
       </Form.Item>
-      <Form.Item dependencies={['type', 'parent']} noStyle={true}>
+      <Form.Item dependencies={['type', 'parentMenu']} noStyle={true}>
         {() => {
-          if (form.getFieldValue('type') !== 'MENU' || !!form.getFieldValue('parent')) {
+          if (form.getFieldValue('type') !== 'MENU' || !!form.getFieldValue('parentMenu')) {
             return <></>;
           }
           return (

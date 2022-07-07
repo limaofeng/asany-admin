@@ -17,6 +17,7 @@ import './style/TreeList.scss';
 type TreeListProps<T> = {
   className?: string;
   expandedKeys?: string[];
+  onExpand?: (expandedKeys: string[]) => void;
   selectedKeys?: string[];
   rowKey?: string | ((record: T & TreeNode) => string);
   rowSelection?: RowSelection<T>;
@@ -62,9 +63,14 @@ function TreeListRowCol<T>(props: TreeListRowColProps<T>) {
 
   const [width, setWidth] = useState(state.widths.get(col.key!));
 
-  const handleChangeWidth = useCallback((_width: number) => {
-    setWidth(_width);
-  }, []);
+  const handleChangeWidth = useCallback(
+    (_width: number) => {
+      if (col.width != 'auto') {
+        setWidth(_width);
+      }
+    },
+    [col.width],
+  );
 
   useEffect(() => {
     state.emitter.on(`${col.key}_width`, handleChangeWidth);
@@ -76,10 +82,13 @@ function TreeListRowCol<T>(props: TreeListRowColProps<T>) {
   return (
     <div
       key={col.key}
-      style={{ width }}
+      style={{ width: col.width != 'auto' ? width : undefined }}
       className={classnames(
         'tree-list-col fs-7 text-muted d-flex align-items-center',
         col.className,
+        {
+          'flex-row-fluid': col.width == 'auto',
+        },
       )}
     >
       {col.render ? col.render(value, data, rowIndex) : value}
@@ -151,6 +160,7 @@ function TreeList<T>(props: TreeListProps<T>) {
     rowKey = 'key',
     onDrop,
     onSelect,
+    onExpand,
   } = props;
 
   const state = useRef<TreeListState>(
@@ -243,6 +253,7 @@ function TreeList<T>(props: TreeListProps<T>) {
         draggable={draggable}
         selectedKeys={selectedKeys}
         expandedKeys={expandedKeys}
+        onExpand={onExpand}
         iconRender={handleIconRender}
         contentRender={handleContentRender}
         treeData={dataSource!}

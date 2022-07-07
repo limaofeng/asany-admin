@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import type { RouteComponentProps } from 'react-router';
-import { history, Link } from 'umi';
+import { history } from 'umi';
 
 import ArticleFormSidebar from '../components/ArticleFormSidebar';
 import { Advanced, General, Metadata, PublishButton } from '../components/bodys/classic';
@@ -13,7 +13,7 @@ import type { PublishAction } from '../components/bodys/classic/PublishButton';
 import { useCreateArticleMutation } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Breadcrumb, Button, Form, Tabs, Toast } from '@/metronic';
+import { Button, Form, Tabs, Toast } from '@/metronic';
 import type { QueueUploadRef } from '@/metronic/typings';
 import type { Article, ArticleCategory } from '@/types';
 import { delay, tree } from '@/utils';
@@ -32,7 +32,7 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
       params: { cid: categoryId },
     },
     location: {
-      state: { rootCategoryId, categories, baseUrl },
+      state: { categories, baseUrl },
     },
   } = props;
 
@@ -77,12 +77,12 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
     [categories],
   );
 
-  const breadcrumbCategories = useMemo(() => {
-    const category = categories.find((item) => item.id == categoryId);
-    return (category?.path?.split('/') || [])
-      .map((_categoryId) => categories.find((item) => item.id == _categoryId)!)
-      .filter((item) => item);
-  }, [categories, categoryId]);
+  // const breadcrumbCategories = useMemo(() => {
+  //   const category = categories.find((item) => item.id == categoryId);
+  //   return (category?.path?.split('/') || [])
+  //     .map((_categoryId) => categories.find((item) => item.id == _categoryId)!)
+  //     .filter((item) => item);
+  // }, [categories, categoryId]);
 
   const handleSubmit = useCallback(
     async (action: PublishAction | 'draft') => {
@@ -188,36 +188,36 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
       header={{
         title: '新增文章',
       }}
-      breadcrumb={
-        <Breadcrumb className="fw-bold fs-base text-muted my-1">
-          <Breadcrumb.Item key="website">互升官网</Breadcrumb.Item>
-          <Breadcrumb.Item key="column">栏目</Breadcrumb.Item>
-          {breadcrumbCategories ? (
-            <>
-              {breadcrumbCategories
-                .filter((item) => item.id != rootCategoryId)
-                .map((item) =>
-                  item.id == categoryId ? (
-                    <Breadcrumb.Item key={item.id} className="text-dark">
-                      {item.name}
-                    </Breadcrumb.Item>
-                  ) : (
-                    <Breadcrumb.Item key={item.id}>
-                      <Link
-                        to={`${baseUrl}/cms/categories/${item.id}/articles`}
-                        className="text-muted"
-                      >
-                        {item.name}
-                      </Link>
-                    </Breadcrumb.Item>
-                  ),
-                )}
-            </>
-          ) : (
-            <Breadcrumb.Item>加载中...</Breadcrumb.Item>
-          )}
-        </Breadcrumb>
-      }
+      // breadcrumb={
+      //   <Breadcrumb className="fw-bold fs-base text-muted my-1">
+      //     <Breadcrumb.Item key="website">互升官网</Breadcrumb.Item>
+      //     <Breadcrumb.Item key="column">栏目</Breadcrumb.Item>
+      //     {breadcrumbCategories ? (
+      //       <>
+      //         {breadcrumbCategories
+      //           .filter((item) => item.id != rootCategoryId)
+      //           .map((item) =>
+      //             item.id == categoryId ? (
+      //               <Breadcrumb.Item key={item.id} className="text-dark">
+      //                 {item.name}
+      //               </Breadcrumb.Item>
+      //             ) : (
+      //               <Breadcrumb.Item key={item.id}>
+      //                 <Link
+      //                   to={`${baseUrl}/cms/categories/${item.id}/articles`}
+      //                   className="text-muted"
+      //                 >
+      //                   {item.name}
+      //                 </Link>
+      //               </Breadcrumb.Item>
+      //             ),
+      //           )}
+      //       </>
+      //     ) : (
+      //       <Breadcrumb.Item>加载中...</Breadcrumb.Item>
+      //     )}
+      //   </Breadcrumb>
+      // }
     >
       <Form
         form={form}

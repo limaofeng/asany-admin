@@ -4,7 +4,7 @@ import Icon from '@asany/icons';
 import type { MenuDataItem } from '@umijs/route-utils';
 import { getMatchMenu } from '@umijs/route-utils';
 import { findLast } from 'lodash';
-import { useLocation, useParams } from 'umi';
+import { useLocation } from 'umi';
 
 import { useLayoutSelector } from '@/layouts/LayoutContext';
 import Breadcrumb from '@/metronic/Breadcrumb';
@@ -59,28 +59,22 @@ function ContentHeader(props: ContentHeaderProps) {
   });
 
   const location = useLocation();
-  const params = useParams();
 
-  const allMenus = useLayoutSelector((_state) => _state.menus);
   const allRoutes = useLayoutSelector((_state) => _state.routes);
 
   const { breadcrumb, title } = useMemo(() => {
     if (props.breadcrumb) {
       return { breadcrumb: props.breadcrumb, title: props.title };
     }
-    const _matchMenus = getMatchMenu(location.pathname, allMenus, true);
     const _matchRoutes = getMatchMenu(location.pathname, allRoutes, true);
 
     let last: MenuDataItem | undefined;
-
-    // console.log('_matchMenus', _matchMenus, location.pathname);
-    // console.log('_matchRoutes', _matchRoutes);
 
     const startIndex = _matchRoutes.findIndex((item) => item.path == last?.path);
 
     let breadcrumbData: MenuDataItem[] = [];
 
-    breadcrumbData.push(..._matchMenus);
+    breadcrumbData.push(..._matchRoutes);
 
     if (startIndex != -1) {
       breadcrumbData.push(..._matchRoutes.slice(startIndex + 1));
@@ -95,12 +89,20 @@ function ContentHeader(props: ContentHeaderProps) {
         item.key == last!.key ? { ...last, name: props.title } : item,
       );
     }
-    const _routes = breadcrumbData;
+    const _routes = [
+      {
+        key: 'root',
+        name: '控制台',
+        path: '/',
+      },
+      ...breadcrumbData,
+    ];
+
     return {
       title: last?.name,
-      breadcrumb: <Breadcrumb params={params} routes={_routes} className="fw-bold fs-base my-1" />,
+      breadcrumb: <Breadcrumb routes={_routes} className="fw-bold fs-base my-1" />,
     };
-  }, [props.breadcrumb, props.title, location.pathname, allMenus, allRoutes, params]);
+  }, [props.breadcrumb, props.title, location.pathname, allRoutes]);
 
   return (
     <div id="kt_header" ref={ref} className="header">

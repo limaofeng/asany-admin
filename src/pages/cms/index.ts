@@ -39,6 +39,11 @@ class Cms {
     loader: () => import('./pages/ArticleEdit'),
     loading: LoadingComponent,
   });
+  @component({ name: 'breadcrumb.ArticleCategoryBreadcrumbItem' })
+  ArticleCategoryBreadcrumbItem = dynamic({
+    loader: () => import('./components/breadcrumb/ArticleCategoryBreadcrumbItem'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'ArticleChannelNew' })
   ArticleChannelNew = dynamic({
     loader: () => import('./pages/ArticleCategoryNew'),

@@ -38,6 +38,9 @@ query loadRoutes($id: ID!) {
     id
     routes {
       ...RouteParts
+      application {
+        id
+      }
     }
   }
 }
@@ -91,6 +94,52 @@ mutation deleteMenu($id: ID!) {
   deleteMenu(id: $id)
 }
 
+mutation createRoute($input: RouteCreateInput!) {
+  createRoute(input: $input) {
+    ...RouteParts
+    hideInBreadcrumb
+    access
+    application {
+      id
+    }
+    component {
+      id
+    }
+  }
+}
+
+mutation updateRoute($id: ID!, $input: RouteUpdateInput!) {
+  updateRoute(id: $id, input: $input) {
+    ...RouteParts
+    hideInBreadcrumb
+    access
+    application {
+      id
+    }
+    component {
+      id
+    }
+  }
+}
+
+mutation moveRoute($id: ID!, $parentRoute: ID, $location: Int!) {
+  moveRoute(id: $id, parentRoute: $parentRoute, location: $location) {
+    ...RouteParts
+    hideInBreadcrumb
+    access
+    application {
+      id
+    }
+    component {
+      id
+    }
+  }
+}
+
+mutation deleteRoute($id: ID!) {
+  deleteRoute(id: $id)
+}
+
 fragment MenuParts on Menu {
   id
   icon
@@ -118,6 +167,10 @@ fragment RouteParts on Route {
   hideInBreadcrumb
   redirect
   component {
+    id
+    template
+  }
+  breadcrumb {
     id
     template
   }
