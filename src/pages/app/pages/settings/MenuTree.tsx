@@ -8,7 +8,7 @@ import { LoadMenusDocument, useLoadMenusQuery, useUpdateMenuMutation } from '../
 import useMenuDelete from '../../hooks/useMenuDelete';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Badge, Breadcrumb, Button, Card, Toast, TreeList } from '@/metronic';
+import { Badge, Button, Card, Toast, TreeList } from '@/metronic';
 import type { Menu as IMenu } from '@/types';
 import { tree } from '@/utils';
 
@@ -185,14 +185,8 @@ function MenuTree(props: MenuTreeProps) {
   return (
     <ContentWrapper
       header={{
-        title: '导航菜单',
+        title: '菜单设置',
       }}
-      breadcrumb={
-        <Breadcrumb className="fw-bold fs-base text-muted my-1">
-          <Breadcrumb.Item>设置</Breadcrumb.Item>
-          <Breadcrumb.Item>导航菜单</Breadcrumb.Item>
-        </Breadcrumb>
-      }
       loading={loading}
     >
       <Card flush>

@@ -9,8 +9,8 @@ import { useCloudDrivesQuery } from '../hooks';
 import Transfers from './Transfers';
 
 import { AsideWorkspace } from '@/layouts/Demo7';
-import type { OptionData } from '@/metronic';
 import { CircleProgress, Menu, Popover, Pulse, Select } from '@/metronic';
+import type { OptionData } from '@/metronic/typings';
 import type { CloudDrive } from '@/types';
 
 type SidebarFooterProps = {
@@ -24,7 +24,7 @@ function SidebarFooter(props: SidebarFooterProps) {
   const currentDriveId = useModel('cloud-drive.index', ({ state }) => state.driveId);
 
   const handleSelect = useCallback(
-    (key) => {
+    (key: string) => {
       if (key.startsWith('drive-')) {
         console.log(key);
         // setCalendarSet(key.substring('contacts-'.length));
@@ -145,7 +145,7 @@ function Sidebar() {
   });
 
   return (
-    <AsideWorkspace width={280} className="app-sidebar app-drive-sidebar">
+    <AsideWorkspace collapsible={false} width={280} className="app-sidebar app-drive-sidebar">
       <div className="relative mt-5 px-5 pt-5 d-flex">
         <h1 className="text-gray-800 flex-row-fluid fw-bold mb-6 mx-5">云盘</h1>
         <Popover

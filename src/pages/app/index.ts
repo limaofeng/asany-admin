@@ -47,6 +47,11 @@ class App {
     loader: () => import('./pages/settings/RouteTree'),
     loading: LoadingComponent,
   });
+  @component({ name: 'breadcrumb.AppBreadcrumbItem' })
+  AppBreadcrumbItem = dynamic({
+    loader: () => import('./components/breadcrumb/AppBreadcrumbItem'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new App();

@@ -200,6 +200,7 @@ function MailboxFolder(props: MailboxFolderProps) {
                 {
                   key: 'title',
                   title: '名称',
+                  width: 'auto',
                   render: (title) => {
                     return (
                       <div className="title d-flex">
