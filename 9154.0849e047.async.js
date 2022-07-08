@@ -1,0 +1,1 @@
+(self.webpackChunkasany_admin=self.webpackChunkasany_admin||[]).push([[9154],{9154:function(e,t,n){"use strict";n.r(t);var a=n(75468),s=n(85893);function u(){return(0,s.jsx)(a.v,{header:{title:"\u7EC4\u4EF6\u8BBE\u7F6E"},children:"123123"})}t.default=u}}]);
