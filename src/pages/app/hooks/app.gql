@@ -13,6 +13,11 @@ query app($id: ID!) {
     name
     title
     description
+    dependencies {
+      id
+      name
+      value
+    }
   }
 }
 
