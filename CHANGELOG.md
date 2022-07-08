@@ -1,37 +1,40 @@
-## [0.2.29](https://github.com/limaofeng/asany-admin/compare/v0.2.28...v0.2.29) (2022-07-01)
-
-
-
-## [0.2.28](https://github.com/limaofeng/asany-admin/compare/v0.2.27...v0.2.28) (2022-07-01)
-
-
-### Features
-
-* 网站模块 ([cb893fe](https://github.com/limaofeng/asany-admin/commit/cb893fe5969bef2a6ac8558203de96752a1f4ca1))
-
-
-
-## [0.2.27](https://github.com/limaofeng/asany-admin/compare/v0.2.26...v0.2.27) (2022-07-01)
-
+## [0.2.30](https://github.com/limaofeng/asany-admin/compare/v0.2.29...v0.2.30) (2022-07-08)
 
 ### Bug Fixes
 
-* 图片上传组件 ([af5e481](https://github.com/limaofeng/asany-admin/commit/af5e481858eb2275bb375cc10203efb8a4bf1c12))
-
+- 网盘模块侧边栏，不允许折叠 ([3f6d67d](https://github.com/limaofeng/asany-admin/commit/3f6d67d17001badcfbbb1aad43584c186f37fe06))
 
 ### Features
 
-*   文章发布逻辑 ([c4679ec](https://github.com/limaofeng/asany-admin/commit/c4679eca60705641b86c54eafb8e0b4343cdaf63))
-*  文章删除逻辑优化 ([3a85d03](https://github.com/limaofeng/asany-admin/commit/3a85d03d67565c25358f711c8152a9351b2b8aea))
-* 分页组件去除 href="#" ([f3db00e](https://github.com/limaofeng/asany-admin/commit/f3db00e8b2b52e81b47aac1f1743a4b2466b8de7))
-* 应该重构 ([75b934d](https://github.com/limaofeng/asany-admin/commit/75b934d1e21378a6552d97627ee975d2b8e6a050))
-* 文章列表优化 ([9cbed98](https://github.com/limaofeng/asany-admin/commit/9cbed98917a97622ee28e31f4c4186e49396c9a7))
-* 文章更新修改 ([50e9f03](https://github.com/limaofeng/asany-admin/commit/50e9f03a88ee30e3d9e88c980162b7df3d46e0d9))
-* 移除 website ([5037913](https://github.com/limaofeng/asany-admin/commit/503791339c94a9b4dfae8fc3212f108326536208))
-* 通过栏目生成面包屑 ([e1ba967](https://github.com/limaofeng/asany-admin/commit/e1ba9679e76d4ad95d1cb15d6e3873e285b26f74))
-* 重构website模块 ([b1d8102](https://github.com/limaofeng/asany-admin/commit/b1d81021c2def6540ea869e98125923cd0c39f97))
+- 应用菜单维护 ([2a9fc66](https://github.com/limaofeng/asany-admin/commit/2a9fc667fd484890ef5cfac4bc1d6c0f6dc29605))
+- 应用详情面包屑中展示应用名称 ([1e84760](https://github.com/limaofeng/asany-admin/commit/1e84760181d418f64bb8c2efafc74f5b3a6b11cc))
+- 路由维护与自定义面包屑 ([f3c8f4b](https://github.com/limaofeng/asany-admin/commit/f3c8f4b60479fa8719156ce22c0638b9babfb668))
 
+## [0.2.29](https://github.com/limaofeng/asany-admin/compare/v0.2.28...v0.2.29) (2022-07-01)
 
+## [0.2.28](https://github.com/limaofeng/asany-admin/compare/v0.2.27...v0.2.28) (2022-07-01)
+
+### Features
+
+- 网站模块 ([cb893fe](https://github.com/limaofeng/asany-admin/commit/cb893fe5969bef2a6ac8558203de96752a1f4ca1))
+
+## [0.2.27](https://github.com/limaofeng/asany-admin/compare/v0.2.26...v0.2.27) (2022-07-01)
+
+### Bug Fixes
+
+- 图片上传组件 ([af5e481](https://github.com/limaofeng/asany-admin/commit/af5e481858eb2275bb375cc10203efb8a4bf1c12))
+
+### Features
+
+- 文章发布逻辑 ([c4679ec](https://github.com/limaofeng/asany-admin/commit/c4679eca60705641b86c54eafb8e0b4343cdaf63))
+- 文章删除逻辑优化 ([3a85d03](https://github.com/limaofeng/asany-admin/commit/3a85d03d67565c25358f711c8152a9351b2b8aea))
+- 分页组件去除 href="#" ([f3db00e](https://github.com/limaofeng/asany-admin/commit/f3db00e8b2b52e81b47aac1f1743a4b2466b8de7))
+- 应该重构 ([75b934d](https://github.com/limaofeng/asany-admin/commit/75b934d1e21378a6552d97627ee975d2b8e6a050))
+- 文章列表优化 ([9cbed98](https://github.com/limaofeng/asany-admin/commit/9cbed98917a97622ee28e31f4c4186e49396c9a7))
+- 文章更新修改 ([50e9f03](https://github.com/limaofeng/asany-admin/commit/50e9f03a88ee30e3d9e88c980162b7df3d46e0d9))
+- 移除 website ([5037913](https://github.com/limaofeng/asany-admin/commit/503791339c94a9b4dfae8fc3212f108326536208))
+- 通过栏目生成面包屑 ([e1ba967](https://github.com/limaofeng/asany-admin/commit/e1ba9679e76d4ad95d1cb15d6e3873e285b26f74))
+- 重构 website 模块 ([b1d8102](https://github.com/limaofeng/asany-admin/commit/b1d81021c2def6540ea869e98125923cd0c39f97))
 
 ## [0.2.26](https://github.com/limaofeng/asany-admin/compare/v0.2.25...v0.2.26) (2022-05-12)
 
