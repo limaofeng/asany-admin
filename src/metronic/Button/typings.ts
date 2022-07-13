@@ -44,7 +44,8 @@ export type ButtonColor =
   | 'gray-600'
   | 'gray-700'
   | 'gray-800'
-  | 'gray-900';
+  | 'gray-900'
+  | 'light-dark';
 
 export type ActiveColor = Variant | ACTIVE_LIGHT_STYLE;
 

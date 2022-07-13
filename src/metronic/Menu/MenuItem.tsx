@@ -22,6 +22,7 @@ export type MenuItemProps = {
   bullet?: boolean | BulletProps;
   children?: React.ReactNode;
   badge?: React.ReactNode;
+  onClick?: () => void;
 };
 
 export function MenuSection(props: MenuItemProps) {
@@ -53,6 +54,7 @@ function MenuItem(props: MenuItemProps) {
     linkClassName,
     contentClassName,
     titleClassName,
+    onClick,
   } = props;
   const { menuKey, path } = props as any;
 
@@ -76,8 +78,9 @@ function MenuItem(props: MenuItemProps) {
     (e: React.MouseEvent) => {
       menuKey && context.select(menuKey, e);
       !isLink && url && history.push(url);
+      onClick && onClick();
     },
-    [menuKey, context, isLink, url, history],
+    [menuKey, context, isLink, url, history, onClick],
   );
 
   const contented = React.Children.toArray(children).some(React.isValidElement);

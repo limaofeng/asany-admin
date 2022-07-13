@@ -10,6 +10,7 @@ export type ModalProps = {
   centered?: boolean;
   closable?: boolean;
   visible?: boolean;
+  width?: number;
   dialogStyle?: CSSProperties;
   onOk?: ClickCallback;
   okText?: string;

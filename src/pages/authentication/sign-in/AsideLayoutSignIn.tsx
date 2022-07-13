@@ -122,12 +122,7 @@ function SignInForm() {
   );
 
   return (
-    <Form
-      className="w-100"
-      initialValues={{ username: 'limaofeng', password: '123456' }}
-      onFinish={handleSignIn}
-      autoComplete="off"
-    >
+    <Form className="w-100" onFinish={handleSignIn} autoComplete="off">
       {/* --begin::Heading--*/}
       <div className="text-center mb-10">
         {/* --begin::Title--*/}

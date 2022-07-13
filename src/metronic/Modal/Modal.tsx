@@ -91,6 +91,7 @@ function Modal(props: ModalProps) {
     confirmLoading,
     okButtonProps,
     onOk,
+    width,
     dialogStyle,
   } = props;
 
@@ -158,7 +159,13 @@ function Modal(props: ModalProps) {
 
   const CustomDialog = useDeepCompareMemo(
     () => (dialogProps: any) =>
-      <BsModal.Dialog {...dialogProps} style={dialogStyle} className={dialogClassName} />,
+      (
+        <BsModal.Dialog
+          {...dialogProps}
+          style={{ ...dialogStyle, maxWidth: width }}
+          className={dialogClassName}
+        />
+      ),
     [dialogStyle, dialogClassName],
   );
 

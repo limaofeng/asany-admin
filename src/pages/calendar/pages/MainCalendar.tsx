@@ -176,7 +176,7 @@ function MainCalendar() {
   const size = useWindowSize();
 
   const contentHeight = useMemo(() => {
-    return Math.max(806, size.height - 165);
+    return Math.max(876, size.height - 165);
   }, [size.height]);
 
   return (

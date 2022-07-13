@@ -165,7 +165,7 @@ function Roles() {
           <h3 className="fw-bolder me-5">角色 (4)</h3>
           <Input.Search placeholder="搜索" className="border-body bg-body w-250px" />
         </div>
-        <Controls layout onLayout={setLayout}>
+        <Controls layout={layout} onLayout={setLayout}>
           <div className="d-flex my-0">
             <Select2
               className="border-body bg-body w-150px me-5"

@@ -1,4 +1,5 @@
 import moment from 'moment';
+import 'antd/dist/antd.css';
 import 'moment/locale/zh-cn';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
 import { history, loadCurrentuser } from 'umi';

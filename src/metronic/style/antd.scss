@@ -1,4 +1,8 @@
-.theme-metronic {
+.antd-theme-custom {
+  // a:not(.btn) {
+  //   color: var(--bs-primary);
+  // }
+
   .ant-select {
     &:not(.ant-select-disabled):hover {
       .ant-select-selector {
@@ -38,11 +42,10 @@
       display: flex;
     }
   }
-}
-.antd-theme-custom {
-  // a:not(.btn) {
-  //   color: var(--bs-primary);
-  // }
+
+  .ant-select-dropdown.ant-cascader-dropdown {
+    z-index: 1100;
+  }
   .ant-picker-today-btn:hover {
     color: var(--bs-primary);
   }
@@ -61,9 +64,9 @@
   .ant-picker {
     border-radius: 6px;
     &.ant-picker-disabled {
-      cursor: default;
       background: #fff;
       border-color: #b5b5c3;
+      cursor: default;
     }
     .ant-picker-input > input[disabled] {
       color: #a1a5b7;
@@ -89,5 +92,38 @@
   .ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner {
     background: var(--bs-primary);
     background-color: var(--bs-primary);
+  }
+
+  .form-control-input-content > .asanyeditor-config-component {
+    color: #5e6278;
+    background-color: #f5f8fa;
+    border-color: #f5f8fa;
+    border-radius: 6px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    .dsign-popover-select {
+      cursor: pointer;
+      &:hover {
+        border-color: transparent;
+        border-radius: 0;
+      }
+
+      &:focus {
+        background-color: #eef3f7;
+        border-color: #eef3f7;
+        color: #5e6278;
+        transition: color .2s ease,background-color .2s ease;
+      }
+
+      .indicator {
+        color: #7c8097;
+        .svg-icon {
+          font-size: 12px;
+          svg {
+            width: auto;
+            height: auto;
+          }
+        }
+      }
+    }
   }
 }
