@@ -12,7 +12,7 @@ import { Badge, Button, Card, Toast, TreeList } from '@/metronic';
 import type { Menu as IMenu } from '@/types';
 import { tree } from '@/utils';
 
-type MenuTreeProps = RouteComponentProps<{ id: string }>;
+type MenuTreeProps = RouteComponentProps<{ id: string }, any, any>;
 
 interface MenuActionsProps {
   data: IMenu;
@@ -49,7 +49,12 @@ function MenuTree(props: MenuTreeProps) {
     match: {
       params: { id },
     },
+    location: {
+      state: { app },
+    },
   } = props;
+
+  const libraryId = app.dependencies.find((item: any) => item.name == 'component.library').value;
 
   const [state, setState] = useState<{ menu?: IMenu; visible: boolean }>({
     visible: false,
@@ -269,6 +274,7 @@ function MenuTree(props: MenuTreeProps) {
       </Card>
       <MenuDrawer
         menu={state.menu}
+        libraryId={libraryId}
         onClose={handleCloseDrawer}
         onSuccess={handleSuccess}
         onDeleteSuccess={handleDeleteSuccess}

@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 
 import { Icon } from '@asany/icons';
 import type { RouteComponentProps } from 'react-router-dom';
+import moment from 'moment';
 
 import ComponentModal from '../../components/ComponentModal';
 import useComponentDelete from '../../hooks/useComponentDelete';
@@ -46,7 +47,7 @@ function ComponentItem(props: ComponentItemProps) {
       <Card flush className="h-md-100">
         <Card.Body>
           <div className="d-flex flex-stack mb-3">
-            <Badge color="light">Development</Badge>
+            <Badge color="light">{'  '}</Badge>
             <div>
               <Dropdown
                 overlay={
@@ -77,7 +78,7 @@ function ComponentItem(props: ComponentItemProps) {
             </div>
           </div>
           <div className="mb-3">
-            <a href="/z">
+            <a>
               <div className="position-relative">
                 <div className="overlay overlay-show">
                   <div
@@ -97,7 +98,9 @@ function ComponentItem(props: ComponentItemProps) {
             <Symbol.Avatar shape="circle" size={35} alt="测" />
             <div className="d-flex my-1">
               <div className="py-2 px-3 ms-3">
-                <span className="ms-1 fs-7 fw-bolder text-gray-600">2022-02-01</span>
+                <span className="ms-1 fs-7 fw-bolder text-gray-600">
+                  {data.createdAt && moment(data.createdAt).format('YYYY-MM-DD HH:mm')}
+                </span>
               </div>
             </div>
           </div>
@@ -162,7 +165,7 @@ function Components(props: ComponentsProps) {
 
   const app = location.state.app;
 
-  const libraryId = app?.dependencies.find((item: any) => item.name == 'component.library').value;
+  const libraryId = app.dependencies.find((item: any) => item.name == 'component.library').value;
 
   const [layout, setLayout] = useState<'card' | 'table'>('card');
 
@@ -237,7 +240,7 @@ function Components(props: ComponentsProps) {
     >
       <div className="d-flex flex-wrap flex-stack pb-7">
         <div className="d-flex flex-wrap align-items-center">
-          <h3 className="fw-bolder me-5">组件 (4)</h3>
+          <h3 className="fw-bolder me-5">组件 ({components.length})</h3>
           <Input.Search placeholder="搜索" className="border-body bg-body w-250px" />
         </div>
         <Controls layout={layout} onLayout={setLayout}>

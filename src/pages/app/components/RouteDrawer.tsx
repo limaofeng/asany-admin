@@ -1,6 +1,15 @@
 import { useEffect, useMemo } from 'react';
 
-import { useLoadRoutesQuery, useRouteDelete, useRouteSubmit } from '../hooks';
+import { ComponentPicker } from 'sunmao-editor';
+import type { ComponentTreeNode } from 'sunmao';
+
+import {
+  useLoadComponentsQuery,
+  useLoadRoutesQuery,
+  useRouteDelete,
+  useRouteSubmit,
+} from '../hooks';
+import { initTag } from '../utils';
 
 import { Button, Col, Drawer, Form, Input, Radio, Row, Select2, Switch } from '@/metronic';
 import type { FormInstance } from '@/metronic/Form';
@@ -12,17 +21,20 @@ type RouteFormProps = {
   visible?: boolean;
   form: FormInstance;
   data: any;
+  libraryId: string;
   submitting: boolean;
   submit: () => void;
   onDeleteSuccess: (data: any) => void;
 };
 
 function RouteForm(props: RouteFormProps) {
-  const { form, appId } = props;
-  const { data } = useLoadRoutesQuery({ variables: { id: appId } });
+  const { form, appId, libraryId } = props;
+
+  const { data: routesData } = useLoadRoutesQuery({ variables: { id: appId } });
+  const { data: componentsData } = useLoadComponentsQuery({ variables: { id: libraryId } });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const routes = data?.app?.routes || [];
+  const routes = routesData?.app?.routes || [];
 
   const treeData = useMemo(
     () =>
@@ -44,9 +56,20 @@ function RouteForm(props: RouteFormProps) {
     [routes],
   );
 
+  const library = componentsData?.library;
+
+  const componentTreeData = useMemo(() => {
+    const rootTags: ComponentTreeNode[] = [];
+    for (const _component of library?.components || []) {
+      for (const tag of _component.tags) {
+        initTag(tag, rootTags, _component as any);
+      }
+    }
+    return rootTags;
+  }, [library]);
+
   useEffect(() => {
     const { children, _rect, pos, parent, ...values } = props.data;
-    // console.log('info', values, props.data);
     if (!props.data.id) {
       form.resetFields();
     }
@@ -142,7 +165,7 @@ function RouteForm(props: RouteFormProps) {
                 name="breadcrumb"
                 label="自定义面包屑组件"
               >
-                <Input solid />
+                <ComponentPicker treeDate={componentTreeData} placeholder="选择面包屑组件" />
               </Form.Item>
             </Row>
           );
@@ -170,7 +193,7 @@ function RouteForm(props: RouteFormProps) {
       </Row>
       <Row>
         <Form.Item className="d-flex flex-column mb-7" name="component" label="组件">
-          <Input solid />
+          <ComponentPicker treeDate={componentTreeData} placeholder="选择组件模版" />
         </Form.Item>
       </Row>
     </Form>
@@ -180,13 +203,14 @@ function RouteForm(props: RouteFormProps) {
 type RouteDrawerProps = {
   route?: Route;
   visible: boolean;
+  libraryId: string;
   onClose: () => void;
   onSuccess: (data: Route) => void;
   onDeleteSuccess: (data: Route) => void;
 };
 
 function RouteDrawer(props: RouteDrawerProps) {
-  const { route, visible, onClose, onSuccess, onDeleteSuccess } = props;
+  const { route, visible, onClose, onSuccess, onDeleteSuccess, libraryId } = props;
 
   const [submit, { form, submitting }] = useRouteSubmit(route!, onSuccess);
 
@@ -245,6 +269,7 @@ function RouteDrawer(props: RouteDrawerProps) {
           data={defaultData}
           appId={route.application.id}
           form={form}
+          libraryId={libraryId}
           submit={submit}
           onDeleteSuccess={onDeleteSuccess}
         />

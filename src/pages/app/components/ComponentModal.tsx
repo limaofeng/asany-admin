@@ -50,7 +50,7 @@ function ComponentForm(props: ComponentFormProps) {
             name="template"
             label="模版"
           >
-            <ComponentPicker tags={['系统管理/']} placeholder="选择组件模版" />
+            <ComponentPicker placeholder="选择组件模版" />
           </Form.Item>
         </Col>
         <Col span={4}>

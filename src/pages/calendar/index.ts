@@ -12,13 +12,16 @@ import './style/index.scss';
   namespace: 'cn.asany.ui.admin.calendar',
 })
 class Contacts {
-  @component()
+  @component({
+    title: '侧边栏',
+    tags: ['日程'],
+  })
   Sidebar = dynamic({
     loader: () => import('./components/Sidebar'),
     loading: LoadingComponent,
   });
 
-  @component({ name: 'MainCalendar' })
+  @component({ name: 'MainCalendar', title: '日历', tags: ['日程'] })
   MainCalendar = dynamic({
     loader: () => import('./pages/MainCalendar'),
     loading: LoadingComponent,

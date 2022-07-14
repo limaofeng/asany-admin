@@ -156,6 +156,8 @@ query loadComponents($id: ID!) {
       description
       image
       template
+      tags
+      createdAt
       blocks {
         key
         props

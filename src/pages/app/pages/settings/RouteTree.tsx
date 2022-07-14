@@ -17,7 +17,7 @@ import { Badge, Button, Card, Toast, TreeList } from '@/metronic';
 import type { Route } from '@/types';
 import { tree } from '@/utils';
 
-type RouteTreeProps = RouteComponentProps<{ id: string }>;
+type RouteTreeProps = RouteComponentProps<{ id: string }, any, any>;
 
 interface RouteActionsProps {
   data: Route;
@@ -54,12 +54,17 @@ function RouteTree(props: RouteTreeProps) {
     match: {
       params: { id },
     },
+    location: {
+      state: { app },
+    },
   } = props;
 
   const { data, loading } = useLoadRoutesQuery({
     variables: { id },
     fetchPolicy: 'cache-and-network',
   });
+
+  const libraryId = app.dependencies.find((item: any) => item.name == 'component.library').value;
 
   const routes = data?.app?.routes;
 
@@ -299,6 +304,7 @@ function RouteTree(props: RouteTreeProps) {
       </Card>
       <RouteDrawer
         route={state.route}
+        libraryId={libraryId}
         onClose={handleCloseDrawer}
         onSuccess={handleSuccess}
         onDeleteSuccess={handleDeleteSuccess}

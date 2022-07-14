@@ -1,12 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { ComponentPicker } from 'sunmao-editor';
+import type { ComponentTreeNode } from 'sunmao';
+
 import {
   LoadMenusDocument,
   useCreateMenuMutation,
+  useLoadComponentsQuery,
   useLoadMenusQuery,
   useUpdateMenuMutation,
 } from '../hooks';
 import useMenuDelete from '../hooks/useMenuDelete';
+import { initTag } from '../utils';
 
 import { Button, Col, Drawer, Form, Input, Radio, Row, Select2, Switch, Toast } from '@/metronic';
 import type { FormInstance } from '@/metronic/Form';
@@ -15,6 +20,7 @@ import { delay, flat, tree } from '@/utils';
 
 type MenuFormProps = {
   appId: string;
+  libraryId: string;
   visible?: boolean;
   form: FormInstance;
   data: any;
@@ -24,8 +30,10 @@ type MenuFormProps = {
 };
 
 function MenuForm(props: MenuFormProps) {
-  const { form, appId } = props;
+  const { form, appId, libraryId } = props;
+
   const { data } = useLoadMenusQuery({ variables: { id: appId } });
+  const { data: componentsData } = useLoadComponentsQuery({ variables: { id: libraryId } });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const menus = data?.app?.menus || [];
@@ -49,6 +57,18 @@ function MenuForm(props: MenuFormProps) {
       ),
     [menus],
   );
+
+  const library = componentsData?.library;
+
+  const componentTreeData = useMemo(() => {
+    const rootTags: ComponentTreeNode[] = [];
+    for (const _component of library?.components || []) {
+      for (const tag of _component.tags) {
+        initTag(tag, rootTags, _component as any);
+      }
+    }
+    return rootTags;
+  }, [library]);
 
   useEffect(() => {
     const { children, _rect, pos, parent, ...values } = props.data;
@@ -164,7 +184,7 @@ function MenuForm(props: MenuFormProps) {
           return (
             <Row>
               <Form.Item className="d-flex flex-column mb-7" name="component" label="组件">
-                <Input solid />
+                <ComponentPicker treeDate={componentTreeData} placeholder="选择组件模版" />
               </Form.Item>
             </Row>
           );
@@ -284,10 +304,11 @@ type MenuDrawerProps = {
   onClose: () => void;
   onSuccess: (data: Menu) => void;
   onDeleteSuccess: (data: Menu) => void;
+  libraryId: string;
 };
 
 function MenuDrawer(props: MenuDrawerProps) {
-  const { menu, visible, onClose, onSuccess, onDeleteSuccess } = props;
+  const { menu, visible, libraryId, onClose, onSuccess, onDeleteSuccess } = props;
 
   const [submit, { form, submitting }] = useSubmit(menu!, onSuccess);
 
@@ -341,6 +362,7 @@ function MenuDrawer(props: MenuDrawerProps) {
     >
       {menu && (
         <MenuForm
+          libraryId={libraryId}
           submitting={submitting}
           data={defaultData}
           appId={menu.application.id}

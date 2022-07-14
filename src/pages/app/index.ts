@@ -15,7 +15,7 @@ class App {
   @component({
     name: 'AppList',
     title: '应用列表',
-    tags: ['系统管理/应用管理'],
+    tags: ['应用管理'],
     cover: 'https://share.cleanshot.com/HIBw6c/download',
   })
   AppList = dynamic({
@@ -25,19 +25,19 @@ class App {
   @component({
     name: 'AppView',
     title: '应用详情布局',
-    tags: ['系统管理/应用管理'],
+    tags: ['应用管理'],
     cover: 'https://share.cleanshot.com/OXqGNn/download',
   })
   AppView = dynamic({
     loader: () => import('./pages/AppView'),
     loading: LoadingComponent,
   });
-  @component({ name: 'settings.Overview', title: '概述', tags: ['系统管理/应用管理/应用详情'] })
+  @component({ name: 'settings.Overview', title: '概述', tags: ['应用管理/应用详情'] })
   Overview = dynamic({
     loader: () => import('./pages/settings/Overview'),
     loading: LoadingComponent,
   });
-  @component({ name: 'settings.Profile', title: '基础信息', tags: ['系统管理/应用管理/应用详情'] })
+  @component({ name: 'settings.Profile', title: '基础信息', tags: ['应用管理/应用详情'] })
   Profile = dynamic({
     loader: () => import('./pages/settings/Profile'),
     loading: LoadingComponent,
@@ -45,7 +45,7 @@ class App {
   @component({
     name: 'settings.ClientSecrets',
     title: '开发信息',
-    tags: ['系统管理/应用管理/应用详情'],
+    tags: ['应用管理/应用详情'],
     cover: 'https://share.cleanshot.com/2F4AQd/download',
   })
   ClientSecrets = dynamic({
@@ -55,7 +55,7 @@ class App {
   @component({
     name: 'settings.MenuTree',
     title: '菜单设置',
-    tags: ['系统管理/应用管理/应用详情'],
+    tags: ['应用管理/应用详情'],
     cover: 'https://share.cleanshot.com/MU8BE1/download',
   })
   MenuTree = dynamic({
@@ -65,7 +65,7 @@ class App {
   @component({
     name: 'settings.RouteTree',
     title: '路由设置',
-    tags: ['系统管理/应用管理/应用详情'],
+    tags: ['应用管理/应用详情'],
     cover: 'https://share.cleanshot.com/YDyqGB/download',
   })
   RouteTree = dynamic({
@@ -76,7 +76,7 @@ class App {
     name: 'settings.ComponentList',
     title: '组件设置',
     cover: 'https://share.cleanshot.com/daQwOK/download',
-    tags: ['系统管理/应用管理/应用详情'],
+    tags: ['应用管理/应用详情'],
   })
   ComponentList = dynamic({
     loader: () => import('./pages/settings/ComponentList'),
@@ -85,7 +85,7 @@ class App {
   @component({
     name: 'breadcrumb.AppBreadcrumbItem',
     title: '应用详情',
-    tags: ['系统管理/应用管理/小组件'],
+    tags: ['应用管理/小组件'],
   })
   AppBreadcrumbItem = dynamic({
     loader: () => import('./components/breadcrumb/AppBreadcrumbItem'),

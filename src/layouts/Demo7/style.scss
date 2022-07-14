@@ -11,7 +11,7 @@
     --met-aside-width: 280px;
 
     &.aside-minimize {
-      --met-aside-width: 0;
+      --met-aside-width: 0px;
       .aside {
         width: 0;
       }

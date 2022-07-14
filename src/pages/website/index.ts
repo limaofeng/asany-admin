@@ -11,27 +11,37 @@ import './style/website.scss';
   namespace: 'cn.asany.ui.admin.website',
 })
 class Website {
-  @component()
+  @component({
+    title: '网站列表',
+    tags: ['网站'],
+  })
   WebsiteList = dynamic({
     loader: () => import('./pages/WebsiteList'),
     loading: LoadingComponent,
   });
-  @component()
+  @component({
+    title: '网站详情',
+    tags: ['网站/网站管理'],
+  })
   WebsiteManage = dynamic({
     loader: () => import('./pages/WebsiteManage'),
     loading: LoadingComponent,
   });
-  @component({ name: 'settings.WebsiteGeneral' })
+  @component({ name: 'settings.WebsiteGeneral', title: '基础信息', tags: ['网站/网站管理'] })
   WebsiteGeneral = dynamic({
     loader: () => import('./pages/settings/WebsiteGeneral'),
     loading: LoadingComponent,
   });
-  @component({ name: 'settings.WebsiteNavigation' })
+  @component({ name: 'settings.WebsiteNavigation', title: '导航', tags: ['网站/网站管理'] })
   WebsiteNavigation = dynamic({
     loader: () => import('./pages/settings/WebsiteNavigation'),
     loading: LoadingComponent,
   });
-  @component({ name: 'breadcrumb.WebsiteBreadcrumbItem' })
+  @component({
+    name: 'breadcrumb.WebsiteBreadcrumbItem',
+    title: '网站面包屑转义',
+    tags: ['网站/其他'],
+  })
   WebsiteBreadcrumbItem = dynamic({
     loader: () => import('./components/breadcrumb/WebsiteBreadcrumbItem'),
     loading: LoadingComponent,

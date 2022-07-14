@@ -4602,10 +4602,10 @@
   resolved "https://registry.npmmirror.com/@xobotyi/scrollbar-width/-/scrollbar-width-1.9.5.tgz#80224a6919272f405b87913ca13b92929bdf3c4d"
   integrity sha512-N8tkAACJx2ww8vFMneJmaAgmjAG1tnVBZJRLRcx061tmsLRZHSEZSLuGWnwPtunsSLvSqXQ2wfp7Mgqg1I+2dQ==
 
-"@yaireo/tagify@^4.13.2":
-  version "4.13.2"
-  resolved "https://registry.npmjs.org/@yaireo/tagify/-/tagify-4.13.2.tgz#836b7c1eca9c4bee6d07a2a2534836300e9ade8d"
-  integrity sha512-D0BGUiNKzR3hbysqSKEC4E9+W0mnRBMqz5TprilXSOwD8BRIjots0uyDtK9sQECCeX8ghKPwUWmn0/KfafI0og==
+"@yaireo/tagify@^4.13.3":
+  version "4.13.3"
+  resolved "https://registry.npmjs.org/@yaireo/tagify/-/tagify-4.13.3.tgz#5e70eee84beab6dcb2981c9caf4df150b6d970bb"
+  integrity sha512-NF9IJeQsIZDSIJzdd/fB65LkyJhqQd79aPP9OFkW+T6CyQOuEqVv13uufdTbbhOCq2N/zeuPT/hlPklW9qqPOQ==
 
 JSONStream@^1.0.4:
   version "1.3.5"
@@ -14035,10 +14035,10 @@ rc-dropdown@~4.0.0:
     rc-trigger "^5.3.1"
     rc-util "^5.17.0"
 
-rc-field-form@1.27.0:
-  version "1.27.0"
-  resolved "https://registry.npmmirror.com/rc-field-form/-/rc-field-form-1.27.0.tgz#0246d11c2cc5fabf31b53729a2ce029f1297ff77"
-  integrity sha512-4NGYFmb6KpNU5tSqvVr94H88ys3TvoUYqHT3nuFqur2EDpDqIFvVmtWrppmXKTr5X1PuE2Om8FExPt6ErfQ/AQ==
+rc-field-form@1.27.1:
+  version "1.27.1"
+  resolved "https://registry.npmjs.org/rc-field-form/-/rc-field-form-1.27.1.tgz#11d61ccb43679e71fdbbff0d821326202554df84"
+  integrity sha512-RShegnwFu6TH8tl2olCxn+B4Wyh5EiQH8c/7wucbkLNyue05YiH5gomUAg1vbZjp71yFKwegClctsEG5CNBWAA==
   dependencies:
     "@babel/runtime" "^7.18.0"
     async-validator "^4.1.0"
@@ -16617,17 +16617,18 @@ sugarss@^2.0.0:
   dependencies:
     postcss "^7.0.2"
 
-sunmao-editor@^0.1.22:
-  version "0.1.22"
-  resolved "https://registry.npmjs.org/sunmao-editor/-/sunmao-editor-0.1.22.tgz#d90ef1dd164c998d0674882881a02b620f4d6136"
-  integrity sha512-ejTRTXj/3Vf0kgWUu46d+L9/X6dyf5pYZeJKUgiGRaWQEjhy/It30VsWqf/jHVVVqbPWz+tJO0YEpccdsHg73Q==
+sunmao-editor@^0.1.23:
+  version "0.1.23"
+  resolved "https://registry.npmjs.org/sunmao-editor/-/sunmao-editor-0.1.23.tgz#965050e54dd73f126df2284c5050b58b181fcbbc"
+  integrity sha512-ChTJobpLpPWM6ho8PZDCjDdl3rPWO98zBZq8kpiih76s8PdVp3GKFp4VvU/2LQ5+rSzPQ/T9WeEvLQO7XLqGPA==
 
-sunmao@^0.2.37:
-  version "0.2.37"
-  resolved "https://registry.npmjs.org/sunmao/-/sunmao-0.2.37.tgz#f7a97529b8a2193574acd4667982df8faac9d433"
-  integrity sha512-Et//HOh2yQNkOUGAOiSVLsvLCppcxusZUnNIogkw49642Kfl2A8O0iPxx1AZl22GuxNNy554GQXWUmNnvJ+6Og==
+sunmao@^0.2.38:
+  version "0.2.38"
+  resolved "https://registry.npmjs.org/sunmao/-/sunmao-0.2.38.tgz#9d046c37437eba16d11e0fa0d72618eff38e6df3"
+  integrity sha512-Uz/ETcQ+VYx3tS5eg/Zi62Tqhv4IHZne+hIy6P1dMRDxgKs9cMh9nbSu+fGnkR0Q3G2TM0aIEI4Edv1KHS/YwQ==
   dependencies:
     classnames "^2.3.1"
+    dexie "^3.2.0"
     lodash-es "^4.17.21"
     reflect-metadata "^0.1.13"
 
@@ -16690,10 +16691,10 @@ sweetalert2-react-content@^5.0.1:
   resolved "https://registry.npmjs.org/sweetalert2-react-content/-/sweetalert2-react-content-5.0.1.tgz#fc993470a2e673d2f63c388708eb8d170cbf7c70"
   integrity sha512-waB/aDHeVSBdxHEFioy0OmQVi+bupr/S1M+GW54WbFkuO86uxVLRzzFomeddhGzrl6R4JwNJAmuKYDhQVN+uyw==
 
-sweetalert2@^11.4.21:
-  version "11.4.21"
-  resolved "https://registry.npmjs.org/sweetalert2/-/sweetalert2-11.4.21.tgz#ec4f2d17a383b96cb8b0f279f5138c4cff11b19c"
-  integrity sha512-Tn7Cs5XTkyNqp64WJzYMtEFi0LyY5iHKaksXvi1dDiPgXtBPpHfLb5BAJKtHAI0/ehiirTX6yIFoi/C+5CQemg==
+sweetalert2@^11.4.22:
+  version "11.4.22"
+  resolved "https://registry.npmjs.org/sweetalert2/-/sweetalert2-11.4.22.tgz#255618eb7c5a4add513605dd01a3b31a257b9df8"
+  integrity sha512-gDBdi/RrU8/+1IPITQyqx4E5vvXt/VdFfaXa0EevJ2teyY/+yJhUb/EQ/yi07It0XZdl3LebeffWGETXWq5fow==
 
 symbol-observable@^1.0.4:
   version "1.2.0"

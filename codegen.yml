@@ -43,8 +43,8 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
-  src/pages/mail/hooks.ts:
-    documents: ["src/pages/mail/**/*.gql"]
+  src/pages/mail/hooks/api.ts:
+    documents: ["src/pages/mail/hooks/*.gql"]
     plugins:
       - "typescript-operations"
       - "typescript-react-apollo"
@@ -54,8 +54,8 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
-  src/pages/calendar/hooks.ts:
-    documents: ["src/pages/calendar/**/*.gql"]
+  src/pages/calendar/hooks/api.ts:
+    documents: ["src/pages/calendar/hooks/*.gql"]
     plugins:
       - "typescript-operations"
       - "typescript-react-apollo"
