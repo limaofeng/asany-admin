@@ -179,7 +179,7 @@ function Dropdown(props: DropdownProps) {
     setVisible(false);
   });
 
-  const handleExit = useCallback((action) => {
+  const handleExit = useCallback((action: string) => {
     if (action === 'EXIT') {
       setVisible(false);
       (itemRef.current as any).blur();

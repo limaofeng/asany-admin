@@ -45,7 +45,7 @@ function ComponentForm(props: ComponentFormProps) {
           <Form.Item className="d-flex flex-column mb-7" name="description" label="描述">
             <Input.TextArea solid />
           </Form.Item>
-          <Form.Item className="d-flex flex-column mb-7" name="tags" label="描述">
+          <Form.Item className="d-flex flex-column mb-7" name="tags" label="标签">
             <TagsInput />
           </Form.Item>
           <Form.Item

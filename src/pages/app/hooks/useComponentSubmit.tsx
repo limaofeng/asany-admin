@@ -61,7 +61,7 @@ function useComponentSubmit(
               success: {
                 render: () => (
                   <>
-                    路由 <strong>{input.name}</strong> 保存成功
+                    组件 <strong>{input.title}</strong> 保存成功
                   </>
                 ),
               },
@@ -93,7 +93,7 @@ function useComponentSubmit(
               success: {
                 render: () => (
                   <>
-                    路由 <strong>{input.name}</strong> 新增成功
+                    组件 <strong>{input.name}</strong> 新增成功
                   </>
                 ),
               },

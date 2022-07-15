@@ -9,7 +9,11 @@ import LoadingComponent from '@/components/PageLoading';
   namespace: 'cn.asany.ui.admin',
 })
 class Admin {
-  @component({ name: 'Home' })
+  @component({
+    name: 'Home',
+    title: '首页',
+    tags: ['门户'],
+  })
   HomeBuilder = dynamic({
     loader: () => import('./components/builder/HomeBuilder'),
     loading: LoadingComponent,

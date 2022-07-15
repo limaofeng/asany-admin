@@ -9,7 +9,10 @@ import LoadingComponent from '@/components/PageLoading';
   namespace: 'cn.asany.ui.admin.layout',
 })
 class Layout {
-  @component()
+  @component({
+    title: '布局 7',
+    tags: ['布局'],
+  })
   Demo7 = dynamic({
     loader: () => import('./Demo7/Demo7'),
     loading: LoadingComponent,

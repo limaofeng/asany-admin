@@ -76,6 +76,8 @@ function RouteForm(props: RouteFormProps) {
     form.setFieldsValue({ ...values, parentRoute: parent ? parent.id : undefined });
   }, [form, props.data]);
 
+  console.log('componentTreeData', componentTreeData);
+
   return (
     <Form form={form}>
       <Row>
