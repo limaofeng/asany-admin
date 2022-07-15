@@ -9,7 +9,11 @@ import LoadingComponent from '@/components/PageLoading';
   namespace: 'cn.asany.ui.admin.authentication',
 })
 class Authentication {
-  @component({ name: 'AsideLayoutSignIn' })
+  @component({
+    name: 'AsideLayoutSignIn',
+    title: '登陆',
+    tags: ['身份认证'],
+  })
   AsideLayoutSignIn = dynamic({
     loader: () => import('./sign-in/AsideLayoutSignIn'),
     loading: LoadingComponent,

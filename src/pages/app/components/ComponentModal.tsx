@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 
 import { ComponentPicker } from 'sunmao-editor';
+import TagsInput from '@asany/tags-input';
 
 import useComponentSubmit from '../hooks/useComponentSubmit';
 
@@ -43,6 +44,9 @@ function ComponentForm(props: ComponentFormProps) {
           </Form.Item>
           <Form.Item className="d-flex flex-column mb-7" name="description" label="描述">
             <Input.TextArea solid />
+          </Form.Item>
+          <Form.Item className="d-flex flex-column mb-7" name="tags" label="描述">
+            <TagsInput />
           </Form.Item>
           <Form.Item
             rules={[{ required: true, message: '组件模版' }]}

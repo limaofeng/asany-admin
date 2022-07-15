@@ -19,7 +19,6 @@ import {
   Input,
   Menu,
   Row,
-  Select2,
   Symbol,
   Table,
 } from '@/metronic';
@@ -47,7 +46,10 @@ function ComponentItem(props: ComponentItemProps) {
       <Card flush className="h-md-100">
         <Card.Body>
           <div className="d-flex flex-stack mb-3">
-            <Badge color="light">{'  '}</Badge>
+            <Badge color="light">
+              <>{data.tags && data.tags.length ? data.tags[0] + '/' : null}</>
+              <>{data.title}</>
+            </Badge>
             <div>
               <Dropdown
                 overlay={
@@ -78,14 +80,14 @@ function ComponentItem(props: ComponentItemProps) {
             </div>
           </div>
           <div className="mb-3">
-            <a>
+            <a onClick={handleEdit}>
               <div className="position-relative">
                 <div className="overlay overlay-show">
                   <div
                     className="bgi-no-repeat bgi-position-center bgi-size-cover card-rounded h-200px"
-                    style={{ backgroundImage: "url('/assets/media/books/img-72.jpg')" }}
+                    style={{ backgroundImage: "url('/assets/media/background/mage_icon.png')" }}
                   />
-                  <div className="overlay-layer rounded bg-black" style={{ opacity: 0.4 }} />
+                  <div className="overlay-layer rounded" style={{ opacity: 0.4 }} />
                 </div>
                 <div className="position-absolute text-white mb-4 ms-4 bottom-0">
                   <span className="text-white fs-4 fw-bolder mb-1">{data.title}</span>
@@ -245,7 +247,7 @@ function Components(props: ComponentsProps) {
         </div>
         <Controls layout={layout} onLayout={setLayout}>
           <div className="d-flex my-0">
-            <Select2
+            {/* <Select2
               className="border-body bg-body w-150px me-5"
               placeholder="启用状态"
               options={[
@@ -253,7 +255,7 @@ function Components(props: ComponentsProps) {
                 { label: '启用', value: 'enable' },
                 { label: '禁用', value: 'disable' },
               ]}
-            />
+            /> */}
             <Button onClick={handleNewModal}>新增组件</Button>
           </div>
         </Controls>

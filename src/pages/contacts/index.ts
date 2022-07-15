@@ -11,17 +11,26 @@ import './style/index.scss';
   namespace: 'cn.asany.ui.admin.contacts',
 })
 class Contacts {
-  @component()
+  @component({
+    title: '侧边栏',
+    tags: ['通讯录'],
+  })
   Sidebar = dynamic({
     loader: () => import('./components/Sidebar'),
     loading: LoadingComponent,
   });
-  @component()
+  @component({
+    title: '主题界面',
+    tags: ['通讯录'],
+  })
   MainContacts = dynamic({
     loader: () => import('./pages/MainContacts'),
     loading: LoadingComponent,
   });
-  @component()
+  @component({
+    title: '联系人详情',
+    tags: ['通讯录'],
+  })
   ViewContact = dynamic({
     loader: () => import('./pages/ViewContact'),
     loading: LoadingComponent,

@@ -50,7 +50,12 @@ function useComponentSubmit(
         try {
           const input = await form.validateFields();
           const { data: rdata } = await Toast.promise(
-            delay(updateComponent({ variables: { id: data.id, input: { ...input } } }), 350),
+            delay(
+              updateComponent({
+                variables: { id: data.id, input: { ...input, libraryId: data.libraryId } },
+              }),
+              350,
+            ),
             {
               pending: '提交中...',
               success: {
