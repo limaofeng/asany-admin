@@ -10,14 +10,43 @@ interface TabsProps {
   className?: string;
   activeKey?: string;
   tabPosition?: 'left' | 'top';
+  type?: 'tabs' | 'pills-custom' | 'pills' | 'line-tabs';
   renderContainer?: boolean;
   defaultActiveKey?: string;
   children: React.ReactElement | React.ReactElement[];
   onChange?: (activeKey: string) => void;
+  renderTabBar?: (props: TabBarProps) => React.ReactElement;
+}
+
+type TabBarProps = {
+  id: string;
+  key: string;
+  active: boolean;
+  className?: string;
+  children?: React.ReactNode;
+  onClick: (e: React.MouseEvent) => void;
+};
+
+function TabBar(props: TabBarProps) {
+  const { className, active, children, onClick } = props;
+  return (
+    <li key={props.id} className="nav-item">
+      <a onClick={onClick} className={classnames('nav-link', className, { active })}>
+        {children}
+      </a>
+    </li>
+  );
 }
 
 function Tabs(props: TabsProps) {
-  const { children, className, onChange, tabPosition = 'top', renderContainer = true } = props;
+  const {
+    children,
+    className,
+    onChange,
+    tabPosition = 'top',
+    type = 'tabs',
+    renderContainer = true,
+  } = props;
 
   const panes = useMemo(() => {
     return React.Children.map(children, (item) => ({
@@ -49,35 +78,41 @@ function Tabs(props: TabsProps) {
     setActiveKey(props.activeKey!);
   }, [props.activeKey]);
 
+  const _renderTabBar = props.renderTabBar;
+  const renderTabBar = useCallback(
+    (_props: TabBarProps) => {
+      if (_renderTabBar) {
+        return _renderTabBar(_props);
+      }
+      return <TabBar {..._props} />;
+    },
+    [_renderTabBar],
+  );
+
   const body = (
     <>
       <ul
         key="nav-tabs"
-        className={classnames('nav nav-tabs', className, {
-          'nav-line-tabs': tabPosition == 'top',
+        className={classnames('nav ', className, {
+          'nav-tabs': type == 'tabs',
+          'nav-line-tabs': type == 'line-tabs',
+          'nav-pills': type == 'pills',
+          'nav-pills nav-pills-custom': type == 'pills-custom',
           'nav-pills flex-row flex-md-column  border-bottom-0': tabPosition == 'left',
         })}
       >
-        {panes.map((item) => (
-          <li key={item.id} className="nav-item">
-            {React.isValidElement(item.name) ? (
-              React.cloneElement(item.name as any, {
-                onClick: handleSelect(item.id),
-                className: classnames((item.name as any).props.className, {
-                  active: activeKey == item.id,
-                }),
-              })
-            ) : (
-              <a
-                onClick={handleSelect(item.id)}
-                href={`#${item.id}`}
-                className={classnames('nav-link', { active: activeKey == item.id })}
-              >
-                {item.name}
-              </a>
-            )}
-          </li>
-        ))}
+        {panes.map((item) =>
+          renderTabBar({
+            id: item.id,
+            key: item.id,
+            className: classnames({
+              active: activeKey == item.id,
+            }),
+            active: activeKey == item.id,
+            onClick: handleSelect(item.id),
+            children: item.name,
+          }),
+        )}
       </ul>
       <div key="tab-content" className="tab-content">
         {panes.map((item) => React.cloneElement(item.content, { active: activeKey == item.id }))}

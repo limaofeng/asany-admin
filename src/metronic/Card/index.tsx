@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import classnames from 'classnames';
 import { Card as BsCard } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { isEqual } from 'lodash';
 
 interface CardProps {
   as?: React.ElementType;
@@ -125,6 +126,7 @@ function randerHeader(
 type CardBodyProps = {
   className?: string;
   children?: React.ReactNode;
+  [key: string]: any;
 };
 
 function CardBody(props: CardBodyProps) {
@@ -132,11 +134,23 @@ function CardBody(props: CardBodyProps) {
   return <BsCard.Body className={className}>{children}</BsCard.Body>;
 }
 
-function Card(props: CardProps & { to?: string }) {
-  const { as, shadow, className, flush, titleClassName, headerClassName, style } = props;
+function Card(props: CardProps & { to?: string }, ref: any) {
+  const {
+    as,
+    shadow,
+    className,
+    flush,
+    titleClassName,
+    headerClassName,
+    style,
+    children,
+    bodyClassName,
+    title: _title,
+    ...otherProps
+  } = props;
 
   const { header, toolbar, body, footer, title } = useMemo(() => {
-    const childs = React.Children.toArray(props.children);
+    const childs = React.Children.toArray(children);
     const toolbarNode = childs.find(
       (item) => React.isValidElement(item) && item.type == CardToolbar,
     );
@@ -150,28 +164,31 @@ function Card(props: CardProps & { to?: string }) {
     return {
       header: headerNode,
       toolbar: toolbarNode,
-      body: bodyNode || <CardBody className={props.bodyClassName}>{newChildren}</CardBody>,
+      body: bodyNode || <CardBody className={bodyClassName}>{newChildren}</CardBody>,
       footer: footerNode,
       title:
         titleNode ||
-        (props.title && (
-          <CardTitle key="card-title" as="h3" className={props.titleClassName}>
-            {props.title}
+        (_title && (
+          <CardTitle key="card-title" as="h3" className={titleClassName}>
+            {_title}
           </CardTitle>
         )),
     };
-  }, [props.children, props.title, props.titleClassName, props.bodyClassName]);
+  }, [children, _title, titleClassName, bodyClassName]);
 
-  return (
-    <BsCard
-      as={as == 'a' ? Link : as}
-      to={props.to}
-      style={style}
-      className={classnames(className, {
+  return React.createElement(
+    (as == 'a' ? Link : as) || 'div',
+    {
+      ...otherProps,
+      ref,
+      to: props.to,
+      style,
+      className: classnames('card', className, {
         [`shadow-${shadow}`]: shadow,
         'card-flush': flush,
-      })}
-    >
+      }),
+    },
+    <>
       {randerHeader(
         header as React.ReactElement,
         headerClassName,
@@ -181,14 +198,25 @@ function Card(props: CardProps & { to?: string }) {
       )}
       {body}
       {footer}
-    </BsCard>
+    </>,
   );
 }
 
-Card.Title = CardTitle;
-Card.Body = CardBody;
-Card.Header = CardHeader;
-Card.Toolbar = CardToolbar;
-Card.Footer = CardFooter;
+interface CardWrapper
+  extends React.ForwardRefExoticComponent<CardProps & React.RefAttributes<any | null>> {
+  Title: typeof CardTitle;
+  Body: typeof CardBody;
+  Header: typeof CardHeader;
+  Toolbar: typeof CardToolbar;
+  Footer: typeof CardFooter;
+}
 
-export default Card;
+const CardRef = React.memo(React.forwardRef(Card), isEqual) as unknown as CardWrapper;
+
+CardRef.Title = CardTitle;
+CardRef.Body = CardBody;
+CardRef.Header = CardHeader;
+CardRef.Toolbar = CardToolbar;
+CardRef.Footer = CardFooter;
+
+export default CardRef;

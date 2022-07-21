@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { useCallback } from 'react';
 
 import classnames from 'classnames';
@@ -5,7 +6,10 @@ import classnames from 'classnames';
 import './style.scss';
 
 type SwitchProps = {
+  style?: CSSProperties;
+  className?: string;
   label?: string;
+  labelClassName?: string;
   solid?: boolean;
   checked?: boolean;
   value?: string;
@@ -13,7 +17,16 @@ type SwitchProps = {
 };
 
 function Switch(props: SwitchProps) {
-  const { label, checked: _checked, value: _value, solid, onChange } = props;
+  const {
+    className,
+    label,
+    labelClassName,
+    checked: _checked,
+    value: _value,
+    solid,
+    style,
+    onChange,
+  } = props;
 
   const handleChange = useCallback(
     (e: any) => {
@@ -27,18 +40,23 @@ function Switch(props: SwitchProps) {
 
   return (
     <label
-      className={classnames('form-switch form-check-custom', {
+      style={style}
+      className={classnames('form-check form-switch form-check-custom', {
         [`form-check-${solid}`]: !!solid,
       })}
     >
       <input
         onChange={handleChange}
-        className="form-check-input"
+        className={classnames('form-check-input', className)}
         type="checkbox"
         value={value}
         checked={checked}
       />
-      {label && <span className="form-check-label fw-bold text-muted">{label}</span>}
+      {label && (
+        <span className={classnames('form-check-label fw-bold text-muted', labelClassName)}>
+          {label}
+        </span>
+      )}
     </label>
   );
 }

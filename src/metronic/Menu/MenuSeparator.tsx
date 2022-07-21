@@ -7,7 +7,7 @@ type MenuSeparatorProps = SeparatorProps;
 
 function MenuSeparator(props: MenuSeparatorProps) {
   const { className, ...separatorProps } = props;
-  return <Separator {...separatorProps} className={classnames(className, 'my-2')} />;
+  return <Separator {...separatorProps} className={classnames(className)} />;
 }
 
 export default MenuSeparator;

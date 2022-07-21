@@ -25,18 +25,41 @@ export type MenuItemProps = {
   onClick?: () => void;
 };
 
-export function MenuSection(props: MenuItemProps) {
-  const { title, children, className } = props;
-  const content = title || children;
+export type MenuSectionProps = MenuContentProps & {
+  sectionClassName?: string;
+};
+
+export function MenuSection(props: MenuSectionProps) {
+  const { children, className, sectionClassName, contentClassName } = props;
+  const content = children;
   return (
-    <div className="menu-item">
-      <div className={classnames('menu-content pb-2', className)}>
-        {typeof content === 'string' ? (
-          <span className="menu-section text-muted text-uppercase fs-8 ls-1">{content}</span>
-        ) : (
-          content
-        )}
+    <div className={classnames('menu-item', className)}>
+      <div className={classnames('menu-content pb-2', contentClassName)}>
+        <span
+          className={classnames(
+            'menu-section text-muted text-uppercase fs-8 ls-1',
+            sectionClassName,
+          )}
+        >
+          {content}
+        </span>
       </div>
+    </div>
+  );
+}
+
+type MenuContentProps = {
+  className?: string;
+  contentClassName?: string;
+  children?: React.ReactNode;
+};
+
+export function MenuContent(props: MenuContentProps) {
+  const { children, className, contentClassName } = props;
+  const content = children;
+  return (
+    <div className={classnames('menu-item', className)}>
+      <div className={classnames('menu-content', contentClassName)}>{content}</div>
     </div>
   );
 }
@@ -52,7 +75,6 @@ function MenuItem(props: MenuItemProps) {
     bullet,
     className,
     linkClassName,
-    contentClassName,
     titleClassName,
     onClick,
   } = props;
@@ -83,40 +105,34 @@ function MenuItem(props: MenuItemProps) {
     [menuKey, context, isLink, url, history, onClick],
   );
 
-  const contented = React.Children.toArray(children).some(React.isValidElement);
-
   return (
     <div className={classnames('menu-item', className)}>
-      {contented ? (
-        <div className={classnames('menu-content', contentClassName)}>{children}</div>
-      ) : (
-        React.createElement(
-          as,
-          {
-            to: isLink ? url : undefined,
-            onClick: handleClick,
-            className: classnames('menu-link', linkClassName, { active: selected }),
-          },
-          <>
-            {icon ? (
-              <span className="menu-icon">
-                {typeof icon == 'string' ? <Icon className="svg-icon-4" name={icon} /> : icon}
+      {React.createElement(
+        as,
+        {
+          to: isLink ? url : undefined,
+          onClick: handleClick,
+          className: classnames('menu-link', linkClassName, { active: selected }),
+        },
+        <>
+          {icon ? (
+            <span className="menu-icon">
+              {typeof icon == 'string' ? <Icon className="svg-icon-4" name={icon} /> : icon}
+            </span>
+          ) : (
+            bullet && (
+              <span className="menu-bullet">
+                <Bullet {...(typeof bullet !== 'boolean' ? bullet : {})} />
               </span>
-            ) : (
-              bullet && (
-                <span className="menu-bullet">
-                  <Bullet {...(typeof bullet !== 'boolean' ? bullet : {})} />
-                </span>
-              )
-            )}
-            {icon || badge ? (
-              <span className={classnames('menu-title', titleClassName)}>{children || title}</span>
-            ) : (
-              children || title
-            )}
-            {badge}
-          </>,
-        )
+            )
+          )}
+          {icon || badge ? (
+            <span className={classnames('menu-title', titleClassName)}>{children || title}</span>
+          ) : (
+            children || title
+          )}
+          {badge}
+        </>,
       )}
     </div>
   );

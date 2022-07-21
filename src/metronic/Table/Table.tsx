@@ -46,7 +46,9 @@ export interface TableProps<T> {
   height?: number;
   overscanRowCount?: number;
   rowHeight?: number | RowHeightFunc;
+  type?: 'native' | 'data_tables';
   noRowsRenderer?: NoContentRenderer;
+  className?: string;
 }
 
 function defaultSelectRenderTitle(size: number) {
@@ -92,6 +94,7 @@ function Table<T>(props: TableProps<T>) {
     noRowsRenderer,
     onChange: tableOnChange,
     rowKey = 'key',
+    type = 'data_tables',
   } = props;
 
   const {
@@ -432,97 +435,132 @@ function Table<T>(props: TableProps<T>) {
   }, [selectedRowKeys]);
 
   return (
-    <div className="dataTables_wrapper dt-bootstrap4 no-footer">
-      <TableHeader
-        rowKey={rowKey}
-        toolbar={toolbar}
-        dataSource={dataSource}
-        renderTitle={renderTitle}
-        selectedAll={state.current.selectedAll}
-        selectedKeys={state.current.selectedKeys}
-        onSelectAll={handleSelectAll}
-        onSort={handleSort}
-        columns={headerColumns}
-      />
-      <div className="dataTable-body">
-        {dataSource.type == 'lazy' ? (
-          <VirtualList<T>
-            tableBodyRef={tableBodyContainer}
-            rowKey={rowKey}
-            recoverer={recoverer}
-            rowSelection={rowSelection}
-            dataSource={dataSource}
-            height={props.height}
-            rowHeight={props.rowHeight || 50}
-            overscanRowCount={props.overscanRowCount || 5}
-            onSelect={handleSelect}
-            columns={newColumns}
-            useCheck={useCheck}
-            hover={hover}
-            onColgroup={handleColgroup}
-            responsive={responsive}
-          />
-        ) : (
-          <BsTable
-            hover={props.hover}
-            striped={props.striped}
-            responsive={props.responsive}
-            className="dataTable table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
-          >
-            <Colgroup<T> onColgroup={handleColgroup} columns={newColumns} />
-            <tbody ref={tableBodyContainer} className="fw-bold text-gray-600">
-              {!dataSource.items.length
-                ? noRowsRenderer && (
-                    <tr>
-                      <td
-                        valign="top"
-                        colSpan={columns.length + (rowSelection ? 1 : 0)}
-                        className="dataTables_empty"
+    <div
+      className={classnames({
+        'dataTables_wrapper dt-bootstrap4 no-footer': type == 'data_tables',
+        'table-responsive': type == 'native',
+      })}
+    >
+      {type == 'data_tables' && (
+        <TableHeader
+          rowKey={rowKey}
+          toolbar={toolbar}
+          dataSource={dataSource}
+          renderTitle={renderTitle}
+          selectedAll={state.current.selectedAll}
+          selectedKeys={state.current.selectedKeys}
+          onSelectAll={handleSelectAll}
+          onSort={handleSort}
+          columns={headerColumns}
+        />
+      )}
+      {React.createElement(
+        type == 'data_tables'
+          ? (_props: any) => <div {..._props} className="dataTable-body" />
+          : React.Fragment,
+        {},
+        <>
+          {dataSource.type == 'lazy' ? (
+            <VirtualList<T>
+              tableBodyRef={tableBodyContainer}
+              rowKey={rowKey}
+              recoverer={recoverer}
+              rowSelection={rowSelection}
+              dataSource={dataSource}
+              height={props.height}
+              rowHeight={props.rowHeight || 50}
+              overscanRowCount={props.overscanRowCount || 5}
+              onSelect={handleSelect}
+              columns={newColumns}
+              useCheck={useCheck}
+              hover={hover}
+              onColgroup={handleColgroup}
+              responsive={responsive}
+            />
+          ) : (
+            <BsTable
+              hover={props.hover}
+              striped={props.striped}
+              responsive={props.responsive}
+              className={classnames(props.className, {
+                'dataTable table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body':
+                  type == 'data_tables',
+                'table table-row-dashed': type == 'native',
+              })}
+            >
+              {type == 'native' && (
+                <thead>
+                  <tr className="fs-7 fw-bolder text-gray-500 border-bottom-0">
+                    {headerColumns.map((col) => (
+                      <th
+                        key={col.key}
+                        className={
+                          typeof col.className == 'function' ? col.className('th') : col.className
+                        }
                       >
-                        {noRowsRenderer()}
-                      </td>
-                    </tr>
-                  )
-                : dataSource.items.map((data: any, index) => {
-                    const key = getRowKey(data, rowKey);
-                    return (
-                      <TableRow<T>
-                        rowKey={rowKey}
-                        recoverer={recoverer}
-                        className={classnames({ odd: index % 2, even: !(index % 2) })}
-                        rowSelection={rowSelection}
-                        onSelect={handleSelect}
-                        key={key}
-                        rowHeight={props.rowHeight}
-                        index={index}
-                        data={data}
-                        columns={newColumns}
-                        useCheck={useCheck}
-                      />
-                    );
-                  })}
-            </tbody>
-          </BsTable>
-        )}
-        {rowSelection && (
-          <Selecto
-            ref={selecto}
-            container={tableBodyContainer.current}
-            dragContainer={tableBodyContainer.current!}
-            selectableTargets={['.table-list-item']}
-            selectByClick={false}
-            selectFromInside={true}
-            continueSelect={true}
-            toggleContinueSelect={'shift'}
-            keyContainer={window}
-            dragCondition={handleSelectoDragCondition}
-            hitRate={0}
-            onSelectStart={handleSelectoSelectStart}
-            onSelectEnd={handleSelectoSelectEnd}
-            onSelect={handleSelectoSelect}
-          />
-        )}
-      </div>
+                        {col.title}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+              )}
+              {type == 'data_tables' && (
+                <Colgroup<T> onColgroup={handleColgroup} columns={newColumns} />
+              )}
+              <tbody ref={tableBodyContainer} className="fw-bold text-gray-600">
+                {!dataSource.items.length
+                  ? noRowsRenderer && (
+                      <tr>
+                        <td
+                          valign="top"
+                          colSpan={columns.length + (rowSelection ? 1 : 0)}
+                          className="dataTables_empty"
+                        >
+                          {noRowsRenderer()}
+                        </td>
+                      </tr>
+                    )
+                  : dataSource.items.map((data: any, index) => {
+                      const key = getRowKey(data, rowKey);
+                      return (
+                        <TableRow<T>
+                          rowKey={rowKey}
+                          recoverer={recoverer}
+                          className={classnames({ odd: index % 2, even: !(index % 2) })}
+                          rowSelection={rowSelection}
+                          onSelect={handleSelect}
+                          key={key}
+                          rowHeight={props.rowHeight}
+                          index={index}
+                          data={data}
+                          columns={newColumns}
+                          useCheck={useCheck}
+                        />
+                      );
+                    })}
+              </tbody>
+            </BsTable>
+          )}
+          {rowSelection && (
+            <Selecto
+              ref={selecto}
+              container={tableBodyContainer.current}
+              dragContainer={tableBodyContainer.current!}
+              selectableTargets={['.table-list-item']}
+              selectByClick={false}
+              selectFromInside={true}
+              continueSelect={true}
+              toggleContinueSelect={'shift'}
+              keyContainer={window}
+              dragCondition={handleSelectoDragCondition}
+              hitRate={0}
+              onSelectStart={handleSelectoSelectStart}
+              onSelectEnd={handleSelectoSelectEnd}
+              onSelect={handleSelectoSelect}
+            />
+          )}
+        </>,
+      )}
       {pagination && <Pagination className="py-4" {...pagination} onChange={handlePageChange} />}
     </div>
   );

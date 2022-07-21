@@ -31,7 +31,10 @@ function RouteForm(props: RouteFormProps) {
   const { form, appId, libraryId } = props;
 
   const { data: routesData } = useLoadRoutesQuery({ variables: { id: appId } });
-  const { data: componentsData } = useLoadComponentsQuery({ variables: { id: libraryId } });
+  const { data: componentsData } = useLoadComponentsQuery({
+    variables: { id: libraryId },
+    fetchPolicy: 'cache-and-network',
+  });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const routes = routesData?.app?.routes || [];
@@ -152,6 +155,26 @@ function RouteForm(props: RouteFormProps) {
             name="hideInBreadcrumb"
           >
             <Switch solid label="不在面包屑中显示" />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={4}>
+          <Form.Item
+            valuePropName="checked"
+            className="d-flex flex-column mb-7"
+            name={['layout', 'pure']}
+          >
+            <Switch solid label="不使用默认布局" />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item
+            valuePropName="checked"
+            className="d-flex flex-column mb-7"
+            name={['layout', 'hideMenu']}
+          >
+            <Switch solid label="隐藏菜单栏" />
           </Form.Item>
         </Col>
       </Row>

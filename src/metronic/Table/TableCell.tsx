@@ -30,7 +30,7 @@ function TableCell<T>(props: TableCellProps<T>) {
           'text-center': align == 'center',
           'text-end': align == 'right',
         },
-        col.className,
+        typeof col.className == 'function' ? col.className('td') : col.className,
       )}
       {..._props}
     >

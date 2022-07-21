@@ -1,49 +1,33 @@
-import { useState } from 'react';
+import { useCallback } from 'react';
 
-import { Button } from 'react-bootstrap';
-import ReactDOM from 'react-dom';
 import SunmaoEditor from 'sunmao-editor';
+import { history } from 'umi';
 
-import { ContentWrapper } from '@/layouts/components';
+import project from '../../project.json';
 
 function RanderSunmaoEditor() {
-  return ReactDOM.createPortal(
-    <div className="fullscreen">
-      <SunmaoEditor
-        id="0"
-        name="测试"
-        onSave={() => {}}
-        data={{
-          id: '',
-          template: 'cn.asany.ui.theme.startp.BasicLayout',
-          blocks: [
-            {
-              key: 'xxx',
-              props: { title: '观自在菩萨' },
-            },
-          ],
-        }}
-      />
-    </div>,
-    document.body,
+  const handleBack = useCallback(() => {
+    history.goBack();
+  }, []);
+
+  const handleSave = useCallback((data: any) => {
+    console.log(JSON.stringify(data), data);
+  }, []);
+
+  return (
+    <SunmaoEditor
+      id="0"
+      name="测试"
+      onSave={handleSave}
+      onBack={handleBack}
+      viewport={{ size: [1280, 2160] }}
+      data={project}
+    />
   );
 }
 
 function HomeBuilder() {
-  const [visible, setVisible] = useState(false);
-  const handleClick = () => {
-    setVisible(!visible);
-  };
-  return (
-    <ContentWrapper
-      header={{
-        title: '首页配置',
-      }}
-    >
-      <Button onClick={handleClick}>配置首页</Button>
-      {visible && <RanderSunmaoEditor />}
-    </ContentWrapper>
-  );
+  return <RanderSunmaoEditor />;
 }
 
 export default HomeBuilder;

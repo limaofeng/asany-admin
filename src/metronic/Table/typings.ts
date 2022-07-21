@@ -43,7 +43,7 @@ export type TableColumn<T> = {
   dataIndex?: string;
   key?: string;
   width?: string | number;
-  className?: string;
+  className?: ((type: 'th' | 'td') => string | undefined) | string;
   align?: 'left' | 'right' | 'center';
   render?: (value: any, record: T, index: number) => React.ReactNode | string | RenderResult;
   sorter?: ((a: T, b: T) => boolean) | true;

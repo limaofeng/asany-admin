@@ -29,6 +29,7 @@ interface SubMenuProps {
   title: string | React.ReactNode;
   className?: string;
   titleClassName?: string;
+  linkClassName?: string;
   bodyClassName?: string;
   offset?: [number, number];
   bullet?: boolean | BulletProps;
@@ -147,7 +148,7 @@ function SubMenu(props: SubMenuProps) {
     <span
       ref={linkRef}
       onClick={!dropdown ? (selectable ? handleSelect : handleClick) : undefined}
-      className={classnames('menu-link', { active: selected && selectable })}
+      className={classnames('menu-link', props.linkClassName, { active: selected && selectable })}
       data-kt-menu-offset={offset ? offset.join(',') : undefined}
     >
       {icon ? (
@@ -188,26 +189,26 @@ function SubMenu(props: SubMenuProps) {
 
   if (dropdown) {
     return (
-      <div
-        ref={itemRef}
-        data-menu-key={menuKey}
-        className={classnames(className, 'menu-item menu-accordion', {
-          hover: !selectable && opened,
-          show: opened,
-          here: subSelected,
-        })}
+      <Dropdown
+        overlay={subMenus}
+        getPopupContainer={() => {
+          return linkRef.current as any;
+        }}
+        trigger="hover"
+        placement="rightStart"
       >
-        <Dropdown
-          overlay={subMenus}
-          getPopupContainer={() => {
-            return linkRef.current as any;
-          }}
-          trigger="hover"
-          placement="rightStart"
+        <div
+          ref={itemRef}
+          data-menu-key={menuKey}
+          className={classnames(className, 'menu-item menu-accordion', {
+            hover: !selectable && opened,
+            show: opened,
+            here: subSelected,
+          })}
         >
           {menuLink}
-        </Dropdown>
-      </div>
+        </div>
+      </Dropdown>
     );
   }
 

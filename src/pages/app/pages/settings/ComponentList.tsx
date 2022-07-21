@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { Icon } from '@asany/icons';
 import type { RouteComponentProps } from 'react-router-dom';
 import moment from 'moment';
+import { history } from 'umi';
 
 import ComponentModal from '../../components/ComponentModal';
 import useComponentDelete from '../../hooks/useComponentDelete';
@@ -10,18 +11,7 @@ import { useLoadComponentsQuery } from '../../hooks';
 
 import Controls from '@/components/Controls';
 import { ContentWrapper } from '@/layouts/components';
-import {
-  Badge,
-  Button,
-  Card,
-  Col,
-  Dropdown,
-  Input,
-  Menu,
-  Row,
-  Symbol,
-  Table,
-} from '@/metronic';
+import { Badge, Button, Card, Col, Dropdown, Input, Menu, Row, Symbol, Table } from '@/metronic';
 import type { Component } from '@/types';
 
 type ComponentItemProps = {
@@ -40,6 +30,10 @@ function ComponentItem(props: ComponentItemProps) {
   const handleDelete = useCallback(() => {
     onDelete(data);
   }, [data, onDelete]);
+
+  const handleDesign = useCallback(() => {
+    history.push(`/designs/${data.id}`);
+  }, [data]);
 
   return (
     <Col md={3}>
@@ -62,6 +56,9 @@ function ComponentItem(props: ComponentItemProps) {
                     </Menu.Item> */}
                     <Menu.Item onClick={handleEdit} className="px-3">
                       编辑
+                    </Menu.Item>
+                    <Menu.Item onClick={handleDesign} className="px-3">
+                      设计
                     </Menu.Item>
                     <Menu.Item onClick={handleDelete} className="px-3">
                       删除

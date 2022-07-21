@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import classnames from 'classnames';
 
 import { unpack, uuid } from '../utils';
+import type { ActiveColor, ButtonColor } from '../Button/typings';
 
 import type { SelectableType } from './MenuContext';
 import { MenuProvider } from './MenuContext';
@@ -27,6 +28,8 @@ export type MenuProps = {
   onSelect?: EventCallback<SelectEvent>;
   onClick?: EventCallback<ClickEvent>;
   onOpenChange?: OpenCallback;
+  color?: ButtonColor;
+  backgroundColor?: ActiveColor;
 };
 
 const InternalMenu = React.forwardRef(function (props: any, ref: any) {
@@ -78,6 +81,8 @@ const InternalMenu = React.forwardRef(function (props: any, ref: any) {
         'menu-column': mode == 'vertical',
         'menu-rounded': rounded,
         'menu-sub menu-sub-dropdown': props.dropdown,
+        [`menu-${props.color}`]: !!props.color,
+        [`menu-state-bg-${props.backgroundColor}`]: !!props.backgroundColor,
       })}
     >
       {props.dropdown ? (

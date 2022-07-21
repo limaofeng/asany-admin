@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import classnames from 'classnames';
 import $ from 'jquery';
@@ -20,6 +20,8 @@ type SelectProps = {
   size?: 'sm' | 'lg';
   multiple?: boolean;
   options?: OptionData[];
+  selectClassName?: string;
+  dropdownClassName?: string;
   onChange?: (value: string[] | string | number, option: OptionData | OptionData[]) => void;
   onSelect?: (value: string[] | string | number, option: OptionData) => void;
 };
@@ -33,6 +35,8 @@ function Select(props: SelectProps) {
     multiple = false,
     placeholder,
     className,
+    selectClassName,
+    dropdownClassName,
     onChange,
     onSelect,
     options,
@@ -40,7 +44,7 @@ function Select(props: SelectProps) {
   } = props;
   const ref = useRef<HTMLSelectElement>(null);
 
-  const handleSelect = useCallback((e) => {
+  const handleSelect = useCallback((e: any) => {
     const params = e.params;
     if (!params._type) {
       return;
@@ -66,7 +70,7 @@ function Select(props: SelectProps) {
         minimumResultsForSearch: Infinity,
         closeOnSelect: multiple ? false : undefined,
         width: width as any,
-        dropdownCssClass: 'form-select-dropdown-container',
+        dropdownCssClass: classnames('form-select-dropdown-container', dropdownClassName),
       })
       .on('select2:select', handleSelect)
       .on('select2:unselect', handleSelect);
@@ -76,7 +80,7 @@ function Select(props: SelectProps) {
       ref.current && select2.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dropdownClassName]);
 
   useEffect(() => {
     // console.log('multiple', multiple, value);
@@ -90,26 +94,12 @@ function Select(props: SelectProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, options]);
 
-  const _classNames = useMemo(() => {
-    const classNames = (className || '').split(' ');
-
-    const wrapperClsName = ['me-', 'm-', 'p-', 'w-'];
-
-    const selectClassName = classNames.filter((item) =>
-      wrapperClsName.some((n) => !item.startsWith(n)),
-    );
-    const wrapperClassName = classNames.filter((item) =>
-      wrapperClsName.some((n) => item.startsWith(n)),
-    );
-    return { selectClassName, wrapperClassName };
-  }, [className]);
-
   return (
-    <div className={classnames('form-select-wrapper', _classNames.wrapperClassName)}>
+    <div className={classnames('form-select-wrapper', className)}>
       <select
         {...selectProps}
         ref={ref}
-        className={classnames('form-select', _classNames.selectClassName, {
+        className={classnames('form-select form-select-transparent', selectClassName, {
           [`form-select-${size}`]: !!size,
           'form-select-solid': solid,
         })}

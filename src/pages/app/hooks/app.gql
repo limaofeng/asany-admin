@@ -190,7 +190,6 @@ mutation deleteComponent($id: ID!) {
   deleteComponent(id: $id)
 }
 
-
 fragment MenuParts on Menu {
   id
   icon
@@ -229,6 +228,7 @@ fragment RouteParts on Route {
   index
   layout {
     pure
+    hideMenu
   }
   enabled
   parent {

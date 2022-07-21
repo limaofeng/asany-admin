@@ -31,7 +31,7 @@ function isNoSelectoDrag(dom?: HTMLElement, container?: HTMLElement): boolean {
   if (isOff) {
     return true;
   }
-  return isNoSelectoDrag(dom.parentNode, container);
+  return isNoSelectoDrag(dom.parentNode as any, container);
 }
 
 function TableRow<T>(props: TableRowProps<T>) {
