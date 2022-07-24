@@ -1,5 +1,5 @@
-import type { IComponentDefinition } from 'sunmao';
-import { component, library } from 'sunmao';
+import type { IComponentDefinition } from '@asany/sunmao';
+import { component, library } from '@asany/sunmao';
 import { dynamic } from 'umi';
 
 import { generateUUID } from './GridLayout/utils';
@@ -15,6 +15,7 @@ class Metronic {
   @component({
     name: 'Dashboard',
     title: '仪表盘',
+    tags: ['门户'],
     symbols: [
       {
         title: '卡片小部件',
@@ -97,6 +98,10 @@ class Metronic {
     tags: ['小部件/表格小部件'],
     title: 'Widget2',
     layout: { w: 12, h: 6 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   TableWidget2 = dynamic({
     loader: () => import('./widgets/table/Widget2'),
@@ -107,6 +112,10 @@ class Metronic {
     tags: ['小部件/图表小部件'],
     title: 'Widget3',
     layout: { w: 12, h: 6 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   ChartWidget3 = dynamic({
     loader: () => import('./widgets/chart/Widget3'),
@@ -117,6 +126,10 @@ class Metronic {
     tags: ['小部件/图表小部件'],
     title: 'ChartWidget5',
     layout: { w: 8, h: 6 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   ChartWidget5 = dynamic({
     loader: () => import('./widgets/chart/ChartWidget5'),
@@ -127,6 +140,10 @@ class Metronic {
     tags: ['小部件/卡片小部件'],
     title: 'Widget4',
     layout: { w: 6, h: 3 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   CardWidget4 = dynamic({
     loader: () => import('./widgets/card/Widget4'),
@@ -137,6 +154,10 @@ class Metronic {
     tags: ['小部件/卡片小部件'],
     title: 'Widget5',
     layout: { w: 6, h: 3 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   CardWidget5 = dynamic({
     loader: () => import('./widgets/card/Widget5'),
@@ -147,6 +168,10 @@ class Metronic {
     tags: ['小部件/卡片小部件'],
     title: 'Widget6',
     layout: { w: 6, h: 3 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   CardWidget6 = dynamic({
     loader: () => import('./widgets/card/Widget6'),
@@ -157,6 +182,10 @@ class Metronic {
     tags: ['小部件/卡片小部件'],
     title: 'Widget7',
     layout: { w: 6, h: 3 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   CardWidget7 = dynamic({
     loader: () => import('./widgets/card/Widget7'),
@@ -167,6 +196,10 @@ class Metronic {
     tags: ['小部件/卡片小部件'],
     title: 'CardWidget8',
     layout: { w: 6, h: 3 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   CardWidget8 = dynamic({
     loader: () => import('./widgets/card/CardWidget8'),
@@ -177,6 +210,10 @@ class Metronic {
     tags: ['小部件/参与小部件'],
     title: 'EngageWidget1',
     layout: { w: 8, h: 7 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   EngageWidget1 = dynamic({
     loader: () => import('./widgets/engage/EngageWidget1'),
@@ -187,6 +224,10 @@ class Metronic {
     tags: ['小部件/表格小部件'],
     title: 'TableWidget4',
     layout: { w: 16, h: 7 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   TableWidget4 = dynamic({
     loader: () => import('./widgets/table/TableWidget4'),
@@ -197,6 +238,10 @@ class Metronic {
     tags: ['小部件/地图小部件'],
     title: 'MapsWidget1',
     layout: { w: 12, h: 6 },
+    moveable: {
+      draggable: true,
+      resizable: true,
+    },
   })
   MapsWidget1 = dynamic({
     loader: () => import('./widgets/maps/MapsWidget1'),

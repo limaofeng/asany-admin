@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import React, { useEffect } from 'react';
 
 import classnames from 'classnames';
@@ -11,12 +12,14 @@ import ContentHeader from './ContentHeader';
 import type { Breadcrumb } from '@/metronic';
 import { BlockUI } from '@/metronic';
 
-type ContentWrapperProps = {
+export type ContentWrapperProps = {
   className?: string;
   loading?: boolean;
+  onClick?: () => void;
   header?: ContentHeaderProps | false;
   footer?: ContentFooterProps | false;
   breadcrumb?: React.ReactElement<typeof Breadcrumb>;
+  style?: CSSProperties;
   children?: React.ReactNode;
 };
 
@@ -24,11 +27,14 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
   const {
     loading,
     header = {},
+    style,
     className,
     breadcrumb,
     footer = { copyright: '版权所有 2021 林暮春 | 沪ICP备11003026号' },
     children,
   } = props;
+
+  console.log('ContentWrapper', ref, props);
 
   useEffect(() => {
     if (!loading) {
@@ -41,10 +47,14 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
     };
   }, [loading]);
 
+  //"kt_wrapper"
+
   return (
     <div
       ref={ref}
-      id="kt_wrapper"
+      id={(props as any).id}
+      style={style}
+      onClick={props.onClick}
       className={classnames('wrapper d-flex flex-column flex-row-fluid', className)}
     >
       <BlockUI

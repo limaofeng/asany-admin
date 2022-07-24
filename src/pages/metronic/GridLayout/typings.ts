@@ -232,12 +232,16 @@ export type GridItemResizeFunc = (
   e?: { width: number; height: number },
 ) => void;
 
-export interface GridItemContentProps<T extends IGridItem = IGridItem> {
-  data: T;
-  animated: AnimatedProps;
+export type GridItemActions<T = IGridItem> = {
   remove: () => void;
   resize: GridItemResizeFunc;
   update: (data: T & Record<string, any>) => void;
+};
+
+export interface GridItemContentProps<T extends IGridItem = IGridItem> {
+  data: T;
+  animated: AnimatedProps;
+  actions: GridItemActions<T>;
   className?: string;
   style?: CSSProperties;
   drag: DragElementWrapper<DragSourceOptions>;
@@ -288,6 +292,7 @@ export interface IGridLayoutState {
   maxRows: number;
   containerPadding: [number, number];
   preview: boolean;
+  draggable: boolean;
 }
 
 export type Relation = 'before' | 'after' | 'none';

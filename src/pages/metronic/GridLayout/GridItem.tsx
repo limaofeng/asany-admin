@@ -37,13 +37,12 @@ function GridItem({ data, itemRender: ItemRender, className, style, ...props }: 
     () => (
       <ItemRender
         {...props}
+        data-resizable={(data as any).moveable?.resizable}
         animated={animatedMerged}
         style={{ ...style, ...additionStyle }}
         className={classnames(className, additionClassName)}
         data={data}
-        resize={resize}
-        remove={remove}
-        update={update}
+        actions={{ resize, remove, update }}
         drag={drag}
         ref={ref}
       />

@@ -1,4 +1,4 @@
-import { component, library } from 'sunmao';
+import { component, library } from '@asany/sunmao';
 import { dynamic } from 'umi';
 
 import LoadingComponent from '@/components/PageLoading';

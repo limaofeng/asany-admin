@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 
-import { numberFormat, ScrubbableControl } from '@asany/editor';
+import { numberFormat, ScrubbableControl } from '@asany/sunmao';
 
 import type { CompactType } from '../../GridLayout';
 

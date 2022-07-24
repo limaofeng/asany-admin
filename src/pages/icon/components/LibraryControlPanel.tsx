@@ -1,7 +1,7 @@
 import { memo, useCallback, useMemo, useRef } from 'react';
 
 import { useMutation } from '@apollo/client';
-import { ComponentPropertyType, createDynaActionForm } from '@asany/editor';
+import { ComponentPropertyType, createDynaActionForm } from '@asany/sunmao';
 import { parseIconFile } from '@asany/icons';
 import gql from 'graphql-tag';
 

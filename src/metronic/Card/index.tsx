@@ -149,7 +149,7 @@ function Card(props: CardProps & { to?: string }, ref: any) {
     ...otherProps
   } = props;
 
-  const { header, toolbar, body, footer, title } = useMemo(() => {
+  const { extra, header, toolbar, body, footer, title } = useMemo(() => {
     const childs = React.Children.toArray(children);
     const toolbarNode = childs.find(
       (item) => React.isValidElement(item) && item.type == CardToolbar,
@@ -161,11 +161,13 @@ function Card(props: CardProps & { to?: string }, ref: any) {
     const newChildren = childs.filter(
       (item) => ![toolbarNode, footerNode, headerNode, titleNode].includes(item),
     );
+    const _extra = newChildren.filter((item) => item !== bodyNode);
     return {
       header: headerNode,
       toolbar: toolbarNode,
       body: bodyNode || <CardBody className={bodyClassName}>{newChildren}</CardBody>,
       footer: footerNode,
+      extra: bodyNode ? _extra : undefined,
       title:
         titleNode ||
         (_title && (
@@ -175,6 +177,8 @@ function Card(props: CardProps & { to?: string }, ref: any) {
         )),
     };
   }, [children, _title, titleClassName, bodyClassName]);
+
+  console.log('extra', extra);
 
   return React.createElement(
     (as == 'a' ? Link : as) || 'div',
@@ -197,6 +201,7 @@ function Card(props: CardProps & { to?: string }, ref: any) {
         titleClassName,
       )}
       {body}
+      {extra}
       {footer}
     </>,
   );

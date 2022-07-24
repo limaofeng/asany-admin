@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'reac
 
 import EventEmitter from 'events';
 
-import { Resizer } from '@asany/editor';
+import { Resizer } from '@asany/sunmao';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 import { debounce } from 'lodash';

@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import React, { useMemo } from 'react';
 
-import { useDeepCompareMemo } from '@asany/editor';
+import { useDeepCompareMemo } from '@asany/sunmao';
 import Icon, { store } from '@asany/icons';
 import classnames from 'classnames';
 import { Modal as BsModal } from 'react-bootstrap';

@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 
 import { isEqual } from 'lodash';
-import { ComponentPropertyType, useDispatch, useSelector } from '@asany/editor';
-import { UIScenaMoveableActionType } from '@asany/editor';
-import { useBlock } from 'sunmao';
-import { useSelector as useEditorSelector } from '@asany/editor';
+import { useBlock, useEditorDispatch, useEditorSelector, useSketch } from '@asany/sunmao';
+import { UIScenaMoveableActionType } from '@asany/sunmao';
 
 import GridLayout from '../GridLayout';
 import type { IGridItemLayout } from '../GridLayout';
@@ -20,7 +18,11 @@ import type { IWidget } from './typings';
 
 export type PortalLayoutType = 'basic' | 'responsive';
 
+import { ContentWrapper } from '@/layouts/components';
+import type { ContentWrapperProps } from '@/layouts/components/Content/ContentWrapper';
+
 import './style/index.scss';
+
 const compactionTypes = [
   {
     value: 'none',
@@ -64,17 +66,17 @@ const defaultPortalState: BlockProps = {
 
 function Dashboard() {
   const state = useRef<BlockProps>(defaultPortalState);
-  const dispatch = useDispatch();
+  const dispatch = useEditorDispatch();
 
-  const draggable = useSelector((_state) => _state.mode === 'CONFIG');
-  const staticed = useSelector((_state) => _state.mode === 'VIEW');
+  const draggable = useEditorSelector((_state) => _state.mode === 'CONFIG');
+  const staticed = useEditorSelector((_state) => _state.mode === 'VIEW');
 
   const {
     props: otherProps,
     update,
     Provider,
-  } = useBlock<BlockProps>({
-    key: `portal`,
+  } = useBlock<BlockProps, ContentWrapperProps>({
+    key: `dashboard`,
     icon: '',
     title: '门户组件',
     props: defaultPortalState,
@@ -83,7 +85,7 @@ function Dashboard() {
         {
           name: 'compactType',
           label: '压缩类型',
-          type: ComponentPropertyType.String,
+          type: 'String',
           renderer: {
             component: 'ImagePicker',
             props: {
@@ -97,25 +99,25 @@ function Dashboard() {
         {
           name: 'settings',
           label: '布局网格',
-          type: ComponentPropertyType.JSON,
+          type: 'JSON',
           renderer: GridLayoutSettings,
         },
         {
           name: 'backgroundColor',
           label: '背景颜色',
-          type: ComponentPropertyType.String,
+          type: 'String',
           renderer: 'ColorPicker',
         },
         {
           name: 'panels',
           label: '面板数组',
-          type: ComponentPropertyType.JSON,
+          type: 'JSON',
           visible: false,
         },
         {
           name: 'layout',
           label: '布局参数',
-          type: ComponentPropertyType.JSON,
+          type: 'JSON',
           visible: false,
         },
       ],
@@ -167,18 +169,19 @@ function Dashboard() {
     dispatch({ type: UIScenaMoveableActionType.MoveableEnable });
   }, [dispatch]);
 
+  const sketch = useSketch();
+
   const zoom = useRef(1);
   const _zoom = useEditorSelector((_state) => _state.ui.scena.zoom);
   zoom.current = _zoom;
 
-  // const sketch = useSketch();
-
-  // sketch.getComponentData(project.data.id);
-
-  console.log('layout to style init', layout, cols, widgets);
-
   return (
     <Provider
+      as={ContentWrapper as any}
+      header={{
+        title: '门户',
+      }}
+      footer={false}
       className="dashboard"
       style={{ backgroundColor: backgroundColor }}
       deps={[
@@ -204,6 +207,7 @@ function Dashboard() {
           'widgets/engage',
           'widgets/maps',
         ]}
+        draggable={sketch.isDev()}
         onChange={handleChange}
         verticalCompact={verticalCompact}
         compactType={compactType as any}

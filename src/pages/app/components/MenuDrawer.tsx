@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { ComponentPicker } from 'sunmao-editor';
-import type { ComponentTreeNode } from 'sunmao';
+import { ComponentPicker } from '@asany/sunmao';
+import type { ComponentTreeNode } from '@asany/sunmao';
 
 import {
   LoadMenusDocument,

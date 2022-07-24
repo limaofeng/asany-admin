@@ -148,6 +148,7 @@ const GridLayoutCore = React.forwardRef(function (
   }, []);
 
   const handleResize = useCallback((event: GridItemResizeEvent) => {
+    console.log('handleResize', event);
     if (event.type === GridItemResizeType.start) {
       dispatch({
         type: SortableActionType.resizing,
@@ -270,6 +271,10 @@ const GridLayoutCore = React.forwardRef(function (
 
 export interface GridLayoutProps {
   /**
+   * 支持拖拽
+   */
+  draggable?: boolean;
+  /**
    * 支持拖入 React-Dnd 的 type
    */
   droppable?: boolean;
@@ -342,6 +347,7 @@ function GridLayout(
   ref: MutableRefObject<HTMLElement | null> | ((instance: HTMLElement | null) => void) | null,
 ) {
   const {
+    draggable = true,
     droppable = false,
     onChange,
     onClick,
@@ -380,6 +386,7 @@ function GridLayout(
       compactType={compactType}
       margin={margin}
       cols={cols}
+      draggable={draggable}
       rowHeight={rowHeight}
       maxRows={maxRows}
       containerPadding={containerPadding}

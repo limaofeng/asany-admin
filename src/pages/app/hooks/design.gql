@@ -1,0 +1,28 @@
+query Component($id: ID!) {
+  component(id: $id) {
+    id
+    name
+    title
+    description
+    image
+    template
+    tags
+    createdAt
+    blocks {
+      key
+      props
+    }
+  }
+}
+
+mutation saveComponent($id: ID!, $input: ComponentUpdateInput!) {
+  updateComponent(id: $id, input: $input) {
+    id
+    name
+    template
+    blocks {
+      key
+      props
+    }
+  }
+}

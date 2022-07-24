@@ -1,9 +1,11 @@
-import type { CSSProperties, RefObject } from 'react';
+import type { CSSProperties } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 
+import type { OnResize } from 'react-moveable';
 import type { DragElementWrapper, DragSourceOptions } from 'react-dnd';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
+import { ActionType, useEditorDispatch, useEditorSelector } from '@asany/sunmao';
 
 import { assign, dispatchWindowResize, sleep } from '../utils';
 import useSelector, { useEventManager, useSortableDispatch } from '../GridLayoutProvider';
@@ -21,7 +23,7 @@ type SortItemState<RT extends HTMLElement> = [
     update: (data: IGridItem) => void;
     remove: () => void;
   },
-  RefObject<RT>,
+  (ref: RT) => void,
   DragElementWrapper<DragSourceOptions>,
 ];
 
@@ -43,8 +45,10 @@ function useGridItem<T extends IGridItem, RT extends HTMLElement>(
   const { sortable = true } = options || {};
 
   const dispatch = useSortableDispatch();
+  const editorDispatch = useEditorDispatch();
   const events = useEventManager();
   const sortableId = useSelector((state) => state.id);
+  const draggable = useSelector((state) => state.draggable);
   const preview = useSelector((state) => state.preview);
   const layout = useSelector((state) => state.layout.find((item) => item.id === data.id));
   const dragging = useSelector((state) => state.dragging);
@@ -54,7 +58,9 @@ function useGridItem<T extends IGridItem, RT extends HTMLElement>(
   const ref = useRef<RT>(null);
   const style = useGridItemPositionStyle(data, layout!);
 
-  console.log('layout to style', data.id, layout, style);
+  const moveable = useEditorSelector((state) => state.ui.scena.moveable?.ref);
+
+  const container = ref.current;
 
   const handleDragend = useCallback(async () => {
     const evObj = document.createEvent('MouseEvents');
@@ -83,35 +89,35 @@ function useGridItem<T extends IGridItem, RT extends HTMLElement>(
 
   // TODO 修复 useDrag end 函数触发问题
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (!ref.current) {
-        return;
-      }
-      clearInterval(timer);
-      ref.current.addEventListener('dragend', handleDragend);
-    }, 100);
+    if (!container) {
+      return;
+    }
+    container.addEventListener('dragend', handleDragend);
     return () => {
-      clearInterval(timer);
+      container.removeEventListener('dragend', handleDragend);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [container, handleDragend]);
 
   useEffect(() => {
+    if (!container) {
+      return;
+    }
     // console.log('useSortItem register', data.id);
     dispatch({
       type: SortableActionType.register,
       payload: {
         id: data.id,
         get _rect() {
-          return ref.current?.getBoundingClientRect();
+          return container.getBoundingClientRect();
         },
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [container]);
 
   const [{ isDragging }, drag, connectDrag] = useDrag<IGridItemInternalData, any, any>({
     item: () => {
+      editorDispatch({ type: ActionType.MoveableDisable });
       return (dataRef.current = {
         ...data,
         layout,
@@ -131,10 +137,14 @@ function useGridItem<T extends IGridItem, RT extends HTMLElement>(
       return result;
     },
     canDrag() {
-      return sortable;
+      return draggable && sortable;
     },
     type: data.type,
     end: (_item, _monitor) => {
+      editorDispatch({ type: ActionType.MoveableEnable });
+      setTimeout(() => {
+        moveable?.current?.updateRect();
+      }, 60);
       const result = _monitor.getDropResult();
       if (result?.type === 'sort') {
         return;
@@ -181,7 +191,7 @@ function useGridItem<T extends IGridItem, RT extends HTMLElement>(
     assign(dataRef.current, item);
   }, []);
 
-  const handleResize = useCallback((type: GridItemResizeType, e: any) => {
+  const handleResize = useCallback((type: GridItemResizeType, e?: any) => {
     const item = {
       ...data,
       _originalSortable: sortableId,
@@ -193,6 +203,39 @@ function useGridItem<T extends IGridItem, RT extends HTMLElement>(
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleRef = useCallback((_ref: any) => {
+    (ref as any).current = _ref;
+  }, []);
+
+  useEffect(() => {
+    if (!container) {
+      return;
+    }
+    const onResizeStart: any = (/*e: CustomEvent<OnResizeStart>*/) => {
+      handleResize(GridItemResizeType.start);
+    };
+    const onResize: any = (e: CustomEvent<OnResize>) => {
+      handleResize(GridItemResizeType.resizing, { width: e.detail.width, height: e.detail.height });
+      setTimeout(() => {
+        moveable?.current?.updateRect();
+      }, 60);
+    };
+    const onResizeStop: any = (/*e: CustomEvent<OnResizeEnd>*/) => {
+      handleResize(GridItemResizeType.stop);
+      setTimeout(() => {
+        moveable?.current?.updateRect();
+      }, 60);
+    };
+    container.addEventListener('moveable.resizeStart', onResizeStart);
+    container.addEventListener('moveable.resize', onResize);
+    container.addEventListener('moveable.resizeStop', onResizeStop);
+    return () => {
+      container.removeEventListener('moveable.resizeStart', onResizeStart);
+      container.removeEventListener('moveable.resize', onResize);
+      container.removeEventListener('moveable.resizeStop', onResizeStop);
+    };
+  }, [handleResize, container, moveable]);
 
   const handleRemove = useCallback(() => {
     const item = {
@@ -206,8 +249,8 @@ function useGridItem<T extends IGridItem, RT extends HTMLElement>(
 
   let _style: any = { ...style };
 
-  if (!!resizing && resizing.id === data.id && ref.current) {
-    _style = ref.current.style.cssText
+  if (!!resizing && resizing.id === data.id && container) {
+    _style = container.style.cssText
       .split(';')
       .filter((item) => !!item.trim())
       .map((item) => {
@@ -230,7 +273,7 @@ function useGridItem<T extends IGridItem, RT extends HTMLElement>(
       style: _style,
       className: isDragging ? 'grid-item grid-item-dragging' : 'grid-item',
     },
-    ref,
+    handleRef,
     drag,
   ];
 }

@@ -53,6 +53,7 @@ interface GridLayoutProviderProps {
   maxRows: number;
   containerPadding: [number, number];
   preview: boolean;
+  draggable: boolean;
 }
 
 export const useSortableStore = () => useContext(SortableStoreContext);
@@ -116,6 +117,7 @@ function useStore(
   _maxRows: number,
   _containerPadding: [number, number],
   preview: boolean,
+  draggable: boolean,
 ): ISortableContext {
   const prevStore = useSortableStore();
   const [SORTABLE_ID] = useState(generateUUID());
@@ -396,6 +398,7 @@ function useStore(
       id: SORTABLE_ID,
       moving: false,
       preview: !!preview,
+      draggable,
       containerWidth: 0,
       margin: _margin,
       cols: _cols,
@@ -505,7 +508,8 @@ function useStore(
         backup: [],
         logs: [],
         moving: false,
-        preview: !!preview,
+
+        draggable,
         id: state.id,
         cols: _cols,
         verticalCompact: _verticalCompact,
@@ -537,6 +541,7 @@ function useStore(
         logs: [],
         moving: false,
         preview: !!preview,
+        draggable,
         id: state.id,
         cols: _cols,
         verticalCompact: _verticalCompact,
@@ -565,6 +570,7 @@ export const GridLayoutProvider = (props: GridLayoutProviderProps) => {
     maxRows,
     containerPadding,
     preview,
+    draggable,
   } = props;
   const store = useStore(
     items,
@@ -578,6 +584,7 @@ export const GridLayoutProvider = (props: GridLayoutProviderProps) => {
     maxRows,
     containerPadding,
     preview,
+    draggable,
   );
   return useMemo(
     () => <SortableStoreContext.Provider value={store}>{children}</SortableStoreContext.Provider>,

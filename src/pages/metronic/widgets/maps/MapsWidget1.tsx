@@ -3,24 +3,36 @@ import { useEffect } from 'react';
 import { useRef } from 'react';
 import React from 'react';
 
+import useMergedRef from '@react-hook/merged-ref';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5map from '@amcharts/amcharts5/map';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import am5geodata_worldLow from '@amcharts/amcharts5-geodata/worldLow';
 import { Icon } from '@asany/icons';
+import { useBlock } from '@asany/sunmao';
+import { Input } from '@asany/sunmao';
+
+import type { GridItemActions, IGridItem } from '../../GridLayout/typings';
 
 import * as KTUtil from '@/metronic/utils/KTUtil';
 import { Button, Card, Dropdown, Menu, Switch } from '@/metronic';
 
 type MapsWidget1Props = {
+  id?: string;
+  data: IGridItem;
   animated: any;
   className: string;
+  actions: GridItemActions;
   style: CSSProperties;
   onRefReady: (ref: any) => void;
 };
 
-function MapsWidget1(props: MapsWidget1Props, ref: any) {
+function MapsWidget1(
+  { data, actions, onRefReady, animated, ...otherProps }: MapsWidget1Props,
+  ref: any,
+) {
   const chartRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const element = chartRef.current!;
@@ -117,14 +129,28 @@ function MapsWidget1(props: MapsWidget1Props, ref: any) {
     });
   }, []);
 
+  const { Provider } = useBlock({
+    key: otherProps.id || 'MapsWidget1',
+    icon: '',
+    title: '地图小部件1',
+    customizer: {
+      fields: [
+        {
+          name: 'title',
+          type: 'String',
+          label: '标题',
+          renderer: {
+            component: Input,
+          },
+        },
+      ],
+    },
+  });
+
+  const multiRef = useMergedRef(containerRef, ref, onRefReady);
+
   return (
-    <Card
-      {...props.animated}
-      className={props.className}
-      flush
-      style={props.style}
-      ref={ref || props.onRefReady}
-    >
+    <Provider as={Card} {...otherProps} {...animated} flush ref={multiRef}>
       <Card.Header className="pt-7">
         <Card.Title className="align-items-start flex-column">
           <span className="card-label fw-bolder text-dark">World Sales</span>
@@ -210,7 +236,7 @@ function MapsWidget1(props: MapsWidget1Props, ref: any) {
       <Card.Body className="d-flex flex-center">
         <div ref={chartRef} className="w-100 h-350px" />
       </Card.Body>
-    </Card>
+    </Provider>
   );
 }
 

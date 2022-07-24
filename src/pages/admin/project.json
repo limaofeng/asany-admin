@@ -3,7 +3,7 @@
   "template": "cn.asany.ui.admin.metronic.Dashboard",
   "blocks": [
     {
-      "key": "portal",
+      "key": "dashboard",
       "props": {
         "widgets": [
           {

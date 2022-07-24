@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import React from 'react';
 
 import ApexCharts from 'apexcharts';
-import { useBlock } from 'sunmao';
+import { useBlock } from '@asany/sunmao';
 
 import * as KTUtil from '@/metronic/utils/KTUtil';
 import { Card } from '@/metronic';

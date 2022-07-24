@@ -1,11 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 
 import { Icon } from '@asany/icons';
+import { useBlock } from '@asany/sunmao';
+import { Input } from '@asany/sunmao';
+import useMergedRef from '@react-hook/merged-ref';
 
 import { Card } from '@/metronic';
 import * as KTUtil from '@/metronic/utils/KTUtil';
 
-function Widget4(props: any, ref: any) {
+function Widget4({ data, actions, onRefReady, animated, ...otherProps }: any, ref: any) {
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,14 +50,31 @@ function Widget4(props: any, ref: any) {
     drawCircle(KTUtil.getCssVariableValue('--bs-primary'), options.lineWidth, 100 / 250);
   }, []);
 
+  const { props, Provider } = useBlock({
+    key: otherProps.id || 'CardWidget4',
+    icon: '',
+    title: '卡片小部件1',
+    props: {
+      subtitle: 'Expected Earnings',
+    },
+    customizer: {
+      fields: [
+        {
+          name: 'subtitle',
+          type: 'String',
+          label: '标题',
+          renderer: {
+            component: Input,
+          },
+        },
+      ],
+    },
+  });
+
+  const multiRef = useMergedRef(ref, onRefReady);
+
   return (
-    <Card
-      {...props.animated}
-      className={props.className}
-      flush
-      style={props.style}
-      ref={ref || props.onRefReady}
-    >
+    <Provider as={Card} {...otherProps} {...animated} flush ref={multiRef}>
       <Card.Header className="pt-5">
         <Card.Title className=" d-flex flex-column">
           <div className="d-flex align-items-center">
@@ -75,7 +95,7 @@ function Widget4(props: any, ref: any) {
           </div>
           {/*end::Info*/}
           {/*begin::Subtitle*/}
-          <span className="text-gray-400 pt-1 fw-bold fs-6">Expected Earnings</span>
+          <span className="text-gray-400 pt-1 fw-bold fs-6">{props.subtitle}</span>
           {/*end::Subtitle*/}
         </Card.Title>
       </Card.Header>
@@ -139,7 +159,7 @@ function Widget4(props: any, ref: any) {
         </div>
         {/*end::Labels*/}
       </Card.Body>
-    </Card>
+    </Provider>
   );
 }
 

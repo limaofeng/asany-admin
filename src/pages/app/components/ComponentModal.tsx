@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
-import { ComponentPicker } from 'sunmao-editor';
+import { ComponentPicker } from '@asany/sunmao';
 import TagsInput from '@asany/tags-input';
 
 import useComponentSubmit from '../hooks/useComponentSubmit';

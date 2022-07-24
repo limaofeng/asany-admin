@@ -4,7 +4,7 @@ import type { MenuDataItem } from '@umijs/route-utils';
 import classnames from 'classnames';
 import { match } from 'path-to-regexp';
 import { generatePath } from 'react-router';
-import { useReactComponent } from 'sunmao';
+import { useReactComponent } from '@asany/sunmao';
 import type { Route } from 'umi';
 
 import BreadcrumbItem from './BreadcrumbItem';

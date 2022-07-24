@@ -1,4 +1,4 @@
-import { useReactComponent } from 'sunmao';
+import { useReactComponent } from '@asany/sunmao';
 
 import type { MenuData, NuwaComponent } from '@/.umi/app/typings';
 
