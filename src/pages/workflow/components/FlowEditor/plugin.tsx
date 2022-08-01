@@ -7,7 +7,7 @@ import reducer from './reducer';
 import Sidebar from './components/Sidebar';
 import ComponentPanel from './components/ComponentPanel';
 
-import './style/index.less';
+import './style/index.scss';
 
 export default (): EditorPlugin => ({
   id: 'workflow',

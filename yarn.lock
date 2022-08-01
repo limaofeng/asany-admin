@@ -205,10 +205,10 @@
     lodash-es "^4.17.21"
     react-flip-toolkit "^7.0.14"
 
-"@asany/sunmao@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.npmjs.org/@asany/sunmao/-/sunmao-1.0.9.tgz#a8d7d0e0c589d48f3aca583fb12324d57c686192"
-  integrity sha512-zybN9MrPyEXW0w8BRsX+eEklWaa2u84n8Of88/wqM5gbxvY5FquNzsNh7A9JKAZ/k64w1CIvmWZEgP/SHZ6HRg==
+"@asany/sunmao@^1.0.10":
+  version "1.0.10"
+  resolved "https://registry.npmjs.org/@asany/sunmao/-/sunmao-1.0.10.tgz#2d9355b83320c28bc0ad6656899d587ddae7bca7"
+  integrity sha512-nOGa5jrsnn//V0tZ86eZwj9OCWtMr37vT6FBt5cvJs5lL0Fqp1u7EbddfhbkXEU/cbalISJBbFal6zoYNbkJjA==
   dependencies:
     "@asany/sortable" "^0.1.36"
     "@daybrush/drag" "^0.19.3"
@@ -219,6 +219,7 @@
     overlayscrollbars "^1.13.2"
     overlayscrollbars-react "^0.3.0"
     react "^18.0.0"
+    react-flow-renderer "^10.3.12"
     react-is "^18.2.0"
     react-moveable "^0.33.0"
     react-selecto "^1.17.0"
@@ -15414,7 +15415,7 @@ react-flip-toolkit@^7.0.14:
     flip-toolkit "7.0.14"
     prop-types "^15.5.7"
 
-react-flow-renderer@^10.3.8:
+react-flow-renderer@^10.3.12, react-flow-renderer@^10.3.8:
   version "10.3.12"
   resolved "https://registry.npmjs.org/react-flow-renderer/-/react-flow-renderer-10.3.12.tgz#ed603e7cab298aee7003e325cebc08372a4e2ca0"
   integrity sha512-DTaz4HV0rA/qtvY80fjdb/QwIvtZEhqCQ2iAqfzFH08RjWCrLmESX4Nc400EB3CGcCK8/pDn/ta4cOS3udunTw==

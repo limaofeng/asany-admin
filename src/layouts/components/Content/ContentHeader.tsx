@@ -115,7 +115,7 @@ function ContentHeader(props: ContentHeaderProps) {
           {breadcrumb}
         </div>
         {/* --begin::Wrapper-- */}
-        <div className="d-flex d-lg-none align-items-center ms-n2 me-2">
+        <div className="d-flex align-items-center ms-n2 me-2">
           {/* --begin::Aside mobile toggle--*/}
           <div className="btn btn-icon btn-active-icon-primary" id="kt_aside_toggle">
             <Icon name="Duotune/abs015" />
