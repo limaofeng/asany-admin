@@ -4,6 +4,9 @@ module.exports = {
     page: true,
     REACT_APP_ENV: true,
   },
+  parserOptions: {
+    project: './tsconfig.eslint.json',
+  },
   plugins: ['import', 'graphql'],
   rules: {
     'graphql/template-strings': [

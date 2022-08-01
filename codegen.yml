@@ -21,6 +21,17 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
+  src/pages/project/hooks/api.ts:
+    documents: ["src/pages/project/hooks/*.gql"]
+    plugins:
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+        - eslint --fix
   src/pages/drive/hooks/api.ts:
     documents: ["src/pages/drive/**/*.gql"]
     plugins:

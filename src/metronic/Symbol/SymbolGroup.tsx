@@ -2,22 +2,31 @@ import React, { useCallback, useMemo } from 'react';
 
 import classnames from 'classnames';
 
-import type { SymbolProps } from './typings';
+import type { SymbolProps, SymbolSize } from './typings';
+import { useSymbolSize } from './utils';
 
 type SymbolGroupProps = {
   maxCount?: number;
   className?: string;
+  shape?: 'circle' | 'square';
+  size?: SymbolSize;
+  more?: React.ReactElement<typeof MoreSymbol>;
   onMoreClick?: () => void;
   children: React.ReactElement<SymbolProps> | React.ReactElement<SymbolProps>[];
 };
 
 type MoreSymbolProps = {
   count: number;
+  shape?: 'circle' | 'square';
+  size?: SymbolSize;
+  className?: string;
+  title?: string;
+  labelClassName?: string;
   onClick?: () => void;
 };
 
-function MoreSymbol(props: MoreSymbolProps) {
-  const { count, onClick } = props;
+export function MoreSymbol(props: MoreSymbolProps) {
+  const { count, shape, onClick, size, className, labelClassName, title = '查看更多' } = props;
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -28,21 +37,20 @@ function MoreSymbol(props: MoreSymbolProps) {
     [onClick],
   );
 
+  const sizeClass = useSymbolSize(size);
+
   return (
     <a
       href="#"
       onClick={handleClick}
-      className="symbol symbol-35px symbol-circle"
+      className={classnames('symbol', className, sizeClass, {
+        'symbol-circle': shape == 'circle',
+        'symbol-square': shape == 'square',
+      })}
       data-bs-toggle="modal"
       data-bs-target="#kt_modal_view_users"
     >
-      {/* bg-dark text-inverse-dark fs-8 fw-bolder */}
-      <span
-        className="symbol-label bg-light text-gray-400 fs-8 fw-bolder"
-        data-bs-toggle="tooltip"
-        data-bs-trigger="hover"
-        title="View more users"
-      >
+      <span className={classnames('symbol-label', labelClassName)} title={title}>
         +{count}
       </span>
     </a>
@@ -50,24 +58,35 @@ function MoreSymbol(props: MoreSymbolProps) {
 }
 
 function SymbolGroup(props: SymbolGroupProps) {
-  const { onMoreClick, maxCount = 5, className } = props;
+  const { more, size, shape, onMoreClick, maxCount = 5, className } = props;
 
   const newChildren = useMemo(() => {
-    const children = React.Children.toArray(props.children);
+    const children = React.Children.toArray(props.children).map((item) =>
+      React.cloneElement(item as any, { size, shape }),
+    );
     if (children.length <= maxCount) {
+      if (maxCount == children.length + 1 && more) {
+        return [...children, React.cloneElement(more as any, { key: 'more-user', size, shape })];
+      }
       return children;
     }
     const showChildren = children.slice(0, maxCount - 1);
     const moreNumber = children.length - showChildren.length;
     return [
       ...showChildren,
-      <MoreSymbol key="more-user" count={moreNumber} onClick={onMoreClick} />,
+      React.cloneElement(more as any, { size, shape }) || (
+        <MoreSymbol
+          key="more-user"
+          shape={shape}
+          size={size}
+          count={moreNumber}
+          onClick={onMoreClick}
+        />
+      ),
     ];
-  }, [props.children, maxCount, onMoreClick]);
+  }, [props.children, maxCount, more, onMoreClick, size, shape]);
 
-  return (
-    <div className={classnames('symbol-group symbol-hover mb-3', className)}>{newChildren}</div>
-  );
+  return <div className={classnames('symbol-group symbol-hover', className)}>{newChildren}</div>;
 }
 
 export default SymbolGroup;

@@ -1,7 +1,7 @@
 import { memo, useCallback, useMemo, useRef } from 'react';
 
 import { useMutation } from '@apollo/client';
-import { ComponentPropertyType, createDynaActionForm } from '@asany/sunmao';
+import { createDynaActionForm } from '@asany/sunmao';
 import { parseIconFile } from '@asany/icons';
 import gql from 'graphql-tag';
 
@@ -37,7 +37,7 @@ function GlobalPanel(props: GlobalPanelProps) {
     file.current?.click();
   }, []);
   const handleImportFile = useCallback(
-    async (e) => {
+    async (e: any) => {
       console.log(e.target.files, parseIconFile, props.library, importIcons);
       const files: File[] = Array.from(e.target.files);
       const icons = await Promise.all(files.map((item) => parseIconFile(item))).then((array) =>
@@ -48,7 +48,7 @@ function GlobalPanel(props: GlobalPanelProps) {
       await importIcons({
         variables: {
           library: library.id,
-          icons,
+          icons: icons.map((item: any) => ({ ...item, tags: [] })),
         },
       });
       refresh();
@@ -119,12 +119,12 @@ function LibraryControlPanel(props: LibraryControlPanelProps) {
         fields: [
           {
             name: 'name',
-            type: ComponentPropertyType.String,
+            type: 'String',
             placeholder: 'Untitled Name',
           },
           {
             name: 'unicode',
-            type: ComponentPropertyType.String,
+            type: 'String',
             placeholder: 'Untitled Unicode',
           },
         ],

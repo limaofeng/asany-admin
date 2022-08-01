@@ -1,0 +1,15 @@
+query projects {
+  projects {
+    total: totalCount
+    current: currentPage
+    pageSize
+    edges {
+      node {
+        id
+        logo
+        name
+        description
+      }
+    }
+  }
+}

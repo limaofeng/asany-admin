@@ -20,6 +20,7 @@ export { default as InfiniteScroll } from './InfiniteScroll';
 export { default as Input } from './Input';
 export { default as Menu } from './Menu';
 export { default as Modal } from './Modal';
+export { default as Pagination } from './Pagination';
 export { default as Nav } from './Navs';
 export { default as NProgress } from './NProgress';
 export { default as Popover } from './Popover';

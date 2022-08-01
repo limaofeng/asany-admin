@@ -23,7 +23,7 @@ function MessageWrapper(props: MessageWrapperProps) {
   const [expand, setExpand] = useState(true);
 
   const handleHandover = useCallback(
-    (e) => {
+    (e: any) => {
       if (!$(e.target).hasClass('message-handover')) {
         return;
       }
@@ -165,21 +165,7 @@ function MessageWrapper(props: MessageWrapperProps) {
               data-bs-placement="top"
               title="Settings"
             >
-              {/*--begin::Svg Icon | path: icons/duotune/general/gen053.svg--*/}
-              <span className="svg-icon svg-icon-2 m-0">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
-                  <rect x="10" y="10" width="4" height="4" rx="2" fill="black" />
-                  <rect x="10" y="3" width="4" height="4" rx="2" fill="black" />
-                  <rect x="10" y="17" width="4" height="4" rx="2" fill="black" />
-                </svg>
-              </span>
-              {/*--end::Svg Icon--*/}
+              <Icon name="Duotune/gen053" className="svg-icon-2 m-0" />
             </a>
             {/*--end::Settings--*/}
           </div>

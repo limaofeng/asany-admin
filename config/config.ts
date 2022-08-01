@@ -49,6 +49,10 @@ export default defineConfig({
   webpack5: {},
   exportStatic: {},
   extraBabelPlugins: ['babel-plugin-styled-components'],
+  extraPostCSSPlugins: [
+    require('tailwindcss')({ config: './tailwind.config.js' }),
+    require('autoprefixer'),
+  ],
   chainWebpack(config, { createCSSRule }) {
     config.module
       .rule('wasm-loader')

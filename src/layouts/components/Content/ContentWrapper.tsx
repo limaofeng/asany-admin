@@ -34,8 +34,6 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
     children,
   } = props;
 
-  console.log('ContentWrapper', ref, props);
-
   useEffect(() => {
     if (!loading) {
       return;

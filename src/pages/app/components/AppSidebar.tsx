@@ -162,22 +162,22 @@ function AppSidebar(props: AppSidebarProps) {
         // openKeys={openKeys}
         // onOpenChange={handleOpenChange}
       >
-        <Menu.Section className="pt-8 pb-2" title="通用" />
+        <Menu.Section contentClassName="pt-6 pb-0">通用</Menu.Section>
         <Menu.Item bullet={true} icon="" title="基本信息" url={`/apps/${app.id}/profile`} />
         <Menu.Item bullet={true} icon="" title="组织机构" url="" />
-        <Menu.Section className="pt-8 pb-2" title="外观" />
+        <Menu.Section contentClassName="pt-6 pb-0">外观</Menu.Section>
         <Menu.Item bullet={true} icon="" title="登录设置" url="" />
         <Menu.Item bullet={true} icon="" title="布局" url="" />
         <Menu.Item bullet={true} icon="" title="门户" url="" />
-        <Menu.Section className="pt-8 pb-2" title="功能集成" />
+        <Menu.Section contentClassName="pt-6 pb-0">功能集成</Menu.Section>
         <Menu.Item bullet={true} icon="" title="信息" url="" />
         <Menu.Item bullet={true} icon="" title="邮件" url="" />
         <Menu.Item bullet={true} icon="" title="日程" url="" />
-        <Menu.Section className="pt-8 pb-2" title="第三方集成" />
+        <Menu.Section contentClassName="pt-6 pb-0">第三方集成</Menu.Section>
         <Menu.Item bullet={true} icon="" title="钉钉" url="" />
         <Menu.Item bullet={true} icon="" title="微信" url="" />
         <Menu.Item bullet={true} icon="" title="企业微信" url="" />
-        <Menu.Section className="pt-8 pb-2" title="开发者设置" />
+        <Menu.Section contentClassName="pt-6 pb-0">开发者设置</Menu.Section>
         <Menu.Item bullet={true} icon="" title="开发信息" url={`/apps/${app.id}/api_keys`} />
         <Menu.Item bullet={true} icon="" title="会话管理" url={`/apps/${app.id}/sessions`} />
         <Menu.Item bullet={true} icon="" title="菜单设置" url={`/apps/${app.id}/menus`} />

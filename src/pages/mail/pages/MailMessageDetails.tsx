@@ -207,7 +207,6 @@ function Pagination(props: PaginationProps) {
 //         title="Settings"
 //       >
 //         <Icon name="Duotune/gen052" className="svg-icon-2 m-0" />
-//         {/*--end::Svg Icon--*/}
 //       </a>
 //       {/*--begin::Menu--*/}
 //       <div

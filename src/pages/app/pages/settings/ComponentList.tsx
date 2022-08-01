@@ -42,7 +42,7 @@ function ComponentItem(props: ComponentItemProps) {
           <div className="d-flex flex-stack mb-3">
             <Badge color="light">
               <>{data.tags && data.tags.length ? data.tags[0] + '/' : null}</>
-              <>{data.title}</>
+              <>{data.title + '(' + data.id + ')'}</>
             </Badge>
             <div>
               <Dropdown
@@ -172,7 +172,10 @@ function Components(props: ComponentsProps) {
     visible: false,
   });
 
-  const { data, loading } = useLoadComponentsQuery({ variables: { id: libraryId } });
+  const { data, loading } = useLoadComponentsQuery({
+    variables: { id: libraryId },
+    fetchPolicy: 'cache-and-network',
+  });
 
   const components = data?.library?.components || [];
 

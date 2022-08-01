@@ -161,7 +161,11 @@ function VirtualList<T>(props: VirtualListProps<T>) {
   }, []);
 
   const handleResize = useCallback(() => {
-    const _target = scrollbar.current!.osTarget();
+    if (!scrollbar.current) {
+      console.warn('_target is null', scrollbar.current);
+      return;
+    }
+    const _target = scrollbar.current.osTarget();
     state.current.height = _target!.clientHeight;
     temp.current.timer && clearTimeout(temp.current.timer);
     temp.current.timer = setTimeout(() => {

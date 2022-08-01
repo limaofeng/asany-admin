@@ -37,7 +37,7 @@ function Widget5(props: Widget5Props, ref: any) {
               style={{ height: 22 }}
             >
               <Icon name="Duotune/arr068" className="svg-icon-7 svg-icon-white ms-n1" />
-              {/*end::Svg Icon*/}2.2%
+              2.2%
             </span>
             {/*end::Badge*/}
           </div>

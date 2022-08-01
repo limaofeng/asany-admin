@@ -1,6 +1,7 @@
 import Avatar from './Avatar';
-import SymbolGroup from './SymbolGroup';
+import SymbolGroup, { MoreSymbol } from './SymbolGroup';
 import type { SymbolProps } from './typings';
+import UsersGroup from './UsersGroup';
 
 import './style.scss';
 
@@ -10,5 +11,7 @@ function Symbol(props: SymbolProps) {
 
 Symbol.Avatar = Avatar;
 Symbol.Group = SymbolGroup;
+Symbol.More = MoreSymbol;
+Symbol.Users = UsersGroup;
 
 export default Symbol;

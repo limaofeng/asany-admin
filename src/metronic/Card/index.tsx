@@ -18,6 +18,7 @@ interface CardProps {
   headerClassName?: string;
   style?: CSSProperties;
   children: React.ReactNode;
+  to?: string;
 }
 
 type CardToolbarProps = {
@@ -144,6 +145,8 @@ function Card(props: CardProps & { to?: string }, ref: any) {
     headerClassName,
     style,
     children,
+    hoverable,
+
     bodyClassName,
     title: _title,
     ...otherProps
@@ -177,8 +180,6 @@ function Card(props: CardProps & { to?: string }, ref: any) {
         )),
     };
   }, [children, _title, titleClassName, bodyClassName]);
-
-  console.log('extra', extra);
 
   return React.createElement(
     (as == 'a' ? Link : as) || 'div',

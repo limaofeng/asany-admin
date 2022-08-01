@@ -34,7 +34,7 @@ export function MenuSection(props: MenuSectionProps) {
   const content = children;
   return (
     <div className={classnames('menu-item', className)}>
-      <div className={classnames('menu-content pb-2', contentClassName)}>
+      <div className={classnames('menu-content', contentClassName)}>
         <span
           className={classnames(
             'menu-section text-muted text-uppercase fs-8 ls-1',
