@@ -74,6 +74,7 @@ const InternalMenu = React.forwardRef(function (props: any, ref: any) {
     //     }),
     // ).filter((item: any) => !!item);
   }, [children]);
+
   return (
     <div
       ref={ref}

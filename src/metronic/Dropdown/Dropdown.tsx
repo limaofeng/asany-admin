@@ -4,6 +4,7 @@ import { Shortcuts } from '@asany/shortcuts';
 import classnames from 'classnames';
 import ReactDOM from 'react-dom';
 import { useClickAway } from 'react-use';
+import useMergedRef from '@react-hook/merged-ref';
 
 import Menu from '../Menu';
 import * as KTMenu from '../utils/KTMenu';
@@ -88,7 +89,7 @@ function Dropdown(props: DropdownProps) {
   } = props;
 
   const itemRef = useRef<HTMLElement>();
-  const subRef = useRef();
+  const subRef = useRef<any>();
   const [visible, setVisible] = useState(props.visible);
 
   const node = React.Children.only(children);
@@ -198,8 +199,9 @@ function Dropdown(props: DropdownProps) {
 
   useClickAway(
     itemRef as any,
-    () => {
-      if (trigger == 'hover') {
+    (e) => {
+      const target = e.target!;
+      if (trigger == 'hover' && !subRef.current?.contains(target)) {
         handleMouseOut();
       }
     },
@@ -231,6 +233,8 @@ function Dropdown(props: DropdownProps) {
     localRef.current = ref;
   };
 
+  const multiRef = useMergedRef(overlay ? (overlay as any).ref : undefined, subRef);
+
   const mergeProps = useCallback((element: any, overlayProps: any) => {
     if (typeof element.type == 'string') {
       delete overlayProps.closeDropdown;
@@ -240,7 +244,6 @@ function Dropdown(props: DropdownProps) {
     return {
       ...overlayProps,
       className: classnames(element.props.className, overlayProps.className),
-      ref: wrapRef(element.ref, subRef),
     };
   }, []);
 
@@ -256,16 +259,16 @@ function Dropdown(props: DropdownProps) {
       />
       <DropdownOverlay visible={!!visible} getPopupContainer={getPopupContainer}>
         {visible &&
-          React.cloneElement(
-            overlay,
-            mergeProps(overlay as any, {
+          React.cloneElement(overlay, {
+            ...mergeProps(overlay as any, {
               dropdown: true,
               className,
               closeDropdown: handleClose,
               onClick: handleClick(overlay.props.onClick),
               selectedKeys: [],
             }),
-          )}
+            ref: multiRef,
+          })}
       </DropdownOverlay>
     </React.Fragment>
   );

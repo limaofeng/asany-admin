@@ -5,7 +5,7 @@ type LogoProps = {
   logo?: string;
 };
 function Logo(props: LogoProps, ref: any) {
-  const { url = '/', logo = '/assets/media/logos/logo-demo7.svg' } = props;
+  const { url = '/', logo = '/assets/media/logos/demo7.svg' } = props;
   return (
     <div
       ref={ref}

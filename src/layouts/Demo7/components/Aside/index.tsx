@@ -105,6 +105,7 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
           zIndex={100}
           visible={userMenuVisible}
           onVisibleChange={setUserMenuVisible}
+          arrowProps={{ style: { display: 'none' } }}
           overlayClassName="overlay-zero-gap overlay-no-arrow"
           content={<UserAccountMenu close={handleCloseUserMenu} />}
         >

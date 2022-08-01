@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { OverlayTrigger as BsOverlayTrigger, Popover as BsPopover } from 'react-bootstrap';
 import type { OverlayDelay, OverlayTriggerType } from 'react-bootstrap/esm/OverlayTrigger';
 import type { Placement } from 'react-bootstrap/esm/types';
+import type { OverlayArrowProps } from '@restart/ui/Overlay';
 import { useClickAway } from 'react-use';
 
 import './style.scss';
@@ -21,6 +22,7 @@ type PopoverProps = {
   content: React.ReactNode;
   children: React.ReactElement;
   stopPropagation?: boolean;
+  arrowProps?: Partial<OverlayArrowProps>;
 };
 
 function Popover(props: PopoverProps) {
@@ -30,6 +32,7 @@ function Popover(props: PopoverProps) {
     content,
     trigger = 'click',
     placement = 'right',
+    arrowProps,
     delay,
     overlayClassName,
     onVisibleChange,
@@ -99,6 +102,7 @@ function Popover(props: PopoverProps) {
       overlay={
         <BsPopover
           style={{ zIndex }}
+          arrowProps={arrowProps}
           className={classnames('asany-popover-overlay', overlayClassName)}
         >
           <div className="flex-column-fluid d-flex flex-column" ref={contentRef}>

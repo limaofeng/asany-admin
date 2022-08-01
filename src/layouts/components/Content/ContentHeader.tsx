@@ -6,6 +6,8 @@ import { getMatchMenu } from '@umijs/route-utils';
 import { findLast } from 'lodash';
 import { useLocation } from 'umi';
 
+import { ThemeModeSwitcher } from '../theme-mode/ThemeModeSwitcher';
+
 import { useLayoutSelector } from '@/layouts/LayoutContext';
 import Breadcrumb from '@/metronic/Breadcrumb';
 import { useSticky } from '@/metronic/hooks';
@@ -13,36 +15,69 @@ import { useSticky } from '@/metronic/hooks';
 function Toolbar() {
   return (
     <div className="d-flex flex-shrink-0">
-      {/* <div className="d-flex ms-3">
+      {/*--begin::Invite user--*/}
+      <div className="d-flex ms-3">
         <a
           href="#"
           className="btn btn-flex flex-center bg-body btn-color-gray-700 btn-active-color-primary w-40px w-md-auto h-40px px-0 px-md-6"
           data-bs-toggle="modal"
           data-bs-target="#kt_modal_invite_friends"
         >
-          <Icon name="Duotune/arr075" />
+          <Icon name="Duotune/arr075" className="svg-icon-2 svg-icon-primary me-0 me-md-2" />
           <span className="d-none d-md-inline">New Member</span>
         </a>
-      </div> */}
-      {/* <div className="d-flex ms-3">
+      </div>
+      {/*--end::Invite user--*/}
+      {/*--begin::Create app--*/}
+      <div className="d-flex ms-3">
         <a
           href="#"
           className="btn btn-flex flex-center bg-body btn-color-gray-700 btn-active-color-primary w-40px w-md-auto h-40px px-0 px-md-6"
-          // tooltip="New App"
           data-bs-toggle="modal"
           data-bs-target="#kt_modal_create_app"
           id="kt_toolbar_primary_button"
         >
-          <Icon name="Duotune/gen005" />
+          <Icon name="Duotune/gen005" className="svg-icon-2 svg-icon-primary me-0 me-md-2" />
           <span className="d-none d-md-inline">New App</span>
         </a>
-      </div> */}
-      {/*    <div className="d-flex align-items-center ms-3">
-        <Button className="w-40px h-40px btn-icon pulse pulse-white">
-          <Icon className="svg-icon-2" name="Duotune/com012" />
+      </div>
+      {/*--end::Create app--*/}
+      {/*--begin::Theme mode--*/}
+      <div className="d-flex align-items-center ms-3">
+        <ThemeModeSwitcher toggleBtnClass="flex-center bg-body btn-color-gray-600 btn-active-color-primary h-40px" />
+      </div>
+      {/*--end::Theme mode--*/}
+      {/*--begin::Chat--*/}
+      <div className="d-flex align-items-center ms-3">
+        {/*--begin::Menu wrapper--*/}
+        <div
+          className="btn btn-icon btn-primary w-40px h-40px pulse pulse-white"
+          id="kt_drawer_chat_toggle"
+        >
+          {/*--begin::Svg Icon | path: icons/duotune/communication/com012.svg--*/}
+          <span className="svg-icon svg-icon-2">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                opacity="0.3"
+                d="M20 3H4C2.89543 3 2 3.89543 2 5V16C2 17.1046 2.89543 18 4 18H4.5C5.05228 18 5.5 18.4477 5.5 19V21.5052C5.5 22.1441 6.21212 22.5253 6.74376 22.1708L11.4885 19.0077C12.4741 18.3506 13.6321 18 14.8167 18H20C21.1046 18 22 17.1046 22 16V5C22 3.89543 21.1046 3 20 3Z"
+                fill="currentColor"
+              />
+              <rect x="6" y="12" width="7" height="2" rx="1" fill="currentColor" />
+              <rect x="6" y="7" width="12" height="2" rx="1" fill="currentColor" />
+            </svg>
+          </span>
+          {/*--end::Svg Icon--*/}
           <span className="pulse-ring" />
-        </Button>
-      </div> */}
+        </div>
+        {/*--end::Menu wrapper--*/}
+      </div>
+      {/*--end::Chat--*/}
     </div>
   );
 }
@@ -114,20 +149,14 @@ function ContentHeader(props: ContentHeaderProps) {
           <h1 className="text-dark fw-bolder my-0 fs-2">{props.title || title}</h1>
           {breadcrumb}
         </div>
-        {/* --begin::Wrapper-- */}
-        <div className="d-flex align-items-center ms-n2 me-2">
-          {/* --begin::Aside mobile toggle--*/}
-          <div className="btn btn-icon btn-active-icon-primary" id="kt_aside_toggle">
-            <Icon name="Duotune/abs015" />
+        <div className="d-flex d-lg-none align-items-center ms-n2 me-2">
+          <div className="btn btn-icon btn-active-icon-primary" id="kt_aside_mobile_toggle">
+            <Icon name="Duotune/abs015" className="svg-icon-1" />
           </div>
-          {/* --end::Aside mobile toggle--*/}
-          {/* --begin::Logo--*/}
-          <a href="../../demo7/dist/index.html" className="d-flex align-items-center">
-            <img alt="Logo" src="/assets/media/logos/logo-demo7.svg" className="h-30px" />
+          <a href="/" className="d-flex align-items-center">
+            <img alt="Logo" src="assets/media/logos/demo7.svg" className="h-30px" />
           </a>
-          {/* --end::Logo--*/}
         </div>
-        {/* --end::Wrapper--*/}
         <Toolbar />
       </div>
     </div>

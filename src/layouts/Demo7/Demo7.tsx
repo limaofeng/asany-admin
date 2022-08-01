@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { useApp } from 'umi';
 
 import { LayoutProvider, useLayoutSelector } from '../LayoutContext';
+import { ThemeModeProvider } from '../components/theme-mode/ThemeModeProvider';
 
 import Aside from './components/Aside';
 import buildMenuRender from './components/utils';
@@ -179,23 +180,25 @@ function LayoutWrapper(props: LayoutProps) {
   }, [layoutRestProps.menuRender, currentMenu]);
 
   return (
-    <LayoutProvider
-      state={{
-        menus,
-        routes: props.route.routes || [],
-        aside: { menus, minimize: false, pure: layoutRestProps.pure, width: 200 },
-      }}
-    >
-      <LayoutInner
-        {...props}
-        activeKey={state.current.activeMenuKey}
-        onSelect={handleSelect}
-        menuRender={menuRender}
-        pure={layoutRestProps.pure}
+    <ThemeModeProvider>
+      <LayoutProvider
+        state={{
+          menus,
+          routes: props.route.routes || [],
+          aside: { menus, minimize: false, pure: layoutRestProps.pure, width: 200 },
+        }}
       >
-        {children}
-      </LayoutInner>
-    </LayoutProvider>
+        <LayoutInner
+          {...props}
+          activeKey={state.current.activeMenuKey}
+          onSelect={handleSelect}
+          menuRender={menuRender}
+          pure={layoutRestProps.pure}
+        >
+          {children}
+        </LayoutInner>
+      </LayoutProvider>
+    </ThemeModeProvider>
   );
 }
 

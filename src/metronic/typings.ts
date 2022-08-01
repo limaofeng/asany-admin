@@ -16,3 +16,5 @@ export type MainColor =
   | 'warning'
   | 'danger'
   | 'dark';
+
+export type { Placement } from './Dropdown/Dropdown';

@@ -4,7 +4,7 @@ interface ContentProps {
 function Content(props: ContentProps) {
   return (
     <div
-      style={{ minHeight: 'calc(100vh - 100px - 65px)' }}
+      style={{ minHeight: 'calc(100vh - 100px - 70px)' }}
       className="content d-flex flex-column flex-column-fluid"
       id="kt_content"
     >

@@ -28,6 +28,7 @@ function Tooltip(props: TooltipProps, ref: any) {
     <BsOverlayTrigger
       trigger={trigger}
       placement={placement}
+      flip={false}
       overlay={<BsTooltip>{title}</BsTooltip>}
     >
       {React.cloneElement(children, {

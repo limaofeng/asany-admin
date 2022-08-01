@@ -32,7 +32,7 @@ function UserAccountMenu(props: UserAccountMenuProps) {
   }, []);
 
   const handleClick = useCallback(
-    async (e) => {
+    async (e: any) => {
       if (['profile', 'organizations', 'user-guide', 'preferences'].includes(e.key)) {
         close();
       } else if (e.key === 'sign-out') {
@@ -58,7 +58,7 @@ function UserAccountMenu(props: UserAccountMenuProps) {
       className="user-account-menu menu-gray-700 menu-state-bg menu-state-primary fw-bold f-14px py-4 w-275px"
       onClick={handleClick}
     >
-      <Menu.Item className="px-3" contentClassName="d-flex align-items-center px-3">
+      <Menu.Content className="px-3" contentClassName="d-flex align-items-center px-3">
         <Symbol.Avatar
           size={50}
           className="me-5"
@@ -74,16 +74,16 @@ function UserAccountMenu(props: UserAccountMenuProps) {
             {user?.email || ' '}
           </a>
         </div>
-      </Menu.Item>
-      <Menu.Separator />
-      <Menu.Item className="px-5 my-0 user-status-details">
+      </Menu.Content>
+      <Menu.Separator className="my-2" />
+      <Menu.Content className="px-5 my-0 user-status-details">
         <div onClick={handleUserStatus} className="d-flex align-items-center">
           <Button className="user-status-header" variant={false} icon={icon} />
           <span className="user-status-message">用户状态</span>
         </div>
         <EditStatusModal visible={editStatusModalVisible} onClose={handleCloseEditStatusModal} />
-      </Menu.Item>
-      <Menu.Separator />
+      </Menu.Content>
+      <Menu.Separator className="my-2" />
       <Menu.Item key="profile" url="/settings/profile" className="px-5 my-0" linkClassName="px-5">
         个人中心
       </Menu.Item>
@@ -95,7 +95,7 @@ function UserAccountMenu(props: UserAccountMenuProps) {
       >
         我的组织
       </Menu.Item>
-      <Menu.Separator />
+      <Menu.Separator className="my-2" />
       <Menu.Item key="user-guide" url="/documentation" className="px-5 my-0" linkClassName="px-5">
         使用手册
       </Menu.Item>
@@ -107,7 +107,7 @@ function UserAccountMenu(props: UserAccountMenuProps) {
       >
         偏好设置
       </Menu.Item>
-      <Menu.Separator />
+      <Menu.Separator className="my-2" />
       <Menu.Item key="sign-out" className="px-5 my-0" linkClassName="px-5">
         退出登录
       </Menu.Item>

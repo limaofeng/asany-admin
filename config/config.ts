@@ -62,6 +62,8 @@ export default defineConfig({
     (config as any).experiments = (config as any).experiments || {};
     (config as any).experiments.syncWebAssembly = true;
 
+    config.stats({ children: true });
+
     createCSSRule({
       lang: 'sass',
       type: 'csr',
