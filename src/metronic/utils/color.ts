@@ -24,7 +24,7 @@ function convertRGBToHex(rgb: string): string {
 const CACHE_ERROR = 'error';
 
 export function generateBackgroundColor(name: string) {
-  return '#' + md5(name).substr(0, 6);
+  return '#' + md5(name).substring(0, 6);
 }
 
 /**

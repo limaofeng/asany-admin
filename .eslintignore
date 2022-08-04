@@ -6,6 +6,7 @@ public
 dist
 .umi
 mock
+src/hooks/api.ts
 src/pages/*/hooks.ts
 src/pages/**/*/hooks.ts
 src/pages/*/hooks/api.ts

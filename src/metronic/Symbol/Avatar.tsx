@@ -1,21 +1,45 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import classnames from 'classnames';
+import styled from 'styled-components';
 
-import { contrastTextColor, generateBackgroundColor } from '../utils/color';
+import {
+  contrastTextColor,
+  darkenColor,
+  generateBackgroundColor,
+  getContrastYIQ,
+  lightenColor,
+} from '../utils/color';
 
 import type { AvatarProps } from './typings';
 import { useSymbolSize } from './utils';
 
+type AvatarLableProps = {
+  color?: string;
+  backgroundColor?: string;
+};
+
+const AvatarLable = styled.div<AvatarLableProps>`
+  --kt-symbol-label-color: ${(props) => props.color};
+  --kt-symbol-label-bg: ${(props) => props.backgroundColor};
+`;
+
 function Avatar(props: AvatarProps, ref: any) {
-  const { onClick, shape, className, labelClassName, src, gap, alt, badge, ...otherProps } = props;
+  const { onClick, shape, className, light, labelClassName, src, gap, alt, badge, ...otherProps } =
+    props;
 
   const [loadFailed, setLoadFailed] = useState(false);
 
-  const backgroundColor = useMemo(
-    () => (typeof alt == 'string' ? generateBackgroundColor(alt) : undefined),
-    [alt],
-  );
+  const backgroundColor = useMemo(() => {
+    if (typeof alt == 'string') {
+      let _backgroundColor = generateBackgroundColor(alt);
+      while (getContrastYIQ(_backgroundColor) == 'dark' && light) {
+        _backgroundColor = lightenColor(_backgroundColor, 80);
+      }
+      return _backgroundColor;
+    }
+    return undefined;
+  }, [alt, light]);
   const color = useMemo(
     () => (backgroundColor ? contrastTextColor(backgroundColor) : undefined),
     [backgroundColor],
@@ -50,18 +74,22 @@ function Avatar(props: AvatarProps, ref: any) {
         React.isValidElement(alt) ? (
           alt
         ) : (
-          <div
-            style={{ backgroundColor, color }}
+          <AvatarLable
+            color={light ? backgroundColor && darkenColor(backgroundColor) : color}
+            backgroundColor={
+              light ? backgroundColor && lightenColor(backgroundColor) : backgroundColor
+            }
             className={classnames(labelClassName, 'symbol-label fw-bold')}
           >
             {typeof alt === 'string' &&
-              (isChinese(alt) ? alt.substring(0, 1) : alt.substring(0, 2).toUpperCase())}
-          </div>
+              (isChinese(alt) ? alt.substring(0, 2) : alt.substring(0, 2).toUpperCase())}
+          </AvatarLable>
         )
       ) : (
         renderImg(src, gap, handleError)
       )}
-      {badge}
+      {badge &&
+        React.cloneElement(badge, { className: classnames('symbol-badge', badge.props.className) })}
     </div>
   );
 }

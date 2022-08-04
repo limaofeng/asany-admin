@@ -14,6 +14,7 @@ import { BlockUI } from '@/metronic';
 
 export type ContentWrapperProps = {
   className?: string;
+  contentClassName?: string;
   loading?: boolean;
   onClick?: () => void;
   header?: ContentHeaderProps | false;
@@ -62,7 +63,7 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
         loading={loading}
       >
         {header && <ContentHeader {...header} breadcrumb={breadcrumb} />}
-        <Content>{children}</Content>
+        <Content className="px-0">{children}</Content>
         {footer && <ContentFooter {...footer} />}
       </BlockUI>
     </div>

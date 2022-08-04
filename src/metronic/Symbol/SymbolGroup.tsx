@@ -72,6 +72,9 @@ function SymbolGroup(props: SymbolGroupProps) {
     }
     const showChildren = children.slice(0, maxCount - 1);
     const moreNumber = children.length - showChildren.length;
+    if (!more) {
+      return showChildren;
+    }
     return [
       ...showChildren,
       React.cloneElement(more as any, { size, shape }) || (

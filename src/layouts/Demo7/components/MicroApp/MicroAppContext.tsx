@@ -5,6 +5,7 @@ import { cloneDeep } from 'lodash';
 type MicroAppState = {
   aside: {
     minimize: boolean;
+    width: number;
   };
 };
 
@@ -16,6 +17,7 @@ type MicroAppStoreContext = {
 const default_state: MicroAppState = {
   aside: {
     minimize: false,
+    width: 280,
   },
 };
 
@@ -30,6 +32,7 @@ type AppProviderProps = {
 
 export enum MicroAppActionKind {
   AsideToggle = 'ASIDE_TOGGLE',
+  AsideWidth = 'ASIDE_WIDTH',
 }
 
 type MicroAppAction = {
@@ -41,6 +44,9 @@ function reducer(state: MicroAppState, action: MicroAppAction): MicroAppState {
   switch (action.type) {
     case 'ASIDE_TOGGLE':
       state.aside.minimize = !state.aside.minimize;
+      return { ...state };
+    case 'ASIDE_WIDTH':
+      state.aside.width = action.payload;
       return { ...state };
     default:
       throw new Error();

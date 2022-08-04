@@ -2,9 +2,10 @@ import moment from 'moment';
 import 'antd/dist/antd.css';
 import 'moment/locale/zh-cn';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
-import { history, loadCurrentuser } from 'umi';
+import { history } from 'umi';
 
-import type { CurrentUser } from './.umi/app/typings';
+import { loadCurrentuser } from './hooks';
+import type { CurrentUser } from './types';
 
 import PageLoading from '@/components/PageLoading';
 

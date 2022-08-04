@@ -14,6 +14,7 @@ export default defineConfig({
     'process.env.STORAGE_URL': '//47.103.119.188:8000',
     'process.env.MOBILE_URL': '//47.103.119.188:8002',
     'process.env.WEBSITE_URL': '//47.103.119.188:8001',
+    'process.env.OPEN_IM_URL': 'ws://47.103.119.188:10003',
   },
   hash: true,
   antd: {},

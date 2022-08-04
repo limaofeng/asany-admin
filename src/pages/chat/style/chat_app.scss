@@ -1,0 +1,25 @@
+.background-transparent {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.micro-app-chat {
+  .app-chat-main {
+    .chat_messenger {
+      --bs-card-border-radius: 0;
+      #kt_chat_messenger_body {
+        height: calc(100vh - 69px - 127px);
+      }
+    }
+  }
+  .cve-list {
+    .cve-item {
+      width: 100%;
+      padding: 0 1rem;
+      border-radius: 1rem;
+      &:hover {
+        background-color: #f4f6f8;
+      }
+    }
+  }
+}

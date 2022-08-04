@@ -18,14 +18,30 @@ export type BadgeProps = {
     | 'dark';
   lightStyle?: 'primary' | 'success' | 'info' | 'warning' | 'danger' | 'dark';
   shape?: 'square' | 'circle';
+  dot?: boolean;
   size?: 'sm' | 'lg';
+  count?: number | null;
   className?: string;
   children?: React.ReactNode;
 };
 
 function Badge(props: BadgeProps) {
-  const { size, className, children, shape, lightStyle, tag = 'span' } = props;
+  const {
+    dot,
+    size,
+    className,
+    count,
+    children = count,
+    shape = dot ? 'circle' : undefined,
+    lightStyle,
+    tag = 'span',
+  } = props;
   const color = !props.color && !lightStyle ? 'light' : props.color;
+
+  if (count == 0) {
+    return <></>;
+  }
+
   return React.createElement(
     tag,
     {

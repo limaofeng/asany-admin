@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { isEqual } from 'lodash';
 
 interface CardProps {
+  id?: string;
   as?: React.ElementType;
   title?: string;
   shadow?: false | 'sm' | 'lg';
@@ -32,13 +33,18 @@ function CardToolbar(props: CardToolbarProps) {
 }
 
 type CardFooterProps = {
+  id?: string;
   className?: string;
   children: React.ReactNode;
 };
 
 function CardFooter(props: CardFooterProps) {
   const { className, children } = props;
-  return <BsCard.Footer className={className}>{children}</BsCard.Footer>;
+  return (
+    <BsCard.Footer id={props.id} className={className}>
+      {children}
+    </BsCard.Footer>
+  );
 }
 
 interface CardTitleProps {
@@ -56,6 +62,7 @@ function CardTitle(props: CardTitleProps) {
 }
 
 type CardHeaderProps = {
+  id?: string;
   border?: false;
   title?: string | React.ReactNode;
   className?: string;
@@ -100,7 +107,10 @@ function CardHeader(props: CardHeaderProps) {
   }, [props.children, props.title, props.titleClassName, props.toolbar]);
 
   return (
-    <BsCard.Header className={classnames(className, { ['border-0']: border == false })}>
+    <BsCard.Header
+      id={props.id}
+      className={classnames(className, { ['border-0']: border == false })}
+    >
       {children}
     </BsCard.Header>
   );
@@ -132,7 +142,11 @@ type CardBodyProps = {
 
 function CardBody(props: CardBodyProps) {
   const { className, children } = props;
-  return <BsCard.Body className={className}>{children}</BsCard.Body>;
+  return (
+    <BsCard.Body id={props.id} className={className}>
+      {children}
+    </BsCard.Body>
+  );
 }
 
 function Card(props: CardProps & { to?: string }, ref: any) {

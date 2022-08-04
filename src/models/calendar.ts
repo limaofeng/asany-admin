@@ -49,7 +49,7 @@ export default function useCalendarModel() {
     forceRender();
   }, [data, loading]);
 
-  const setSelectedDay = useCallback((day) => {
+  const setSelectedDay = useCallback((day: Date) => {
     state.current.selectedDay = day;
     forceRender();
   }, []);

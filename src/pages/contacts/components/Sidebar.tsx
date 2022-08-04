@@ -7,10 +7,10 @@ import { useModel } from 'umi';
 import { useBookQuery, useBooksQuery } from '../hooks';
 
 import { AsideWorkspace } from '@/layouts/Demo7';
-import type { OptionData } from '@/metronic';
 import { Select, Tabs } from '@/metronic';
 import type { ContactBook } from '@/types';
 import * as utils from '@/utils';
+import type { OptionData } from '@/metronic/typings';
 
 const { TabPane } = Tabs;
 
@@ -24,7 +24,7 @@ function SidebarFooter(props: SidebarFooterProps) {
 
   const currentBook = useModel('contacts', ({ state }) => state.book);
 
-  const handleSelect = useCallback((key) => {
+  const handleSelect = useCallback((key: string) => {
     if (key.startsWith('contacts-')) {
       console.log(key);
       // setCalendarSet(key.substring('contacts-'.length));

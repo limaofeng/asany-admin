@@ -178,7 +178,7 @@ function MenuForm(props: MenuFormProps) {
       </Form.Item>
       <Form.Item dependencies={['type', 'parentMenu']} noStyle={true}>
         {() => {
-          if (form.getFieldValue('type') !== 'MENU' || !!form.getFieldValue('parentMenu')) {
+          if (form.getFieldValue('type') == 'SECTION' || !!form.getFieldValue('parentMenu')) {
             return <></>;
           }
           return (

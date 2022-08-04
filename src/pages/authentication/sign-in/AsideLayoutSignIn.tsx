@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
 
 import { useHistory } from 'react-router';
-import { loginWithUsername, useModel } from 'umi';
+import { useModel } from 'umi';
 
 import { Button, Form, Input, Modal } from '@/metronic';
+import { loginWithUsername } from '@/hooks';
 
 function Aside() {
   return (

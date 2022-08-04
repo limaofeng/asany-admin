@@ -18,7 +18,7 @@ function CalendarSidebarFooter(props: CalendarSidebarFooterProps) {
   const setCalendarSet = useModel('calendar', (model) => model.setCalendarSet);
 
   const handleSelect = useCallback(
-    (key) => {
+    (key: string) => {
       if (key.startsWith('calendar-set-')) {
         setCalendarSet(key.substring('calendar-set-'.length));
       } else {

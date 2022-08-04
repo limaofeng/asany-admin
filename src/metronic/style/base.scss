@@ -26,11 +26,16 @@
   }
 }
 .app-sidebar {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--kt-border-color);
+
   .app-sidebar-body {
     .badge {
       padding: 0.3em 0.85em;
     }
   }
+
   .app-sidebar-footer {
     display: flex;
     align-items: center;

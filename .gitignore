@@ -37,8 +37,9 @@ screenshot
 .eslintcache
 
 # tmp
-src/types.ts
 graphql/index.schema.json
+src/types.ts
+src/hooks/api.ts
 src/pages/**/*/hooks.ts
 src/pages/*/hooks.ts
 src/pages/*/hooks/api.ts

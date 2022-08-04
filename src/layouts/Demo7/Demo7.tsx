@@ -115,7 +115,7 @@ function LayoutWrapper(props: LayoutProps) {
           pidKey: 'parent.id',
           sort: (l: any, r: any) => l.index - r.index,
         },
-      ),
+      ) as any,
     [sourceMenus],
   );
 
