@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import classnames from 'classnames';
 import styled from 'styled-components';
@@ -30,6 +30,10 @@ function AppContainer(props: AppContainerProps) {
     },
   } = useMicroApp();
 
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+  }, []);
+
   return (
     <MicroAppContainer
       minimize={minimize}
@@ -37,6 +41,7 @@ function AppContainer(props: AppContainerProps) {
       className={classnames('micro-app-container page-full-content', className, {
         'aside-minimize': minimize,
       })}
+      onContextMenu={handleContextMenu}
     >
       {children}
     </MicroAppContainer>

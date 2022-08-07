@@ -1,20 +1,23 @@
+import { useCallback } from 'react';
+
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import { useModel } from 'umi';
 
-import { formatDate } from '../../utils/commons';
+import { formatDate } from '../../../../utils/open-im/utils/common';
 
-import { parseMessageType } from '@/models/open-im/utils/im';
-import { OptType } from '@/models/open-im/utils/open_im_sdk/types';
+import { parseMessageType } from '@/utils/open-im/utils/im';
+import { OptType } from '@/utils/open-im/sdk/types';
 import { Badge, Symbol } from '@/metronic';
 
 type CveItemProps = {
   curCve: ConversationItem | null;
   data: ConversationItem;
   cveList: ConversationItem[];
+  onClick: (item: ConversationItem) => void;
 };
 
 function CveItem(props: CveItemProps) {
-  const { data: cve } = props;
+  const { data: cve, onClick } = props;
 
   const curUid = useModel('@@initialState', (state) => state.initialState?.currentUser?.uid);
 
@@ -57,11 +60,15 @@ function CveItem(props: CveItemProps) {
     }
   };
 
+  const handleClick = useCallback(() => {
+    onClick(cve);
+  }, [cve, onClick]);
+
   console.log('data-time', parseLatestTime(cve.latestMsgSendTime));
   console.log('unreadCount', isRecv(cve?.recvMsgOpt), cve.unreadCount);
 
   return (
-    <div className="cve-item d-flex flex-stack py-4">
+    <div className="cve-item d-flex flex-stack py-4" onClick={handleClick}>
       <div className="d-flex align-items-center">
         <Symbol.Avatar
           size={45}
@@ -77,9 +84,6 @@ function CveItem(props: CveItemProps) {
             />
           }
         />
-        {/* <div className="symbol symbol-45px symbol-circle">
-          <span className="symbol-label bg-light-danger text-danger fs-6 fw-bolder">M</span>
-        </div> */}
         <div className="ms-5">
           <a href="#" className="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">
             {cve.showName}

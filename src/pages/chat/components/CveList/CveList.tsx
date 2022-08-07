@@ -7,17 +7,24 @@ import { Card } from '@/metronic';
 type CveListProps = {
   loading: boolean;
   cves: ConversationItem[];
+  onItemClick: (item: ConversationItem) => void;
   curCve: ConversationItem | null;
 };
 
 function CveList(props: CveListProps) {
-  const { curCve, cves } = props;
+  const { curCve, cves, onItemClick } = props;
 
   return (
     <>
-      <Card flush className="pt-0 px-5 background-transparent" bodyClassName="pt-5 px-3 cve-list">
+      <Card flush className="pt-0 px-2 background-transparent" bodyClassName="pt-5 px-3 cve-list">
         {cves.map((item) => (
-          <CveItem cveList={cves} data={item} curCve={curCve} key={item.conversationID} />
+          <CveItem
+            onClick={onItemClick}
+            cveList={cves}
+            data={item}
+            curCve={curCve}
+            key={item.conversationID}
+          />
         ))}
       </Card>
       <div className="card card-flush d-none">

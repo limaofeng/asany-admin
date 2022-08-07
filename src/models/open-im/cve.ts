@@ -1,10 +1,11 @@
-import { useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 
 import { useModel } from 'umi';
+import type { ConversationItem } from 'open-im-sdk/types';
 
-import { getCveList } from './actions/cve';
-import type { CveActionTypes, CveState } from './types/cve';
-import { SET_CUR_CVE, SET_CVE_INIT_LOADING, SET_CVE_LIST } from './types/cve';
+import type { CveActionTypes, CveState } from '@/utils/open-im/types/cve';
+import { SET_CUR_CVE, SET_CVE_INIT_LOADING, SET_CVE_LIST } from '@/utils/open-im/types/cve';
+import { getCveList, setCurCve } from '@/utils/open-im/actions/cve';
 
 const initialState: CveState = {
   cves: [],
@@ -41,7 +42,16 @@ function useCveModel() {
     getCveList(dispatch);
   }, [loginStatus]);
 
-  return { state, dispatch };
+  return {
+    state,
+    dispatch,
+    actions: {
+      setCurCve: useCallback((cve: ConversationItem) => {
+        console.log('cve:', cve);
+        dispatch(setCurCve(cve));
+      }, []),
+    },
+  };
 }
 
 export default useCveModel;

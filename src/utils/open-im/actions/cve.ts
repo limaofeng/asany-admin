@@ -1,5 +1,6 @@
-import { im } from '../auth';
-import type { ConversationItem } from '../utils/open_im_sdk/types';
+import type { ConversationItem } from 'open-im-sdk/types';
+
+import { im } from '../../../models/open-im/auth';
 import type { CveActionTypes } from '../types/cve';
 import { SET_CUR_CVE, SET_CVE_INIT_LOADING, SET_CVE_LIST } from '../types/cve';
 

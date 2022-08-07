@@ -1,4 +1,4 @@
-import type { FullUserItem } from '../utils/open_im_sdk/types';
+import type { FullUserItem } from '../sdk/types';
 
 export type UserState = {
   selfInfo: FullUserItem;

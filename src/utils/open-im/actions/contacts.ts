@@ -1,6 +1,4 @@
-import type { Dispatch } from 'redux';
-
-import { im } from '../auth';
+import { im } from '../../../models/open-im/auth';
 import type {
   BlackItem,
   FriendApplicationItem,
@@ -11,7 +9,7 @@ import type {
   GroupMemberItem,
   MemberMapType,
   TotalUserStruct,
-} from '../utils/open_im_sdk/types';
+} from '../sdk/types';
 import type { ContactActionTypes } from '../types/contacts';
 import {
   SET_BLACK_LIST,
@@ -125,7 +123,7 @@ export const setUnReadCount = (value: number): ContactActionTypes => {
 };
 
 export const getFriendList = () => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<ContactActionTypes>) => {
     im.getFriendList().then((res) => {
       const tmp: FriendItem[] = [];
       JSON.parse(res.data).forEach(
@@ -137,13 +135,13 @@ export const getFriendList = () => {
 };
 
 export const getGroupList = () => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<ContactActionTypes>) => {
     im.getJoinedGroupList().then((res) => dispatch(setGroupList(JSON.parse(res.data))));
   };
 };
 
 export const getBlackList = () => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<ContactActionTypes>) => {
     im.getBlackList().then((res) => {
       dispatch(setBlackList(JSON.parse(res.data)));
     });
@@ -151,7 +149,7 @@ export const getBlackList = () => {
 };
 
 export const getRecvFriendApplicationList = () => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<ContactActionTypes>) => {
     im.getRecvFriendApplicationList().then((res) =>
       dispatch(setRecvFriendApplicationList(JSON.parse(res.data))),
     );
@@ -159,7 +157,7 @@ export const getRecvFriendApplicationList = () => {
 };
 
 export const getSentFriendApplicationList = () => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<ContactActionTypes>) => {
     im.getSendFriendApplicationList().then((res) =>
       dispatch(setSentFriendApplicationList(JSON.parse(res.data))),
     );
@@ -167,7 +165,7 @@ export const getSentFriendApplicationList = () => {
 };
 
 export const getRecvGroupApplicationList = () => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<ContactActionTypes>) => {
     im.getRecvGroupApplicationList().then((res) =>
       dispatch(setRecvGroupApplicationList(JSON.parse(res.data))),
     );
@@ -175,7 +173,7 @@ export const getRecvGroupApplicationList = () => {
 };
 
 export const getSentGroupApplicationList = () => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<ContactActionTypes>) => {
     im.getSendGroupApplicationList().then((res) =>
       dispatch(setSentGroupApplicationList(JSON.parse(res.data))),
     );
@@ -183,7 +181,7 @@ export const getSentGroupApplicationList = () => {
 };
 
 export const getGroupMemberList = (options: GetGroupMemberParams) => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<ContactActionTypes>) => {
     dispatch(setGroupMemberLoading(true));
     im.getGroupMemberList(options).then((res) => {
       dispatch(setGroupMemberList(JSON.parse(res.data)));
@@ -193,7 +191,7 @@ export const getGroupMemberList = (options: GetGroupMemberParams) => {
 };
 
 export const getGroupInfo = (gid: string) => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<ContactActionTypes>) => {
     im.getGroupsInfo([gid])
       .then((res) => {
         dispatch(setGroupInfo(JSON.parse(res.data)[0]));
@@ -203,7 +201,7 @@ export const getGroupInfo = (gid: string) => {
 };
 
 export const getUnReadCount = () => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<ContactActionTypes>) => {
     im.getTotalUnreadMsgCount().then((res) => {
       dispatch(setUnReadCount(Number(res.data)));
     });

@@ -1,8 +1,8 @@
 import type { Dispatch } from 'redux';
 
 // import { getAuthToken } from '../../api/admin';
-import { im } from '../auth';
-import type { FullUserItem, PartialUserItem } from '../utils/open_im_sdk/types';
+import { im } from '../../../models/open-im/auth';
+import type { FullUserItem, PartialUserItem } from '../sdk/types';
 import type { UserActionTypes } from '../types/user';
 import { SET_ADMIN_TOKEN, SET_SELF_INFO, SET_SELF_INIT_LOADING } from '../types/user';
 

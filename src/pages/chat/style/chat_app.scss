@@ -7,11 +7,44 @@
   .app-chat-main {
     .chat_messenger {
       --bs-card-border-radius: 0;
+      height: calc(100vh);
       #kt_chat_messenger_body {
-        height: calc(100vh - 69px - 127px);
+        .os-content {
+          min-height: 100%;
+        }
+      }
+
+      #kt_chat_messenger_footer {
+        .chat-msg-actions {
+          position: absolute;
+          right: 1.5rem;
+          bottom: 1rem;
+        }
+
+        [contenteditable] {
+          &:focus-visible {
+            outline: 0;
+          }
+          &[placeholder]:empty:before {
+            color: var(--kt-input-placeholder-color) !important;
+            font-size: 13px !important;
+            content: attr(placeholder);
+          }
+        }
+      }
+
+      .resizer.direction-y,
+      .resizer.active {
+        & > .handle {
+          &:hover,
+          &::before {
+            background: transparent !important;
+          }
+        }
       }
     }
   }
+
   .cve-list {
     .cve-item {
       width: 100%;
@@ -20,6 +53,47 @@
       &:hover {
         background-color: #f4f6f8;
       }
+    }
+  }
+
+  .chat_messenger {
+    .custom-scrollbar {
+      .os-content {
+        display: flex;
+        flex-direction: column-reverse;
+      }
+    }
+  }
+
+  .chat_bg_msg_content {
+    position: relative;
+
+    .chat_bg_msg_content_time {
+      position: absolute;
+      right: 8px;
+      bottom: 4px;
+      display: inline-block;
+      color: #999;
+      font-size: 12px;
+      transform: scale(0.9);
+    }
+  }
+}
+
+.msg_item_menu_popover {
+  --bs-popover-box-shadow: none;
+  --bs-popover-border-width: 0;
+  --bs-popover-body-padding-y: 0;
+  --bs-popover-body-padding-x: 0;
+
+  .menu-item.px-3 {
+    padding-right: 0.5rem !important;
+    padding-left: 0.5rem !important;
+
+    .menu-link {
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+      padding-left: 0.5rem !important;
     }
   }
 }

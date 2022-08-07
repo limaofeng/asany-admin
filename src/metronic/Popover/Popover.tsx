@@ -7,6 +7,7 @@ import type { OverlayDelay, OverlayTriggerType } from 'react-bootstrap/esm/Overl
 import type { Placement } from 'react-bootstrap/esm/types';
 import type { OverlayArrowProps } from '@restart/ui/Overlay';
 import { useClickAway } from 'react-use';
+import type { Offset } from '@restart/ui/usePopper';
 
 import './style.scss';
 
@@ -17,7 +18,7 @@ type PopoverProps = {
   zIndex?: number;
   delay?: OverlayDelay;
   onVisibleChange?: (visible: boolean, e?: React.MouseEvent) => void;
-  trigger?: OverlayTriggerType | OverlayTriggerType[];
+  trigger?: OverlayTriggerType | OverlayTriggerType[] | 'contextMenu';
   title?: React.ReactNode;
   content: React.ReactNode;
   children: React.ReactElement;
@@ -31,7 +32,7 @@ function Popover(props: PopoverProps) {
     title,
     content,
     trigger = 'click',
-    placement = 'right',
+    placement = trigger == 'contextMenu' ? 'right-start' : 'right',
     arrowProps,
     delay,
     overlayClassName,
@@ -43,6 +44,7 @@ function Popover(props: PopoverProps) {
   const nodeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(props.visible || false);
+  const [offset, setOffset] = useState<Offset | undefined>();
 
   const temp = useRef(visible);
   temp.current = visible;
@@ -93,11 +95,31 @@ function Popover(props: PopoverProps) {
     }
   });
 
+  // const initOffset: OffsetFunction = useCallback((details: any) => {
+  //   console.log('initOffset', details);
+  //   return [0, 0];
+  // }, []);
+
+  useEffect(() => {
+    if (trigger != 'contextMenu') {
+      return;
+    }
+    nodeRef.current?.addEventListener('contextmenu', (e: any) => {
+      const x = (getOffsetLeft(e.target, nodeRef.current!) + e.layerX) as number;
+      const y = (getOffsetTop(e.target, nodeRef.current!) + e.layerY) as number;
+      setOffset([y - 6, x - nodeRef.current!.offsetWidth]);
+      setVisible(true);
+      e.stopPropagation();
+      e.preventDefault();
+    });
+  }, [trigger, visible]);
+
   return (
     <BsOverlayTrigger
-      trigger={trigger}
+      trigger={trigger == 'contextMenu' ? undefined : trigger}
       show={visible}
       delay={delay}
+      offset={offset}
       placement={placement}
       overlay={
         <BsPopover
@@ -115,6 +137,32 @@ function Popover(props: PopoverProps) {
       {React.cloneElement(children, { ref: multiRef })}
     </BsOverlayTrigger>
   );
+}
+
+function getOffsetLeft(o: HTMLElement, parent: HTMLElement = document.body) {
+  let left = 0;
+  let offsetParent = o;
+  while (offsetParent != null && offsetParent != parent) {
+    if (getComputedStyle(offsetParent).position == 'absolute') {
+      left += offsetParent.offsetLeft;
+    }
+    offsetParent = offsetParent.offsetParent as HTMLElement;
+  }
+
+  return left;
+}
+
+function getOffsetTop(o: HTMLElement, parent: HTMLElement = document.body) {
+  let top = 0;
+  let offsetParent = o;
+  while (offsetParent != null && offsetParent != parent) {
+    if (getComputedStyle(offsetParent).position == 'absolute') {
+      top += offsetParent.offsetTop;
+    }
+    offsetParent = offsetParent.offsetParent as HTMLElement;
+  }
+
+  return top;
 }
 
 export default Popover;

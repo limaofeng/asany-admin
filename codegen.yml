@@ -21,6 +21,17 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
+  src/pages/chat/hooks/api.ts:
+    documents: ["src/pages/chat/hooks/*.gql"]
+    plugins:
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+        - eslint --fix
   src/pages/cms/hooks/api.ts:
     documents: ["src/pages/cms/**/*.gql"]
     plugins:

@@ -1,4 +1,4 @@
-import type { MessageItem } from '../utils/open_im_sdk/types';
+import type { MessageItem } from '../sdk/types';
 
 export type MsgState = {
   historyMsgList: MessageItem[];

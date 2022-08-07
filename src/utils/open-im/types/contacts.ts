@@ -6,7 +6,7 @@ import type {
   GroupItem,
   GroupMemberItem,
   MemberMapType,
-} from '../utils/open_im_sdk/types';
+} from '../sdk/types';
 
 export type ContactState = {
   friendList: FriendItem[];
@@ -117,3 +117,5 @@ export type ContactActionTypes =
   | SetGroupMemberList
   | SetGroupInfo
   | SetGroupMemberLoading;
+
+export type ContactDispatch = React.Dispatch<ContactActionTypes>;

@@ -1,7 +1,7 @@
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 
-import { MessageType, SessionType } from './open_im_sdk/types';
-import { OpenIMSDK } from './open_im_sdk';
+import { MessageType, SessionType } from '@/utils/open-im/sdk/types';
+import { OpenIMSDK } from '@/utils/open-im/sdk';
 
 export const im = new OpenIMSDK();
 
