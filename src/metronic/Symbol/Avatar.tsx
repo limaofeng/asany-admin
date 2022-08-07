@@ -33,17 +33,22 @@ function Avatar(props: AvatarProps, ref: any) {
   const backgroundColor = useMemo(() => {
     if (typeof alt == 'string') {
       let _backgroundColor = generateBackgroundColor(alt);
-      while (getContrastYIQ(_backgroundColor) == 'dark' && light) {
-        _backgroundColor = lightenColor(_backgroundColor, 80);
+      if (light) {
+        while (getContrastYIQ(_backgroundColor) == 'dark') {
+          _backgroundColor = lightenColor(_backgroundColor, 80);
+        }
+        _backgroundColor = lightenColor(_backgroundColor, 40);
       }
       return _backgroundColor;
     }
     return undefined;
   }, [alt, light]);
-  const color = useMemo(
-    () => (backgroundColor ? contrastTextColor(backgroundColor) : undefined),
-    [backgroundColor],
-  );
+  const color = useMemo(() => {
+    if (backgroundColor) {
+      return contrastTextColor(light ? darkenColor(backgroundColor, 80) : backgroundColor);
+    }
+    return undefined;
+  }, [backgroundColor, light]);
 
   const handleError = useCallback(() => {
     setLoadFailed(true);

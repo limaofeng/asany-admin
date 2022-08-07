@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { useReactive, useRequest } from 'ahooks';
 import type { ConversationItem, MergeElem, MessageItem, WsResponse } from 'open-im-sdk/types';
@@ -247,11 +247,17 @@ function ChatApp() {
     }
   };
 
+  useEffect(
+    () => () => {
+      setCurCve(null);
+    },
+    [setCurCve],
+  );
+
   return (
     <MicroApp className="micro-app-chat">
       <MicroApp.Sidebar
         header={<SearchBar onSearch={handleCveSearch} />}
-        className="bg-white"
         width={325}
         collapsible={false}
       >

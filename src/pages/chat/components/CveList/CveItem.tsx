@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import { useModel } from 'umi';
+import classnames from 'classnames';
 
 import { formatDate } from '../../../../utils/open-im/utils/common';
 
@@ -17,7 +18,7 @@ type CveItemProps = {
 };
 
 function CveItem(props: CveItemProps) {
-  const { data: cve, onClick } = props;
+  const { data: cve, onClick, curCve } = props;
 
   const curUid = useModel('@@initialState', (state) => state.initialState?.currentUser?.uid);
 
@@ -68,7 +69,12 @@ function CveItem(props: CveItemProps) {
   console.log('unreadCount', isRecv(cve?.recvMsgOpt), cve.unreadCount);
 
   return (
-    <div className="cve-item d-flex flex-stack py-4" onClick={handleClick}>
+    <div
+      className={classnames('cve-item d-flex flex-stack py-4 mb-1', {
+        active: curCve?.conversationID == cve.conversationID,
+      })}
+      onClick={handleClick}
+    >
       <div className="d-flex align-items-center">
         <Symbol.Avatar
           size={45}

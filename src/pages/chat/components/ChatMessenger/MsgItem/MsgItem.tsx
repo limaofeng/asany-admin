@@ -145,6 +145,7 @@ const MsgItem: FC<MsgItemProps> = (props) => {
             className={classnames({
               'me-4': !isGroupCve,
             })}
+            light
             size={40}
             alt={msg.senderNickname}
             src={msg.senderFaceUrl}

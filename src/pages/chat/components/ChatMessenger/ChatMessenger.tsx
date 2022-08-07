@@ -128,7 +128,7 @@ function ChatMessenger(props: ChatMessengerProps) {
         {curCve && (
           <Card.Header id="kt_chat_messenger_header">
             <Card.Title className="d-flex align-items-center">
-              <Symbol.Avatar size={45} alt={curCve?.showName} src={curCve?.faceURL} />
+              <Symbol.Avatar light size={45} alt={curCve?.showName} src={curCve?.faceURL} />
               <div className="ms-5 d-flex justify-content-center flex-column me-3">
                 <a
                   href="#"

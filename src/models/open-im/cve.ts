@@ -46,8 +46,7 @@ function useCveModel() {
     state,
     dispatch,
     actions: {
-      setCurCve: useCallback((cve: ConversationItem) => {
-        console.log('cve:', cve);
+      setCurCve: useCallback((cve: ConversationItem | null) => {
         dispatch(setCurCve(cve));
       }, []),
     },

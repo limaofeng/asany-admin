@@ -270,9 +270,9 @@ function ChatFooter(props: ChatFooterProps) {
   }, [atList]);
 
   return (
-    <div className="pt-2 ps-2 h-100 d-flex flex-column">
+    <div className="pt-4 ps-8 h-100 d-flex flex-column">
       <div className="d-flex flex-row mb-2">
-        <Tooltip placement="bottom" trigger="click" inverse title="表情">
+        <Tooltip placement="bottom" inverse title="表情">
           <Button
             variant={false}
             icon={<Icon name="Bootstrap/emoji-smile" className="svg-icon-2" />}
