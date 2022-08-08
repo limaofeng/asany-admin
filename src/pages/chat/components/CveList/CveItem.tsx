@@ -22,7 +22,7 @@ function CveItem(props: CveItemProps) {
 
   const curUid = useModel('@@initialState', (state) => state.initialState?.currentUser?.uid);
 
-  const parseLatestMsg = (lmsg: string): string => {
+  const parseLatestMsg = (lmsg: string): React.ReactNode => {
     if (lmsg === '') return lmsg;
     const pmsg: MessageItem = JSON.parse(lmsg);
 
@@ -35,7 +35,12 @@ function CveItem(props: CveItemProps) {
           text = text.replaceAll(matchRes, 'Picture');
         });
       }
-      return 'Draft' + ' ' + text;
+      return (
+        <>
+          <span className="text-warning me-1">[草稿]</span>
+          {text}
+        </>
+      );
     }
     return parseMessageType(pmsg, curUid);
   };
@@ -55,7 +60,7 @@ function CveItem(props: CveItemProps) {
     if (sendArr[3] === curArr[3]) {
       return sendArr[4] as string;
     } else if (dayArr[3] === curArr[3]) {
-      return 'Yesterday';
+      return '昨天';
     } else {
       return sendArr[3] as string;
     }
@@ -65,8 +70,8 @@ function CveItem(props: CveItemProps) {
     onClick(cve);
   }, [cve, onClick]);
 
-  console.log('data-time', parseLatestTime(cve.latestMsgSendTime));
-  console.log('unreadCount', isRecv(cve?.recvMsgOpt), cve.unreadCount);
+  // console.log('data-time', parseLatestTime(cve.latestMsgSendTime));
+  // console.log('unreadCount', isRecv(cve?.recvMsgOpt), cve.unreadCount);
 
   return (
     <div
@@ -94,10 +99,7 @@ function CveItem(props: CveItemProps) {
           <a href="#" className="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">
             {cve.showName}
           </a>
-          <div
-            className="fw-semibold text-muted"
-            dangerouslySetInnerHTML={{ __html: parseLastMessage }}
-          />
+          <div className="fw-semibold text-muted cve_msg">{parseLastMessage}</div>
         </div>
       </div>
       <div className="d-flex flex-column align-items-end ms-2">

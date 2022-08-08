@@ -37,7 +37,7 @@ function Avatar(props: AvatarProps, ref: any) {
         while (getContrastYIQ(_backgroundColor) == 'dark') {
           _backgroundColor = lightenColor(_backgroundColor, 80);
         }
-        _backgroundColor = lightenColor(_backgroundColor, 40);
+        // _backgroundColor = lightenColor(_backgroundColor, 40);
       }
       return _backgroundColor;
     }
@@ -45,7 +45,7 @@ function Avatar(props: AvatarProps, ref: any) {
   }, [alt, light]);
   const color = useMemo(() => {
     if (backgroundColor) {
-      return contrastTextColor(light ? darkenColor(backgroundColor, 80) : backgroundColor);
+      return contrastTextColor(light ? darkenColor(backgroundColor, 20) : backgroundColor);
     }
     return undefined;
   }, [backgroundColor, light]);

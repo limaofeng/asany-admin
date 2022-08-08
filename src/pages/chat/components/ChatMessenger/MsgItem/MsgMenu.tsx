@@ -5,6 +5,7 @@ import { useCallback, useMemo } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import type { MessageItem } from 'open-im-sdk/types';
 import { Icon } from '@asany/icons';
+import classnames from 'classnames';
 
 import events from '@/utils/open-im/events';
 import {
@@ -240,7 +241,14 @@ const MsgMenu: FC<MsgMenuProps> = ({ msg, isSelf, children }) => {
       }
       overlayClassName="overlay-no-arrow msg_item_menu_popover"
     >
-      <div className="chat_bg_msg_content py-3 ps-3 pe-8">{children}</div>
+      <div
+        className={classnames('chat_bg_msg_content py-4', {
+          'ps-4 pe-8': !isSelf,
+          'ps-8 pe-4': isSelf,
+        })}
+      >
+        {children}
+      </div>
     </Popover>
   );
 };

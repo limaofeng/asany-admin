@@ -2,11 +2,12 @@ import { useCallback, useMemo, useReducer, useRef } from 'react';
 
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import { Resizer } from '@asany/sunmao';
+import type { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { useGetUserOnlineStatusQuery } from '../../hooks/api';
 import '../../style/chat_app.scss';
 
-import ChatContent from './ChatContent';
+import ChatContent from './ChatContent/ChatContent';
 import WelcomeContent from './WelcomeContent';
 import ChatFooter from './ChatFooter/ChatFooter';
 
@@ -23,6 +24,7 @@ type ChatMessengerProps = {
   loading: boolean;
   merID?: string;
   sendMsg: (nMsg: string, type: messageTypes, uid?: string, gid?: string) => void;
+  scrollbar: React.MutableRefObject<OverlayScrollbarsComponent | undefined>;
 };
 
 const SingleCveInfo = ({ userId }: { userId: string }) => {
@@ -88,16 +90,11 @@ const MESSAGE_INPUT_MIN_HEIGHT = 105;
 const MESSAGE_INPUT_MAX_HEIGHT = 350;
 
 function getHeight(height: number) {
-  console.log(
-    'resizer height:',
-    height,
-    Math.min(MESSAGE_INPUT_MAX_HEIGHT, Math.max(MESSAGE_INPUT_MIN_HEIGHT, height)),
-  );
   return Math.min(MESSAGE_INPUT_MAX_HEIGHT, Math.max(MESSAGE_INPUT_MIN_HEIGHT, height));
 }
 
 function ChatMessenger(props: ChatMessengerProps) {
-  const { msgList, loadMore, hasMore, curCve, loading, sendMsg } = props;
+  const { msgList, loadMore, hasMore, curCve, loading, sendMsg, scrollbar } = props;
 
   const state = useRef({
     height: 200,
@@ -263,6 +260,7 @@ function ChatMessenger(props: ChatMessengerProps) {
               msgList={msgList}
               hasMore={hasMore}
               curCve={curCve}
+              scrollbar={scrollbar}
             />
           ) : (
             <WelcomeContent />

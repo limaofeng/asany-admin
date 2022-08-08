@@ -32,9 +32,7 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({ msg, audio, curCve, selfID }) =
   const groupMemberList = useModel('open-im.contacts', ({ state }) => state.groupMemberList);
   const textRef = useRef<HTMLDivElement>(null);
 
-  const [sty, setSty] = useState<CSSProperties>({
-    paddingRight: '40px',
-  });
+  const [sty, setSty] = useState<CSSProperties>({});
   const playerRef = useRef<any>();
 
   useEffect(() => {
@@ -159,7 +157,7 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({ msg, audio, curCve, selfID }) =
   };
 
   const msgType = () => {
-    console.log('msgType', msgType);
+    // console.log('msgType', msgType);
     switch (msg.contentType as number) {
       case messageTypes.TEXTMESSAGE:
         let mstr = msg.content;

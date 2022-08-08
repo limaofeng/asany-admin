@@ -17,5 +17,9 @@ const keymap = {
   DROPDOWN: {
     EXIT: ['esc'],
   },
+  CHAT_MESSAGE_INPUT: {
+    SEND: ['enter'],
+    LINE_FEED: ['command', 'enter'],
+  },
 };
 export default keymap;

@@ -1,7 +1,11 @@
 import type { CSSProperties } from 'react';
+import { useReducer } from 'react';
 import React, { useCallback, useEffect, useRef } from 'react';
 
 import useMergedRef from '@react-hook/merged-ref';
+import { Shortcuts } from '@asany/shortcuts';
+
+import { contenteditableDivRange, move2end } from '@/utils/open-im/utils/common';
 
 function replaceCaret(el: HTMLElement) {
   // Place the caret at the end of the element
@@ -36,14 +40,19 @@ export type ContentEditableProps = {
   className?: string;
   style?: CSSProperties;
   innerRef?: React.RefObject<HTMLElement>;
+  onEnter?: (html: string) => void;
 } & DivProps;
 
-function ContentEditable({ tagName, html, innerRef, ...props }: ContentEditableProps) {
+function ContentEditable(
+  { tagName, html, onEnter, onChange, ...props }: ContentEditableProps,
+  innerRef: any,
+) {
   const el = useRef<HTMLElement>();
 
   const state = useRef({ html });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const multiRef = useMergedRef(el, innerRef!);
+  const multiRef = useMergedRef(el, innerRef);
 
   useEffect(() => {
     state.current.html = html;
@@ -54,34 +63,68 @@ function ContentEditable({ tagName, html, innerRef, ...props }: ContentEditableP
     (originalEvt: React.SyntheticEvent<any>) => {
       const lastHtml = state.current.html;
       const _html = el.current!.innerHTML;
-      if (!!props.onChange && _html !== lastHtml) {
+      if (!!onChange && _html !== lastHtml) {
         const evt = Object.assign({}, originalEvt, {
           target: {
-            value: html,
+            value: _html,
           },
         });
-        props.onChange(evt);
+        onChange(evt);
       }
-      state.current.html = html;
+      state.current.html = _html;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [props.onChange],
+    [onChange],
   );
 
-  return React.createElement(
-    tagName || 'div',
-    {
-      ...props,
-      ref: multiRef,
-      onInput: handleEmitChange,
-      onBlur: props.onBlur || handleEmitChange,
-      onKeyUp: props.onKeyUp || handleEmitChange,
-      onKeyDown: props.onKeyDown || handleEmitChange,
-      contentEditable: !props.disabled,
-      dangerouslySetInnerHTML: { __html: html },
-    } as any,
-    props.children,
+  const handleShortcuts = useCallback(
+    (action: string) => {
+      console.log('shortcuts', action, state.current.html);
+      if (action == 'SEND') {
+        if (onEnter) {
+          onEnter(state.current.html);
+        } else {
+          state.current.html = '';
+          forceRender();
+        }
+      } else if (action == 'LINE_FEED') {
+        contenteditableDivRange();
+        move2end(el.current as any);
+      }
+    },
+    [onEnter],
+  );
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  }, []);
+
+  return (
+    <Shortcuts
+      className="content-editable-shortcuts h-100"
+      handler={handleShortcuts}
+      name="CHAT_MESSAGE_INPUT"
+    >
+      {
+        React.createElement(
+          tagName || 'div',
+          {
+            ...props,
+            ref: multiRef,
+            onChange,
+            onInput: handleEmitChange,
+            onBlur: props.onBlur || handleEmitChange,
+            onKeyUp: props.onKeyUp || handleEmitChange,
+            onKeyDown: handleKeyDown,
+            contentEditable: !props.disabled,
+            dangerouslySetInnerHTML: { __html: html },
+          } as any,
+          props.children,
+        ) as React.ReactElement
+      }
+    </Shortcuts>
   );
 }
 
-export default ContentEditable;
+export default React.forwardRef(ContentEditable);

@@ -1,7 +1,8 @@
-import type { FC } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { throttle } from 'throttle-debounce';
+import useMergedRef from '@react-hook/merged-ref';
 
 import { Loading } from '../Loading';
 
@@ -11,44 +12,38 @@ type ScrollViewProps = {
   hasMore: boolean;
   loading: boolean;
   height?: number;
-  holdHeight?: number;
   children: React.ReactNode;
 };
 
-const ScrollView: FC<ScrollViewProps> = ({
-  data,
-  fetchMoreData,
-  hasMore,
-  children,
-  loading,
-  height,
-  holdHeight,
-}) => {
-  const onScroll = async (e: any) => {
-    const loadThreshold = 0 - e.target.scrollHeight + e.target.offsetHeight + (holdHeight ?? 30);
-    if (e.target.scrollTop < loadThreshold && e.target.scrollTop !== 0) {
-      if (loading || !hasMore) return;
-      requestAnimationFrame(fetchMoreData);
-    }
-  };
+const ScrollView = (
+  { data, fetchMoreData, hasMore, children, loading, height }: ScrollViewProps,
+  ref?: React.ForwardedRef<OverlayScrollbarsComponent | undefined>,
+) => {
+  const onScroll = useCallback(
+    async (e: any) => {
+      if (e.target.scrollTop === 0) {
+        if (loading || !hasMore) return;
+        requestAnimationFrame(fetchMoreData);
+      }
+    },
+    [fetchMoreData, hasMore, loading],
+  );
+
+  const nodeRef = useRef<OverlayScrollbarsComponent>();
+
+  const multiRef = useMergedRef(nodeRef, ref!);
 
   const throttleScroll = throttle(500, onScroll);
 
-  /*
-      <div
-      onScroll={throttleScroll}
-      id="scr_container"
-      style={{ height: height ?? '100%' }}
-      className={styles.con}
-    >
-  */
-
   return (
     <OverlayScrollbarsComponent
+      ref={multiRef}
       className="d-flex h-100 flex-column custom-scrollbar pe-9 pt-8"
-      onScroll={throttleScroll}
       options={{
         scrollbars: { autoHide: 'scroll' },
+        callbacks: {
+          onScroll: throttleScroll,
+        },
       }}
     >
       {children}
@@ -65,4 +60,4 @@ const ScrollView: FC<ScrollViewProps> = ({
   );
 };
 
-export default ScrollView;
+export default React.forwardRef(ScrollView);

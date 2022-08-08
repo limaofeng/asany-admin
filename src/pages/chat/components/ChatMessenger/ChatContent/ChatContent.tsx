@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
+import type { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import ScrollView from '../../ScrollView';
 import { MsgItem } from '../MsgItem';
@@ -18,6 +19,7 @@ type ChatContentProps = {
   curCve?: ConversationItem;
   loading: boolean;
   merID?: string;
+  scrollbar: React.MutableRefObject<OverlayScrollbarsComponent | undefined>;
 };
 
 function ChatContent(props: ChatContentProps) {
@@ -173,14 +175,13 @@ function ChatContent(props: ChatContentProps) {
 
   return (
     <ScrollView
-      holdHeight={30}
+      ref={props.scrollbar}
       loading={loading}
       data={msgList}
       fetchMoreData={nextFuc}
       hasMore={hasMore}
     >
       {msgList?.map((msg) => {
-        console.log('msgList', msgList, msg.contentType);
         if (tipList.includes(msg.contentType)) {
           return (
             <div key={msg.clientMsgID} className="chat_bg_tips">

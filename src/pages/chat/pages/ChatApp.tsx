@@ -1,9 +1,9 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useReactive, useRequest } from 'ahooks';
 import type { ConversationItem, MergeElem, MessageItem, WsResponse } from 'open-im-sdk/types';
 import { useModel } from 'umi';
-import { animateScroll } from 'react-scroll';
+import type { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { CveList, SearchBar } from '../components';
 import ChatMessenger from '../components/ChatMessenger/ChatMessenger';
@@ -30,6 +30,7 @@ const uuid = () => {
 
 type ReactiveState = {
   historyMsgList: MessageItem[];
+  firstLoad: boolean;
   typing: boolean;
   hasMore: boolean;
   merModal: boolean;
@@ -56,6 +57,7 @@ function ChatApp() {
 
   const rs = useReactive<ReactiveState>({
     historyMsgList: [],
+    firstLoad: false,
     typing: false,
     hasMore: true,
     merModal: false,
@@ -74,7 +76,12 @@ function ChatApp() {
     onError: (err: any) => console.log('GetChatRecordFailed', err),
   });
 
-  console.log(loading, getMsg, msgCancel);
+  const scrollbar = useRef<OverlayScrollbarsComponent>();
+
+  const scrollToBottom = useCallback((duration?: number) => {
+    const _scrollbar = scrollbar.current?.osInstance();
+    _scrollbar?.scroll([0, '100%'], duration ?? 350);
+  }, []);
 
   function handleMsg(res: WsResponse) {
     if (JSON.parse(res.data).length === 0) {
@@ -87,8 +94,13 @@ function ChatApp() {
     ) {
       rs.historyMsgList.pop();
     }
+
     rs.historyMsgList = [...rs.historyMsgList, ...JSON.parse(res.data).reverse()];
-    console.log(rs.historyMsgList);
+
+    if (!rs.firstLoad) {
+      rs.firstLoad = true;
+      setTimeout(() => scrollToBottom(0));
+    }
 
     rs.hasMore = !(JSON.parse(res.data).length < 20);
   }
@@ -162,6 +174,7 @@ function ChatApp() {
         events.emit(ISSETDRAFT, curCve);
       }
       rs.historyMsgList = [];
+      rs.firstLoad = false;
       setCurCve(cve);
       rs.hasMore = true;
       getInfo(cve);
@@ -188,14 +201,7 @@ function ChatApp() {
     if (type === messageTypes.MERGERMESSAGE) {
       Toast.success('ForwardSuccessTip');
     }
-  };
-
-  const scrollToBottom = (duration?: number) => {
-    animateScroll.scrollTo(0, {
-      duration: duration ?? 350,
-      smooth: true,
-      containerId: 'scr_container',
-    });
+    scrollToBottom();
   };
 
   const sendMsg = (nMsg: string, type: messageTypes, uid?: string, gid?: string) => {
@@ -247,12 +253,11 @@ function ChatApp() {
     }
   };
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    return () => {
       setCurCve(null);
-    },
-    [setCurCve],
-  );
+    };
+  }, [setCurCve]);
 
   return (
     <MicroApp className="micro-app-chat">
@@ -269,6 +274,7 @@ function ChatApp() {
         />
       </MicroApp.Sidebar>
       <ChatMessenger
+        scrollbar={scrollbar}
         loadMore={getHistoryMsg}
         loading={loading}
         msgList={rs.historyMsgList}

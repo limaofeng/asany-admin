@@ -1,19 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Icon } from '@asany/icons';
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import { useLatest } from 'ahooks';
+import { useModel } from 'umi';
 
 import type { ContentEditableEvent } from '../../ContentEditable/ContentEditable';
 import ContentEditable from '../../ContentEditable/ContentEditable';
 
 import { Button, Tooltip } from '@/metronic';
 import { messageTypes } from '@/utils/open-im/constants/messageContentType';
-import { base64toFile, contenteditableDivRange, move2end } from '@/utils/open-im/utils/common';
+import { base64toFile, move2end } from '@/utils/open-im/utils/common';
 import { isSingleCve } from '@/utils/open-im/utils/im';
 import { im } from '@/models/open-im/auth';
 import events from '@/utils/open-im/events';
-import { ATSTATEUPDATE, ISSETDRAFT } from '@/utils/open-im/constants/events';
+import { ATSTATEUPDATE, ISSETDRAFT, MUTILMSGCHANGE } from '@/utils/open-im/constants/events';
+import { faceMap } from '@/utils/open-im/constants/faceType';
 
 type AtItem = {
   id: string;
@@ -98,8 +100,10 @@ function ChatFooter(props: ChatFooterProps) {
   const latestContent = useLatest(msgContent);
   const [replyMsg, setReplyMsg] = useState<MessageItem>();
   const [atList, setAtList] = useState<AtItem[]>([]);
+  const groupMemberList = useModel('open-im.contacts', ({ state }) => state.groupMemberList);
   const [flag, setFlag] = useState(false);
   const latestFlag = useLatest(flag);
+  const [mutilMsg, setMutilMsg] = useState<MessageItem[]>([]);
 
   const atHandler = (id: string, name: string) => {
     if (replyMsg) {
@@ -117,7 +121,7 @@ function ChatFooter(props: ChatFooterProps) {
     im.typingStatusUpdate({ recvID, msgTip });
   };
 
-  const typing = () => {
+  const typing = useCallback(() => {
     if (isSingleCve(curCve)) {
       if (timer.current) {
         clearTimeout(timer.current);
@@ -126,7 +130,7 @@ function ChatFooter(props: ChatFooterProps) {
         updateTypeing(curCve.userID, 'yes');
       }, 2000);
     }
-  };
+  }, [curCve]);
 
   const textInit = async (e: any) => {
     const clp = (e.originalEvent || e).clipboardData;
@@ -144,120 +148,226 @@ function ChatFooter(props: ChatFooterProps) {
     }
   };
 
-  const parseAt = (_text: string) => {
-    let text = _text;
-    atList.map((at) => {
-      text = text.replaceAll(at.tag, `@${at.id} `);
-    });
-    return text;
-  };
+  const parseAt = useCallback(
+    (_text: string) => {
+      let text = _text;
+      atList.map((at) => {
+        text = text.replaceAll(at.tag, `@${at.id} `);
+      });
+      return text;
+    },
+    [atList],
+  );
 
-  const setDraft = (cve: ConversationItem) => {
-    if (cve.draftText !== '' || latestContent.current !== '') {
-      let text = latestContent.current;
-      text = parseEmojiFace(text);
-      // text = parseImg(text).text;
-      const option = {
-        conversationID: cve.conversationID,
-        draftText: atList.length > 0 ? parseAt(text) : text,
-      };
+  const setDraft = useCallback(
+    (cve: ConversationItem) => {
+      if (cve.draftText !== '' || latestContent.current !== '') {
+        let text = latestContent.current;
+        text = parseEmojiFace(text);
+        // text = parseImg(text).text;
+        const option = {
+          conversationID: cve.conversationID,
+          draftText: atList.length > 0 ? parseAt(text) : text,
+        };
 
-      im.setConversationDraft(option)
-        .then((res) => {
-          console.warn(res);
-        })
-        .catch((err) => {
-          console.warn(err);
-        })
-        .finally(() => setMsgContent(''));
-    }
-  };
+        im.setConversationDraft(option)
+          .then((res) => {
+            console.warn(res);
+          })
+          .catch((err) => {
+            console.warn(err);
+          })
+          .finally(() => setMsgContent(''));
+      }
+    },
+    [atList.length, latestContent, parseAt],
+  );
 
-  const reSet = () => {
+  const reSet = useCallback(() => {
     setMsgContent('');
     setReplyMsg(undefined);
     setAtList([]);
     setFlag(false);
     setDraft(curCve);
-  };
+  }, [curCve, setDraft]);
 
-  const sendTextMsg = async (text: string) => {
-    const { data } = await im.createTextMessage(text);
-    // im.insertGroupMessageToLocalStorage({
-    //   message: data,
-    //   groupID: curCve.groupID,
-    //   sendID: "17396220460",
-    // }).then((res) => console.log(JSON.parse(res.data)));
-    sendMsg(data, messageTypes.TEXTMESSAGE);
-    reSet();
-  };
+  const sendTextMsg = useCallback(
+    async (text: string) => {
+      const { data } = await im.createTextMessage(text);
+      // im.insertGroupMessageToLocalStorage({
+      //   message: data,
+      //   groupID: curCve.groupID,
+      //   sendID: "17396220460",
+      // }).then((res) => console.log(JSON.parse(res.data)));
+      sendMsg(data, messageTypes.TEXTMESSAGE);
+      reSet();
+    },
+    [reSet, sendMsg],
+  );
 
-  const sendAtTextMsg = async (text: string) => {
-    const options = {
-      text,
-      atUserIDList: atList.map((au) => au.id),
-    };
-    const { data } = await im.createTextAtMessage(options);
-    sendMsg(data, messageTypes.ATTEXTMESSAGE);
-    reSet();
-  };
+  const sendAtTextMsg = useCallback(
+    async (text: string) => {
+      const options = {
+        text,
+        atUserIDList: atList.map((au) => au.id),
+      };
+      const { data } = await im.createTextAtMessage(options);
+      sendMsg(data, messageTypes.ATTEXTMESSAGE);
+      reSet();
+    },
+    [atList, reSet, sendMsg],
+  );
 
-  const quoteMsg = async (text: string) => {
-    const { data } = await im.createQuoteMessage({ text, message: JSON.stringify(replyMsg) });
-    sendMsg(data, messageTypes.QUOTEMESSAGE);
-    reSet();
-  };
+  const quoteMsg = useCallback(
+    async (text: string) => {
+      const { data } = await im.createQuoteMessage({ text, message: JSON.stringify(replyMsg) });
+      sendMsg(data, messageTypes.QUOTEMESSAGE);
+      reSet();
+    },
+    [reSet, replyMsg, sendMsg],
+  );
 
-  const switchMessage = (type: string) => {
-    let text = latestContent.current;
-    text = parseImg(parseEmojiFace(text));
-    text = parseBr(text);
-    forEachImgMsg();
-    if (text === '') return;
-    switch (type) {
-      case 'text':
-        sendTextMsg(text);
-        break;
-      case 'at':
-        sendAtTextMsg(parseAt(text));
-        break;
-      case 'quote':
-        quoteMsg(text);
-        break;
-      default:
-        break;
-    }
-  };
+  const switchMessage = useCallback(
+    (type: string) => {
+      let text = latestContent.current;
+      text = parseImg(parseEmojiFace(text));
+      text = parseBr(text);
+      forEachImgMsg();
+      if (text === '') return;
+      switch (type) {
+        case 'text':
+          sendTextMsg(text);
+          break;
+        case 'at':
+          sendAtTextMsg(parseAt(text));
+          break;
+        case 'quote':
+          quoteMsg(text);
+          break;
+        default:
+          break;
+      }
+    },
+    [latestContent, parseAt, quoteMsg, sendAtTextMsg, sendTextMsg],
+  );
 
-  const keyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter' && e.ctrlKey) {
-      e.preventDefault();
-      contenteditableDivRange();
-      move2end(inputRef.current!.el);
-    }
-    if (e.key === 'Enter' && !e.ctrlKey) {
-      e.preventDefault();
+  // const keyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  //   if (e.key === 'Enter' && e.ctrlKey) {
+  //     e.preventDefault();
+  //     contenteditableDivRange();
+  //     move2end(inputRef.current!.el);
+  //   }
+  //   if (e.key === 'Enter' && !e.ctrlKey) {
+
+  //   }
+  // };
+
+  const handleEnter = useCallback(
+    (html: string) => {
+      console.log(html);
+      debugger;
       if (latestContent.current && !latestFlag.current) {
         setFlag(true);
         switchMessage(replyMsg ? 'quote' : atList.length > 0 ? 'at' : 'text');
       }
-    }
-  };
+    },
+    [atList.length, latestContent, latestFlag, replyMsg, switchMessage],
+  );
 
-  const onChange = (e: ContentEditableEvent) => {
-    setMsgContent(e.target.value);
-    const atels = [...Array.from(document.getElementsByClassName('at_el'))];
-    const tmpAts: any = [];
-    atels.map((at) =>
-      tmpAts.push({
-        id: at.attributes.getNamedItem('data_id')?.value,
-        name: at.attributes.getNamedItem('data_name')?.value,
-        tag: at.outerHTML,
-      }),
-    );
-    setAtList(tmpAts);
-    typing();
-  };
+  const onChange = useCallback(
+    (e: ContentEditableEvent) => {
+      setMsgContent(e.target.value);
+      const atels = [...Array.from(document.getElementsByClassName('at_el'))];
+      const tmpAts: any = [];
+      atels.map((at) =>
+        tmpAts.push({
+          id: at.attributes.getNamedItem('data_id')?.value,
+          name: at.attributes.getNamedItem('data_name')?.value,
+          tag: at.outerHTML,
+        }),
+      );
+      setAtList(tmpAts);
+      typing();
+    },
+    [typing],
+  );
+
+  const reParseEmojiFace = useCallback((_text: string) => {
+    let text = _text;
+    faceMap.map((f) => {
+      const idx = text.indexOf(f.context);
+      if (idx > -1) {
+        const faceStr = `<img class="face_el" alt="${f.context}" style="padding-right:2px" width="24px" src="${f.src}">`;
+        text = text.replaceAll(f.context, faceStr);
+      }
+    });
+    return text;
+  }, []);
+
+  const reParseAt = useCallback(
+    (_text: string) => {
+      let text = _text;
+      const pattern = /@\S+\s/g;
+      const arr = text.match(pattern);
+      const tmpAts: AtItem[] = [];
+
+      arr?.map((uid) => {
+        const member = groupMemberList.find((gm) => gm.userID === uid.slice(1, -1));
+        if (member) {
+          const tag = `<b class="at_el" data_id="${member.userID}" data_name="${member.nickname}" contenteditable="false" style="color:#428be5"> @${member.nickname}</b>`;
+          text = text.replaceAll(uid, tag);
+          tmpAts.push({ id: member.userID, name: member.nickname, tag });
+        }
+      });
+      setAtList(tmpAts);
+      return text;
+    },
+    [groupMemberList],
+  );
+
+  const parseDrft = useCallback(
+    (text: string) => {
+      setMsgContent(reParseEmojiFace(reParseAt(text)));
+    },
+    [reParseAt, reParseEmojiFace],
+  );
+
+  useEffect(() => {
+    if (atList.length > 0) {
+      setAtList([]);
+    }
+    if (curCve.draftText !== '') {
+      parseDrft(curCve.draftText);
+    } else {
+      setMsgContent('');
+    }
+    setMutilMsg([]);
+    return () => {
+      setDraft(curCve);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curCve]);
+
+  const mutilMsgChangeHandler = useCallback(
+    (checked: boolean, msg: MessageItem) => {
+      let tms = [...mutilMsg];
+      if (checked) {
+        tms = [...tms, msg];
+      } else {
+        const idx = tms.findIndex((t) => t.clientMsgID === msg.clientMsgID);
+        tms.splice(idx, 1);
+      }
+      setMutilMsg(tms);
+    },
+    [mutilMsg],
+  );
+
+  useEffect(() => {
+    events.on(MUTILMSGCHANGE, mutilMsgChangeHandler);
+    return () => {
+      events.off(MUTILMSGCHANGE, mutilMsgChangeHandler);
+    };
+  }, [mutilMsgChangeHandler]);
 
   useEffect(() => {
     events.on(ATSTATEUPDATE, atHandler);
@@ -316,11 +426,12 @@ function ChatFooter(props: ChatFooterProps) {
       <div className="ps-3 flex-row-fluid position-relative">
         <ContentEditable
           style={{ paddingTop: replyMsg ? '32px' : '4px' }}
-          placeholder={`SendTo ${curCve.showName}`}
+          placeholder={`发送给 ${curCve.showName}`}
+          className="h-100"
           ref={inputRef}
           html={msgContent}
           onChange={onChange}
-          onKeyDown={keyDown}
+          onEnter={handleEnter}
           onPaste={textInit}
         />
         <div className="chat-msg-actions d-flex flex-row position-absolute">

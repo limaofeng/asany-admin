@@ -80,7 +80,7 @@ const MsgItem: FC<MsgItemProps> = (props) => {
         return <>loading...</>; // <Spin indicator={antIcon} />;
       case 2:
         if (curCve && isSingleCve(curCve)) {
-          return msg.isRead ? 'Readed' : 'UnRead';
+          return msg.isRead ? '已读' : '未读';
         }
         return null;
       case 3:
@@ -127,23 +127,24 @@ const MsgItem: FC<MsgItemProps> = (props) => {
       ref={msgItemRef}
       onClick={mutilCheckItem}
       // className={`chat_bg_msg ${isSelf(msg.sendID) ? 'chat_bg_omsg' : ''}`}
-      className={classnames('d-flex justify-content-start mb-10', {
+      className={classnames('msg-item d-flex mb-10', {
         'justify-content-start': !isSelf,
         'justify-content-end': isSelf,
+        'mt-4': isSelf,
       })}
     >
       <div
-        className={classnames('d-flex', {
+        className={classnames('d-flex align-items-start', {
           'flex-column': isGroupCve,
-          'flex-row': !isGroupCve,
-          'align-items-start': !isSelf,
-          'align-items-end': isSelf,
+          'flex-row-reverse': isSelf && !isGroupCve,
+          'flex-row': !isSelf && !isGroupCve,
         })}
       >
-        <div className="d-flex align-items-center mb-2">
+        <div className={classnames('d-flex align-items-center mb-2')}>
           <Symbol.Avatar
             className={classnames({
-              'me-4': !isGroupCve,
+              'me-4': !isSelf && !isGroupCve,
+              'ms-4': isSelf && !isGroupCve,
             })}
             light
             size={40}
@@ -159,7 +160,15 @@ const MsgItem: FC<MsgItemProps> = (props) => {
             </div>
           )}
         </div>
-        <div className="rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start">
+        <div
+          className={classnames(
+            'msg-item-content rounded text-dark fw-semibold mw-lg-400px text-start',
+            {
+              'bg-light-info': !isSelf,
+              'bg-light-primary': isSelf,
+            },
+          )}
+        >
           <MsgMenu
             key={msg.clientMsgID}
             visible={contextMenuVisible}
@@ -173,9 +182,9 @@ const MsgItem: FC<MsgItemProps> = (props) => {
             <div
               style={{
                 color: msg.isRead ? '#999' : '#428BE5',
-                marginTop: curCve && isSingleCve(curCve) ? '0' : '24px',
+                // marginTop: curCve && isSingleCve(curCve) ? '0' : '24px',
               }}
-              className="chat_bg_flag"
+              className="self_msg_chat_flag"
             >
               {switchTip()}
             </div>
