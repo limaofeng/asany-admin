@@ -330,7 +330,7 @@ function Mailbox(props: MailboxProps) {
   state.current.message = useMessage(state.current.activeIndex);
 
   const handleScrollToIndex = useCallback(
-    async (e) => {
+    async (e: any) => {
       if (state.current.activeIndex == e.index) {
         return;
       }
@@ -346,7 +346,7 @@ function Mailbox(props: MailboxProps) {
   );
 
   const handleResize = useCallback(
-    (x) => {
+    (x: number) => {
       state.current.width += x;
       forceResize();
     },

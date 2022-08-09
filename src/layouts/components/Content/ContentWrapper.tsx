@@ -30,6 +30,7 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
     header = {},
     style,
     className,
+    contentClassName,
     breadcrumb,
     footer = { copyright: '版权所有 2021 林暮春 | 沪ICP备11003026号' },
     children,
@@ -63,7 +64,7 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
         loading={loading}
       >
         {header && <ContentHeader {...header} breadcrumb={breadcrumb} />}
-        <Content className="px-0">{children}</Content>
+        <Content className={contentClassName}>{children}</Content>
         {footer && <ContentFooter {...footer} />}
       </BlockUI>
     </div>

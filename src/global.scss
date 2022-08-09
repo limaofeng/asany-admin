@@ -62,6 +62,11 @@ ol {
   font-size: 14px;
 }
 
+.tooltip, .popover {
+  position: absolute;
+  left: -100px;
+}
+
 // Compatible with IE11
 @media screen /* and(-ms-high-contrast: active), (-ms-high-contrast: none) */ {
   body .asany-web > .ant-layout {

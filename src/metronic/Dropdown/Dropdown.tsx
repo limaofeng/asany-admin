@@ -225,14 +225,6 @@ function Dropdown(props: DropdownProps) {
     return _targetProps;
   }, [handleMouseOver, handleVisible, node, trigger]);
 
-  const wrapRef = (originalRef: any, localRef: any) => (ref: any) => {
-    if (originalRef) {
-      if (typeof originalRef === 'object') originalRef.current = ref;
-      if (typeof originalRef === 'function') originalRef(ref);
-    }
-    localRef.current = ref;
-  };
-
   const multiRef = useMergedRef(overlay ? (overlay as any).ref : undefined, subRef);
 
   const mergeProps = useCallback((element: any, overlayProps: any) => {
@@ -247,11 +239,13 @@ function Dropdown(props: DropdownProps) {
     };
   }, []);
 
+  const shortcutsRef = useMergedRef((node as any).ref, itemRef);
+
   return (
     <React.Fragment>
       <Shortcuts
         tag={React.cloneElement(node as React.ReactElement, {
-          ref: wrapRef((node as any).ref, itemRef),
+          ref: shortcutsRef,
           ...targetProps,
         })}
         name="DROPDOWN"

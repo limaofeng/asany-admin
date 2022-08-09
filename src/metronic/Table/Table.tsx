@@ -78,6 +78,10 @@ function useDataSourceWrapper<T>(dataSource: T[] | DataSource<T>): DataSource<T>
   return dataSource;
 }
 
+function DataTableBody(_props: any) {
+  return <div {..._props} className="dataTable-body" />;
+}
+
 function initEventEmitter() {
   const emitter = new EventEmitter();
   emitter.setMaxListeners(1000);
@@ -126,9 +130,11 @@ function Table<T>(props: TableProps<T>) {
     colgroups: new Map(),
     selectedKeys: new Set<string>(),
   });
-  const [, forceRender] = useReducer((s) => s + 1, 0);
+  const [v, forceRender] = useReducer((s) => s + 1, 0);
 
   const dataSource = useDataSourceWrapper(props.dataSource);
+
+  console.log('v', v);
 
   state.current.page = pagination?.current || 0;
   state.current.pageSize = pagination?.pageSize || 0;
@@ -278,6 +284,7 @@ function Table<T>(props: TableProps<T>) {
       const nextKey = Array.from(state.current.selectedKeys.keys()).join(',');
       if (!isEqual(prevKey, nextKey)) {
         temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
+        debugger;
         forceRender();
       }
     }
@@ -455,9 +462,7 @@ function Table<T>(props: TableProps<T>) {
         />
       )}
       {React.createElement(
-        type == 'data_tables'
-          ? (_props: any) => <div {..._props} className="dataTable-body" />
-          : React.Fragment,
+        type == 'data_tables' ? DataTableBody : React.Fragment,
         {},
         <>
           {dataSource.type == 'lazy' ? (

@@ -1,10 +1,10 @@
-import { useCallback, useMemo, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import { Resizer } from '@asany/sunmao';
 import type { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import { useGetUserOnlineStatusQuery } from '../../hooks/api';
+import { useGetUserOnlineStatusLazyQuery } from '../../hooks/api';
 import '../../style/chat_app.scss';
 
 import ChatContent from './ChatContent/ChatContent';
@@ -17,6 +17,7 @@ import { isSingleCve } from '@/utils/open-im/utils/im';
 import type { messageTypes } from '@/utils/open-im/constants/messageContentType';
 
 type ChatMessengerProps = {
+  typing?: boolean;
   msgList: MessageItem[];
   loadMore: (uid?: string, gid?: string, sMsg?: any) => void;
   hasMore: boolean;
@@ -27,8 +28,8 @@ type ChatMessengerProps = {
   scrollbar: React.MutableRefObject<OverlayScrollbarsComponent | undefined>;
 };
 
-const SingleCveInfo = ({ userId }: { userId: string }) => {
-  const { data } = useGetUserOnlineStatusQuery({
+const SingleCveInfo = ({ userId, typing }: { userId: string; typing: boolean }) => {
+  const [getUserOnlineStatus, { data, refetch }] = useGetUserOnlineStatusLazyQuery({
     variables: {
       id: userId,
     },
@@ -51,8 +52,19 @@ const SingleCveInfo = ({ userId }: { userId: string }) => {
     return '离线';
   }, [oType, details]);
 
+  const prevOnlineStatus = useRef(oType);
+
+  prevOnlineStatus.current = oType;
+
+  useEffect(() => {
+    if (prevOnlineStatus.current == 'online') {
+      return;
+    }
+    refetch();
+  }, [getUserOnlineStatus, refetch, typing]);
+
   return (
-    <div className="mb-0 lh-1">
+    <div className="mb-0 lh-1 d-flex flex-row align-items-center">
       <Badge
         color={oType == 'online' ? 'primary' : 'secondary'}
         shape="circle"
@@ -62,16 +74,6 @@ const SingleCveInfo = ({ userId }: { userId: string }) => {
     </div>
   );
 };
-
-{
-  /* <>
-    <span
-      style={{ backgroundColor: onlineStatus === t('Offline') ? '#959595' : '#0ecc63' }}
-      className="icon"
-    />
-    <span className="online">{onlineStatus}</span>
-  </> */
-}
 
 const GroupCveInfo = () => (
   <>
@@ -94,7 +96,7 @@ function getHeight(height: number) {
 }
 
 function ChatMessenger(props: ChatMessengerProps) {
-  const { msgList, loadMore, hasMore, curCve, loading, sendMsg, scrollbar } = props;
+  const { msgList, loadMore, hasMore, curCve, loading, sendMsg, scrollbar, typing } = props;
 
   const state = useRef({
     height: 200,
@@ -133,7 +135,16 @@ function ChatMessenger(props: ChatMessengerProps) {
                 >
                   {curCve.showName}
                 </a>
-                {_is_single_cve ? <SingleCveInfo userId={curCve!.userID} /> : <GroupCveInfo />}
+                <div className="d-flex flex-row align-items-center">
+                  {_is_single_cve ? (
+                    <SingleCveInfo userId={curCve!.userID} typing={!!typing} />
+                  ) : (
+                    <GroupCveInfo />
+                  )}
+                  {typing && (
+                    <span className="mb-0 lh-1 ms-4 fs-7 fw-semibold text-muted">正在输入...</span>
+                  )}
+                </div>
               </div>
             </Card.Title>
             <Card.Toolbar>

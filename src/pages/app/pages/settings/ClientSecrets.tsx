@@ -3,8 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 import moment from 'moment';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
 import type { RouteComponentProps } from 'react-router';
+import { useCopyToClipboard } from 'react-use';
 
 import { useAppWithClientSecretQuery } from '../../hooks/api';
 
@@ -75,8 +75,10 @@ function ClientSecrets(props: ClientSecretsProps) {
   const form = Form.useForm();
 
   console.log('data', data, form);
+  const [, copy] = useCopyToClipboard();
 
   const handleCopy = useCallback(() => {
+    app?.clientId && copy(app.clientId);
     Toast.info('客户端ID 已经复制', 3000, {
       placement: 'top-center',
     });
@@ -86,7 +88,7 @@ function ClientSecrets(props: ClientSecretsProps) {
       setCopied(false);
       timer.current = null;
     }, 3000);
-  }, []);
+  }, [app?.clientId, copy]);
 
   useEffect(() => {
     return () => {
@@ -109,17 +111,16 @@ function ClientSecrets(props: ClientSecretsProps) {
               <div>
                 <div className="d-flex align-items-center">
                   {app.clientId}
-                  <CopyToClipboard text={app.clientId} onCopy={handleCopy}>
-                    <Tooltip title="点击复制客户端ID">
-                      <Icon
-                        className={classnames('ms-2 svg-icon-4 cursor-pointer', {
-                          'text-success': !copied,
-                          'text-primary': copied,
-                        })}
-                        name={`Bootstrap/clipboard${copied ? '-check' : ''}`}
-                      />
-                    </Tooltip>
-                  </CopyToClipboard>
+                  <Tooltip title="点击复制客户端ID">
+                    <Icon
+                      onClick={handleCopy}
+                      className={classnames('ms-2 svg-icon-4 cursor-pointer', {
+                        'text-success': !copied,
+                        'text-primary': copied,
+                      })}
+                      name={`Bootstrap/clipboard${copied ? '-check' : ''}`}
+                    />
+                  </Tooltip>
                 </div>
                 <div className="text-muted fs-7">当前也可作为 AppId 使用</div>
               </div>

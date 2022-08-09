@@ -31,7 +31,7 @@ function ContactItem(props: ContactItemProps) {
     <div
       onClick={handleClick}
       style={style}
-      className={classnames('contact-item d-flex flex-stack py-4', { active })}
+      className={classnames('contact-item d-flex flex-stack py-4 mb-1', { active })}
     >
       {!contact ? (
         <ContentLoader

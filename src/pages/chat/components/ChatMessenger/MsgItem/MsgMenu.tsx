@@ -1,15 +1,15 @@
 import type { FC } from 'react';
+import { useState } from 'react';
 import { useCallback, useMemo } from 'react';
 
-// import { message, Modal, Popover } from 'antd';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import type { MessageItem } from 'open-im-sdk/types';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
+import { useCopyToClipboard } from 'react-use';
 
 import events from '@/utils/open-im/events';
 import {
-  // DELETEMESSAGE,
+  DELETEMESSAGE,
   FORWARDANDMERMSG,
   MUTILMSG,
   REPLAYMSG,
@@ -18,7 +18,7 @@ import {
 import { im } from '@/models/open-im/auth';
 import { downloadFileUtil } from '@/utils/open-im/utils/common';
 import { messageTypes } from '@/utils/open-im/constants/messageContentType';
-import { Menu, Popover } from '@/metronic';
+import { Menu, Modal, Popover, Toast } from '@/metronic';
 
 const canCpTypes = [messageTypes.TEXTMESSAGE, messageTypes.ATTEXTMESSAGE];
 const canDownloadTypes = [
@@ -28,21 +28,17 @@ const canDownloadTypes = [
 ];
 
 type MsgMenuProps = {
-  visible: boolean;
   msg: MessageItem;
   isSelf: boolean;
   children: React.ReactNode;
-  visibleChange: (v: boolean) => void;
-};
-
-const message = {
-  error(msg: string, err: Error) {
-    console.log(msg, err);
-  },
 };
 
 const MsgMenu: FC<MsgMenuProps> = ({ msg, isSelf, children }) => {
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+
   const canHiddenTypes = ['Copy', 'Translate', 'Reply', 'Forward'];
+
+  const [, copy] = useCopyToClipboard();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const forwardMsg = () => {
@@ -58,36 +54,41 @@ const MsgMenu: FC<MsgMenuProps> = ({ msg, isSelf, children }) => {
     events.emit(REPLAYMSG, msg);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const revMsg = () => {
+  const revMsg = useCallback(() => {
     im.revokeMessage(JSON.stringify(msg))
       .then((res) => {
         events.emit(REVOKEMSG, msg.clientMsgID);
         console.log('res', res);
       })
-      .catch((err) => message.error('RevokeMessageFailed', err));
-  };
+      .catch((err) => Toast.error('撤回消息失败！', err));
+  }, [msg]);
 
-  // const delMsg = useCallback(() => {
-  //   im.deleteMessageFromLocalStorage(JSON.stringify(msg))
-  //     .then((res) => {
-  //       events.emit(DELETEMESSAGE, msg.clientMsgID);
-  //       console.log('res', res);
-  //     })
-  //     .catch((err) => message.error('DeleteMessageFailed', err));
-  // }, [msg]);
+  const delMsg = useCallback(() => {
+    console.log('msg', msg);
+    im.deleteMessageFromLocalStorage(JSON.stringify(msg))
+      .then((res) => {
+        events.emit(DELETEMESSAGE, msg.clientMsgID);
+        console.log('res', res);
+      })
+      .catch((err) => Toast.error('删除消息失败！' + err.message));
+  }, [msg]);
 
-  const delComfirm = () => {
-    // Modal.confirm({
-    //   title: 'DeleteMessage',
-    //   content: 'DeleteMessageConfirm',
-    //   okButtonProps: {
-    //     type: 'primary',
-    //   },
-    //   okType: 'danger',
-    //   onOk: delMsg,
-    // });
-  };
+  const delComfirm = useCallback(async () => {
+    setContextMenuVisible(false);
+    const result = await Modal.confirm({
+      title: '删除消息',
+      content: (
+        <>
+          <p className="tip-confirm">确定删除该消息吗？</p>
+        </>
+      ),
+      icon: 'info',
+      okText: '删除',
+    });
+    if (result.isConfirmed) {
+      delMsg();
+    }
+  }, [delMsg]);
 
   const downloadFile = useCallback(() => {
     let downloadUrl = '';
@@ -134,7 +135,15 @@ const MsgMenu: FC<MsgMenuProps> = ({ msg, isSelf, children }) => {
         id: 'Copy',
         title: '复制',
         icon: 'Bootstrap/clipboard2',
-        method: () => {},
+        method: () => {
+          const content =
+            (msg.contentType as number) === messageTypes.ATTEXTMESSAGE
+              ? msg.atElem.text
+              : msg.content;
+          copy(content);
+          Toast.success('复制成功！');
+          setContextMenuVisible(false);
+        },
         hidden: false,
       },
       {
@@ -173,7 +182,17 @@ const MsgMenu: FC<MsgMenuProps> = ({ msg, isSelf, children }) => {
         hidden: false,
       },
     ],
-    [downloadFile, forwardMsg, replayMsg, revMsg],
+    [
+      copy,
+      delComfirm,
+      downloadFile,
+      forwardMsg,
+      msg.atElem.text,
+      msg.content,
+      msg.contentType,
+      replayMsg,
+      revMsg,
+    ],
   );
 
   const switchMenu = (menu: typeof menus[0]) => {
@@ -189,51 +208,25 @@ const MsgMenu: FC<MsgMenuProps> = ({ msg, isSelf, children }) => {
       menu.hidden = true;
     }
 
-    return menu.hidden ? null : menu.id === 'Copy' ? (
-      <Menu.Item
-        key={menu.id}
-        icon={<Icon name={menu.icon} className="svg-icon-6" />}
-        className="px-3"
-      >
-        <CopyToClipboard
-          key={menu.title}
-          onCopy={() => {
-            /*message.success('复制成功！')*/
-          }}
-          text={
-            (msg.contentType as number) === messageTypes.ATTEXTMESSAGE
-              ? msg.atElem.text
-              : msg.content
-          }
+    return (
+      !menu.hidden && (
+        <Menu.Item
+          key={menu.id}
+          icon={<Icon name={menu.icon} className="svg-icon-6" />}
+          className="px-3"
+          onClick={menu.method}
         >
-          <div onClick={menu.method} className="msg_menu_iem">
-            <span>{menu.title}</span>
-          </div>
-        </CopyToClipboard>
-      </Menu.Item>
-    ) : (
-      <Menu.Item
-        key={menu.id}
-        icon={<Icon name={menu.icon} className="svg-icon-6" />}
-        className="px-3"
-      >
-        {menu.title}
-      </Menu.Item>
+          {menu.title}
+        </Menu.Item>
+      )
     );
   };
-
-  //   <div key={menu.title} onClick={menu.method} className="msg_menu_iem">
-  //   <img src={menu.icon} />
-  //   <span>{menu.title}</span>
-  // </div>
-
-  // const PopContent = () => {
-  //   return <div onClick={() => visibleChange(false)}>{menus.map((m) => switchMenu(m))}</div>;
-  // };
 
   return (
     <Popover
       trigger="contextMenu"
+      visible={contextMenuVisible}
+      onVisibleChange={setContextMenuVisible}
       content={
         <Menu className="menu-sub show menu-sub-dropdown show menu-gray-600 menu-state-bg-light-primary fw-bold fs-8 w-125px py-2">
           {menus.map(switchMenu)}

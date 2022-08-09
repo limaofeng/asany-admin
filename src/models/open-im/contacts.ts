@@ -1,6 +1,9 @@
-import { useCallback, useReducer } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 
-import type { GetGroupMemberParams, GroupItem } from 'open-im-sdk/types';
+import type { GetGroupMemberParams, GroupItem, WsResponse } from 'open-im-sdk/types';
+import { CbEvents } from 'open-im-sdk';
+
+import { im } from './auth';
 
 import type { ContactActionTypes, ContactState } from '@/utils/open-im/types/contacts';
 import {
@@ -18,7 +21,7 @@ import {
   SET_UNREAD_COUNT,
 } from '@/utils/open-im/types/contacts';
 import { SET_RECV_GROUP_APPLICATION_LIST } from '@/utils/open-im/types/contacts';
-import { getGroupInfo, getGroupMemberList } from '@/utils/open-im/actions/contacts';
+import { getGroupInfo, getGroupMemberList, setFriendList } from '@/utils/open-im/actions/contacts';
 
 const initialState: ContactState = {
   friendList: [],
@@ -71,6 +74,53 @@ export const friendReducer = (state = initialState, action: ContactActionTypes):
 
 function useContactsModel() {
   const [state, dispatch] = useReducer(friendReducer, initialState);
+
+  const { friendList } = state;
+
+  const temp = useRef({ friendList });
+  temp.current.friendList = friendList;
+
+  const friendHandlerTemplate = useCallback(
+    (data: WsResponse, type: 'info' | 'added' | 'deleted') => {
+      const user = JSON.parse(data.data);
+      const tmpArr = [...temp.current.friendList];
+      if (type === 'info') {
+        const idx = tmpArr.findIndex((f) => f.userID === user.userID);
+        if (idx !== -1) tmpArr[idx] = user;
+      } else if (type === 'added') {
+        tmpArr.push(user);
+      } else {
+        const idx = tmpArr.findIndex((f) => f.userID === user.userID);
+        if (idx !== -1) tmpArr.splice(idx, 1);
+      }
+      dispatch(setFriendList(tmpArr));
+    },
+    [],
+  );
+
+  const friednInfoChangeHandler = useCallback(
+    (data: WsResponse) => friendHandlerTemplate(data, 'info'),
+    [friendHandlerTemplate],
+  );
+  const friednAddedHandler = useCallback(
+    (data: WsResponse) => friendHandlerTemplate(data, 'added'),
+    [friendHandlerTemplate],
+  );
+  const friednDeletedHandler = useCallback(
+    (data: WsResponse) => friendHandlerTemplate(data, 'deleted'),
+    [friendHandlerTemplate],
+  );
+
+  useEffect(() => {
+    im.on(CbEvents.ONFRIENDINFOCHANGED, friednInfoChangeHandler);
+    im.on(CbEvents.ONFRIENDADDED, friednAddedHandler);
+    im.on(CbEvents.ONFRIENDDELETED, friednDeletedHandler);
+    return () => {
+      im.off(CbEvents.ONFRIENDINFOCHANGED, friednInfoChangeHandler);
+      im.off(CbEvents.ONFRIENDADDED, friednAddedHandler);
+      im.off(CbEvents.ONFRIENDDELETED, friednDeletedHandler);
+    };
+  }, [friednAddedHandler, friednDeletedHandler, friednInfoChangeHandler, friendList]);
 
   return {
     state,

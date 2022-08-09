@@ -38,7 +38,7 @@ function MainContacts(props: MainContactsProps) {
   const token = useMemo(() => book, [book]);
 
   const handleScrollToIndex = useCallback(
-    async (e) => {
+    async (e: any) => {
       if (state.current.activeIndex == e.index) {
         return;
       }

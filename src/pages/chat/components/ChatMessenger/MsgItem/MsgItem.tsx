@@ -42,7 +42,6 @@ const MsgItem: FC<MsgItemProps> = (props) => {
   const { msg, selfID, curCve, mutilSelect } = props;
 
   const [lastChange, setLastChange] = useState(false);
-  const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const avaRef = useRef<HTMLDivElement>(null);
   const msgItemRef = useRef<HTMLDivElement>(null);
   const [inViewport] = useInViewport(msgItemRef);
@@ -166,13 +165,7 @@ const MsgItem: FC<MsgItemProps> = (props) => {
             },
           )}
         >
-          <MsgMenu
-            key={msg.clientMsgID}
-            visible={contextMenuVisible}
-            msg={msg}
-            isSelf={isSelf}
-            visibleChange={(v) => setContextMenuVisible(v)}
-          >
+          <MsgMenu key={msg.clientMsgID} msg={msg} isSelf={isSelf}>
             <SwitchMsgType {...props} />
           </MsgMenu>
           {isSelf && (

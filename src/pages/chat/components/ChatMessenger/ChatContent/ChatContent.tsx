@@ -49,12 +49,12 @@ function ChatContent(props: ChatContentProps) {
         <>
           <b onClick={() => window.userClick(msg.sendID)}>
             {isSelf(msg.sendID)
-              ? 'You'
+              ? '你'
               : isSingleCve(curCve!)
               ? curCve?.showName
               : msg.senderNickname}
           </b>
-          {'RevokeMessage'}
+          撤回了一条消息
         </>
       );
     }

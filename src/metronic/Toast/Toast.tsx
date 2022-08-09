@@ -132,7 +132,7 @@ Toast.warning = (content: string, duration?: number, overrides?: ToastOptions) =
     ...toToastifyOptions(overrides),
   });
 };
-Toast.promise = function <T>(
+Toast.promise = function <T = unknown>(
   content: Promise<T> | (() => Promise<T>),
   params: ToastPromiseParams,
   overrides?: ToastOptions,
@@ -140,7 +140,7 @@ Toast.promise = function <T>(
   return toast.promise(content, params, {
     autoClose: overrides?.duration,
     ...toToastifyOptions(overrides),
-  });
+  }) as any;
 };
 Toast.error = (content: string, duration?: number, overrides?: ToastOptions) => {
   toast.error(content, {

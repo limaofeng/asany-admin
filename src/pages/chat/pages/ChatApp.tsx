@@ -502,6 +502,7 @@ function ChatApp() {
         />
       </MicroApp.Sidebar>
       <ChatMessenger
+        typing={rs.typing}
         scrollbar={scrollbar}
         loadMore={getHistoryMsg}
         loading={loading}

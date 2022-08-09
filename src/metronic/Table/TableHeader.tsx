@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import classnames from 'classnames';
+import useMergedRef from '@react-hook/merged-ref';
 import { useMeasure } from 'react-use';
 
 import Checkbox from '../Checkbox';
-import { wrapRef } from '../utils';
 
 import type {
   DataSource,
@@ -31,24 +31,24 @@ export function Colgroup<T>({ columns, onColgroup }: ColgroupProps<T>) {
 
   const temp = useRef<{ columns: TableColumn<T>[] }>({ columns });
 
-  const [ref, { width }] = useMeasure<HTMLTableColElement>();
+  const [ref, { width }] = useMeasure();
+
+  const multiRef = useMergedRef(ref, container);
 
   useEffect(() => {
-    if (!onColgroup) {
+    if (!onColgroup || !width) {
       return;
     }
     const data = new Map<string, number>();
-
     const widths = Array.from(container.current!.children).map((item: any) => item.offsetWidth);
     temp.current.columns.forEach((col, i) => {
       data.set(getColKey(col), widths[i]);
     });
-
     onColgroup(data);
   }, [onColgroup, width]);
 
   return (
-    <colgroup ref={wrapRef(ref, container)}>
+    <colgroup ref={multiRef}>
       {columns.map((col) => (
         <col key={`colgroup-cols-${getColKey(col)}`} width={col.width} />
       ))}
@@ -72,7 +72,7 @@ function TableHeaderColumnCheckbox(props: TableHeaderColumnCheckboxProps) {
   const { onSelect } = props;
 
   const handleChange = useCallback(
-    (e) => {
+    (e: any) => {
       onSelect(e.target.checked);
     },
     [onSelect],
@@ -172,13 +172,11 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
   );
 
   const handleSelect = useCallback(
-    (selected) => {
+    (selected: boolean) => {
       onSelectAll(selected);
     },
     [onSelectAll],
   );
-
-  // console.log('selectedKeys', selectedKeys.size, columns, isStats);
 
   return (
     <div className="table-header">

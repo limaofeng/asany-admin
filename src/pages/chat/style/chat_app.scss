@@ -12,6 +12,16 @@
         .os-content {
           min-height: 100%;
         }
+        .chat_bg_tips {
+          margin-bottom: 0.25rem;
+          color: var(--kt-text-muted);
+          font-size: .95rem;
+          text-align: center;
+          b {
+            margin-right: 0.2rem;
+            color: var(--kt-text-success);
+          }
+        }
         .con_nomore {
           padding: 8px;
           color: var(--kt-input-color);

@@ -69,7 +69,6 @@ export default defineConfig({
       lang: 'sass',
       type: 'csr',
       test: /\.(sass|scss)(\?.*)?$/,
-      // exclude: /(node_modules)/,
       loader: require.resolve('sass-loader'),
       options: {
         implementation: require('sass'),

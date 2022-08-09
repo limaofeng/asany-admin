@@ -131,7 +131,6 @@ function Sidebar() {
             selectedKeys={selectedKeys}
           >
             <Menu.Item
-              className="mb-3"
               url="/mail/inbox"
               titleClassName="fw-bolder"
               icon={<Icon className="svg-icon-2 me-3" name="Duotune/com010" />}
@@ -151,7 +150,7 @@ function Sidebar() {
               const lightStyle = DEFAULT_MAILBOXES[item.name]?.badge;
               return (
                 <Menu.Item
-                  className="mb-3"
+                  className="mb-1"
                   url={`/mail/${item.key}`}
                   titleClassName="fw-bolder"
                   icon={<Icon className="svg-icon-2 me-3" name={item.icon!} />}
@@ -174,7 +173,7 @@ function Sidebar() {
                 <Menu.Section>自定义</Menu.Section>
                 {mailboxes.custom.map((item) => (
                   <Menu.Item
-                    className="mb-3"
+                    className="mb-1"
                     url={`/mail/${item.key}`}
                     titleClassName="fw-bolder"
                     key={item.key}
@@ -188,7 +187,7 @@ function Sidebar() {
           {/* <Menu rounded={true} className="menu-state-bg menu-state-title-primary">
             <Menu.Section>标签</Menu.Section>
             <Menu.Item
-              className="mb-3"
+              className="mb-2"
               titleClassName="fw-bold"
               icon={<Icon className="svg-icon-6 svg-icon-danger me-3" name="Duotune/abs009" />}
               badge={<Badge lightStyle="danger">6</Badge>}
@@ -196,7 +195,7 @@ function Sidebar() {
               工作项
             </Menu.Item>
             <Menu.Item
-              className="mb-3"
+              className="mb-2"
               titleClassName="fw-bold"
               icon={<Icon className="svg-icon-2 me-3" name="Duotune/arr087" />}
             >

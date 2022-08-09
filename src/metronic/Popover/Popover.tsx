@@ -17,7 +17,7 @@ type PopoverProps = {
   overlayClassName?: string;
   zIndex?: number;
   delay?: OverlayDelay;
-  onVisibleChange?: (visible: boolean, e?: React.MouseEvent) => void;
+  onVisibleChange?: (visible: boolean) => void;
   trigger?: OverlayTriggerType | OverlayTriggerType[] | 'contextMenu';
   title?: React.ReactNode;
   content: React.ReactNode;
@@ -49,8 +49,6 @@ function Popover(props: PopoverProps) {
   const temp = useRef(visible);
   temp.current = visible;
 
-  const [controlled] = useState(props.visible != null);
-
   const multiRef = useMergedRef(nodeRef, (children as any).ref);
 
   useEffect(() => {
@@ -64,18 +62,14 @@ function Popover(props: PopoverProps) {
       return;
     }
     const handler = (e: any) => {
-      if (!controlled) {
-        setVisible((_v) => !_v);
-      } else {
-        onVisibleChange && onVisibleChange(!temp.current, e);
-      }
+      onVisibleChange ? onVisibleChange(!temp.current) : setVisible((_v) => !_v);
       stopPropagation && e.stopPropagation();
     };
     node.addEventListener(eventName, handler);
     return () => {
       node.removeEventListener(eventName, handler);
     };
-  }, [trigger, stopPropagation, onVisibleChange, controlled]);
+  }, [trigger, stopPropagation, onVisibleChange]);
 
   useClickAway(contentRef as any, (e) => {
     const target = e.target!;
@@ -88,17 +82,8 @@ function Popover(props: PopoverProps) {
       // ignore click
       return;
     }
-    if (!controlled) {
-      setVisible(false);
-    } else {
-      onVisibleChange && onVisibleChange(false, e as any);
-    }
+    onVisibleChange ? onVisibleChange(false) : setVisible(false);
   });
-
-  // const initOffset: OffsetFunction = useCallback((details: any) => {
-  //   console.log('initOffset', details);
-  //   return [0, 0];
-  // }, []);
 
   useEffect(() => {
     if (trigger != 'contextMenu') {
@@ -108,11 +93,11 @@ function Popover(props: PopoverProps) {
       const x = (getOffsetLeft(e.target, nodeRef.current!) + e.layerX) as number;
       const y = (getOffsetTop(e.target, nodeRef.current!) + e.layerY) as number;
       setOffset([y - 6, x - nodeRef.current!.offsetWidth]);
-      setVisible(true);
+      onVisibleChange ? onVisibleChange(true) : setVisible(true);
       e.stopPropagation();
       e.preventDefault();
     });
-  }, [trigger, visible]);
+  }, [onVisibleChange, trigger, visible]);
 
   return (
     <BsOverlayTrigger

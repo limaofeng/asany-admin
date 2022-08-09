@@ -84,7 +84,7 @@ function Actions({ data, history, onDelete, onShowQRCode, baseUrl }: ActionsProp
           <Menu.Item key="view" className="px-3">
             编辑
           </Menu.Item>
-          <Menu.Separator />
+          <Menu.Separator className="my-1" />
           {/* {data.status == 'DRAFT' && (
             <Menu.Item key="publish" className="px-3">
               发布
@@ -98,7 +98,7 @@ function Actions({ data, history, onDelete, onShowQRCode, baseUrl }: ActionsProp
           <Menu.Item key="preview" className="px-3">
             预览
           </Menu.Item>
-          <Menu.Separator />
+          <Menu.Separator className="my-1" />
           <Menu.Item key="delete" className="px-3 actions-delete">
             删除
           </Menu.Item>
@@ -258,6 +258,8 @@ function PageList(props: PageListProps) {
       );
     };
   }, [handleDeleteInBatch]);
+
+  console.log('qrCode', qrCode, variables);
 
   return (
     <ContentWrapper footer={false}>

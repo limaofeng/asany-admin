@@ -105,18 +105,6 @@ function ChatFooter(props: ChatFooterProps) {
   const latestFlag = useLatest(flag);
   const [mutilMsg, setMutilMsg] = useState<MessageItem[]>([]);
 
-  const atHandler = (id: string, name: string) => {
-    if (replyMsg) {
-      setReplyMsg(undefined);
-    }
-    if (atList.findIndex((au) => au.id === id) === -1) {
-      const tag = `<b class="at_el" data_id="${id}" data_name="${name}" contenteditable="false" style="color:#428be5"> @${name}</b>`;
-      setAtList([...atList, { id, name, tag }]);
-      setMsgContent(latestContent.current + tag);
-      move2end(inputRef.current!.el);
-    }
-  };
-
   const updateTypeing = (recvID: string, msgTip: string) => {
     im.typingStatusUpdate({ recvID, msgTip });
   };
@@ -148,28 +136,62 @@ function ChatFooter(props: ChatFooterProps) {
     }
   };
 
-  const parseAt = useCallback(
-    (_text: string) => {
-      let text = _text;
-      atList.map((at) => {
-        text = text.replaceAll(at.tag, `@${at.id} `);
-      });
-      return text;
-    },
-    [atList],
-  );
+  const temp = useRef({
+    curCve,
+    latestContent,
+    atList,
+    groupMemberList,
+    replyMsg,
+    draftSaved: false,
+  });
+  temp.current.curCve = curCve;
+  temp.current.latestContent = latestContent;
+  temp.current.atList = atList;
+  temp.current.groupMemberList = groupMemberList;
+  temp.current.replyMsg = replyMsg;
+
+  const atHandler = useCallback((id: string, name: string) => {
+    const _atList = temp.current.atList;
+    const _latestContent = temp.current.latestContent;
+    const _replyMsg = temp.current.replyMsg;
+    if (_replyMsg) {
+      setReplyMsg(undefined);
+    }
+    if (_atList.findIndex((au) => au.id === id) === -1) {
+      const tag = `<b class="at_el" data_id="${id}" data_name="${name}" contenteditable="false" style="color:#428be5"> @${name}</b>`;
+      setAtList([..._atList, { id, name, tag }]);
+      setMsgContent(_latestContent.current + tag);
+      move2end(inputRef.current!.el);
+    }
+  }, []);
+
+  const parseAt = useCallback((_text: string) => {
+    let text = _text;
+    const _atList = temp.current.atList;
+    _atList.map((at) => {
+      text = text.replaceAll(at.tag, `@${at.id} `);
+    });
+    return text;
+  }, []);
 
   const setDraft = useCallback(
     (cve: ConversationItem) => {
-      if (cve.draftText !== '' || latestContent.current !== '') {
-        let text = latestContent.current;
+      const _latestContent = temp.current.latestContent;
+      const _atList = temp.current.atList;
+
+      if (cve.draftText == _latestContent.current) {
+        return;
+      }
+
+      if (cve.draftText !== '' || _latestContent.current !== '') {
+        temp.current.draftSaved = true;
+        let text = _latestContent.current;
         text = parseEmojiFace(text);
         // text = parseImg(text).text;
         const option = {
           conversationID: cve.conversationID,
-          draftText: atList.length > 0 ? parseAt(text) : text,
+          draftText: _atList.length > 0 ? parseAt(text) : text,
         };
-
         im.setConversationDraft(option)
           .then((res) => {
             console.warn(res);
@@ -177,10 +199,12 @@ function ChatFooter(props: ChatFooterProps) {
           .catch((err) => {
             console.warn(err);
           })
-          .finally(() => setMsgContent(''));
+          .finally(() => {
+            setMsgContent('');
+          });
       }
     },
-    [atList.length, latestContent, parseAt],
+    [parseAt],
   );
 
   const reSet = useCallback(() => {
@@ -299,26 +323,24 @@ function ChatFooter(props: ChatFooterProps) {
     return text;
   }, []);
 
-  const reParseAt = useCallback(
-    (_text: string) => {
-      let text = _text;
-      const pattern = /@\S+\s/g;
-      const arr = text.match(pattern);
-      const tmpAts: AtItem[] = [];
+  const reParseAt = useCallback((_text: string) => {
+    let text = _text;
+    const pattern = /@\S+\s/g;
+    const arr = text.match(pattern);
+    const tmpAts: AtItem[] = [];
+    const _groupMemberList = temp.current.groupMemberList;
 
-      arr?.map((uid) => {
-        const member = groupMemberList.find((gm) => gm.userID === uid.slice(1, -1));
-        if (member) {
-          const tag = `<b class="at_el" data_id="${member.userID}" data_name="${member.nickname}" contenteditable="false" style="color:#428be5"> @${member.nickname}</b>`;
-          text = text.replaceAll(uid, tag);
-          tmpAts.push({ id: member.userID, name: member.nickname, tag });
-        }
-      });
-      setAtList(tmpAts);
-      return text;
-    },
-    [groupMemberList],
-  );
+    arr?.map((uid) => {
+      const member = _groupMemberList.find((gm) => gm.userID === uid.slice(1, -1));
+      if (member) {
+        const tag = `<b class="at_el" data_id="${member.userID}" data_name="${member.nickname}" contenteditable="false" style="color:#428be5"> @${member.nickname}</b>`;
+        text = text.replaceAll(uid, tag);
+        tmpAts.push({ id: member.userID, name: member.nickname, tag });
+      }
+    });
+    setAtList(tmpAts);
+    return text;
+  }, []);
 
   const parseDrft = useCallback(
     (text: string) => {
@@ -328,7 +350,9 @@ function ChatFooter(props: ChatFooterProps) {
   );
 
   useEffect(() => {
-    if (atList.length > 0) {
+    temp.current.draftSaved = false;
+    const _atList = temp.current.atList;
+    if (_atList.length > 0) {
       setAtList([]);
     }
     if (curCve.draftText !== '') {
@@ -338,10 +362,12 @@ function ChatFooter(props: ChatFooterProps) {
     }
     setMutilMsg([]);
     return () => {
-      setDraft(curCve);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      if (!temp.current.draftSaved) {
+        setDraft(curCve);
+      }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [curCve]);
+  }, [curCve, parseDrft, setDraft]);
 
   const mutilMsgChangeHandler = useCallback(
     (checked: boolean, msg: MessageItem) => {
@@ -371,8 +397,7 @@ function ChatFooter(props: ChatFooterProps) {
       events.off(ATSTATEUPDATE, atHandler);
       events.off(ISSETDRAFT, setDraft);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [atList]);
+  }, [atHandler, setDraft]);
 
   return (
     <div className="pt-4 ps-8 h-100 d-flex flex-column">
