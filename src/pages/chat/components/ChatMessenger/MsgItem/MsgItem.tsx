@@ -1,14 +1,13 @@
 import type { FC } from 'react';
 import { useCallback } from 'react';
 import { useMemo } from 'react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // import { ExclamationCircleFilled, LoadingOutlined } from '@ant-design/icons';
 // import { Spin } from 'antd';
 import { useInViewport, useLongPress } from 'ahooks';
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import classnames from 'classnames';
-import { isEqual } from 'lodash';
 
 import MsgMenu from './MsgMenu';
 import SwitchMsgType from './SwitchMsgType';
@@ -23,9 +22,9 @@ import { messageTypes } from '@/utils/open-im/constants/messageContentType';
 type MsgItemProps = {
   msg: MessageItem;
   selfID: string;
-  audio: React.RefObject<HTMLAudioElement>;
   curCve: ConversationItem;
   mutilSelect?: boolean;
+  audio: React.RefObject<HTMLAudioElement>;
 };
 
 const canSelectTypes: number[] = [
@@ -40,7 +39,7 @@ const canSelectTypes: number[] = [
 ];
 
 const MsgItem: FC<MsgItemProps> = (props) => {
-  const { msg, selfID, curCve, mutilSelect, audio } = props;
+  const { msg, selfID, curCve, mutilSelect } = props;
 
   const [lastChange, setLastChange] = useState(false);
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
@@ -50,8 +49,6 @@ const MsgItem: FC<MsgItemProps> = (props) => {
 
   const isSelf = useMemo(() => selfID == msg.sendID, [selfID, msg.sendID]);
   const isGroupCve = useMemo(() => !curCve || !isSingleCve(curCve), [curCve]);
-
-  console.log('audio', audio);
 
   useEffect(() => {
     if (lastChange) {
@@ -200,4 +197,4 @@ const MsgItem: FC<MsgItemProps> = (props) => {
   );
 };
 
-export default React.memo(MsgItem, isEqual);
+export default MsgItem;

@@ -242,7 +242,7 @@ const MsgMenu: FC<MsgMenuProps> = ({ msg, isSelf, children }) => {
       overlayClassName="overlay-no-arrow msg_item_menu_popover"
     >
       <div
-        className={classnames('chat_bg_msg_content py-4', {
+        className={classnames('chat_bg_msg_content py-3', {
           'ps-4 pe-8': !isSelf,
           'ps-8 pe-4': isSelf,
         })}

@@ -23,10 +23,10 @@ type ChatContentProps = {
 };
 
 function ChatContent(props: ChatContentProps) {
+  const audioRef = useRef<HTMLAudioElement>(null);
   const { merID, msgList, loadMore, hasMore, curCve, loading } = props;
   const [mutilSelect, setMutilSelect] = useState(false);
   const selfID = useCurrentuser().data?.uid;
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   const tipList = Object.values(tipsTypes) as number[];
 
@@ -174,35 +174,38 @@ function ChatContent(props: ChatContentProps) {
   };
 
   return (
-    <ScrollView
-      ref={props.scrollbar}
-      loading={loading}
-      data={msgList}
-      fetchMoreData={nextFuc}
-      hasMore={hasMore}
-    >
-      {msgList?.map((msg) => {
-        if (tipList.includes(msg.contentType)) {
-          return (
-            <div key={msg.clientMsgID} className="chat_bg_tips">
-              {parseTip(msg)}
-            </div>
-          );
-        } else {
-          return (
-            <MsgItem
-              audio={audioRef}
-              key={msg.clientMsgID}
-              mutilSelect={mutilSelect}
-              msg={msg}
-              // imgClick={imgClick}
-              selfID={merID ?? selfID!}
-              curCve={curCve!}
-            />
-          );
-        }
-      })}
-    </ScrollView>
+    <>
+      <ScrollView
+        ref={props.scrollbar}
+        loading={loading}
+        data={msgList}
+        fetchMoreData={nextFuc}
+        hasMore={hasMore}
+      >
+        {msgList?.map((msg) => {
+          if (tipList.includes(msg.contentType)) {
+            return (
+              <div key={msg.clientMsgID} className="chat_bg_tips">
+                {parseTip(msg)}
+              </div>
+            );
+          } else {
+            return (
+              <MsgItem
+                audio={audioRef}
+                key={msg.clientMsgID}
+                mutilSelect={mutilSelect}
+                msg={msg}
+                // imgClick={imgClick}
+                selfID={merID ?? selfID!}
+                curCve={curCve!}
+              />
+            );
+          }
+        })}
+      </ScrollView>
+      <audio ref={audioRef} />
+    </>
   );
 }
 

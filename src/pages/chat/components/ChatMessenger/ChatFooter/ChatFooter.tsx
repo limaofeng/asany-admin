@@ -10,7 +10,7 @@ import ContentEditable from '../../ContentEditable/ContentEditable';
 
 import { Button, Tooltip } from '@/metronic';
 import { messageTypes } from '@/utils/open-im/constants/messageContentType';
-import { base64toFile, move2end } from '@/utils/open-im/utils/common';
+import { base64toFile, contenteditableDivRange, move2end } from '@/utils/open-im/utils/common';
 import { isSingleCve } from '@/utils/open-im/utils/im';
 import { im } from '@/models/open-im/auth';
 import events from '@/utils/open-im/events';
@@ -251,24 +251,19 @@ function ChatFooter(props: ChatFooterProps) {
     [latestContent, parseAt, quoteMsg, sendAtTextMsg, sendTextMsg],
   );
 
-  // const keyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-  //   if (e.key === 'Enter' && e.ctrlKey) {
-  //     e.preventDefault();
-  //     contenteditableDivRange();
-  //     move2end(inputRef.current!.el);
-  //   }
-  //   if (e.key === 'Enter' && !e.ctrlKey) {
-
-  //   }
-  // };
-
-  const handleEnter = useCallback(
-    (html: string) => {
-      console.log(html);
-      debugger;
-      if (latestContent.current && !latestFlag.current) {
-        setFlag(true);
-        switchMessage(replyMsg ? 'quote' : atList.length > 0 ? 'at' : 'text');
+  const keyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Enter' && e.metaKey) {
+        e.preventDefault();
+        contenteditableDivRange();
+        move2end(inputRef.current!.el);
+      }
+      if (e.key === 'Enter' && !e.metaKey) {
+        e.preventDefault();
+        if (latestContent.current && !latestFlag.current) {
+          setFlag(true);
+          switchMessage(replyMsg ? 'quote' : atList.length > 0 ? 'at' : 'text');
+        }
       }
     },
     [atList.length, latestContent, latestFlag, replyMsg, switchMessage],
@@ -431,7 +426,7 @@ function ChatFooter(props: ChatFooterProps) {
           ref={inputRef}
           html={msgContent}
           onChange={onChange}
-          onEnter={handleEnter}
+          onKeyDown={keyDown}
           onPaste={textInit}
         />
         <div className="chat-msg-actions d-flex flex-row position-absolute">

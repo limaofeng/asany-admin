@@ -71,7 +71,7 @@ const ThemeModeProvider = ({ children }: { children: React.ReactNode }) => {
   const updateMode = (_mode: ThemeModeType) => {
     const updatedMode = _mode === 'system' ? systemMode : _mode;
     setMode(updatedMode);
-    console.log('updatedMode', updatedMode);
+    // console.log('updatedMode', updatedMode);
     // themeModeSwitchHelper(updatedMode)
     if (localStorage) {
       localStorage.setItem(themeModeLSKey, updatedMode);
@@ -83,7 +83,6 @@ const ThemeModeProvider = ({ children }: { children: React.ReactNode }) => {
 
   const updateMenuMode = (_menuMode: ThemeModeType) => {
     setMenuMode(_menuMode);
-    console.log('_menuMode', _menuMode);
     if (localStorage) {
       localStorage.setItem(themeMenuModeLSKey, _menuMode);
     }
