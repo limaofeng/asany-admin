@@ -86,8 +86,7 @@ export class EventHandlerUtil {
     delete EventHandlerUtil.store[name][handerId];
   }
 
-  public static trigger(element: HTMLElement, name: string, target?: any, e?: Event): boolean {
-    console.log('e', e);
+  public static trigger(element: HTMLElement, name: string, target?: any /*, e?: Event*/): boolean {
     let returnValue = true;
     if (!DataUtil.has(element, name)) {
       return returnValue;

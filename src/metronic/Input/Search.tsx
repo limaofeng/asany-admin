@@ -32,7 +32,7 @@ function Search({ size, className, onSearch, ...props }: SearchProps) {
   const sizeClass = sizes[size || 'middle'];
 
   const handleSearch = useCallback(
-    (e) => {
+    (e: any) => {
       onSearch && onSearch(e.target.value);
     },
     [onSearch],
@@ -47,9 +47,9 @@ function Search({ size, className, onSearch, ...props }: SearchProps) {
         />
       }
       className={classnames(className, sizeClass.inputClassName)}
-      boxClassName={sizeClass.boxClassName}
+      boxClassName={classnames(sizeClass.boxClassName, props.boxClassName)}
       size={size}
-      onPressEnter={handleSearch}
+      onChange={handleSearch}
       {...props}
     />
   );

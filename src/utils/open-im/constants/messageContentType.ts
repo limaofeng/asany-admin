@@ -17,6 +17,7 @@ export enum messageTypes {
 
 export enum tipsTypes {
   REVOKEMESSAGE = 111,
+  ADVANCEREVOKEMESSAGE = 118,
   FRIENDAPPLICATIONAPPROVED = 1201, //add_friend_response
   FRIENDAPPLICATIONREJECTED = 1202, //add_friend_response
   FRIENDAPPLICATIONADDED = 1203, //add_friend

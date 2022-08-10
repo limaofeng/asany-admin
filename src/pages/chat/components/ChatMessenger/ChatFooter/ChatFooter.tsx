@@ -138,12 +138,14 @@ function ChatFooter(props: ChatFooterProps) {
 
   const temp = useRef({
     curCve,
+    msgContent,
     latestContent,
     atList,
     groupMemberList,
     replyMsg,
     draftSaved: false,
   });
+  temp.current.msgContent = msgContent;
   temp.current.curCve = curCve;
   temp.current.latestContent = latestContent;
   temp.current.atList = atList;
@@ -208,6 +210,7 @@ function ChatFooter(props: ChatFooterProps) {
   );
 
   const reSet = useCallback(() => {
+    temp.current.latestContent.current = '';
     setMsgContent('');
     setReplyMsg(undefined);
     setAtList([]);

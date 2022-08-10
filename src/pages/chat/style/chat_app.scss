@@ -9,16 +9,22 @@
       --bs-card-border-radius: 0;
       height: calc(100vh);
       #kt_chat_messenger_body {
+        .custom-scrollbar {
+          .scroll-view-spin {
+            span {
+              color: var(--kt-text-primary);
+            }
+          }
+        }
         .os-content {
           min-height: 100%;
         }
         .chat_bg_tips {
           margin-bottom: 0.25rem;
           color: var(--kt-text-muted);
-          font-size: .95rem;
+          font-size: 0.95rem;
           text-align: center;
           b {
-            margin-right: 0.2rem;
             color: var(--kt-text-success);
           }
         }
@@ -85,6 +91,19 @@
         display: flex;
         flex-direction: column-reverse;
       }
+    }
+  }
+
+  .cve-searchbar {
+    .cve-searchbar-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background-color: #e8e8e8;
+      border-radius: 8px;
+      cursor: pointer;
     }
   }
 

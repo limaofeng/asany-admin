@@ -18,8 +18,6 @@ const initialState: CveState = {
 };
 
 function reducer(state = initialState, action: CveActionTypes) {
-  console.log('reducer', state, action);
-
   switch (action.type) {
     case SET_CVE_LIST:
       return { ...state, cves: action.payload };
@@ -34,8 +32,6 @@ function reducer(state = initialState, action: CveActionTypes) {
 
 function useCveModel() {
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  console.log('im cve state: ', state);
 
   const loginStatus = useModel('open-im.auth', (_state) => _state.status);
 

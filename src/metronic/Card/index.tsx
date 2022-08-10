@@ -4,7 +4,6 @@ import React, { useMemo } from 'react';
 import classnames from 'classnames';
 import { Card as BsCard } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { isEqual } from 'lodash';
 
 interface CardProps {
   id?: string;
@@ -231,7 +230,7 @@ interface CardWrapper
   Footer: typeof CardFooter;
 }
 
-const CardRef = React.memo(React.forwardRef(Card), isEqual) as unknown as CardWrapper;
+const CardRef = React.forwardRef(Card) as CardWrapper;
 
 CardRef.Title = CardTitle;
 CardRef.Body = CardBody;

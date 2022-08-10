@@ -2,6 +2,19 @@
   .table.dataTable > thead > tr > th:not(.sorting_disabled) {
     padding: 0;
   }
+  table.dataTable.table-hover > tbody {
+    & > tr:hover,
+    & > tr.selected {
+      & > * {
+        background-color: var(--bs-table-bg);
+        box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg) !important;
+      }
+    }
+  }
+  table.dataTable.table-hover.table-list-body tr:hover > * {
+    color: var(--bs-table-hover-color);
+    --bs-table-accent-bg: var(--bs-table-hover-bg);
+  }
   .table > :not(caption) > * > * {
     padding: 0;
   }
@@ -47,9 +60,11 @@ table.dataTable.table-list-body {
     color: inherit;
   }
   tr.table-list-item.selected {
-    background-color: rgba(220, 253, 253, 0.35) !important;
-    td {
-      color: #7e8299 !important;
+    --kt-primary-rgb: 220, 253, 253;
+    --bs-table-accent-bg: rgba(var(--kt-primary-rgb), 0.35);
+    --bs-table-hover-color: var(--kt-text-gray-700);
+    & > * {
+      color: var(--bs-table-hover-color);
     }
   }
 }

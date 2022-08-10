@@ -32,7 +32,11 @@ export const parseMessageType = (pmsg: MessageItem, curUid?: string): string => 
     case MessageType.FILEMESSAGE:
       return 'FileMessage';
     case MessageType.REVOKEMESSAGE:
-      return `${isSelf(pmsg.sendID) ? 'You' : pmsg.senderNickname}${'RevokeMessage'}`;
+      return `${isSelf(pmsg.sendID) ? '你' : pmsg.senderNickname}撤回了一条消息`;
+    case MessageType.ADVANCEREVOKEMESSAGE:
+      const content = JSON.parse(pmsg.content);
+      console.log('content', content);
+      return `${isSelf(content.revokerID) ? '你' : content.revokerNickname}撤回了一条消息`;
     case MessageType.CUSTOMMESSAGE:
       return 'CustomMessage';
     case MessageType.QUOTEMESSAGE:

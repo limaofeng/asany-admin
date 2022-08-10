@@ -41,7 +41,7 @@ function CalendarSidebarHeader() {
   );
 
   const handleChange = useCallback(
-    (e) => {
+    (e: any) => {
       setValue(e.target.value);
       if (!e.target.value) {
         changeState('none');

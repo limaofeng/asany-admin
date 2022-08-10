@@ -105,7 +105,6 @@ export default function useChatModel() {
     };
   }, [currentUser]);
 
-  console.log('currentUser', currentUser);
   return {
     status,
   };

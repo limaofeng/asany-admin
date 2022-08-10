@@ -25,6 +25,7 @@ type MsgItemProps = {
   curCve: ConversationItem;
   mutilSelect?: boolean;
   audio: React.RefObject<HTMLAudioElement>;
+  className?: string;
 };
 
 const canSelectTypes: number[] = [
@@ -39,7 +40,7 @@ const canSelectTypes: number[] = [
 ];
 
 const MsgItem: FC<MsgItemProps> = (props) => {
-  const { msg, selfID, curCve, mutilSelect } = props;
+  const { msg, selfID, curCve, mutilSelect, className } = props;
 
   const [lastChange, setLastChange] = useState(false);
   const avaRef = useRef<HTMLDivElement>(null);
@@ -123,7 +124,7 @@ const MsgItem: FC<MsgItemProps> = (props) => {
       ref={msgItemRef}
       onClick={mutilCheckItem}
       // className={`chat_bg_msg ${isSelf(msg.sendID) ? 'chat_bg_omsg' : ''}`}
-      className={classnames('msg-item d-flex mb-10', {
+      className={classnames('msg-item d-flex mb-10', className, {
         'justify-content-start': !isSelf,
         'justify-content-end': isSelf,
         'mt-4': isSelf,

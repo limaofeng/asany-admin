@@ -12,7 +12,6 @@ import type {
   WsResponse,
 } from 'open-im-sdk/types';
 import { useModel } from 'umi';
-import type { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { CbEvents } from 'open-im-sdk';
 
 import { CveList, SearchBar } from '../components';
@@ -119,11 +118,10 @@ function ChatApp() {
     onError: (err: any) => console.log('GetChatRecordFailed', err),
   });
 
-  const scrollbar = useRef<OverlayScrollbarsComponent>();
+  const scrollbar = useRef<OverlayScrollbars>();
 
   const scrollToBottom = useCallback((duration?: number) => {
-    const _scrollbar = scrollbar.current?.osInstance();
-    _scrollbar?.scroll([0, '100%'], duration ?? 350);
+    scrollbar.current?.scroll({ y: '100%' }, duration ?? 350);
   }, []);
 
   function handleMsg(res: WsResponse) {
@@ -150,8 +148,6 @@ function ChatApp() {
 
   const getHistoryMsg = useCallback(
     (uid?: string, gid?: string, sMsg?: MessageItem) => {
-      console.log('getMsg:::');
-
       const config = {
         userID: uid ?? '',
         groupID: gid ?? '',
@@ -361,12 +357,11 @@ function ChatApp() {
               rs.historyMsgList = [newServerMsg, ...rs.historyMsgList];
             }
             markCveHasRead(curCve, 1);
-            setTimeout(scrollToBottom);
           }
         }
       }
     },
-    [assignHandler, curCve, inCurCve, markCveHasRead, rs, scrollToBottom, selfID, typingUpdate],
+    [assignHandler, curCve, inCurCve, markCveHasRead, rs, selfID, typingUpdate],
   );
 
   const revokeMsgHandler = useCallback(
@@ -390,10 +385,6 @@ function ChatApp() {
           });
         });
       });
-      console.log(
-        'c2cMsgHandler msgList',
-        rs.historyMsgList.map((item) => ({ content: item.content, isRead: item.isRead })),
-      );
     },
     [rs],
   );

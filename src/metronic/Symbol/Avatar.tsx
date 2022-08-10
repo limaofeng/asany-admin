@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 
 import classnames from 'classnames';
 import styled from 'styled-components';
@@ -10,6 +10,7 @@ import {
   getContrastYIQ,
   lightenColor,
 } from '../utils/color';
+import { loadImage } from '../utils';
 
 import type { AvatarProps } from './typings';
 import { useSymbolSize } from './utils';
@@ -28,7 +29,7 @@ function Avatar(props: AvatarProps, ref: any) {
   const { onClick, shape, className, light, labelClassName, src, gap, alt, badge, ...otherProps } =
     props;
 
-  const [loadFailed, setLoadFailed] = useState(false);
+  const [state, setState] = useState<'init' | 'succeed' | 'error'>('init');
 
   const backgroundColor = useMemo(() => {
     if (typeof alt == 'string') {
@@ -51,12 +52,24 @@ function Avatar(props: AvatarProps, ref: any) {
   }, [backgroundColor, light]);
 
   const handleError = useCallback(() => {
-    setLoadFailed(true);
+    setState('error');
   }, []);
 
-  useEffect(() => {
-    setLoadFailed(false);
-  }, [src]);
+  useLayoutEffect(() => {
+    if (!src) {
+      setState('error');
+      return;
+    }
+    if (typeof src !== 'string') {
+      setState('succeed');
+      return;
+    }
+    loadImage(src)
+      .then(() => {
+        setState('succeed');
+      })
+      .catch(handleError);
+  }, [handleError, src]);
 
   const sizeClass = useSymbolSize(props.size);
 
@@ -75,7 +88,7 @@ function Avatar(props: AvatarProps, ref: any) {
       )}
       {...otherProps}
     >
-      {loadFailed ? (
+      {state == 'error' || state == 'init' ? (
         React.isValidElement(alt) ? (
           alt
         ) : (
@@ -91,7 +104,7 @@ function Avatar(props: AvatarProps, ref: any) {
           </AvatarLable>
         )
       ) : (
-        renderImg(src, gap, handleError)
+        state == 'succeed' && renderImg(src, gap, handleError)
       )}
       {badge &&
         React.cloneElement(badge, { className: classnames('symbol-badge', badge.props.className) })}

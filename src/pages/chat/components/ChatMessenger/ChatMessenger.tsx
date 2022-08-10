@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import { Resizer } from '@asany/sunmao';
-import type { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import { Icon } from '@asany/icons';
 
 import { useGetUserOnlineStatusLazyQuery } from '../../hooks/api';
 import '../../style/chat_app.scss';
@@ -12,7 +12,7 @@ import WelcomeContent from './WelcomeContent';
 import ChatFooter from './ChatFooter/ChatFooter';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Badge, Card, Symbol } from '@/metronic';
+import { Badge, Button, Card, Symbol, Tooltip } from '@/metronic';
 import { isSingleCve } from '@/utils/open-im/utils/im';
 import type { messageTypes } from '@/utils/open-im/constants/messageContentType';
 
@@ -25,7 +25,7 @@ type ChatMessengerProps = {
   loading: boolean;
   merID?: string;
   sendMsg: (nMsg: string, type: messageTypes, uid?: string, gid?: string) => void;
-  scrollbar: React.MutableRefObject<OverlayScrollbarsComponent | undefined>;
+  scrollbar: React.MutableRefObject<OverlayScrollbars | undefined>;
 };
 
 const SingleCveInfo = ({ userId, typing }: { userId: string; typing: boolean }) => {
@@ -148,118 +148,38 @@ function ChatMessenger(props: ChatMessengerProps) {
               </div>
             </Card.Title>
             <Card.Toolbar>
-              <div className="me-n3">
-                <button className="btn btn-sm btn-icon btn-active-light-primary">
-                  <i className="bi bi-three-dots fs-2" />
-                </button>
-                {/*--begin::Menu 3--*/}
-                <div
-                  className="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
-                  data-kt-menu="true"
-                >
-                  {/*--begin::Heading--*/}
-                  <div className="menu-item px-3">
-                    <div className="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">
-                      Contacts
-                    </div>
-                  </div>
-                  {/*--end::Heading--*/}
-                  {/*--begin::Menu item--*/}
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link px-3"
-                      data-bs-toggle="modal"
-                      data-bs-target="#kt_modal_users_search"
-                    >
-                      Add Contact
-                    </a>
-                  </div>
-                  {/*--end::Menu item--*/}
-                  {/*--begin::Menu item--*/}
-                  <div className="menu-item px-3">
-                    <a
-                      href="#"
-                      className="menu-link flex-stack px-3"
-                      data-bs-toggle="modal"
-                      data-bs-target="#kt_modal_invite_friends"
-                    >
-                      Invite Contacts
-                      <i
-                        className="fas fa-exclamation-circle ms-2 fs-7"
-                        data-bs-toggle="tooltip"
-                        title="Specify a contact email to send an invitation"
-                      />
-                    </a>
-                  </div>
-                  {/*--end::Menu item--*/}
-                  {/*--begin::Menu item--*/}
-                  <div
-                    className="menu-item px-3"
-                    data-kt-menu-trigger="hover"
-                    data-kt-menu-placement="right-start"
-                  >
-                    <a href="#" className="menu-link px-3">
-                      <span className="menu-title">Groups</span>
-                      <span className="menu-arrow" />
-                    </a>
-                    {/*--begin::Menu sub--*/}
-                    <div className="menu-sub menu-sub-dropdown w-175px py-4">
-                      {/*--begin::Menu item--*/}
-                      <div className="menu-item px-3">
-                        <a
-                          href="#"
-                          className="menu-link px-3"
-                          data-bs-toggle="tooltip"
-                          title="Coming soon"
-                        >
-                          Create Group
-                        </a>
-                      </div>
-                      {/*--end::Menu item--*/}
-                      {/*--begin::Menu item--*/}
-                      <div className="menu-item px-3">
-                        <a
-                          href="#"
-                          className="menu-link px-3"
-                          data-bs-toggle="tooltip"
-                          title="Coming soon"
-                        >
-                          Invite Members
-                        </a>
-                      </div>
-                      {/*--end::Menu item--*/}
-                      {/*--begin::Menu item--*/}
-                      <div className="menu-item px-3">
-                        <a
-                          href="#"
-                          className="menu-link px-3"
-                          data-bs-toggle="tooltip"
-                          title="Coming soon"
-                        >
-                          Settings
-                        </a>
-                      </div>
-                      {/*--end::Menu item--*/}
-                    </div>
-                    {/*--end::Menu sub--*/}
-                  </div>
-                  {/*--end::Menu item--*/}
-                  {/*--begin::Menu item--*/}
-                  <div className="menu-item px-3 my-1">
-                    <a
-                      href="#"
-                      className="menu-link px-3"
-                      data-bs-toggle="tooltip"
-                      title="Coming soon"
-                    >
-                      Settings
-                    </a>
-                  </div>
-                  {/*--end::Menu item--*/}
-                </div>
-                {/*--end::Menu 3--*/}
-              </div>
+              <Tooltip placement="bottom" inverse title="文件">
+                <Button
+                  className="me-4"
+                  icon={<Icon name="Bootstrap/folder" className="svg-icon-2" />}
+                  variant={false}
+                  activeColor="light-primary"
+                />
+              </Tooltip>
+              <Tooltip placement="bottom" inverse title="聊天记录">
+                <Button
+                  className="me-4"
+                  icon={<Icon name="Bootstrap/list-ul" className="svg-icon-2" />}
+                  variant={false}
+                  activeColor="light-primary"
+                />
+              </Tooltip>
+              <Tooltip placement="bottom" inverse title="添加成员">
+                <Button
+                  className="me-4"
+                  icon={<Icon name="Bootstrap/person-plus" className="svg-icon-2" />}
+                  variant={false}
+                  activeColor="light-primary"
+                />
+              </Tooltip>
+              <Tooltip placement="bottom" inverse title="聊天设置">
+                <Button
+                  className="me-4"
+                  icon={<Icon name="Bootstrap/gear" className="svg-icon-2" />}
+                  variant={false}
+                  activeColor="light-primary"
+                />
+              </Tooltip>
             </Card.Toolbar>
           </Card.Header>
         )}
