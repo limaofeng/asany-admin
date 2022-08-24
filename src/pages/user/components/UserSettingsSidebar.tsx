@@ -15,7 +15,7 @@ type UserSettingsSidebarProps = {
 
 function renderMenuItem(item: MenuData) {
   if (item.type === 'SECTION') {
-    return <Menu.Section key={item.id} title={item.name} />;
+    return <Menu.Section key={item.id}>{item.name}</Menu.Section>;
   }
   if (item.type === 'URL') {
     return (

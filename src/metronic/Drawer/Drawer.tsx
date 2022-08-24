@@ -16,17 +16,21 @@ type GetContainer = () => HTMLElement;
 
 type DrawerProps = {
   title?: string;
+  closable?: boolean;
   placement?: 'right' | 'left';
   width?: number;
   mask?: boolean;
   maskClosable?: boolean;
   maskStyle?: CSSProperties;
+  bodyStyle?: CSSProperties;
   destroyOnClose?: boolean;
   onClose?: OnClose;
   getContainer?: GetContainer;
   visible?: boolean;
   children: React.ReactNode;
   footer?: React.ReactNode;
+  forceRender?: boolean;
+  className?: string;
 };
 
 function runGetContainer(getContainer?: GetContainer) {
@@ -64,6 +68,9 @@ function DrawerContainer(props: DrawerContainerProps) {
     title,
     placement,
     mask = true,
+    bodyStyle,
+    forceRender = false,
+    closable = true,
     maskClosable = true,
     maskStyle,
     onClose,
@@ -104,25 +111,29 @@ function DrawerContainer(props: DrawerContainerProps) {
     <>
       <div
         style={{ width }}
-        className={classnames('bg-white drawer', {
+        className={classnames('bg-white drawer', props.className, {
           'drawer-on': visible,
           'drawer-start': placement == 'left',
           'drawer-end': placement == 'right',
         })}
       >
         <Card className="rounded-0 w-100">
-          <Card.Header className="pe-5">
-            <Card.Title>{title}</Card.Title>
-            <Card.Toolbar>
-              <Button
-                variant={false}
-                onClick={handleClose}
-                activeColor="light-primary"
-                icon={<Icon className="svg-icon-2" name="Duotune/arr061" />}
-              />
-            </Card.Toolbar>
-          </Card.Header>
-          <Card.Body className="overflow-auto">{children}</Card.Body>
+          {title && closable && (
+            <Card.Header className="pe-5">
+              <Card.Title>{title}</Card.Title>
+              <Card.Toolbar>
+                <Button
+                  variant={false}
+                  onClick={handleClose}
+                  activeColor="light-primary"
+                  icon={<Icon className="svg-icon-2" name="Duotune/arr061" />}
+                />
+              </Card.Toolbar>
+            </Card.Header>
+          )}
+          <Card.Body style={bodyStyle} className="overflow-auto">
+            {(forceRender || visible) && children}
+          </Card.Body>
           {footer && <Card.Footer>{footer}</Card.Footer>}
         </Card>
       </div>
@@ -140,7 +151,6 @@ function DrawerContainer(props: DrawerContainerProps) {
 function Drawer({ getContainer, destroyOnClose, ...props }: DrawerProps) {
   const mountPoint = useMemo(() => {
     return runGetContainer(getContainer);
-    // container && container.removeChild(this.el);
   }, [getContainer]);
 
   useEffect(() => {}, [mountPoint]);

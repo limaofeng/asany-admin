@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import { Resizer } from '@asany/sunmao';
 import { Icon } from '@asany/icons';
+import classnames from 'classnames';
 
 import { useGetUserOnlineStatusLazyQuery } from '../../hooks/api';
 import '../../style/chat_app.scss';
@@ -26,6 +27,7 @@ type ChatMessengerProps = {
   merID?: string;
   sendMsg: (nMsg: string, type: messageTypes, uid?: string, gid?: string) => void;
   scrollbar: React.MutableRefObject<OverlayScrollbars | undefined>;
+  onBack?: () => void;
 };
 
 const SingleCveInfo = ({ userId, typing }: { userId: string; typing: boolean }) => {
@@ -96,7 +98,7 @@ function getHeight(height: number) {
 }
 
 function ChatMessenger(props: ChatMessengerProps) {
-  const { msgList, loadMore, hasMore, curCve, loading, sendMsg, scrollbar, typing } = props;
+  const { msgList, loadMore, hasMore, curCve, loading, sendMsg, scrollbar, typing, onBack } = props;
 
   const state = useRef({
     height: 200,
@@ -174,12 +176,22 @@ function ChatMessenger(props: ChatMessengerProps) {
               </Tooltip>
               <Tooltip placement="bottom" inverse title="聊天设置">
                 <Button
-                  className="me-4"
+                  className={classnames({ 'me-4': !!onBack })}
                   icon={<Icon name="Bootstrap/gear" className="svg-icon-2" />}
                   variant={false}
                   activeColor="light-primary"
                 />
               </Tooltip>
+              {onBack && (
+                <Tooltip placement="bottom" inverse title="返回消息列表">
+                  <Button
+                    onClick={onBack}
+                    icon={<Icon name="Bootstrap/arrow-return-left" className="svg-icon-2" />}
+                    variant={false}
+                    activeColor="light-primary"
+                  />
+                </Tooltip>
+              )}
             </Card.Toolbar>
           </Card.Header>
         )}

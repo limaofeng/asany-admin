@@ -6,11 +6,12 @@ import classnames from 'classnames';
 import { Input } from '@/metronic';
 
 type SearchBarProps = {
+  className?: string;
   onSearch: (value: string) => void;
 };
 
 function SearchBar(props: SearchBarProps) {
-  const { onSearch } = props;
+  const { onSearch, className } = props;
   const [value, setValue] = useState('');
 
   const handleChange = useCallback(
@@ -22,11 +23,11 @@ function SearchBar(props: SearchBarProps) {
   );
 
   return (
-    <div className="cve-searchbar ps-6 pe-6 pt-8 d-flex align-items-center">
+    <div className={classnames('cve-searchbar ps-6 pe-6 d-flex align-items-center', className)}>
       <Input.Search
         solid
         size="lg"
-        boxClassName="flex-column-fluid"
+        boxClassName="flex-row-fluid"
         value={value}
         onChange={handleChange}
         placeholder="搜索..."

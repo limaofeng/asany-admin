@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { default as classNames, default as classnames } from 'classnames';
+import classnames from 'classnames';
 
 import Tooltip from '../Tooltip';
 import type { TooltipProps } from '../Tooltip/Tooltip';
@@ -108,7 +108,7 @@ const FormItemLabel: React.FC<FormItemLabelProps & { required?: boolean; prefixC
           );
         }
 
-        const labelClassName = classNames('form-label', className, {
+        const labelClassName = classnames('form-label', className, {
           [`${prefixCls}-item-required`]: required,
           [`${prefixCls}-item-required-mark-optional`]: requiredMark === 'optional',
           [`${prefixCls}-item-no-colon`]: !computedColon,

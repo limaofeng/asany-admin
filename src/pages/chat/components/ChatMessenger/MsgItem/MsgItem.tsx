@@ -87,18 +87,6 @@ const MsgItem: FC<MsgItemProps> = (props) => {
     }
   }, [curCve, msg.isRead, msg.status]);
 
-  // const switchStyle = useCallback(() => {
-  //   if (isSelf) {
-  //     return {
-  //       marginLeft: '12px',
-  //     };
-  //   } else {
-  //     return {
-  //       marginRight: '12px',
-  //     };
-  //   }
-  // }, []);
-
   const mutilCheckItem = () => {
     if (mutilSelect && canSelectTypes.includes(msg.contentType)) {
       events.emit(MUTILMSGCHANGE, !lastChange, msg);

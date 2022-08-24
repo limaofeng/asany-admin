@@ -136,13 +136,14 @@ function randerHeader(
 type CardBodyProps = {
   className?: string;
   children?: React.ReactNode;
+  style?: CSSProperties;
   [key: string]: any;
 };
 
 function CardBody(props: CardBodyProps) {
-  const { className, children } = props;
+  const { className, children, style } = props;
   return (
-    <BsCard.Body id={props.id} className={className}>
+    <BsCard.Body id={props.id} style={style} className={className}>
       {children}
     </BsCard.Body>
   );

@@ -1,4 +1,5 @@
 import { Card } from '@/metronic';
+import '@/metronic';
 import '@/components';
 import '@/layouts/components';
 import '@/pages/calendar/hooks';

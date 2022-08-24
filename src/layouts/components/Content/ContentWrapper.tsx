@@ -47,8 +47,6 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
     };
   }, [loading]);
 
-  //"kt_wrapper"
-
   return (
     <div
       ref={ref}
