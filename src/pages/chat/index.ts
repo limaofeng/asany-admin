@@ -17,6 +17,15 @@ class Chat {
     loader: () => import('./pages/ChatApp'),
     loading: LoadingComponent,
   });
+  @component({
+    name: 'ChatDrawer',
+    title: 'Mini聊天框',
+    tags: ['消息'],
+  })
+  ChatDrawer = dynamic({
+    loader: () => import('./components/ChatDrawer'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Chat();

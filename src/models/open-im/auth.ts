@@ -1,14 +1,42 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 
 import { useModel } from 'umi';
 import { CbEvents, OpenIMSDK } from 'open-im-sdk';
-import type { InitConfig } from 'open-im-sdk/types';
+import type { FullUserItem, InitConfig } from 'open-im-sdk/types';
+
+import { getSelfInfo, getUnReadCount, setUnReadCount } from '@/utils/open-im/actions/user';
+import type { UserActionTypes, UserState } from '@/utils/open-im/types/user';
+import { SET_ADMIN_TOKEN, SET_SELF_INFO, SET_SELF_INIT_LOADING } from '@/utils/open-im/types/user';
+import { SET_UNREAD_COUNT } from '@/utils/open-im/types/user';
 
 export const im = new OpenIMSDK();
+
+const initialState: UserState = {
+  unReadCount: 0,
+  selfInfo: {} as FullUserItem,
+  adminToken: '',
+  selfInitLoading: true,
+};
+
+function reducer(state = initialState, action: UserActionTypes) {
+  switch (action.type) {
+    case SET_UNREAD_COUNT:
+      return { ...state, unReadCount: action.payload };
+    case SET_SELF_INFO:
+      return { ...state, selfInfo: { ...state.selfInfo, ...action.payload } };
+    case SET_ADMIN_TOKEN:
+      return { ...state, adminToken: action.payload };
+    case SET_SELF_INIT_LOADING:
+      return { ...state, selfInitLoading: action.payload };
+    default:
+      return state;
+  }
+}
 
 export default function useChatModel() {
   const currentUser = useModel('@@initialState', (model) => model.initialState?.currentUser);
 
+  const [state, dispatch] = useReducer(reducer, initialState);
   const [status, setStatus] = useState<'init' | 'login.success' | 'login.failure'>('init');
 
   const handleConnectFailed = useCallback((data: any) => {
@@ -30,9 +58,13 @@ export default function useChatModel() {
     console.log('被踢下线...', data);
   }, []);
 
-  const handleUserTokenExpired = useCallback((data: any) => {
+  const handleUserTokenExpired = useCallback((event: any) => {
     // token过期...
-    console.log('token过期...', data);
+    console.log('token过期...', event);
+  }, []);
+
+  const handleUnreadMessageCountChanged = useCallback((event: any) => {
+    dispatch(setUnReadCount(Number(event.data)));
   }, []);
 
   useEffect(() => {
@@ -44,6 +76,8 @@ export default function useChatModel() {
     im.on(CbEvents.ONKICKEDOFFLINE, handleKickedOffline);
     im.on(CbEvents.ONUSERTOKENEXPIRED, handleUserTokenExpired);
 
+    im.on(CbEvents.ONTOTALUNREADMESSAGECOUNTCHANGED, handleUnreadMessageCountChanged);
+
     return () => {
       im.off(CbEvents.ONCONNECTFAILED, handleConnectFailed);
       im.off(CbEvents.ONCONNECTSUCCESS, handleConnectSuccess);
@@ -52,12 +86,15 @@ export default function useChatModel() {
 
       im.off(CbEvents.ONKICKEDOFFLINE, handleKickedOffline);
       im.off(CbEvents.ONUSERTOKENEXPIRED, handleUserTokenExpired);
+
+      im.off(CbEvents.ONTOTALUNREADMESSAGECOUNTCHANGED, handleUnreadMessageCountChanged);
     };
   }, [
     handleConnectFailed,
     handleConnectSuccess,
     handleConnecting,
     handleKickedOffline,
+    handleUnreadMessageCountChanged,
     handleUserTokenExpired,
   ]);
 
@@ -77,7 +114,7 @@ export default function useChatModel() {
       .then((res) => {
         setStatus('login.success');
         console.log('login', res);
-        // dispatch(getSelfInfo());
+        getSelfInfo()(dispatch);
         // getCveList(cveDispatch);
         // dispatch(getFriendList());
         // dispatch(getRecvFriendApplicationList());
@@ -85,9 +122,9 @@ export default function useChatModel() {
         // dispatch(getGroupList());
         // dispatch(getRecvGroupApplicationList());
         // dispatch(getSentGroupApplicationList());
-        // dispatch(getUnReadCount());
+        getUnReadCount()(dispatch);
         // dispatch(getBlackList());
-        // dispatch(getAdminToken());
+        // getAdminToken()(dispatch);
       })
       .catch((err) => {
         setStatus('login.failure');
@@ -97,6 +134,7 @@ export default function useChatModel() {
     return () => {
       im.logout()
         .then((res) => {
+          setStatus('init');
           console.log('logout suc...', res);
         })
         .catch((err) => {
@@ -107,5 +145,6 @@ export default function useChatModel() {
 
   return {
     status,
+    state,
   };
 }

@@ -1,0 +1,382 @@
+{
+  "modelId": "694d346c-99cf-11ec-bec4-00ffa161f54a",
+  "bounds": { "lowerRight": { "x": 1200, "y": 1050 }, "upperLeft": { "x": 0, "y": 0 } },
+  "properties": {
+    "process_id": "unitedFrontFundsDJ",
+    "name": "统一战线经费申请",
+    "documentation": "统一战线经费申请",
+    "process_author": "",
+    "process_version": "",
+    "process_namespace": "http://www.flowable.org/processdef",
+    "process_historylevel": "",
+    "isexecutable": true,
+    "dataproperties": "",
+    "executionlisteners": "",
+    "eventlisteners": "",
+    "signaldefinitions": "",
+    "messagedefinitions": "",
+    "process_potentialstarteruser": "",
+    "process_potentialstartergroup": "",
+    "iseagerexecutionfetch": "false"
+  },
+  "childShapes": [
+    {
+      "resourceId": "startEvent1",
+      "properties": {
+        "overrideid": "",
+        "name": "统一战线经费申请",
+        "documentation": "",
+        "executionlisteners": "",
+        "initiator": "",
+        "formkeydefinition": "",
+        "formreference": {
+          "id": "whir_flow_694d346c-99cf-11ec-bec4-00ffa161f54a",
+          "name": "统一战线经费申请表单",
+          "key": "unitedFrontFundsDJ"
+        },
+        "formproperties": "",
+        "defineForms": ["unitedFrontFundsDJ"]
+      },
+      "stencil": { "id": "StartNoneEvent" },
+      "childShapes": [],
+      "outgoing": [{ "resourceId": "sid-5AAA977B-461A-4E84-9997-F732B4C629DE" }],
+      "bounds": { "lowerRight": { "x": 130, "y": 193 }, "upperLeft": { "x": 100, "y": 163 } },
+      "dockers": []
+    },
+    {
+      "resourceId": "sid-39EF5DF9-D5FC-4CF5-99B5-16F72092C26E",
+      "properties": {
+        "overrideid": "",
+        "name": "党派审批",
+        "documentation": "",
+        "asynchronousdefinition": false,
+        "exclusivedefinition": false,
+        "executionlisteners": { "executionListeners": [] },
+        "handlingMode": "preselection",
+        "multiinstance_type": "None",
+        "multiinstance_cardinality": "",
+        "multiinstance_collection": "",
+        "multiinstance_variable": "",
+        "multiinstance_condition": "",
+        "isforcompensation": "false",
+        "usertaskassignment": {
+          "assignment": {
+            "type": "static",
+            "value": "",
+            "candidateUsers": [{ "value": "${initiator.candidate}" }]
+          }
+        },
+        "formkeydefinition": "",
+        "formreference": "",
+        "duedatedefinition": "",
+        "prioritydefinition": "",
+        "formproperties": "",
+        "tasklisteners": { "taskListeners": [] },
+        "skipexpression": "",
+        "nodetype": "",
+        "iseditdata": "",
+        "operationPermission": [
+          { "name": "Agree" },
+          { "name": "Back", "attribute": [{ "type": "Radio", "values": "Back_PREVIOUS_NODE" }] },
+          { "name": "Termination" }
+        ]
+      },
+      "stencil": { "id": "UserTask" },
+      "childShapes": [],
+      "outgoing": [{ "resourceId": "sid-345D49FA-5755-46D2-8E58-BBF45E55D24B" }],
+      "bounds": {
+        "lowerRight": { "x": 287.0000063939527, "y": 84.00000216744158 },
+        "upperLeft": { "x": 187.00000639395267, "y": 4.000002167441579 }
+      },
+      "dockers": []
+    },
+    {
+      "resourceId": "sid-5AAA977B-461A-4E84-9997-F732B4C629DE",
+      "properties": {
+        "overrideid": "",
+        "name": "",
+        "documentation": "",
+        "conditionsequenceflow": "",
+        "executionlisteners": "",
+        "defaultflow": "false",
+        "skipexpression": "",
+        "sequence_flow_text_x": ""
+      },
+      "stencil": { "id": "SequenceFlow" },
+      "childShapes": [],
+      "outgoing": [{ "resourceId": "sid-39EF5DF9-D5FC-4CF5-99B5-16F72092C26E" }],
+      "bounds": {
+        "lowerRight": { "x": 200.10803253754767, "y": 166.7918097085795 },
+        "upperLeft": { "x": 125.20447245772787, "y": 84.5206919847342 }
+      },
+      "dockers": [
+        { "x": 15, "y": 15 },
+        { "x": 50, "y": 40 }
+      ],
+      "target": { "resourceId": "sid-39EF5DF9-D5FC-4CF5-99B5-16F72092C26E" }
+    },
+    {
+      "resourceId": "sid-C79362AC-9F73-4AAC-848E-73266A732821",
+      "properties": {
+        "overrideid": "",
+        "name": "党办审批",
+        "documentation": "",
+        "asynchronousdefinition": false,
+        "exclusivedefinition": false,
+        "executionlisteners": { "executionListeners": [] },
+        "handlingMode": "preselection",
+        "multiinstance_type": "None",
+        "multiinstance_cardinality": "",
+        "multiinstance_collection": "",
+        "multiinstance_variable": "",
+        "multiinstance_condition": "",
+        "isforcompensation": "false",
+        "usertaskassignment": {
+          "assignment": {
+            "type": "static",
+            "value": "",
+            "candidateUsers": [{ "value": "${initiator.candidate}" }]
+          }
+        },
+        "formkeydefinition": "",
+        "formreference": "",
+        "duedatedefinition": "",
+        "prioritydefinition": "",
+        "formproperties": "",
+        "tasklisteners": { "taskListeners": [] },
+        "skipexpression": "",
+        "nodetype": "",
+        "iseditdata": "",
+        "operationPermission": [
+          { "name": "Agree" },
+          { "name": "Back", "attribute": [{ "type": "Radio", "values": "Back_PREVIOUS_NODE" }] },
+          { "name": "Termination" }
+        ]
+      },
+      "stencil": { "id": "UserTask" },
+      "childShapes": [],
+      "outgoing": [{ "resourceId": "sid-A7ABF0E2-DB55-4482-A39F-C9F42D3EBAB2" }],
+      "bounds": {
+        "lowerRight": { "x": 429.0000063939527, "y": 260.0000021674416 },
+        "upperLeft": { "x": 329.0000063939527, "y": 180.00000216744158 }
+      },
+      "dockers": []
+    },
+    {
+      "resourceId": "sid-345D49FA-5755-46D2-8E58-BBF45E55D24B",
+      "properties": {
+        "overrideid": "",
+        "name": "",
+        "documentation": "",
+        "conditionsequenceflow": "",
+        "executionlisteners": "",
+        "defaultflow": "false",
+        "skipexpression": "",
+        "sequence_flow_text_x": ""
+      },
+      "stencil": { "id": "SequenceFlow" },
+      "childShapes": [],
+      "outgoing": [{ "resourceId": "sid-C79362AC-9F73-4AAC-848E-73266A732821" }],
+      "bounds": {
+        "lowerRight": { "x": 346.20020609281477, "y": 179.34672855476362 },
+        "upperLeft": { "x": 269.7998066950906, "y": 84.65327578011957 }
+      },
+      "dockers": [
+        { "x": 50, "y": 40 },
+        { "x": 50, "y": 40.000000000000014 }
+      ],
+      "target": { "resourceId": "sid-C79362AC-9F73-4AAC-848E-73266A732821" }
+    },
+    {
+      "resourceId": "sid-71B19B27-C70D-4CFE-AD10-D8B131DF6688",
+      "properties": {
+        "overrideid": "",
+        "name": "党委书记审批",
+        "documentation": "",
+        "asynchronousdefinition": false,
+        "exclusivedefinition": false,
+        "executionlisteners": { "executionListeners": [] },
+        "handlingMode": "preselection",
+        "multiinstance_type": "None",
+        "multiinstance_cardinality": "",
+        "multiinstance_collection": "",
+        "multiinstance_variable": "",
+        "multiinstance_condition": "",
+        "isforcompensation": "false",
+        "usertaskassignment": {
+          "assignment": {
+            "type": "static",
+            "value": "",
+            "candidateUsers": [{ "value": "${initiator.candidate}" }]
+          }
+        },
+        "formkeydefinition": "",
+        "formreference": "",
+        "duedatedefinition": "",
+        "prioritydefinition": "",
+        "formproperties": "",
+        "tasklisteners": { "taskListeners": [] },
+        "skipexpression": "",
+        "nodetype": "",
+        "iseditdata": "",
+        "operationPermission": [
+          { "name": "Agree" },
+          { "name": "Back", "attribute": [{ "type": "Radio", "values": "Back_PREVIOUS_NODE" }] },
+          { "name": "Termination" }
+        ]
+      },
+      "stencil": { "id": "UserTask" },
+      "childShapes": [],
+      "outgoing": [{ "resourceId": "sid-44628627-73B2-4E66-B998-674CB473CB70" }],
+      "bounds": {
+        "lowerRight": { "x": 601.0000063939526, "y": 84.00000216744158 },
+        "upperLeft": { "x": 501.0000063939526, "y": 4.000002167441579 }
+      },
+      "dockers": []
+    },
+    {
+      "resourceId": "sid-A7ABF0E2-DB55-4482-A39F-C9F42D3EBAB2",
+      "properties": {
+        "overrideid": "",
+        "name": "",
+        "documentation": "",
+        "conditionsequenceflow": "",
+        "executionlisteners": "",
+        "defaultflow": "false",
+        "skipexpression": "",
+        "sequence_flow_text_x": ""
+      },
+      "stencil": { "id": "SequenceFlow" },
+      "childShapes": [],
+      "outgoing": [{ "resourceId": "sid-71B19B27-C70D-4CFE-AD10-D8B131DF6688" }],
+      "bounds": {
+        "lowerRight": { "x": 511.33232344615163, "y": 179.4098149650406 },
+        "upperLeft": { "x": 418.6676893417536, "y": 84.5901893698426 }
+      },
+      "dockers": [
+        { "x": 50, "y": 40.000000000000014 },
+        { "x": 50, "y": 40 }
+      ],
+      "target": { "resourceId": "sid-71B19B27-C70D-4CFE-AD10-D8B131DF6688" }
+    },
+    {
+      "resourceId": "sid-6451B4CE-6DD4-4944-B2F6-31FC44FEA858",
+      "properties": {
+        "overrideid": "",
+        "name": "财务处审批",
+        "documentation": "",
+        "asynchronousdefinition": false,
+        "exclusivedefinition": false,
+        "executionlisteners": { "executionListeners": [] },
+        "handlingMode": "preselection",
+        "multiinstance_type": "None",
+        "multiinstance_cardinality": "",
+        "multiinstance_collection": "",
+        "multiinstance_variable": "",
+        "multiinstance_condition": "",
+        "isforcompensation": "false",
+        "usertaskassignment": {
+          "assignment": {
+            "type": "static",
+            "value": "",
+            "candidateUsers": [{ "value": "${initiator.candidate}" }]
+          }
+        },
+        "formkeydefinition": "",
+        "formreference": "",
+        "duedatedefinition": "",
+        "prioritydefinition": "",
+        "formproperties": "",
+        "tasklisteners": { "taskListeners": [] },
+        "skipexpression": "",
+        "nodetype": "",
+        "iseditdata": "",
+        "operationPermission": [
+          { "name": "Agree" },
+          { "name": "Back", "attribute": [{ "type": "Radio", "values": "Back_PREVIOUS_NODE" }] },
+          { "name": "Termination" }
+        ]
+      },
+      "stencil": { "id": "UserTask" },
+      "childShapes": [],
+      "outgoing": [{ "resourceId": "sid-22C8BDCD-3DB1-4ADA-BBD8-64D28573DA1B" }],
+      "bounds": {
+        "lowerRight": { "x": 775, "y": 262.0000021674416 },
+        "upperLeft": { "x": 675, "y": 182.00000216744158 }
+      },
+      "dockers": []
+    },
+    {
+      "resourceId": "sid-44628627-73B2-4E66-B998-674CB473CB70",
+      "properties": {
+        "overrideid": "",
+        "name": "",
+        "documentation": "",
+        "conditionsequenceflow": "",
+        "executionlisteners": "",
+        "defaultflow": "false",
+        "skipexpression": "",
+        "sequence_flow_text_x": ""
+      },
+      "stencil": { "id": "SequenceFlow" },
+      "childShapes": [],
+      "outgoing": [{ "resourceId": "sid-6451B4CE-6DD4-4944-B2F6-31FC44FEA858" }],
+      "bounds": {
+        "lowerRight": { "x": 685.5587875918928, "y": 181.6520937385584 },
+        "upperLeft": { "x": 590.4412188020598, "y": 84.34791059632481 }
+      },
+      "dockers": [
+        { "x": 50, "y": 40 },
+        { "x": 50, "y": 40.000000000000014 }
+      ],
+      "target": { "resourceId": "sid-6451B4CE-6DD4-4944-B2F6-31FC44FEA858" }
+    },
+    {
+      "resourceId": "sid-CA5B9A74-6612-496C-851B-B1FE8FA8920A",
+      "properties": {
+        "overrideid": "",
+        "name": "结束",
+        "documentation": "",
+        "executionlisteners": { "executionListeners": [] }
+      },
+      "stencil": { "id": "EndNoneEvent" },
+      "childShapes": [],
+      "outgoing": [],
+      "bounds": {
+        "lowerRight": { "x": 989.0000089948826, "y": 106.00000216744158 },
+        "upperLeft": { "x": 961.0000089948826, "y": 78.00000216744158 }
+      },
+      "dockers": []
+    },
+    {
+      "resourceId": "sid-22C8BDCD-3DB1-4ADA-BBD8-64D28573DA1B",
+      "properties": {
+        "overrideid": "",
+        "name": "",
+        "documentation": "",
+        "conditionsequenceflow": "",
+        "executionlisteners": "",
+        "defaultflow": "false",
+        "skipexpression": "",
+        "sequence_flow_text_x": ""
+      },
+      "stencil": { "id": "SequenceFlow" },
+      "childShapes": [],
+      "outgoing": [{ "resourceId": "sid-CA5B9A74-6612-496C-851B-B1FE8FA8920A" }],
+      "bounds": {
+        "lowerRight": { "x": 962.3940417652184, "y": 195.64021194386578 },
+        "upperLeft": { "x": 775.6919060999783, "y": 98.55510489101741 }
+      },
+      "dockers": [
+        { "x": 50, "y": 40.000000000000014 },
+        { "x": 14, "y": 14 }
+      ],
+      "target": { "resourceId": "sid-CA5B9A74-6612-496C-851B-B1FE8FA8920A" }
+    }
+  ],
+  "stencil": { "id": "BPMNDiagram" },
+  "stencilset": {
+    "namespace": "http://b3mn.org/stencilset/bpmn2.0#",
+    "url": "../editor/stencilsets/bpmn2.0/bpmn2.0.json"
+  }
+}

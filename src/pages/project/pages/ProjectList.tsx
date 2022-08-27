@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useProjectsQuery } from '../hooks/api';
 import { CurrentProjects, OurClients, ProjectFinance } from '../components/widgets';
 import ProjectCard from '../components/ProjectCard';
+import ProjectToolbar from '../components/ProjectToolbar';
 
 import { ContentWrapper } from '@/layouts/components';
 import { Col, Pagination, Row, Select } from '@/metronic';
@@ -20,7 +21,7 @@ function ProjectList() {
   return (
     <ContentWrapper
       header={{
-        title: '应用管理',
+        toolbar: <ProjectToolbar />,
       }}
       loading={loading}
     >

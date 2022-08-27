@@ -91,6 +91,15 @@ class User {
     loader: () => import('./pages/settings/SessionDetails'),
     loading: LoadingComponent,
   });
+  @component({
+    name: 'UserAccountMenu',
+    title: ' 用户菜单',
+    tags: ['用户中心/其他'],
+  })
+  UserAccountMenu = dynamic({
+    loader: () => import('./components/UserAccountMenu'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new User();

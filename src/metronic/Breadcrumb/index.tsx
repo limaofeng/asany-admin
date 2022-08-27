@@ -11,6 +11,8 @@ import BreadcrumbItem from './BreadcrumbItem';
 
 import type { Component } from '@/types';
 
+import './style.scss';
+
 type BreadcrumbItemRender = (
   route: Route,
   params: any,

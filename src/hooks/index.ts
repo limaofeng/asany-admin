@@ -5,10 +5,13 @@ import { LoginByUsernameDocument, LogoutDocument, ViewerDocument } from './api';
 import type { CurrentUser } from '@/types';
 import { delay, sleep } from '@/utils';
 
-export async function loadCurrentuser(): Promise<CurrentUser> {
+export async function loadCurrentuser(): Promise<CurrentUser | undefined> {
   const token = localStorage.getItem('credentials');
   if (!tokenHelper.withToken() && token) {
     tokenHelper.setToken(token);
+  }
+  if (!token) {
+    return undefined;
   }
   const {
     data: { viewer },

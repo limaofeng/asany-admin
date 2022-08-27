@@ -32,7 +32,7 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
     className,
     contentClassName,
     breadcrumb,
-    footer = { copyright: '版权所有 2021 林暮春 | 沪ICP备11003026号' },
+    footer = { copyright: '版权所有 2022 李茂峰 | 沪ICP备2022024659号' },
     children,
   } = props;
 

@@ -44,7 +44,7 @@ export async function getInitialState(): Promise<{
         settings: {},
       };
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return {
         currentUser: undefined,
         settings: {},

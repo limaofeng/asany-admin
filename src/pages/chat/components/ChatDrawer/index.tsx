@@ -1,1 +1,1 @@
-export { default as ChatDrawer } from './ChatDrawer';
+export { default } from './ChatDrawer';

@@ -4,6 +4,7 @@ import type { Dispatch } from 'redux';
 import { im } from '../../../models/open-im/auth';
 import type { FullUserItem, PartialUserItem } from '../sdk/types';
 import type { UserActionTypes } from '../types/user';
+import { SET_UNREAD_COUNT } from '../types/user';
 import { SET_ADMIN_TOKEN, SET_SELF_INFO, SET_SELF_INIT_LOADING } from '../types/user';
 
 export const setSelfInfo = (value: PartialUserItem): UserActionTypes => {
@@ -28,11 +29,26 @@ export const setSelfInitLoading = (value: boolean): UserActionTypes => {
 };
 
 export const getSelfInfo = () => {
-  return (dispatch: Dispatch) => {
+  return (dispatch: React.Dispatch<UserActionTypes>) => {
     dispatch(setSelfInitLoading(true));
     im.getSelfUserInfo().then((res) => {
       dispatch(setSelfInfo(JSON.parse(res.data)));
       dispatch(setSelfInitLoading(false));
+    });
+  };
+};
+
+export const setUnReadCount = (value: number): UserActionTypes => {
+  return {
+    type: SET_UNREAD_COUNT,
+    payload: value,
+  };
+};
+
+export const getUnReadCount = () => {
+  return (dispatch: React.Dispatch<UserActionTypes>) => {
+    im.getTotalUnreadMsgCount().then((res) => {
+      dispatch(setUnReadCount(Number(res.data)));
     });
   };
 };

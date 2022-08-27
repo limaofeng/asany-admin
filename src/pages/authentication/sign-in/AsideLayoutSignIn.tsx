@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 import { useModel } from 'umi';
 
 import { Button, Form, Input, Modal } from '@/metronic';
-import { loginWithUsername } from '@/hooks';
+import { loadCurrentuser, loginWithUsername } from '@/hooks';
 
 function Aside() {
   return (
@@ -95,7 +95,8 @@ function SignInForm() {
     async (values: any) => {
       setLoading(true);
       try {
-        const user = await loginWithUsername(values.username, values.password);
+        let user = await loginWithUsername(values.username, values.password);
+        user = await loadCurrentuser();
         await Modal.success({
           content: '登录成功!',
           okText: '知道了',

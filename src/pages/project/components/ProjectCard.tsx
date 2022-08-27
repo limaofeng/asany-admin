@@ -4,14 +4,9 @@ import type { Project } from '@/types';
 type ProjectCardProps = Project;
 
 function ProjectCard(props: ProjectCardProps) {
-  const { name, description } = props;
+  const { name, description, id } = props;
   return (
-    <Card
-      as="a"
-      to="../../demo7/dist/apps/projects/project.html"
-      hoverable
-      className="border-hover-primary"
-    >
+    <Card as="a" to={`/projects/${id}`} hoverable className="border-hover-primary">
       <Card.Header className=" border-0 pt-9">
         <Card.Title className="m-0">
           <div className="symbol symbol-50px w-50px bg-light">

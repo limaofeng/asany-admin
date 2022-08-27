@@ -23,7 +23,7 @@ function renderMenuItem(item: MenuData) {
     );
   }
   if (item.type === 'SEPARATOR') {
-    return <Menu.Separator key={item.id} />;
+    return <Menu.Separator key={item.id} className="my-1" />;
   }
   if (item.type === 'MENU') {
     return (

@@ -28,7 +28,6 @@ export const setCveInitLoading = (value: boolean): CveActionTypes => {
 export const getCveList = (dispatch: React.Dispatch<any>) => {
   dispatch(setCveInitLoading(true));
   im.getAllConversationList().then((res: any) => {
-    console.log(JSON.parse(res.data));
     dispatch(setCveList(JSON.parse(res.data)));
     dispatch(setCveInitLoading(false));
   });

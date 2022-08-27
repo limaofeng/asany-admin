@@ -36,7 +36,6 @@ export const SET_GROUP_MEMBER_LIST = 'SET_GROUP_MEMBER_LIST';
 export const SET_GROUP_INFO = 'SET_GROUP_INFO';
 export const SET_GROUP_MEMBER_LOADING = 'SET_GROUP_MEMBER_LOADING';
 export const SET_MEMBER2STATUS = 'SET_MEMBER2STATUS';
-export const SET_UNREAD_COUNT = 'SET_UNREAD_COUNT';
 
 type SetFriendList = {
   type: typeof SET_FRIEND_LIST;
@@ -98,11 +97,6 @@ type SetMember2Status = {
   payload: MemberMapType;
 };
 
-type SetUnReadCount = {
-  type: typeof SET_UNREAD_COUNT;
-  payload: number;
-};
-
 export type ContactActionTypes =
   | SetFriendList
   | SetOriginList
@@ -111,7 +105,6 @@ export type ContactActionTypes =
   | SetGroupList
   | SetRecvGroupApplicationList
   | SetSentGroupApplicationList
-  | SetUnReadCount
   | SetbBlackList
   | SetMember2Status
   | SetGroupMemberList

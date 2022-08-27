@@ -1,16 +1,26 @@
 import { useCallback, useRef, useState } from 'react';
 
 import { useDrop } from 'react-dnd';
+import type { Connection, Edge, Node } from 'react-flow-renderer';
 import ReactFlow, {
   addEdge,
   Background,
+  ConnectionLineType,
   Controls,
   MiniMap,
+  Position,
   useEdgesState,
   useNodesState,
 } from 'react-flow-renderer';
+import dagre from 'dagre';
 
-import { edges as initialEdges, nodes as initialNodes } from './initial-elements';
+import { flowableToReactflow } from '../../utils/Convert';
+import flowable_data from '../../utils/flowable_data.json';
+
+import ButtonEdge from './components/ButtonEdge';
+import nodeTypes from './components/nodeTypes';
+
+// import { edges as initialEdges, nodes as initialNodes } from './initial-elements';
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
@@ -19,14 +29,76 @@ type OverviewFlowProps = {
   onNodeClick: (e: any, node: any) => void;
 };
 
+const edgeTypes = {
+  buttonedge: ButtonEdge,
+};
+
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+const nodeWidth = 172;
+const nodeHeight = 36;
+
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
+  const isHorizontal = direction === 'LR';
+  dagreGraph.setGraph({ rankdir: direction });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  nodes.forEach((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.targetPosition = isHorizontal ? Position.Left : Position.Top;
+    node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
+
+    // We are shifting the dagre node position (anchor=center center) to the top left
+    // so it matches the React Flow node anchor point (top left).
+    node.position = {
+      x: nodeWithPosition.x - nodeWidth / 2,
+      y: nodeWithPosition.y - nodeHeight / 2,
+    };
+
+    return node;
+  });
+
+  console.log('nodes', nodes);
+
+  return { nodes, edges };
+};
+
 const OverviewFlow = (props: OverviewFlowProps) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes as any);
+
+  const [{ nodes: initialNodes, edges: initialEdges }] = useState(
+    flowableToReactflow(flowable_data as any),
+  );
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
 
   const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge(params, eds)),
+    (params: Connection) => {
+      if (params.source == params.target) {
+        return;
+      }
+      setEdges((eds) =>
+        addEdge(
+          {
+            ...params,
+            type: 'buttonedge',
+          },
+          eds,
+        ),
+      );
+    },
     [setEdges],
   );
 
@@ -51,6 +123,20 @@ const OverviewFlow = (props: OverviewFlowProps) => {
     }),
   });
   connectDrop(reactFlowWrapper);
+
+  const onLayout = useCallback(
+    (direction: 'LR' | 'TB') => {
+      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+        nodes,
+        edges,
+        direction,
+      );
+
+      setNodes([...layoutedNodes]);
+      setEdges([...layoutedEdges]);
+    },
+    [nodes, edges, setNodes, setEdges],
+  );
 
   const onDrop = useCallback(
     (event: any) => {
@@ -84,17 +170,35 @@ const OverviewFlow = (props: OverviewFlowProps) => {
     [reactFlowInstance, setNodes],
   );
 
+  const handleRemoveEdge = useCallback(
+    (edgeId: string) => () =>
+      setEdges((eds) => {
+        return eds.filter((ed) => ed.id !== edgeId);
+      }),
+    [setEdges],
+  );
+
+  const _edges = edges.map((item) => ({
+    ...item,
+    data: { ...item, remove: handleRemoveEdge(item.id) },
+  }));
+
+  console.log('edges', edges, _edges);
+
   return (
     <div className="reactflow-wrapper" style={{ height: '100%' }} ref={reactFlowWrapper}>
       <ReactFlow
         nodes={nodes}
-        edges={edges}
+        edges={_edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={(event, element) => {
           console.log('click', element);
           props.onNodeClick(event, element);
         }}
+        // onEdgeClick={(...args) => {
+        //   console.log('onEdgeClick', args);
+        // }}
         onConnect={onConnect}
         onInit={setReactFlowInstance}
         onDrop={onDrop}
@@ -102,19 +206,24 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         fitView
         attributionPosition="top-right"
         proOptions={{ account: 'paid-pro', hideAttribution: true }}
+        edgeTypes={edgeTypes}
+        nodeTypes={nodeTypes}
+        connectionLineType={ConnectionLineType.SmoothStep}
       >
         <MiniMap
           nodeStrokeColor={(n) => {
             if (n.style?.background) return n.style.background as any;
-            if (n.type === 'input') return '#0041d0';
-            if (n.type === 'output') return '#ff0072';
-            if (n.type === 'default') return '#1a192b';
-
+            if (n.type === 'StartNoneEvent') return '#0041d0';
+            if (n.type === 'EndNoneEvent') return '#ff0072';
+            if (['UserTask', 'ExclusiveGateway'].includes(n.type!)) {
+              return '#1a192b';
+            }
             return '#eee';
           }}
           nodeColor={(n) => {
-            if (n.style?.background) return n.style.background as any;
-
+            if (n.style?.background) {
+              return n.style.background as any;
+            }
             return '#fff';
           }}
           nodeBorderRadius={2}
@@ -122,6 +231,10 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         <Controls />
         <Background color="#aaa" gap={16} />
       </ReactFlow>
+      <div className="controls" style={{ position: 'absolute', top: 0, right: 0, zIndex: 1000 }}>
+        <button onClick={() => onLayout('TB')}>vertical layout</button>
+        <button onClick={() => onLayout('LR')}>horizontal layout</button>
+      </div>
     </div>
   );
 };

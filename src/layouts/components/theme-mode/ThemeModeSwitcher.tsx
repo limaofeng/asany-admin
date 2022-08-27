@@ -25,14 +25,11 @@ const ThemeModeSwitcher = ({
   const { mode, menuMode, updateMode, updateMenuMode } = useThemeMode();
   const switchMode = useCallback(
     (_mode: ThemeModeType) => {
-      console.log('_mode', _mode);
       updateMenuMode(_mode);
       updateMode(_mode);
     },
     [updateMenuMode, updateMode],
   );
-
-  console.log('mode', mode);
 
   return (
     <Dropdown

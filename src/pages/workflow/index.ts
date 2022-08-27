@@ -5,13 +5,31 @@ import LoadingComponent from '@/components/PageLoading';
 
 @library({
   name: 'workflow',
-  description: '',
+  description: '工作流',
   namespace: 'cn.asany.ui.admin.workflow',
 })
 class Workflow {
   @component({
-    title: '网站列表',
-    tags: ['网站'],
+    title: '默认侧边栏',
+    tags: ['工作流/侧边栏'],
+  })
+  DefaultSidebar = dynamic({
+    loader: () => import('./components/DefaultSidebar'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    title: '流程发起',
+    tags: ['工作流'],
+  })
+  Launcher = dynamic({
+    loader: () => import('./pages/Launcher'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    title: '设计器',
+    tags: ['工作流'],
   })
   FlowDesign = dynamic({
     loader: () => import('./pages/FlowDesign'),

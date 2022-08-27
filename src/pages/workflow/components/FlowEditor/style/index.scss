@@ -105,7 +105,7 @@
   .sidebar-block-layers {
     .asany-treeview {
       .monaco-icon-label {
-        &>.svg-icon {
+        & > .svg-icon {
           svg {
             width: 21px;
             height: 21px;
@@ -150,7 +150,6 @@
         }
       }
     }
-
   }
 
   .canvas {
@@ -159,19 +158,18 @@
 
   .sidebar-panel {
     .flow-node {
-      border-color: #0041d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       height: 20px;
+      margin-bottom: 10px;
       padding: 4px;
       border: 1px solid #1a192b;
+      border-color: #0041d0;
       border-radius: 2px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       cursor: grab;
     }
   }
-
 }
 
 .sunmao-libraries {
@@ -628,7 +626,7 @@
     display: flex;
     flex-wrap: wrap;
 
-    &.show-list>li {
+    &.show-list > li {
       width: 100%;
       height: auto;
 
@@ -766,7 +764,7 @@
               color: #fff;
               font-weight: bold;
 
-              &>span {
+              & > span {
                 position: relative;
               }
 
@@ -808,7 +806,7 @@
   }
 
   .tree-current-node {
-    &>.svg-icon {
+    & > .svg-icon {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -821,13 +819,58 @@
   .ae-tree {
     margin-bottom: 0;
 
-    &>li>.svg-icon {
+    & > li > .svg-icon {
       display: flex;
       align-items: center;
       justify-content: center;
       width: 32px;
       height: 32px;
       font-size: 14px;
+    }
+  }
+}
+
+.reactflow-wrapper {
+  .react-flow__node-StartNoneEvent {
+    width: 150px;
+    padding: 10px;
+    color: #222;
+    font-size: 12px;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #1a192b;
+    border-radius: 3px;
+
+    &.selectable.selected {
+      box-shadow: 0 0 0 0.5px #1a192b;
+    }
+  }
+  .react-flow__node-UserTask {
+    width: 150px;
+    padding: 10px;
+    color: #222;
+    font-size: 12px;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #1a192b;
+    border-radius: 3px;
+
+    &.selectable.selected {
+      box-shadow: 0 0 0 0.5px #1a192b;
+    }
+  }
+  .react-flow__node-EndNoneEvent {
+    width: 150px;
+    padding: 10px;
+    color: #222;
+    font-size: 12px;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #1a192b;
+    border-radius: 3px;
+
+    &.selectable.selected {
+      box-shadow: 0 0 0 0.5px #1a192b;
     }
   }
 }

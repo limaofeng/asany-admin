@@ -17,7 +17,7 @@ type OrganizationSettingsSidebarProps = {
 
 function renderMenuItem(item: MenuData, params: any) {
   if (item.type === 'SECTION') {
-    return <Menu.Section key={item.id} title={item.name} />;
+    return <Menu.Section key={item.id}>{item.name}</Menu.Section>;
   }
   if (item.type === 'URL') {
     return (
@@ -32,7 +32,7 @@ function renderMenuItem(item: MenuData, params: any) {
     );
   }
   if (item.type === 'SEPARATOR') {
-    return <Menu.Separator key={item.id} />;
+    return <Menu.Separator key={item.id} className="my-1" />;
   }
   if (item.type === 'MENU') {
     return (

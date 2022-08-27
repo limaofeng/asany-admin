@@ -24,7 +24,6 @@ import {
   SET_RECV_GROUP_APPLICATION_LIST,
   SET_SENT_FRIEND_APPLICATION_LIST,
   SET_SENT_GROUP_APPLICATION_LIST,
-  SET_UNREAD_COUNT,
 } from '../types/contacts';
 
 export const setFriendList = (value: FriendItem[]): ContactActionTypes => {
@@ -115,13 +114,6 @@ export const setMember2Status = (value: MemberMapType): ContactActionTypes => {
   };
 };
 
-export const setUnReadCount = (value: number): ContactActionTypes => {
-  return {
-    type: SET_UNREAD_COUNT,
-    payload: value,
-  };
-};
-
 export const getFriendList = () => {
   return (dispatch: React.Dispatch<ContactActionTypes>) => {
     im.getFriendList().then((res) => {
@@ -197,13 +189,5 @@ export const getGroupInfo = (gid: string) => {
         dispatch(setGroupInfo(JSON.parse(res.data)[0]));
       })
       .catch(() => dispatch(setGroupInfo({} as GroupItem)));
-  };
-};
-
-export const getUnReadCount = () => {
-  return (dispatch: React.Dispatch<ContactActionTypes>) => {
-    im.getTotalUnreadMsgCount().then((res) => {
-      dispatch(setUnReadCount(Number(res.data)));
-    });
   };
 };

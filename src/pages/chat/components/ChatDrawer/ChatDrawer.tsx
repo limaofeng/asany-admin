@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
@@ -17,9 +17,7 @@ type ChatDrawerProps = {
 };
 
 function ChatDrawer(props: ChatDrawerProps) {
-  const { onClose } = props;
-
-  const [visible, setVisible] = useState(props.visible);
+  const { visible, onClose } = props;
 
   const {
     curCve,
@@ -36,7 +34,6 @@ function ChatDrawer(props: ChatDrawerProps) {
   } = useChat();
 
   const handleClose = useCallback(() => {
-    setVisible(false);
     onClose();
   }, [onClose]);
 
@@ -45,8 +42,10 @@ function ChatDrawer(props: ChatDrawerProps) {
   }, [setCurCve]);
 
   useEffect(() => {
-    setVisible(!!props.visible);
-  }, [setCurCve, props.visible]);
+    if (!visible) {
+      setCurCve(null);
+    }
+  }, [setCurCve, visible]);
 
   return (
     <Drawer

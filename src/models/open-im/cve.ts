@@ -37,6 +37,7 @@ function useCveModel() {
 
   useEffect(() => {
     if (loginStatus != 'login.success') {
+      dispatch(setCveList([]));
       return;
     }
     getCveList(dispatch);

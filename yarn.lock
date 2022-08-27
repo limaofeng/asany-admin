@@ -205,10 +205,10 @@
     lodash-es "^4.17.21"
     react-flip-toolkit "^7.0.14"
 
-"@asany/sunmao@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.npmjs.org/@asany/sunmao/-/sunmao-1.0.10.tgz#2d9355b83320c28bc0ad6656899d587ddae7bca7"
-  integrity sha512-nOGa5jrsnn//V0tZ86eZwj9OCWtMr37vT6FBt5cvJs5lL0Fqp1u7EbddfhbkXEU/cbalISJBbFal6zoYNbkJjA==
+"@asany/sunmao@^1.0.11":
+  version "1.0.11"
+  resolved "https://registry.npmjs.org/@asany/sunmao/-/sunmao-1.0.11.tgz#3249eb9e9d311f484a54ec8c984898085a19d2dd"
+  integrity sha512-e8WmevwfdAXX4Wqpm456sZAAq7pkcc/Gjcztb0ArHNQHZhIQtBHvQOja7jDGrpRyooAvGYvIh1abnFELmsEdmA==
   dependencies:
     "@asany/sortable" "^0.1.36"
     "@daybrush/drag" "^0.19.3"
@@ -3669,6 +3669,11 @@
     "@types/d3-timer" "*"
     "@types/d3-transition" "*"
     "@types/d3-zoom" "*"
+
+"@types/dagre@^0.7.48":
+  version "0.7.48"
+  resolved "https://registry.npmjs.org/@types/dagre/-/dagre-0.7.48.tgz#e3ff1962df959c22af44d58d4275d35bd9309043"
+  integrity sha512-rF3yXSwHIrDxEkN6edCE4TXknb5YSEpiXfLaspw1I08grC49ZFuAVGOQCmZGIuLUGoFgcqGlUFBL/XrpgYpQgw==
 
 "@types/daterangepicker@^3.1.4":
   version "3.1.4"
@@ -7858,6 +7863,14 @@ d@1, d@^1.0.1:
     es5-ext "^0.10.50"
     type "^1.0.1"
 
+dagre@^0.8.5:
+  version "0.8.5"
+  resolved "https://registry.npmjs.org/dagre/-/dagre-0.8.5.tgz#ba30b0055dac12b6c1fcc247817442777d06afee"
+  integrity sha512-/aTqmnRta7x7MCCpExk7HQL2O4owCT2h8NT//9I1OQ9vt29Pa0BzSAkR5lwFUcQ7491yVi/3CXU9jQ5o0Mn2Sw==
+  dependencies:
+    graphlib "^2.1.8"
+    lodash "^4.17.15"
+
 dargs@^7.0.0:
   version "7.0.0"
   resolved "https://registry.npmjs.org/dargs/-/dargs-7.0.0.tgz#04015c41de0bcb69ec84050f3d9be0caf8d6d5cc"
@@ -10233,6 +10246,13 @@ grapheme-splitter@^1.0.4:
   version "1.0.4"
   resolved "https://registry.npmjs.org/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
+
+graphlib@^2.1.8:
+  version "2.1.8"
+  resolved "https://registry.npmjs.org/graphlib/-/graphlib-2.1.8.tgz#5761d414737870084c92ec7b5dbcb0592c9d35da"
+  integrity sha512-jcLLfkpoVGmH7/InMC/1hIvOPSUh38oJtGhvrOFGzioE1DZ+0YW16RgmOJhHiuWTvGiJQ9Z1Ik43JvkRPRvE+A==
+  dependencies:
+    lodash "^4.17.15"
 
 graphql-config@^3.0.2:
   version "3.4.1"

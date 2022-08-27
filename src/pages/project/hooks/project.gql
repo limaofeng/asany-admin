@@ -13,3 +13,12 @@ query projects {
     }
   }
 }
+
+query project($id: ID!) {
+  project(id: $id) {
+    id
+    logo
+    name
+    description
+  }
+}

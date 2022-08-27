@@ -66,7 +66,7 @@ const IconMosaic = memo(
       >
         <span
           role="img"
-          className="anyicon icon-thumb"
+          className="anyicon icon-thumb d-flex justify-content-center align-items-center"
           aria-label={icon.name}
           dangerouslySetInnerHTML={{
             __html: icon.content,

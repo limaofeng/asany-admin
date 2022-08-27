@@ -70,9 +70,6 @@ function CveItem(props: CveItemProps) {
     onClick(cve);
   }, [cve, onClick]);
 
-  // console.log('data-time', parseLatestTime(cve.latestMsgSendTime));
-  // console.log('unreadCount', isRecv(cve?.recvMsgOpt), cve.unreadCount);
-
   return (
     <div
       className={classnames('cve-item d-flex flex-stack py-4 mb-1', {

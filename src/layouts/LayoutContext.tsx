@@ -43,7 +43,13 @@ type LayoutStoreContext = {
   dispatch: DispatchWithoutAction;
 };
 
-const LayoutContext = React.createContext<LayoutStoreContext>({} as any);
+const LayoutContext = React.createContext<LayoutStoreContext>({
+  getState: () => ({
+    routes: [],
+  }),
+  subscribe: () => {},
+  dispatch: () => {},
+} as any);
 
 export interface LayoutProviderProps {
   children: React.ReactNode;

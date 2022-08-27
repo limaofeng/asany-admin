@@ -18,7 +18,6 @@ import {
   SET_RECV_FRIEND_APPLICATION_LIST,
   SET_SENT_FRIEND_APPLICATION_LIST,
   SET_SENT_GROUP_APPLICATION_LIST,
-  SET_UNREAD_COUNT,
 } from '@/utils/open-im/types/contacts';
 import { SET_RECV_GROUP_APPLICATION_LIST } from '@/utils/open-im/types/contacts';
 import { getGroupInfo, getGroupMemberList, setFriendList } from '@/utils/open-im/actions/contacts';
@@ -65,8 +64,6 @@ export const friendReducer = (state = initialState, action: ContactActionTypes):
       return { ...state, groupMemberLoading: action.payload };
     case SET_MEMBER2STATUS:
       return { ...state, member2status: action.payload };
-    case SET_UNREAD_COUNT:
-      return { ...state, unReadCount: action.payload };
     default:
       return state;
   }

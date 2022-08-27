@@ -4,15 +4,16 @@ import Icon from '@asany/icons';
 import type { MenuDataItem } from '@umijs/route-utils';
 import { getMatchMenu } from '@umijs/route-utils';
 import { findLast } from 'lodash';
-import { useLocation } from 'umi';
+import { useLocation, useModel } from 'umi';
+import classnames from 'classnames';
+import { useReactComponent } from '@asany/sunmao';
 
 import { ThemeModeSwitcher } from '../theme-mode/ThemeModeSwitcher';
 
 import { useLayoutSelector } from '@/layouts/LayoutContext';
 import Breadcrumb from '@/metronic/Breadcrumb';
 import { useSticky } from '@/metronic/hooks';
-import { Button } from '@/metronic';
-import { ChatDrawer } from '@/pages/chat/components/ChatDrawer';
+import { Bullet, Button } from '@/metronic';
 
 type ToolbarProps = {
   children?: React.ReactNode;
@@ -20,6 +21,10 @@ type ToolbarProps = {
 
 function Toolbar(props: ToolbarProps) {
   const [visible, setVisible] = useState(false);
+
+  const unreadCount = useModel('open-im.auth', ({ state }) => state.unReadCount);
+
+  const ChatDrawer = useReactComponent('cn.asany.ui.admin.chat.ChatDrawer');
 
   const handleChatClose = useCallback(() => {
     setVisible(false);
@@ -37,11 +42,24 @@ function Toolbar(props: ToolbarProps) {
       </div>
       <div className="d-flex align-items-center ms-3">
         <Button
-          className="w-40px h-40px pulse pulse-white"
+          variant={false}
+          color="gray-600"
+          className={classnames('w-40px bg-body h-40px pulse btn-active-color-primary', {
+            'pulse-success': !!unreadCount,
+          })}
           icon={
             <>
               <Icon name="Duotune/com012" className="svg-icon-2" />
-              <span className="pulse-ring" />
+              {!!unreadCount && (
+                <>
+                  <span className="pulse-ring" />
+                  <Bullet
+                    style="dot"
+                    color="success"
+                    className="h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink"
+                  />
+                </>
+              )}
             </>
           }
           onClick={handleChatOpen}

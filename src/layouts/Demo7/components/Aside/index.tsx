@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 import { Button, Nav } from 'react-bootstrap';
+import { useReactComponent } from '@asany/sunmao';
 
 import { useLayout, useLayoutSelector } from '../../../LayoutContext';
 
@@ -14,7 +15,6 @@ import type { MenuData } from '@/.umi/app/typings';
 import { Symbol, Tooltip } from '@/metronic';
 import Popover from '@/metronic/Popover';
 import { useScroll } from '@/metronic/utils';
-import UserAccountMenu from '@/pages/user/components/UserAccountMenu';
 import { getFileThumbnailUrlById } from '@/utils';
 import { useCurrentuser } from '@/utils/hooks';
 
@@ -39,6 +39,8 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
   const [userMenuVisible, setUserMenuVisible] = useState(false);
 
   const { data: user } = useCurrentuser();
+
+  const UserAccountMenu = useReactComponent('cn.asany.ui.admin.user.UserAccountMenu');
 
   const handleCloseUserMenu = useCallback(() => {
     setUserMenuVisible(false);
