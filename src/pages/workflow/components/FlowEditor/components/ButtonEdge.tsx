@@ -16,7 +16,6 @@ export default function CustomEdge({
   targetPosition,
   style = {},
   markerEnd,
-  data,
 }: EdgeProps) {
   const edgePath = getSmoothStepPath({
     sourceX,
@@ -51,8 +50,8 @@ export default function CustomEdge({
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
         <div className="edge-container">
-          <button className="edgebutton" onClick={data?.remove}>
-            <Icon name="Bootstrap/x" />
+          <button className="edgebutton">
+            <Icon name="Bootstrap/plus" />
           </button>
         </div>
       </foreignObject>

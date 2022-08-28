@@ -5,7 +5,6 @@ import type { Connection, Edge, Node } from 'react-flow-renderer';
 import ReactFlow, {
   addEdge,
   Background,
-  ConnectionLineType,
   Controls,
   MiniMap,
   Position,
@@ -17,8 +16,9 @@ import dagre from 'dagre';
 import { flowableToReactflow } from '../../utils/Convert';
 import flowable_data from '../../utils/flowable_data.json';
 
-import ButtonEdge from './components/ButtonEdge';
-import nodeTypes from './components/nodeTypes';
+import nodeTypes from './nodeTypes';
+import { FloatingConnectionLine } from './edgeTypes/FloatingEdge';
+import edgeTypes from './edgeTypes';
 
 // import { edges as initialEdges, nodes as initialNodes } from './initial-elements';
 
@@ -29,22 +29,18 @@ type OverviewFlowProps = {
   onNodeClick: (e: any, node: any) => void;
 };
 
-const edgeTypes = {
-  buttonedge: ButtonEdge,
-};
-
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const nodeWidth = 172;
-const nodeHeight = 36;
+// const nodeWidth = 172;
+// const nodeHeight = 36;
 
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
   const isHorizontal = direction === 'LR';
   dagreGraph.setGraph({ rankdir: direction });
 
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+    dagreGraph.setNode(node.id, { width: node.width, height: node.height });
   });
 
   edges.forEach((edge) => {
@@ -57,6 +53,11 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
     const nodeWithPosition = dagreGraph.node(node.id);
     node.targetPosition = isHorizontal ? Position.Left : Position.Top;
     node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
+
+    const nodeWidth = nodeWithPosition.width!;
+    const nodeHeight = nodeWithPosition.height!;
+
+    console.log('node', node);
 
     // We are shifting the dagre node position (anchor=center center) to the top left
     // so it matches the React Flow node anchor point (top left).
@@ -93,7 +94,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         addEdge(
           {
             ...params,
-            type: 'buttonedge',
+            type: 'floating',
           },
           eds,
         ),
@@ -208,7 +209,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         proOptions={{ account: 'paid-pro', hideAttribution: true }}
         edgeTypes={edgeTypes}
         nodeTypes={nodeTypes}
-        connectionLineType={ConnectionLineType.SmoothStep}
+        connectionLineComponent={FloatingConnectionLine}
       >
         <MiniMap
           nodeStrokeColor={(n) => {
