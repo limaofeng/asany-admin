@@ -71,10 +71,12 @@ function DefaultSidebar() {
             草稿箱
           </Menu.Item>
           <Menu.Separator className="my-1" />
-          <Menu.Section contentClassName="pb-0">设置</Menu.Section>
-          <Menu.Item bullet url="/workflow/settings/xxx" key="project_settings_types">
-            项目类型
+          <Menu.Section contentClassName="pb-0">设计</Menu.Section>
+          <Menu.Item bullet url="/workflow/my/models" key="workflow_models">
+            我的模型
           </Menu.Item>
+          <Menu.Separator className="my-1" />
+          <Menu.Section contentClassName="pb-0">设置</Menu.Section>
           <Menu.Item bullet url="/workflow/design" key="project_settings_tags">
             设计器
           </Menu.Item>

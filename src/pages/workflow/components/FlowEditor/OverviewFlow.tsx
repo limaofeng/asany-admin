@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDrop } from 'react-dnd';
 import type { Connection, Edge, Node } from 'react-flow-renderer';
@@ -12,13 +12,16 @@ import ReactFlow, {
   useNodesState,
 } from 'react-flow-renderer';
 import dagre from 'dagre';
+import { useEditorSelector } from '@asany/sunmao';
 
 import { flowableToReactflow } from '../../utils/Convert';
-import flowable_data from '../../utils/flowable_data.json';
+import type { ProcessDefinition } from '../../type';
 
 import nodeTypes from './nodeTypes';
 import { FloatingConnectionLine } from './edgeTypes/FloatingEdge';
 import edgeTypes from './edgeTypes';
+
+import type { ProcessModel } from '@/types';
 
 // import { edges as initialEdges, nodes as initialNodes } from './initial-elements';
 
@@ -77,13 +80,21 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 const OverviewFlow = (props: OverviewFlowProps) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
-  const [{ nodes: initialNodes, edges: initialEdges }] = useState(
-    flowableToReactflow(flowable_data as any),
+  const editorJson = useEditorSelector(
+    (state) => (state.project.data as ProcessModel | undefined)?.editorJson,
   );
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+
+  useEffect(() => {
+    if (editorJson) {
+      const flowData = flowableToReactflow(JSON.parse(editorJson) as ProcessDefinition);
+      setNodes(flowData.nodes);
+      setEdges(flowData.edges);
+    }
+  }, [editorJson, setEdges, setNodes]);
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -185,6 +196,10 @@ const OverviewFlow = (props: OverviewFlowProps) => {
   }));
 
   console.log('edges', edges, _edges);
+
+  const loading = useEditorSelector((state) => state.ui.scena.loading);
+
+  console.log('loading', loading);
 
   return (
     <div className="reactflow-wrapper" style={{ height: '100%' }} ref={reactFlowWrapper}>

@@ -109,6 +109,22 @@ export default (): EditorPlugin => ({
   },
   scena: {
     screen: 'fullscreen',
+    toolbar: {
+      tools: [
+        {
+          id: 'move',
+          name: '选择',
+          icon: 'AsanyEditor/Move',
+          position: 'left',
+          mutex: 'icons-actions',
+          useSelector: () => true,
+          isSelected: (move) => move,
+          onClick: (editor) => {
+            return editor.sidebar.select('move');
+          },
+        },
+      ],
+    },
     workspace: Workspace,
   },
   features: [],

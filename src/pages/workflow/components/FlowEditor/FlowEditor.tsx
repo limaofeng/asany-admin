@@ -7,12 +7,20 @@ import { SketchProvider } from '@asany/sunmao';
 
 import plugin from './plugin';
 
-function FlowEditor() {
+import type { ProcessModel } from '@/types';
+
+type FlowEditorProps = {
+  loading: boolean;
+  data?: ProcessModel;
+  onBack: () => void;
+};
+
+function FlowEditor(props: FlowEditorProps) {
   const api = useRef<IAsanyEditor>(null);
 
-  const handleSave = useCallback(() => {}, []);
+  const { loading, onBack, data } = props;
 
-  const handleBack = useCallback(() => {}, []);
+  const handleSave = useCallback(() => {}, []);
 
   return (
     <ReactFlowProvider>
@@ -21,9 +29,15 @@ function FlowEditor() {
           ref={api}
           plugins={[plugin()]}
           onSave={handleSave}
-          onBack={handleBack}
+          onBack={onBack}
+          loading={loading}
           className="flow-editor"
-          project={{ type: 'flow' } as any}
+          project={{
+            id: data?.id || 'none',
+            type: 'flow',
+            name: data?.name || '',
+            data: data!,
+          }}
         />
       </SketchProvider>
     </ReactFlowProvider>

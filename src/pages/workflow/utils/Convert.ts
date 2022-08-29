@@ -16,7 +16,6 @@ export function flowableToReactflow(source: ProcessDefinition) {
   };
 
   const shapes = source.childShapes;
-  console.log('shapes', shapes.length);
   const nodes = shapes.filter((item) => item.stencil.id != 'SequenceFlow');
   for (const shape of shapes) {
     if (shape.stencil.id == 'SequenceFlow') {

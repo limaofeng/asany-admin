@@ -205,10 +205,10 @@
     lodash-es "^4.17.21"
     react-flip-toolkit "^7.0.14"
 
-"@asany/sunmao@^1.0.11":
-  version "1.0.11"
-  resolved "https://registry.npmjs.org/@asany/sunmao/-/sunmao-1.0.11.tgz#3249eb9e9d311f484a54ec8c984898085a19d2dd"
-  integrity sha512-e8WmevwfdAXX4Wqpm456sZAAq7pkcc/Gjcztb0ArHNQHZhIQtBHvQOja7jDGrpRyooAvGYvIh1abnFELmsEdmA==
+"@asany/sunmao@^1.0.14":
+  version "1.0.14"
+  resolved "https://registry.npmjs.org/@asany/sunmao/-/sunmao-1.0.14.tgz#c4f2d57d9ee905bc1b67c89978c4d95372629773"
+  integrity sha512-0ZVo/SCfVKLYzKcsew+5fcKWETeOI6cgrwfoL7L8uNBN9Do4h1YiXOGa/5YL8Z+EjKfGMg6dQhUU9CfwSOFX5g==
   dependencies:
     "@asany/sortable" "^0.1.36"
     "@daybrush/drag" "^0.19.3"

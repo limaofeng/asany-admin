@@ -35,6 +35,15 @@ class Workflow {
     loader: () => import('./pages/FlowDesign'),
     loading: LoadingComponent,
   });
+
+  @component({
+    title: '流程模型',
+    tags: ['工作流'],
+  })
+  ModelList = dynamic({
+    loader: () => import('./pages/ModelList'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Workflow();

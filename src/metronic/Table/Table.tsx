@@ -130,11 +130,9 @@ function Table<T>(props: TableProps<T>) {
     colgroups: new Map(),
     selectedKeys: new Set<string>(),
   });
-  const [v, forceRender] = useReducer((s) => s + 1, 0);
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const dataSource = useDataSourceWrapper(props.dataSource);
-
-  console.log('v', v);
 
   state.current.page = pagination?.current || 0;
   state.current.pageSize = pagination?.pageSize || 0;
