@@ -10,7 +10,6 @@ import ReactFlow, {
   useEdgesState,
   useNodesState,
 } from 'react-flow-renderer';
-import { useEditorSelector } from '@asany/sunmao';
 
 import nodeTypes from './nodeTypes';
 import { FloatingConnectionLine } from './edgeTypes/FloatingEdge';
@@ -25,6 +24,8 @@ type OverviewFlowProps = {
   onClick: (e: React.MouseEvent) => void;
   onNodeClick: (e: React.MouseEvent, node: Node) => void;
   onEdgeClick: (e: React.MouseEvent, edge: Edge) => void;
+  onNodesDelete: (nodes: Node[]) => void;
+  onEdgesDelete: (edges: Edge[]) => void;
 };
 
 const OverviewFlow = (props: OverviewFlowProps) => {
@@ -67,11 +68,12 @@ const OverviewFlow = (props: OverviewFlowProps) => {
   }, []);
 
   const [{}, connectDrop] = useDrop<any, any, any>({
-    accept: ['input', 'output', 'default'],
+    accept: ['StartNoneEvent', 'EndNoneEvent', 'UserTask'],
     drop(item) {
       return item;
     },
     canDrop(item, monitor) {
+      console.log('canDrop', monitor.isOver({ shallow: true }));
       return monitor.isOver({ shallow: true });
     },
     collect: (monitor) => ({
@@ -127,10 +129,6 @@ const OverviewFlow = (props: OverviewFlowProps) => {
     data: { ...item, remove: handleRemoveEdge(item.id) },
   }));
 
-  const loading = useEditorSelector((state) => state.ui.scena.loading);
-
-  console.log('loading', loading);
-
   return (
     <div className="reactflow-wrapper" style={{ height: '100%' }} ref={reactFlowWrapper}>
       <ReactFlow
@@ -141,6 +139,8 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         onEdgesChange={onEdgesChange}
         onNodeClick={props.onNodeClick}
         onEdgeClick={props.onEdgeClick}
+        onNodesDelete={props.onNodesDelete}
+        onEdgesDelete={props.onEdgesDelete}
         onConnect={onConnect}
         onInit={setReactFlowInstance}
         onDrop={onDrop}

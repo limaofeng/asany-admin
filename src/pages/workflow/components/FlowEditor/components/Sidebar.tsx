@@ -79,9 +79,9 @@ function Sidebar(props: SidebarProps) {
                 <div className="description">
                   You can drag these nodes to the pane on the right.
                 </div>
-                <FlowNode type="StartNoneEvent">Input Node</FlowNode>
-                <FlowNode type="EndNoneEvent">Default Node</FlowNode>
-                <FlowNode type="UserTask">Output Node</FlowNode>
+                <FlowNode type="StartNoneEvent">开始</FlowNode>
+                <FlowNode type="EndNoneEvent">结束</FlowNode>
+                <FlowNode type="UserTask">用户任务</FlowNode>
               </aside>
             </div>
           </OverlayScrollbarsComponent>

@@ -34,7 +34,7 @@ const nodeProperties: ICustomizer = {
       renderer: {
         component: 'MultiLineText',
         props: {
-          autoSize: { minRows: 2 },
+          autoSize: { minRows: 2, maxRows: 4 },
         },
       },
     },
@@ -61,7 +61,7 @@ const edgeProperties: ICustomizer = {
       renderer: {
         component: 'MultiLineText',
         props: {
-          autoSize: { minRows: 2 },
+          autoSize: { minRows: 2, maxRows: 4 },
         },
       },
     },
@@ -258,6 +258,14 @@ function Workspace() {
     [editor.aside],
   );
 
+  const handleNodesDelete = useCallback(() => {
+    editor.aside.close();
+  }, [editor.aside]);
+
+  const handleEdgesDelete = useCallback(() => {
+    editor.aside.close();
+  }, [editor.aside]);
+
   return (
     <div
       style={{
@@ -271,6 +279,8 @@ function Workspace() {
         onClick={handleClick}
         onNodeClick={handleNodeClick}
         onEdgeClick={handleEdgeClick}
+        onNodesDelete={handleNodesDelete}
+        onEdgesDelete={handleEdgesDelete}
       />
     </div>
   );
