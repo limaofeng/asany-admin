@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import { useDrop } from 'react-dnd';
 import type { Connection, Edge, Node } from 'react-flow-renderer';
@@ -7,94 +7,40 @@ import ReactFlow, {
   Background,
   Controls,
   MiniMap,
-  Position,
   useEdgesState,
   useNodesState,
 } from 'react-flow-renderer';
-import dagre from 'dagre';
 import { useEditorSelector } from '@asany/sunmao';
-
-import { flowableToReactflow } from '../../utils/Convert';
-import type { ProcessDefinition } from '../../type';
 
 import nodeTypes from './nodeTypes';
 import { FloatingConnectionLine } from './edgeTypes/FloatingEdge';
 import edgeTypes from './edgeTypes';
 
-import type { ProcessModel } from '@/types';
-
-// import { edges as initialEdges, nodes as initialNodes } from './initial-elements';
-
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 type OverviewFlowProps = {
-  onNodeClick: (e: any, node: any) => void;
-};
-
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-// const nodeWidth = 172;
-// const nodeHeight = 36;
-
-const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
-  const isHorizontal = direction === 'LR';
-  dagreGraph.setGraph({ rankdir: direction });
-
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: node.width, height: node.height });
-  });
-
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
-
-  dagre.layout(dagreGraph);
-
-  nodes.forEach((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    node.targetPosition = isHorizontal ? Position.Left : Position.Top;
-    node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
-
-    const nodeWidth = nodeWithPosition.width!;
-    const nodeHeight = nodeWithPosition.height!;
-
-    console.log('node', node);
-
-    // We are shifting the dagre node position (anchor=center center) to the top left
-    // so it matches the React Flow node anchor point (top left).
-    node.position = {
-      x: nodeWithPosition.x - nodeWidth / 2,
-      y: nodeWithPosition.y - nodeHeight / 2,
-    };
-
-    return node;
-  });
-
-  console.log('nodes', nodes);
-
-  return { nodes, edges };
+  nodes: Node[];
+  edges: Edge[];
+  onClick: (e: React.MouseEvent) => void;
+  onNodeClick: (e: React.MouseEvent, node: Node) => void;
+  onEdgeClick: (e: React.MouseEvent, edge: Edge) => void;
 };
 
 const OverviewFlow = (props: OverviewFlowProps) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
-  const editorJson = useEditorSelector(
-    (state) => (state.project.data as ProcessModel | undefined)?.editorJson,
-  );
-
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState(props.nodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(props.edges);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
 
-  useEffect(() => {
-    if (editorJson) {
-      const flowData = flowableToReactflow(JSON.parse(editorJson) as ProcessDefinition);
-      setNodes(flowData.nodes);
-      setEdges(flowData.edges);
-    }
-  }, [editorJson, setEdges, setNodes]);
+  useLayoutEffect(() => {
+    setEdges(props.edges);
+  }, [props.edges, setEdges]);
+
+  useLayoutEffect(() => {
+    setNodes(props.nodes);
+  }, [props.nodes, setNodes]);
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -135,20 +81,6 @@ const OverviewFlow = (props: OverviewFlowProps) => {
     }),
   });
   connectDrop(reactFlowWrapper);
-
-  const onLayout = useCallback(
-    (direction: 'LR' | 'TB') => {
-      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-        nodes,
-        edges,
-        direction,
-      );
-
-      setNodes([...layoutedNodes]);
-      setEdges([...layoutedEdges]);
-    },
-    [nodes, edges, setNodes, setEdges],
-  );
 
   const onDrop = useCallback(
     (event: any) => {
@@ -195,8 +127,6 @@ const OverviewFlow = (props: OverviewFlowProps) => {
     data: { ...item, remove: handleRemoveEdge(item.id) },
   }));
 
-  console.log('edges', edges, _edges);
-
   const loading = useEditorSelector((state) => state.ui.scena.loading);
 
   console.log('loading', loading);
@@ -206,15 +136,11 @@ const OverviewFlow = (props: OverviewFlowProps) => {
       <ReactFlow
         nodes={nodes}
         edges={_edges}
+        onClick={props.onClick}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onNodeClick={(event, element) => {
-          console.log('click', element);
-          props.onNodeClick(event, element);
-        }}
-        // onEdgeClick={(...args) => {
-        //   console.log('onEdgeClick', args);
-        // }}
+        onNodeClick={props.onNodeClick}
+        onEdgeClick={props.onEdgeClick}
         onConnect={onConnect}
         onInit={setReactFlowInstance}
         onDrop={onDrop}
@@ -247,10 +173,6 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         <Controls />
         <Background color="#aaa" gap={16} />
       </ReactFlow>
-      <div className="controls" style={{ position: 'absolute', top: 0, right: 0, zIndex: 1000 }}>
-        <button onClick={() => onLayout('TB')}>vertical layout</button>
-        <button onClick={() => onLayout('LR')}>horizontal layout</button>
-      </div>
     </div>
   );
 };

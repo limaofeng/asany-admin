@@ -2,10 +2,11 @@ import type { EditorPlugin } from '@asany/sunmao';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
 
 import Navigation from './components/Navigation';
-import Workspace from './components/Workspace';
+import Workspace from './Workspace';
 import reducer from './reducer';
 import Sidebar from './components/Sidebar';
 import ComponentPanel from './components/ComponentPanel';
+import { AlignHorizontalCenter, AlignVerticalCenter } from './tools';
 
 import './style/index.scss';
 
@@ -113,14 +114,23 @@ export default (): EditorPlugin => ({
       tools: [
         {
           id: 'move',
-          name: '选择',
-          icon: 'AsanyEditor/Move',
+          name: '水平对齐',
+          icon: 'AsanyEditor/AlignHorizontalCenters',
           position: 'left',
-          mutex: 'icons-actions',
-          useSelector: () => true,
-          isSelected: (move) => move,
-          onClick: (editor) => {
-            return editor.sidebar.select('move');
+          render: (item, props) => {
+            return <AlignHorizontalCenter {...props} item={item} />;
+          },
+        },
+        {
+          id: 'vertical-divider',
+        },
+        {
+          id: 'move1',
+          name: '垂直对齐',
+          icon: 'AsanyEditor/AlignVerticalCenters',
+          position: 'left',
+          render: (item, props) => {
+            return <AlignVerticalCenter {...props} item={item} />;
           },
         },
       ],

@@ -1,13 +1,16 @@
 import moment from 'moment';
+import { EditorLibrary } from '@asany/sunmao';
 import 'antd/dist/antd.css';
 import 'moment/locale/zh-cn';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
-import { history } from 'umi';
+import { history, sunmao } from 'umi';
 
 import { loadCurrentuser } from './hooks';
 import type { CurrentUser } from './types';
 
 import PageLoading from '@/components/PageLoading';
+
+sunmao.addLibrary(new EditorLibrary() as any);
 
 moment.locale('zh-cn', {
   meridiem: function (hour) {
