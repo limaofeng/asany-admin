@@ -1,10 +1,11 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { ReactFlowProvider } from 'react-flow-renderer';
-import type { IAsanyEditor } from '@asany/sunmao';
+import type { AsanyProject, IAsanyEditor } from '@asany/sunmao';
 import { Designer } from '@asany/sunmao';
 import { SketchProvider } from '@asany/sunmao';
 
+import { FlowStateProvider } from './FlowContext';
 import plugin from './plugin';
 
 import type { ProcessModel } from '@/types';
@@ -22,22 +23,30 @@ function FlowEditor(props: FlowEditorProps) {
 
   const handleSave = useCallback(() => {}, []);
 
+  const project: AsanyProject = useMemo(() => {
+    if (!data) {
+      return { type: 'flow' } as any;
+    }
+    return {
+      id: data.id,
+      type: 'flow',
+      name: data?.name || '',
+      data: data!,
+    };
+  }, [data]);
+
   return (
     <ReactFlowProvider>
       <SketchProvider>
         <Designer
+          container={FlowStateProvider}
           ref={api}
           plugins={[plugin()]}
           onSave={handleSave}
           onBack={onBack}
           loading={loading}
           className="flow-editor"
-          project={{
-            id: data?.id || 'none',
-            type: 'flow',
-            name: data?.name || '',
-            data: data!,
-          }}
+          project={project}
         />
       </SketchProvider>
     </ReactFlowProvider>

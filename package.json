@@ -64,7 +64,7 @@
     "@asany/icons": "^0.2.13",
     "@asany/shortcuts": "^0.1.5",
     "@asany/sortable": "^0.1.36",
-    "@asany/sunmao": "^1.0.26",
+    "@asany/sunmao": "^1.0.30",
     "@asany/tags-input": "^0.1.2",
     "@asany/tree": "^0.1.28",
     "@ckeditor/ckeditor5-react": "^3.0.3",
@@ -137,7 +137,8 @@
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "throttle-debounce": "^5.0.0",
     "umi": "^3.5.32",
-    "umi-serve": "^1.9.11"
+    "umi-serve": "^1.9.11",
+    "use-undoable": "^3.3.11"
   },
   "devDependencies": {
     "@asany/umi-plugin-apollo": "^0.1.12",

@@ -6,11 +6,17 @@ import Workspace from './Workspace';
 import reducer from './reducer';
 import Sidebar from './components/Sidebar';
 import ComponentPanel from './components/ComponentPanel';
-import { AlignHorizontalCenter, AlignVerticalCenter } from './tools';
+import { AlignHorizontalCenter, AlignVerticalCenter, Redo, Undo } from './tools';
 
 import './style/index.scss';
 
-export default (): EditorPlugin => ({
+export default (): // defaultState: ReactFlowData,
+// setState: (state: ReactFlowData) => void,
+// undo: () => void,
+// canUndo: boolean,
+// redo: () => void,
+// canRedo: boolean,
+EditorPlugin => ({
   id: 'workflow',
   description: '',
   types: ['flow'],
@@ -113,7 +119,26 @@ export default (): EditorPlugin => ({
     toolbar: {
       tools: [
         {
-          id: 'move',
+          id: 'undo',
+          icon: 'Bootstrap/arrow-90deg-left',
+          position: 'left',
+          render: (item, props) => {
+            return <Undo {...props} item={item} />;
+          },
+        },
+        {
+          id: 'redo',
+          icon: 'Bootstrap/arrow-90deg-right',
+          position: 'left',
+          render: (item, props) => {
+            return <Redo {...props} item={item} />;
+          },
+        },
+        {
+          id: 'vertical-divider',
+        },
+        {
+          id: 'horizontal',
           name: '水平对齐',
           icon: 'AsanyEditor/AlignHorizontalCenters',
           position: 'left',
@@ -125,7 +150,7 @@ export default (): EditorPlugin => ({
           id: 'vertical-divider',
         },
         {
-          id: 'move1',
+          id: 'vertical',
           name: '垂直对齐',
           icon: 'AsanyEditor/AlignVerticalCenters',
           position: 'left',

@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { useDrop } from 'react-dnd';
 import type { Connection, Edge, Node } from 'react-flow-renderer';
@@ -14,13 +14,12 @@ import ReactFlow, {
 import nodeTypes from './nodeTypes';
 import { FloatingConnectionLine } from './edgeTypes/FloatingEdge';
 import edgeTypes from './edgeTypes';
+import { useFlowState } from './FlowContext';
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 type OverviewFlowProps = {
-  nodes: Node[];
-  edges: Edge[];
   onClick: (e: React.MouseEvent) => void;
   onNodeClick: (e: React.MouseEvent, node: Node) => void;
   onEdgeClick: (e: React.MouseEvent, edge: Edge) => void;
@@ -31,17 +30,23 @@ type OverviewFlowProps = {
 const OverviewFlow = (props: OverviewFlowProps) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(props.nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(props.edges);
+  const [state, setState] = useFlowState();
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(state.nodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(state.edges);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
 
   useLayoutEffect(() => {
-    setEdges(props.edges);
-  }, [props.edges, setEdges]);
+    setEdges(state.edges);
+  }, [state.edges, setEdges]);
 
   useLayoutEffect(() => {
-    setNodes(props.nodes);
-  }, [props.nodes, setNodes]);
+    setNodes(state.nodes);
+  }, [state.nodes, setNodes]);
+
+  useEffect(() => {
+    console.log('state is update');
+  }, [state]);
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -116,24 +121,37 @@ const OverviewFlow = (props: OverviewFlowProps) => {
     [reactFlowInstance, setNodes],
   );
 
-  const handleRemoveEdge = useCallback(
-    (edgeId: string) => () =>
-      setEdges((eds) => {
-        return eds.filter((ed) => ed.id !== edgeId);
-      }),
-    [setEdges],
-  );
+  // const handleRemoveEdge = useCallback(
+  //   (edgeId: string) => () =>
+  //     setEdges((eds) => {
+  //       return eds.filter((ed) => ed.id !== edgeId);
+  //     }),
+  //   [setEdges],
+  // );
 
-  const _edges = edges.map((item) => ({
-    ...item,
-    data: { ...item, remove: handleRemoveEdge(item.id) },
-  }));
+  const handleNodeDragStop = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      setState((prevState) => {
+        const newNodes = prevState.nodes.map((e) => {
+          if (e.id === node.id) {
+            return {
+              ...e,
+              position: node.position,
+            };
+          }
+          return e;
+        });
+        return { ...prevState, nodes: newNodes };
+      });
+    },
+    [setState],
+  );
 
   return (
     <div className="reactflow-wrapper" style={{ height: '100%' }} ref={reactFlowWrapper}>
       <ReactFlow
         nodes={nodes}
-        edges={_edges}
+        edges={edges}
         onClick={props.onClick}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
@@ -141,6 +159,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         onEdgeClick={props.onEdgeClick}
         onNodesDelete={props.onNodesDelete}
         onEdgesDelete={props.onEdgesDelete}
+        onNodeDragStop={handleNodeDragStop}
         onConnect={onConnect}
         onInit={setReactFlowInstance}
         onDrop={onDrop}

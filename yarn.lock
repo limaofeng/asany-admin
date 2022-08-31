@@ -205,10 +205,10 @@
     lodash-es "^4.17.21"
     react-flip-toolkit "^7.0.14"
 
-"@asany/sunmao@^1.0.26":
-  version "1.0.26"
-  resolved "https://registry.npmjs.org/@asany/sunmao/-/sunmao-1.0.26.tgz#118a66edf802f2f571ca857eca1373edc3e58dc1"
-  integrity sha512-WJV9B0oXFLcP0CczdK4byfV37SQW6LoUk2fqIBM+hVpP2GwzFf1wAiqMzcZrz22pPoWntv/jvsZDQmnntq5MzQ==
+"@asany/sunmao@^1.0.30":
+  version "1.0.30"
+  resolved "https://registry.npmjs.org/@asany/sunmao/-/sunmao-1.0.30.tgz#fba737bb72dda719f5e99aa8f3be0500f7bf017a"
+  integrity sha512-aRXE7Tt+EB8BNGVIfVC5/vdxz+kYoWENpbJipF6RaspUmvTBZH1+BHvhS4cPffcyfVlJF/arvaYKCLhPsGi1ew==
   dependencies:
     "@asany/sortable" "^0.1.36"
     "@daybrush/drag" "^0.19.3"
@@ -18797,6 +18797,11 @@ use-sync-external-store@^1.1.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
   integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
+
+use-undoable@^3.3.11:
+  version "3.3.11"
+  resolved "https://registry.npmjs.org/use-undoable/-/use-undoable-3.3.11.tgz#b5f303d9ad3159b149fc0af5142a16c7ec274d7b"
+  integrity sha512-9b82HzzBSKewn5EFIxR2hDBXcjvgR/SpzYnFjAviqqtqRAXSOYbaJL3aBIcDlktthY/bf/nYCcRW2TRIhRsFlQ==
 
 use@^3.1.0:
   version "3.1.1"

@@ -74,6 +74,6 @@ export type ProcessDefinition = {
 };
 
 export type ReactFlowData = {
-  nodes: Node<any>[];
+  nodes: Node[];
   edges: Edge[];
 };

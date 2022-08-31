@@ -7,6 +7,8 @@ import type { Edge, Node } from 'react-flow-renderer';
 import { Position } from 'react-flow-renderer';
 import { useReactFlow } from 'react-flow-renderer';
 
+import { useFlowState } from '../FlowContext';
+
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
@@ -50,7 +52,9 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 function useLayout() {
-  const { fitView, getNodes, getEdges, setNodes, setEdges } = useReactFlow();
+  const { fitView, getNodes, getEdges } = useReactFlow();
+
+  const [, setState] = useFlowState();
 
   const layout = useCallback(
     (direction: 'LR' | 'TB') => {
@@ -64,11 +68,10 @@ function useLayout() {
         direction,
       );
 
-      setNodes([...layoutedNodes]);
-      setEdges([...layoutedEdges]);
+      setState({ nodes: layoutedNodes, edges: layoutedEdges });
       setTimeout(fitView, 0);
     },
-    [getNodes, getEdges, setNodes, setEdges, fitView],
+    [getNodes, getEdges, setState, fitView],
   );
 
   return layout;
