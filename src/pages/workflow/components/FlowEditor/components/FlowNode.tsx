@@ -2,6 +2,7 @@ import React from 'react';
 import { useCallback } from 'react';
 
 import { useDrag } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 
 type FlowNodeProps = {
   type: string;
@@ -19,7 +20,7 @@ function FlowNode(props: FlowNodeProps) {
     [type],
   );
 
-  const [, drag] = useDrag({
+  const [, drag, connectDrag] = useDrag({
     item: () => ({
       type,
     }),
@@ -28,6 +29,8 @@ function FlowNode(props: FlowNodeProps) {
       opacity: monitor.isDragging() ? 0.4 : 1,
     }),
   });
+
+  connectDrag(getEmptyImage(), { captureDraggingState: true });
 
   return (
     <div ref={drag} className="flow-node" onDragStart={onDragStart} draggable>

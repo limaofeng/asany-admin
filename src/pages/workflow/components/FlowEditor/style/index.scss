@@ -102,17 +102,11 @@
 }
 
 .flow-editor {
-  .sidebar-block-layers {
-    .asany-treeview {
-      .monaco-icon-label {
-        & > .svg-icon {
-          svg {
-            width: 21px;
-            height: 21px;
-          }
-        }
-      }
-    }
+  .sidebar-node-types-classics {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 16px 8px 16px 16px;
   }
 
   .sketch-toolbar {
@@ -165,13 +159,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 20px;
-      margin-bottom: 10px;
+      width: 105px;
+      height: 30px;
+      margin-right: 8px;
+      margin-bottom: 8px;
       padding: 4px;
-      border: 1px solid #1a192b;
-      border-color: #0041d0;
+      background-color: #f5f8fa;
+      border: 1px solid #a1a5b7;
       border-radius: 2px;
       cursor: grab;
+
+      .svg-icon {
+        margin-right: 8px;
+      }
     }
   }
 }
@@ -834,94 +834,107 @@
   }
 }
 
-.reactflow-wrapper {
-  .react-flow__node-StartNoneEvent,
-  .react-flow__node-EndNoneEvent,
-  .react-flow__node-UserTask,
-  .react-flow__node-ServiceTask {
-    width: 240px;
-    height: 88px;
-    padding: 0;
-    color: #222;
-    font-size: 12px;
-    text-align: center;
-    background: #fff;
-    border-radius: 3px;
-    box-shadow: rgb(100 100 100 / 20%) 0px 0px 2px 0px;
-    transition: box-shadow 0.3s ease-in-out;
+.react-flow__node-StartNoneEvent,
+.react-flow__node-EndNoneEvent,
+.react-flow__node-UserTask,
+.react-flow__node-ServiceTask {
+  width: 240px;
+  height: 88px;
+  padding: 0;
+  color: #222;
+  font-size: 12px;
+  text-align: center;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: rgb(100 100 100 / 20%) 0px 0px 2px 0px;
+  transition: box-shadow 0.3s ease-in-out;
 
-    .react-flow__node-header {
-      --bs-bg-opacity: 0.1;
-      display: flex;
-      flex-direction: row;
-      padding-left: 8px;
-      background-color: rgba(var(--flow-node-color-rgb), var(--bs-bg-opacity));
-      border-top: 3px solid var(--flow-node-color);
-      border-top-left-radius: 3px;
-      border-top-right-radius: 3px;
+  .react-flow__node-header {
+    --bs-bg-opacity: 0.1;
+    display: flex;
+    flex-direction: row;
+    padding-left: 8px;
+    background-color: rgba(var(--flow-node-color-rgb), var(--bs-bg-opacity));
+    border-top: 3px solid var(--flow-node-color);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
 
-      .react-flow__node-icon {
-        .svg-icon {
-          color: var(--flow-node-color);
-          svg {
-            path {
-              fill: var(--flow-node-color);
-            }
+    .react-flow__node-icon {
+      .svg-icon {
+        color: var(--flow-node-color);
+        svg {
+          path {
+            fill: var(--flow-node-color);
           }
         }
       }
-
-      .react-flow__node-title {
-        padding-left: 4px;
-        color: var(--flow-node-color);
-        line-height: 24px;
-        text-align: left;
-      }
     }
 
-    &:hover {
-      box-shadow: rgba(var(--flow-node-color-rgb), 0.2) 0px 0px 3px 3px;
-    }
-
-    &.selectable.selected {
-      box-shadow: rgba(var(--flow-node-color-rgb), 0.4) 0px 0px 3px 3px;
+    .react-flow__node-title {
+      padding-left: 4px;
+      color: var(--flow-node-color);
+      line-height: 24px;
+      text-align: left;
     }
   }
 
-  .react-flow__node-StartNoneEvent {
-    --flow-node-color: var(--kt-success);
-    --flow-node-color-rgb: var(--bs-success-rgb);
-    --flow-node-color-inverse: var(--kt-success-inverse);
+  &:hover {
+    box-shadow: rgba(var(--flow-node-color-rgb), 0.2) 0px 0px 3px 3px;
   }
 
-  .react-flow__node-UserTask {
-    --flow-node-color: var(--kt-warning);
-    --flow-node-color-rgb: var(--kt-warning-rgb);
-    --flow-node-color-inverse: var(--kt-warning-inverse);
+  &.selectable.selected {
+    box-shadow: rgba(var(--flow-node-color-rgb), 0.4) 0px 0px 3px 3px;
+  }
+}
+
+.react-flow__node-StartNoneEvent {
+  --flow-node-color: var(--kt-success);
+  --flow-node-color-rgb: var(--bs-success-rgb);
+  --flow-node-color-inverse: var(--kt-success-inverse);
+}
+
+.react-flow__node-UserTask {
+  --flow-node-color: var(--kt-warning);
+  --flow-node-color-rgb: var(--kt-warning-rgb);
+  --flow-node-color-inverse: var(--kt-warning-inverse);
+}
+
+.react-flow__node-EndNoneEvent {
+  --flow-node-color: var(--kt-dark);
+  --flow-node-color-rgb: var(--kt-dark-rgb);
+  --flow-node-color-inverse: var(--kt-dark-inverse);
+}
+
+.react-flow__node-ServiceTask {
+  --flow-node-color: var(--kt-primary);
+  --flow-node-color-rgb: var(--kt-primary-rgb);
+  --flow-node-color-inverse: var(--kt-primary-inverse);
+}
+
+.react-flow__node-ExclusiveGateway {
+  color: #222;
+  font-size: 12px;
+  text-align: center;
+
+  .inner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45.25px;
+    height: 45.25px;
+    .shape-diamond {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      background-color: #fff;
+      border: 1px solid #1a192b;
+      border-radius: 3px;
+      transform: rotate(45deg);
+    }
   }
 
-  .react-flow__node-EndNoneEvent {
-    --flow-node-color: var(--kt-dark);
-    --flow-node-color-rgb: var(--kt-dark-rgb);
-    --flow-node-color-inverse: var(--kt-dark-inverse);
-  }
-
-  .react-flow__node-ServiceTask {
-    --flow-node-color: var(--kt-primary);
-    --flow-node-color-rgb: var(--kt-primary-rgb);
-    --flow-node-color-inverse: var(--kt-primary-inverse);
-  }
-  .react-flow__node-ExclusiveGateway {
-    width: 80px;
-    padding: 10px;
-    color: #222;
-    font-size: 12px;
-    text-align: center;
-    background: #fff;
-    border: 1px solid #1a192b;
-    border-radius: 3px;
-
-    &.selectable.selected {
+  &.selectable.selected {
+    .shape-diamond {
       box-shadow: 0 0 0 0.5px #1a192b;
     }
   }

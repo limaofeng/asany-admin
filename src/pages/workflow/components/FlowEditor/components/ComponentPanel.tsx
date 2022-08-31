@@ -60,7 +60,6 @@ function ComponentPanel() {
       <Collapse
         bordered={false}
         activeKey={activeKey}
-        // tslint:disable-next-line:jsx-no-lambda
         expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
         className="site-collapse-compactness-collapse"
         onChange={handleCollapse}

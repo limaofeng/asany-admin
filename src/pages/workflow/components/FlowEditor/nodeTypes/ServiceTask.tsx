@@ -2,6 +2,8 @@ import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
 
+import FlowNode from '../components/FlowNode';
+
 function ServiceTask({ data }: NodeProps) {
   // const onChange = useCallback((evt: any) => {
   //   console.log(evt.target.value);
@@ -24,5 +26,14 @@ function ServiceTask({ data }: NodeProps) {
     </div>
   );
 }
+
+export const DragNodeOfServiceTask = () => {
+  return (
+    <FlowNode type="ServiceTask">
+      <Icon name="Bootstrap/filetype-java" />
+      服务任务
+    </FlowNode>
+  );
+};
 
 export default ServiceTask;

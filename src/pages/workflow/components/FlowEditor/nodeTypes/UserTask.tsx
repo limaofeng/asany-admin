@@ -2,6 +2,8 @@ import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
 
+import FlowNode from '../components/FlowNode';
+
 function UserTask({ data }: NodeProps) {
   // const onChange = useCallback((evt: any) => {
   //   console.log(evt.target.value);
@@ -24,5 +26,14 @@ function UserTask({ data }: NodeProps) {
     </div>
   );
 }
+
+export const DragNodeOfUserTask = () => {
+  return (
+    <FlowNode type="UserTask">
+      <Icon name="Bootstrap/person-workspace" />
+      用户任务
+    </FlowNode>
+  );
+};
 
 export default UserTask;

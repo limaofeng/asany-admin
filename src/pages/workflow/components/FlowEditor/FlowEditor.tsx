@@ -5,6 +5,7 @@ import type { AsanyProject, IAsanyEditor } from '@asany/sunmao';
 import { Designer } from '@asany/sunmao';
 import { SketchProvider } from '@asany/sunmao';
 
+import FlowNodeDragLayer from './components/FlowNodeDragLayer';
 import { FlowStateProvider } from './FlowContext';
 import plugin from './plugin';
 
@@ -49,6 +50,7 @@ function FlowEditor(props: FlowEditorProps) {
           project={project}
         />
       </SketchProvider>
+      <FlowNodeDragLayer />
     </ReactFlowProvider>
   );
 }

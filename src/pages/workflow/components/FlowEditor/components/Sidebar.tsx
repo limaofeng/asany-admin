@@ -1,11 +1,12 @@
-import { useCallback, useReducer, useRef, useState } from 'react';
+import React, { useCallback, useReducer, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 import Icon from '@asany/icons';
 import { Resizer } from '@asany/sunmao';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import BlockLayers from './BlockLayers';
+import { dragNodes } from '../nodeTypes';
+
 import FlowNode from './FlowNode';
 
 // 折叠面板最小化
@@ -67,7 +68,7 @@ function Sidebar(props: SidebarProps) {
       <div className="sidebar-screen-panel">
         <div className="sidebar-subpanel">
           <div className="sidebar-subpanel-header">
-            <div className="header-left">项目详情</div>
+            <div className="header-left">基础节点</div>
             <div className="header-right" />
           </div>
           <OverlayScrollbarsComponent
@@ -75,14 +76,9 @@ function Sidebar(props: SidebarProps) {
             style={{ height: 'calc(100% - 38px)' }}
           >
             <div style={{ padding: '8px 8px 0 8px' }}>
-              <aside>
-                <div className="description">
-                  You can drag these nodes to the pane on the right.
-                </div>
-                <FlowNode type="StartNoneEvent">开始</FlowNode>
-                <FlowNode type="EndNoneEvent">结束</FlowNode>
-                <FlowNode type="UserTask">用户任务</FlowNode>
-              </aside>
+              <FlowNode type="StartNoneEvent">开始</FlowNode>
+              <FlowNode type="EndNoneEvent">结束</FlowNode>
+              <FlowNode type="UserTask">用户任务</FlowNode>
             </div>
           </OverlayScrollbarsComponent>
         </div>
@@ -96,7 +92,7 @@ function Sidebar(props: SidebarProps) {
         style={{ flexBasis: outlinepaneheight }}
       >
         <div className="sidebar-subpanel-header">
-          <div className="header-left">大纲</div>
+          <div className="header-left">经典</div>
           <div className="header-right">
             <Icon
               onClick={handleClick}
@@ -106,7 +102,9 @@ function Sidebar(props: SidebarProps) {
           </div>
         </div>
         <div className="sidebar-subpanel-body">
-          <BlockLayers />
+          <div className="sidebar-node-types-classics">
+            {dragNodes.classics.map((item) => React.createElement(item, { key: item.name }))}
+          </div>
         </div>
       </Resizer>
     </div>

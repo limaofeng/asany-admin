@@ -67,7 +67,6 @@ const OverviewFlow = (props: OverviewFlowProps) => {
   );
 
   const onDragOver = useCallback((event: any) => {
-    console.log('onDragOver', event);
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
@@ -78,7 +77,6 @@ const OverviewFlow = (props: OverviewFlowProps) => {
       return item;
     },
     canDrop(item, monitor) {
-      console.log('canDrop', monitor.isOver({ shallow: true }));
       return monitor.isOver({ shallow: true });
     },
     collect: (monitor) => ({

@@ -166,6 +166,10 @@ function Workspace() {
     editor.aside.close();
   }, [editor.aside]);
 
+  const minimizable = useEditorSelector((state) => state.ui.sidebar.minimizable);
+
+  console.log('minimizable', minimizable);
+
   return (
     <div
       style={{
