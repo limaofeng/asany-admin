@@ -14,7 +14,10 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
   const isHorizontal = direction === 'LR';
-  dagreGraph.setGraph({ rankdir: direction });
+  dagreGraph.setGraph({
+    rankdir: direction,
+    ranksep: 80,
+  });
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: node.width, height: node.height });
@@ -34,8 +37,6 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
     const nodeWidth = nodeWithPosition.width!;
     const nodeHeight = nodeWithPosition.height!;
 
-    console.log('node', node);
-
     // We are shifting the dagre node position (anchor=center center) to the top left
     // so it matches the React Flow node anchor point (top left).
     node.position = {
@@ -46,13 +47,11 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
     return node;
   });
 
-  console.log('nodes', nodes);
-
   return { nodes, edges };
 };
 
 function useLayout() {
-  const { fitView, getNodes, getEdges } = useReactFlow();
+  const { getNodes, getEdges } = useReactFlow();
 
   const [, setState] = useFlowState();
 
@@ -69,9 +68,9 @@ function useLayout() {
       );
 
       setState({ nodes: layoutedNodes, edges: layoutedEdges });
-      setTimeout(fitView, 0);
+      // setTimeout(fitView, 0);
     },
-    [getNodes, getEdges, setState, fitView],
+    [getNodes, getEdges, setState],
   );
 
   return layout;

@@ -1,28 +1,40 @@
+import { useCallback } from 'react';
+
 import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
 
 import FlowNode from '../components/FlowNode';
+import useDelete from '../tools/useDelete';
 
-function EndNoneEvent({ data }: NodeProps) {
-  // const onChange = useCallback((evt: any) => {
-  //   console.log(evt.target.value);
-  // }, []);
+function EndNoneEvent({ data, ...props }: NodeProps) {
+  const { removeNode } = useDelete();
 
-  console.log('data', data);
+  const handleDelete = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      removeNode(props.id);
+    },
+    [props.id, removeNode],
+  );
 
   return (
     <div className="text-updater-node selectable">
-      <Handle type="target" position={Position.Top} />
       <div className="react-flow__node-header">
         <div className="react-flow__node-icon">
           <Icon name="Bootstrap/stop-circle" />
         </div>
         <div className="react-flow__node-title">结束</div>
+        <div onClick={handleDelete} className="react-flow__node-header__delete">
+          <Icon name="Bootstrap/x" />
+        </div>
       </div>
       <div>{data.label}</div>
-      {/* <Handle type="source" position={Position.Bottom} id="a" style={handleStyle} /> */}
-      {/* <Handle type="source" position={Position.Bottom} id="b" /> */}
+      <Handle type="target" position={Position.Top} id="top" />
+      <Handle type="source" position={Position.Bottom} id="bottom" />
+      <Handle type="target" position={Position.Left} id="left" />
+      <Handle type="target" position={Position.Right} id="right" />
     </div>
   );
 }

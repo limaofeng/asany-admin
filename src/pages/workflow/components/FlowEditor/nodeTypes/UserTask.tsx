@@ -1,15 +1,23 @@
+import { useCallback } from 'react';
+
 import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
 
 import FlowNode from '../components/FlowNode';
+import useDelete from '../tools/useDelete';
 
-function UserTask({ data }: NodeProps) {
-  // const onChange = useCallback((evt: any) => {
-  //   console.log(evt.target.value);
-  // }, []);
+function UserTask({ data, ...props }: NodeProps) {
+  const { removeNode } = useDelete();
 
-  console.log('data', data);
+  const handleDelete = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      removeNode(props.id);
+    },
+    [props.id, removeNode],
+  );
 
   return (
     <div className="text-updater-node selectable">
@@ -19,10 +27,15 @@ function UserTask({ data }: NodeProps) {
           <Icon name="Bootstrap/person-workspace" />
         </div>
         <div className="react-flow__node-title">审批</div>
+        <div onClick={handleDelete} className="react-flow__node-header__delete">
+          <Icon name="Bootstrap/x" />
+        </div>
       </div>
       <div>{data.label}</div>
-      {/* <Handle type="source" position={Position.Bottom} id="a" style={handleStyle} /> */}
-      <Handle type="source" position={Position.Bottom} id="b" />
+      <Handle type="target" position={Position.Top} id="top" />
+      <Handle type="source" position={Position.Bottom} id="bottom" />
+      <Handle type="source" position={Position.Left} id="left" />
+      <Handle type="source" position={Position.Right} id="right" />
     </div>
   );
 }

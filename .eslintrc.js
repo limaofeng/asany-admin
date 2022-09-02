@@ -35,7 +35,7 @@ module.exports = {
         'newlines-between': 'always',
         pathGroups: [
           {
-            pattern: 'react',
+            pattern: '@(react|react-dom)',
             group: 'builtin',
             position: 'before',
           },

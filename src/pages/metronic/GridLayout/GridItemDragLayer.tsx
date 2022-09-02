@@ -1,7 +1,7 @@
 import type { CSSProperties, FC } from 'react';
+import ReactDOM from 'react-dom';
 
 import { useDragLayer } from 'react-dnd';
-import ReactDOM from 'react-dom';
 
 import useSelector from './GridLayoutProvider';
 import type { DragPreviewRenderer } from './typings';

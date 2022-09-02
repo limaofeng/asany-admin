@@ -1,3 +1,5 @@
+import { MarkerType } from 'react-flow-renderer';
+
 import type { ProcessDefinition, ProcessDefinitionShape, ReactFlowData } from '../type';
 
 function getSourceId(id: string, nodes: ProcessDefinitionShape[]) {
@@ -21,16 +23,18 @@ export function flowableToReactflow(source: ProcessDefinition) {
     if (shape.stencil.id == 'SequenceFlow') {
       flowdata.edges.push({
         id: shape.resourceId,
-        type: 'buttonedge',
+        type: 'simple_floating', // 'buttonedge',
         source: getSourceId(shape.resourceId, nodes)!,
         target: getTagetId(shape),
         label: shape.properties.name || '线',
+        markerEnd: { type: MarkerType.ArrowClosed },
       });
       console.log(getSourceId(shape.resourceId, nodes), getTagetId(shape));
     } else {
       flowdata.nodes.push({
         id: shape.resourceId,
         type: shape.stencil.id,
+        dragHandle: '.react-flow__node-header',
         data: {
           label: shape.properties.name,
         },

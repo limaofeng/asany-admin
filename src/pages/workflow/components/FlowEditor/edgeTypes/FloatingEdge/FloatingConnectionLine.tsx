@@ -21,10 +21,10 @@ function FloatingConnectionLine({
     positionAbsolute: { x: targetX, y: targetY },
   };
 
-  const { sx, sy } = getEdgeParams(sourceNode, targetNode);
+  const { sourceX, sourceY } = getEdgeParams(sourceNode, targetNode as any);
   const d = getSmoothStepPath({
-    sourceX: sx,
-    sourceY: sy,
+    sourceX,
+    sourceY,
     sourcePosition,
     targetPosition,
     targetX,

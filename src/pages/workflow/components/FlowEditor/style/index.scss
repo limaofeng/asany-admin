@@ -630,7 +630,7 @@
     display: flex;
     flex-wrap: wrap;
 
-    &.show-list > li {
+    &.show-list>li {
       width: 100%;
       height: auto;
 
@@ -768,7 +768,7 @@
               color: #fff;
               font-weight: bold;
 
-              & > span {
+              &>span {
                 position: relative;
               }
 
@@ -810,7 +810,7 @@
   }
 
   .tree-current-node {
-    & > .svg-icon {
+    &>.svg-icon {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -823,7 +823,7 @@
   .ae-tree {
     margin-bottom: 0;
 
-    & > li > .svg-icon {
+    &>li>.svg-icon {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -847,7 +847,18 @@
   background: #fff;
   border-radius: 3px;
   box-shadow: rgb(100 100 100 / 20%) 0px 0px 2px 0px;
+  cursor: default;
   transition: box-shadow 0.3s ease-in-out;
+
+  .react-flow__handle {
+    background-color: var(--flow-node-color);
+  }
+
+  &:hover {
+    .react-flow__node-header .react-flow__node-header__delete {
+      opacity: 1;
+    }
+  }
 
   .react-flow__node-header {
     --bs-bg-opacity: 0.1;
@@ -858,10 +869,13 @@
     border-top: 3px solid var(--flow-node-color);
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
+    position: relative;
+    cursor: grab;
 
     .react-flow__node-icon {
       .svg-icon {
         color: var(--flow-node-color);
+
         svg {
           path {
             fill: var(--flow-node-color);
@@ -875,6 +889,19 @@
       color: var(--flow-node-color);
       line-height: 24px;
       text-align: left;
+    }
+
+    .react-flow__node-header__delete {
+      position: absolute;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      right: 0px;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
     }
   }
 
@@ -922,6 +949,7 @@
     justify-content: center;
     width: 45.25px;
     height: 45.25px;
+
     .shape-diamond {
       display: inline-block;
       width: 32px;
@@ -930,12 +958,171 @@
       border: 1px solid #1a192b;
       border-radius: 3px;
       transform: rotate(45deg);
+
+      &>div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        .svg-icon svg {
+          width: 32px;
+          height: 32px;
+        }
+      }
+    }
+  }
+
+  &:hover {
+    .shape-diamond {
+      box-shadow: 0 0 0 0.5px rgba(rgb(26, 25, 43), 0.5);
     }
   }
 
   &.selectable.selected {
     .shape-diamond {
       box-shadow: 0 0 0 0.5px #1a192b;
+    }
+  }
+
+}
+
+.react-flow__edge {
+  .edge-container {
+    position: relative;
+
+    .edge-shortcuts {
+      position: absolute;
+      left: 20px;
+    }
+  }
+}
+
+.react-flow__node {
+  .react-flow__handle {
+    &.nodrag {
+      opacity: 0;
+    }
+  }
+
+  &:hover {
+    .react-flow__handle.nodrag {
+      opacity: 1;
+    }
+  }
+}
+
+.react-flow__handle {
+  opacity: 0;
+}
+
+.reactflow-wrapper {
+
+  .react-flow__handle {
+    opacity: 1;
+  }
+
+  .react-flow__node-ExclusiveGateway {
+    .react-flow__handle {
+      &.react-flow__handle-top {
+        top: -5px;
+      }
+
+      &.react-flow__handle-bottom {
+        bottom: -5px;
+      }
+
+      &.react-flow__handle-left {
+        left: -5px;
+      }
+
+      &.react-flow__handle-right {
+        right: -5px;
+      }
+    }
+  }
+
+
+  .react-flow__edge-path {
+    stroke-width: 2;
+  }
+
+  .react-flow__handle {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    border: 2px solid #fff;
+    transition: opacity 0.3s;
+
+    &.react-flow__handle-top {
+      top: -6px;
+    }
+
+    &.react-flow__handle-bottom {
+      bottom: -6px;
+    }
+
+    &.react-flow__handle-left {
+      left: -6px;
+    }
+
+    &.react-flow__handle-right {
+      right: -6px;
+    }
+  }
+
+  .edge-quick {
+    z-index: 1;
+    display: inline-flex;
+    padding: 16px;
+    background-color: #fff;
+    border-radius: 8px;
+    pointer-events: all;
+    align-items: center;
+
+    .flow-node-type-separator {
+      height: 40px;
+      width: 1px;
+      background-color: rgb(87, 86, 86);
+      margin-right: 8px;
+    }
+
+    .flow-node-type {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+
+      &:not(:last-child) {
+        margin-right: 8px;
+      }
+
+      &-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 16px;
+      }
+
+      &-label {
+        font-size: 12px;
+        transform: scale(0.8);
+      }
+
+      &:hover {
+
+        .flow-node-type-icon {
+          background-color: #000;
+
+          .svg-icon {
+            color: #fff;
+          }
+        }
+
+      }
     }
   }
 }

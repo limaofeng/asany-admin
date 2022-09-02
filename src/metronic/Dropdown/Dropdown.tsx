@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 
 import { Shortcuts } from '@asany/shortcuts';
 import classnames from 'classnames';
-import ReactDOM from 'react-dom';
 import { useClickAway } from 'react-use';
 import useMergedRef from '@react-hook/merged-ref';
 

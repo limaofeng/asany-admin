@@ -13,13 +13,15 @@ function ExclusiveGateway({ data }: NodeProps) {
 
   return (
     <div className="inner-container">
-      <div className="shape-diamond">
-        <div>{data.label}</div>
+      <div className="shape-diamond react-flow__node-header">
+        <div>
+          <Icon name="Bootstrap/plus" />
+        </div>
       </div>
-      <Handle type="target" position={Position.Top} style={{ top: -1 }} />
-      <Handle type="source" position={Position.Bottom} style={{ bottom: -1 }} id="bottom" />
-      {/* <Handle type="source" position={Position.Left} style={{ left: -1 }} id="left" /> */}
-      {/* <Handle type="source" position={Position.Right} style={{ right: -1 }} id="right" /> */}
+      <Handle type="target" position={Position.Top} id="top" />
+      <Handle type="source" position={Position.Bottom} id="bottom" />
+      <Handle type="source" position={Position.Left} id="left" />
+      <Handle type="source" position={Position.Right} id="right" />
     </div>
   );
 }

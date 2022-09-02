@@ -1,20 +1,16 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
+import React from 'react';
 
 import { useDrop } from 'react-dnd';
 import type { Connection, Edge, Node } from 'react-flow-renderer';
-import ReactFlow, {
-  addEdge,
-  Background,
-  Controls,
-  MiniMap,
-  useEdgesState,
-  useNodesState,
-} from 'react-flow-renderer';
+import ReactFlow, { addEdge, Background, Controls, MiniMap } from 'react-flow-renderer';
+import { Icon } from '@asany/icons';
 
 import nodeTypes from './nodeTypes';
 import { FloatingConnectionLine } from './edgeTypes/FloatingEdge';
 import edgeTypes from './edgeTypes';
-import { useFlowState } from './FlowContext';
+import { useEdgesState, useNodesState } from './FlowContext';
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
@@ -30,23 +26,9 @@ type OverviewFlowProps = {
 const OverviewFlow = (props: OverviewFlowProps) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
-  const [state, setState] = useFlowState();
-
-  const [nodes, setNodes, onNodesChange] = useNodesState(state.nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(state.edges);
+  const [nodes, setNodes, onNodesChange] = useNodesState();
+  const [edges, setEdges, onEdgesChange] = useEdgesState();
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
-
-  useLayoutEffect(() => {
-    setEdges(state.edges);
-  }, [state.edges, setEdges]);
-
-  useLayoutEffect(() => {
-    setNodes(state.nodes);
-  }, [state.nodes, setNodes]);
-
-  useEffect(() => {
-    console.log('state is update');
-  }, [state]);
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -57,7 +39,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         addEdge(
           {
             ...params,
-            type: 'floating',
+            type: 'simple_floating',
           },
           eds,
         ),
@@ -66,13 +48,13 @@ const OverviewFlow = (props: OverviewFlowProps) => {
     [setEdges],
   );
 
-  const onDragOver = useCallback((event: any) => {
+  const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
   const [{}, connectDrop] = useDrop<any, any, any>({
-    accept: ['StartNoneEvent', 'EndNoneEvent', 'UserTask'],
+    accept: Object.keys(nodeTypes),
     drop(item) {
       return item;
     },
@@ -88,15 +70,12 @@ const OverviewFlow = (props: OverviewFlowProps) => {
   connectDrop(reactFlowWrapper);
 
   const onDrop = useCallback(
-    (event: any) => {
+    (event: React.DragEvent) => {
       event.preventDefault();
 
       const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
       const type = event.dataTransfer.getData('application/reactflow');
 
-      console.log('onDrop', type, reactFlowBounds, reactFlowBounds);
-
-      // check if the dropped element is valid
       if (typeof type === 'undefined' || !type || !reactFlowBounds) {
         return;
       }
@@ -105,6 +84,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
       });
+
       const newNode = {
         id: getId(),
         type,
@@ -119,18 +99,10 @@ const OverviewFlow = (props: OverviewFlowProps) => {
     [reactFlowInstance, setNodes],
   );
 
-  // const handleRemoveEdge = useCallback(
-  //   (edgeId: string) => () =>
-  //     setEdges((eds) => {
-  //       return eds.filter((ed) => ed.id !== edgeId);
-  //     }),
-  //   [setEdges],
-  // );
-
   const handleNodeDragStop = useCallback(
     (event: React.MouseEvent, node: Node) => {
-      setState((prevState) => {
-        const newNodes = prevState.nodes.map((e) => {
+      setNodes((prevNodes) =>
+        prevNodes.map((e) => {
           if (e.id === node.id) {
             return {
               ...e,
@@ -138,12 +110,18 @@ const OverviewFlow = (props: OverviewFlowProps) => {
             };
           }
           return e;
-        });
-        return { ...prevState, nodes: newNodes };
-      });
+        }),
+      );
     },
-    [setState],
+    [setNodes],
   );
+
+  const handleConnectStop = useCallback((event: MouseEvent) => {
+    const targetIsPane = (event.target! as HTMLElement).classList.contains('react-flow__pane');
+    console.log('targetIsPane', targetIsPane);
+    if (targetIsPane) {
+    }
+  }, []);
 
   return (
     <div className="reactflow-wrapper" style={{ height: '100%' }} ref={reactFlowWrapper}>
@@ -159,6 +137,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         onEdgesDelete={props.onEdgesDelete}
         onNodeDragStop={handleNodeDragStop}
         onConnect={onConnect}
+        onConnectStop={handleConnectStop}
         onInit={setReactFlowInstance}
         onDrop={onDrop}
         onDragOver={onDragOver}
@@ -189,9 +168,50 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         />
         <Controls />
         <Background color="#aaa" gap={16} />
+        <TestRender />
       </ReactFlow>
     </div>
   );
 };
+
+function TestRender() {
+  const body = (
+    <div className="edge-quick" style={{ zIndex: 1, pointerEvents: 'all' }}>
+      <div className="flow-node-type">
+        <div className="flow-node-type-icon">
+          <Icon name="Bootstrap/chat-fill" />
+        </div>
+        <div className="flow-node-type-label">审批</div>
+      </div>
+      <div className="flow-node-type">
+        <div className="flow-node-type-icon">
+          <Icon name="Bootstrap/chat-fill" />
+        </div>
+        <div className="flow-node-type-label">抄送</div>
+      </div>
+      <div className="flow-node-type">
+        <div className="flow-node-type-icon">
+          <Icon name="Bootstrap/chat-fill" />
+        </div>
+        <div className="flow-node-type-label">服务任务</div>
+      </div>
+      <div className="flow-node-type-separator" />
+      <div className="flow-node-type">
+        <div className="flow-node-type-icon">
+          <Icon name="Bootstrap/gear" />
+        </div>
+        <div className="flow-node-type-label">设置</div>
+      </div>
+    </div>
+  );
+
+  const viewport = document.querySelector('.react-flow__viewport');
+
+  if (!viewport) {
+    return <React.Fragment />;
+  }
+
+  return ReactDOM.createPortal(body, viewport);
+}
 
 export default OverviewFlow;
