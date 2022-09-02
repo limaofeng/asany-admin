@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import { useRef } from 'react';
 import { useLayoutEffect } from 'react';
 import { createContext, useCallback, useContext } from 'react';
 
-import type { Edge, EdgeChange, Node, NodeChange } from 'react-flow-renderer';
+import type { Edge, EdgeChange, Node, NodeChange, Rect } from 'react-flow-renderer';
 import {
   useEdgesState as useOriginalEdgesState,
   useNodesState as useOriginalNodesState,
@@ -19,13 +20,22 @@ type IFlowTools = {
   redo: () => void;
   reset: (data: ReactFlowData) => void;
   resetInitialState: (data: ReactFlowData) => void;
+  showQuickControls: (edgeId: string, rect: Rect) => void;
+  hideQuickControls: () => void;
 };
 
 type SetStateCallback = (prev: ReactFlowData) => ReactFlowData;
 type SetState = (data: ReactFlowData | SetStateCallback) => void;
 
+type QuickControlsState = {
+  visible: boolean;
+  edgeId?: string;
+  rect?: Rect;
+};
+
 type IFlowStoreContext = {
   state: ReactFlowData;
+  quickControls: QuickControlsState;
   setState: SetState;
   tools: IFlowTools;
 };
@@ -38,7 +48,10 @@ export const FlowContext = createContext<IFlowStoreContext>({
     redo: () => {},
     reset: () => {},
     resetInitialState: () => {},
+    showQuickControls: () => {},
+    hideQuickControls: () => {},
   },
+  quickControls: { visible: false },
   setState: () => {},
   state: {
     nodes: [],
@@ -51,6 +64,17 @@ export type FlowStateProviderProps = {
 };
 
 type IFlowState = [ReactFlowData, SetState];
+
+export const useQuickControls = (): [
+  QuickControlsState,
+  { show: (id: string, r: Rect) => void; hide: () => void },
+] => {
+  const context = useContext(FlowContext);
+  return [
+    context.quickControls,
+    { show: context.tools.showQuickControls, hide: context.tools.hideQuickControls },
+  ];
+};
 
 export const useFlowState = (): IFlowState => {
   const context = useContext(FlowContext);
@@ -138,13 +162,31 @@ export const FlowStateProvider = ({ children }: FlowStateProviderProps) => {
       },
     );
 
-  console.log('FlowStateProvider', state, canUndo, canRedo);
+  const [quickControls, setQuickControls] = useState<QuickControlsState>({
+    visible: false,
+    rect: undefined,
+  });
+
+  const showQuickControls = useCallback((edgeId: string, rect: Rect) => {
+    setQuickControls({
+      visible: true,
+      edgeId,
+      rect,
+    });
+  }, []);
+
+  const hideQuickControls = useCallback(() => {
+    setQuickControls({
+      visible: false,
+    });
+  }, []);
 
   return (
     <FlowContext.Provider
       value={{
         state,
         setState,
+        quickControls,
         tools: {
           undo,
           canRedo,
@@ -152,6 +194,8 @@ export const FlowStateProvider = ({ children }: FlowStateProviderProps) => {
           canUndo,
           reset,
           resetInitialState,
+          showQuickControls,
+          hideQuickControls,
         },
       }}
     >

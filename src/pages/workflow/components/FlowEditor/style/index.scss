@@ -1072,14 +1072,67 @@
     }
   }
 
-  .edge-quick {
+  .quick-controls {
     z-index: 1;
+    opacity: 1;
     display: inline-flex;
+    position: relative;
     padding: 16px;
     background-color: #fff;
     border-radius: 8px;
     pointer-events: all;
     align-items: center;
+    box-shadow: rgb(100 100 100 / 20%) 0px 0px 3px 3px;
+
+    .quick-controls-arrow {
+      left: 0;
+      top: 50%;
+      transform: translate(-100%) translateY(-50%);
+      position: absolute;
+      display: block;
+      width: 22px;
+      height: 22px;
+      overflow: hidden;
+      background: 0 0;
+      pointer-events: none;
+
+      .quick-controls-arrow-content {
+        box-shadow: 3px 3px 7px #00000012;
+        transform: translate(11px) rotate(135deg);
+        --arrow-background-color: #fff;
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 11.3137085px;
+        height: 11.3137085px;
+        margin: auto;
+        content: "";
+        pointer-events: auto;
+        border-radius: 0 0 2px;
+        pointer-events: none;
+
+        &::before {
+          position: absolute;
+          top: -11.3137085px;
+          left: -11.3137085px;
+          width: 33.9411255px;
+          height: 33.9411255px;
+          background: var(--arrow-background-color);
+          background-repeat: no-repeat;
+          background-position: -10px -10px;
+          content: "";
+          position: absolute;
+          top: -11.3137085px;
+          left: -11.3137085px;
+          width: 33.9411255px;
+          height: 33.9411255px;
+          background-repeat: no-repeat;
+          background-position: -10px -10px;
+          content: "";
+          clip-path: path("M 9.849242404917499 24.091883092036785 A 5 5 0 0 1 13.384776310850237 22.627416997969522 L 20.627416997969522 22.627416997969522 A 2 2 0 0 0 22.627416997969522 20.627416997969522 L 22.627416997969522 13.384776310850237 A 5 5 0 0 1 24.091883092036785 9.849242404917499 L 23.091883092036785 9.849242404917499 L 9.849242404917499 23.091883092036785 Z");
+        }
+      }
+    }
 
     .flow-node-type-separator {
       height: 40px;
@@ -1102,14 +1155,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 16px;
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        transition: background-color 0.1s ease-in-out;
       }
 
       &-label {
         font-size: 12px;
-        transform: scale(0.8);
+        line-height: 20px;
       }
 
       &:hover {

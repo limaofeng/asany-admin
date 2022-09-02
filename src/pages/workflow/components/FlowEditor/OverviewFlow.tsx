@@ -1,16 +1,15 @@
 import { useCallback, useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
 import React from 'react';
 
 import { useDrop } from 'react-dnd';
 import type { Connection, Edge, Node } from 'react-flow-renderer';
 import ReactFlow, { addEdge, Background, Controls, MiniMap } from 'react-flow-renderer';
-import { Icon } from '@asany/icons';
 
 import nodeTypes from './nodeTypes';
 import { FloatingConnectionLine } from './edgeTypes/FloatingEdge';
 import edgeTypes from './edgeTypes';
-import { useEdgesState, useNodesState } from './FlowContext';
+import { useEdgesState, useFlowTools, useNodesState } from './FlowContext';
+import QuickControls from './components/QuickControls';
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
@@ -29,6 +28,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
   const [nodes, setNodes, onNodesChange] = useNodesState();
   const [edges, setEdges, onEdgesChange] = useEdgesState();
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+  const { hideQuickControls } = useFlowTools();
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -123,12 +123,27 @@ const OverviewFlow = (props: OverviewFlowProps) => {
     }
   }, []);
 
+  const { onClick } = props;
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      const targetIsPane = (e.target! as HTMLElement).classList.contains('react-flow__pane');
+      if (!targetIsPane) {
+        return;
+      }
+      console.log('handleClick', e.target);
+      onClick(e);
+      hideQuickControls();
+    },
+    [hideQuickControls, onClick],
+  );
+
   return (
     <div className="reactflow-wrapper" style={{ height: '100%' }} ref={reactFlowWrapper}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onClick={props.onClick}
+        onClick={handleClick}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={props.onNodeClick}
@@ -168,50 +183,10 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         />
         <Controls />
         <Background color="#aaa" gap={16} />
-        <TestRender />
+        <QuickControls flowContainer={reactFlowWrapper} />
       </ReactFlow>
     </div>
   );
 };
-
-function TestRender() {
-  const body = (
-    <div className="edge-quick" style={{ zIndex: 1, pointerEvents: 'all' }}>
-      <div className="flow-node-type">
-        <div className="flow-node-type-icon">
-          <Icon name="Bootstrap/chat-fill" />
-        </div>
-        <div className="flow-node-type-label">审批</div>
-      </div>
-      <div className="flow-node-type">
-        <div className="flow-node-type-icon">
-          <Icon name="Bootstrap/chat-fill" />
-        </div>
-        <div className="flow-node-type-label">抄送</div>
-      </div>
-      <div className="flow-node-type">
-        <div className="flow-node-type-icon">
-          <Icon name="Bootstrap/chat-fill" />
-        </div>
-        <div className="flow-node-type-label">服务任务</div>
-      </div>
-      <div className="flow-node-type-separator" />
-      <div className="flow-node-type">
-        <div className="flow-node-type-icon">
-          <Icon name="Bootstrap/gear" />
-        </div>
-        <div className="flow-node-type-label">设置</div>
-      </div>
-    </div>
-  );
-
-  const viewport = document.querySelector('.react-flow__viewport');
-
-  if (!viewport) {
-    return <React.Fragment />;
-  }
-
-  return ReactDOM.createPortal(body, viewport);
-}
 
 export default OverviewFlow;
