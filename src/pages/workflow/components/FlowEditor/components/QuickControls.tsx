@@ -7,8 +7,10 @@ import { useStore } from 'react-flow-renderer';
 import { useReactFlow } from 'react-flow-renderer';
 import { Icon } from '@asany/icons';
 import { useClickAway } from 'react-use';
+import classnames from 'classnames';
 
 import { useQuickControls } from '../FlowContext';
+import { nodeTypeGroups } from '../nodeTypes';
 
 type QuickControlsProps = {
   flowContainer: React.RefObject<HTMLDivElement>;
@@ -60,24 +62,17 @@ function QuickControls(props: QuickControlsProps) {
       <div className="quick-controls-arrow">
         <span className="quick-controls-arrow-content" />
       </div>
-      <div className="flow-node-type">
-        <div className="flow-node-type-icon">
-          <Icon name="Bootstrap/chat-fill" />
+      {nodeTypeGroups.quick.map((data) => (
+        <div
+          key={data.type}
+          className={classnames('flow-node-type', `quick-controls__node-${data.type}`)}
+        >
+          <div className="flow-node-type-icon">
+            <Icon name={data.icon} />
+          </div>
+          <div className="flow-node-type-label">{data.name}</div>
         </div>
-        <div className="flow-node-type-label">审批</div>
-      </div>
-      <div className="flow-node-type">
-        <div className="flow-node-type-icon">
-          <Icon name="Bootstrap/chat-fill" />
-        </div>
-        <div className="flow-node-type-label">抄送</div>
-      </div>
-      <div className="flow-node-type">
-        <div className="flow-node-type-icon">
-          <Icon name="Bootstrap/chat-fill" />
-        </div>
-        <div className="flow-node-type-label">服务任务</div>
-      </div>
+      ))}
       <div className="flow-node-type-separator" />
       <div className="flow-node-type">
         <div className="flow-node-type-icon">

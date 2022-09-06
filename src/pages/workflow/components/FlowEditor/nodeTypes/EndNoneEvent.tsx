@@ -4,7 +4,6 @@ import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
 
-import FlowNode from '../components/FlowNode';
 import useDelete from '../tools/useDelete';
 
 function EndNoneEvent({ data, ...props }: NodeProps) {
@@ -39,13 +38,10 @@ function EndNoneEvent({ data, ...props }: NodeProps) {
   );
 }
 
-export const DragNodeOfEndNoneEvent = () => {
-  return (
-    <FlowNode type="EndNoneEvent">
-      <Icon name="Bootstrap/stop-circle" />
-      结束
-    </FlowNode>
-  );
+EndNoneEvent.info = {
+  icon: 'Bootstrap/stop-circle',
+  type: 'EndNoneEvent',
+  name: '结束',
 };
 
 export default EndNoneEvent;

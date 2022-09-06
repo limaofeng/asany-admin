@@ -45,6 +45,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.theme-metronic {
+  .resizer {
+    &.active>.handle::before,
+    .handle:hover::before {
+      background: var(--kt-primary);
+    }
+  }
+}
+
 .bg-body-color {
   background-color: var(--bg-body);
 }

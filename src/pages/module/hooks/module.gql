@@ -1,0 +1,7 @@
+query module($id: ID!) {
+  module(id: $id) {
+    id
+    name
+    description
+  }
+}

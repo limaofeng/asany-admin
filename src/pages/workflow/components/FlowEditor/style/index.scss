@@ -914,25 +914,29 @@
   }
 }
 
-.react-flow__node-StartNoneEvent {
+.react-flow__node-StartNoneEvent,
+.quick-controls__node-StartNoneEvent {
   --flow-node-color: var(--kt-success);
   --flow-node-color-rgb: var(--bs-success-rgb);
   --flow-node-color-inverse: var(--kt-success-inverse);
 }
 
-.react-flow__node-UserTask {
+.react-flow__node-UserTask,
+.quick-controls__node-UserTask {
   --flow-node-color: var(--kt-warning);
   --flow-node-color-rgb: var(--kt-warning-rgb);
   --flow-node-color-inverse: var(--kt-warning-inverse);
 }
 
-.react-flow__node-EndNoneEvent {
+.react-flow__node-EndNoneEvent,
+.quick-controls__node-EndNoneEvent {
   --flow-node-color: var(--kt-dark);
   --flow-node-color-rgb: var(--kt-dark-rgb);
   --flow-node-color-inverse: var(--kt-dark-inverse);
 }
 
-.react-flow__node-ServiceTask {
+.react-flow__node-ServiceTask,
+.quick-controls__node-ServiceTask {
   --flow-node-color: var(--kt-primary);
   --flow-node-color-rgb: var(--kt-primary-rgb);
   --flow-node-color-inverse: var(--kt-primary-inverse);
@@ -1073,7 +1077,7 @@
   }
 
   .quick-controls {
-    z-index: 1;
+    z-index: 1000;
     opacity: 1;
     display: inline-flex;
     position: relative;
@@ -1083,6 +1087,7 @@
     pointer-events: all;
     align-items: center;
     box-shadow: rgb(100 100 100 / 20%) 0px 0px 3px 3px;
+    --flow-node-color: #000;
 
     .quick-controls-arrow {
       left: 0;
@@ -1159,6 +1164,11 @@
         height: 40px;
         border-radius: 20px;
         transition: background-color 0.1s ease-in-out;
+
+        .svg-icon svg {
+          width: 20px;
+          height: 20px;
+        }
       }
 
       &-label {
@@ -1169,7 +1179,7 @@
       &:hover {
 
         .flow-node-type-icon {
-          background-color: #000;
+          background-color: var(--flow-node-color);
 
           .svg-icon {
             color: #fff;

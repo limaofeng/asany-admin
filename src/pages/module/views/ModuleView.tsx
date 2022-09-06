@@ -3,16 +3,16 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { RouteComponentProps } from 'react-router';
 import { matchPath } from 'react-router';
 
-import { useProjectQuery } from '../hooks';
+import { useModuleQuery } from '../hooks/api';
 
 import { MicroApp } from '@/layouts/Demo7';
 import { BlockUI, Menu, Symbol } from '@/metronic';
 
-type ProjectViewProps = RouteComponentProps<{ id: string }> & {
+type ModuleViewProps = RouteComponentProps<{ id: string }> & {
   children: React.ReactNode;
 };
 
-function ProjectView(props: ProjectViewProps) {
+function ModuleView(props: ModuleViewProps) {
   const {
     children,
     location,
@@ -21,13 +21,13 @@ function ProjectView(props: ProjectViewProps) {
     },
   } = props;
 
-  const { data = {}, loading } = useProjectQuery({ variables: { id } });
+  const { data = {}, loading } = useModuleQuery({ variables: { id } });
 
-  const project = data.project;
+  const module = data.module;
 
   const menuKey = useMemo(() => {
     const channelMatch = matchPath<{ sid: string; cid: string }>(location.pathname, {
-      path: '/project/:id/:key',
+      path: '/module/:id/:key',
       exact: false,
       strict: true,
     });
@@ -56,9 +56,9 @@ function ProjectView(props: ProjectViewProps) {
 
   return (
     <MicroApp loading={loading}>
-      {project && (
+      {module && (
         <>
-          <MicroApp.Sidebar>
+          <MicroApp.Sidebar collapsible={false} width={216}>
             <BlockUI
               zIndex={10}
               className="my-5 p-5"
@@ -69,8 +69,8 @@ function ProjectView(props: ProjectViewProps) {
                 <div className="d-flex align-items-center">
                   <Symbol.Avatar alt="啥地方" className="me-5" />
                   <div className="flex-grow-1">
-                    <a className="text-dark fw-bolder text-hover-primary fs-6">{project.name}</a>
-                    <span className="text-muted d-block fw-bold">{project.description}</span>
+                    <a className="text-dark fw-bolder text-hover-primary fs-6">{module.name}</a>
+                    <span className="text-muted d-block fw-bold">{module.description}</span>
                   </div>
                 </div>
               </div>
@@ -86,37 +86,52 @@ function ProjectView(props: ProjectViewProps) {
               >
                 <Menu.Item
                   bullet={true}
-                  icon="Bootstrap/speedometer2"
-                  title="仪表盘"
-                  url={`/projects/${project.id}`}
+                  icon="Fonticon/layers"
+                  title="架构"
+                  url={`/modules/${module.id}/schema/models`}
                 />
-                <Menu.Section contentClassName="pt-6 pb-0">基础功能</Menu.Section>
-                <Menu.Item bullet={true} title="目标" url={`/projects/${project.id}/targets`} />
-                <Menu.Item bullet={true} title="任务" url={`/projects/${project.id}/tasks`} />
-                <Menu.Item bullet={true} title="预算" url={`/projects/${project.id}/budget`} />
-                <Menu.Item bullet={true} title="成员" url={`/projects/${project.id}/users`} />
-                <Menu.Item bullet={true} title="文档" url={`/projects/${project.id}/files`} />
-                <Menu.Item bullet={true} title="活动" url={`/projects/${project.id}/activity`} />
-                <Menu.Section contentClassName="pt-6 pb-0">设置</Menu.Section>
                 <Menu.Item
                   bullet={true}
-                  title="基础信息"
-                  url={`/projects/${project.id}/settings`}
+                  icon="Fonticon/alignment-right"
+                  title="内容管理"
+                  url={`/modules/${module.id}/content`}
+                />
+                <Menu.Item
+                  bullet={true}
+                  icon="Fonticon/attachments"
+                  title="静态资源"
+                  url={`/modules/${module.id}/content`}
+                />
+                {/* <Menu.Section contentClassName="pt-6 pb-0">基础功能</Menu.Section>
+                <Menu.Item bullet={true} title="目标" url={`/projects/${module.id}/targets`} />
+                <Menu.Item bullet={true} title="任务" url={`/projects/${module.id}/tasks`} />
+                <Menu.Item bullet={true} title="预算" url={`/projects/${module.id}/budget`} />
+                <Menu.Item bullet={true} title="成员" url={`/projects/${module.id}/users`} />
+                <Menu.Item bullet={true} title="文档" url={`/projects/${module.id}/files`} />
+                <Menu.Item bullet={true} title="活动" url={`/projects/${module.id}/activity`} /> */}
+                <Menu.Item
+                  bullet={true}
+                  icon="Fonticon/settings"
+                  title="模块设置"
+                  url={`/modules/${module.id}/content`}
                 />
               </Menu>
             </BlockUI>
           </MicroApp.Sidebar>
-          {React.Children.map(children, (o: any) => {
-            o.props.location.state = {
-              project,
-              baseUrl: '/projects/' + id,
-            };
-            return o;
-          })}
+          <div style={{ zIndex: 99 }} className="position-relative d-flex flex-row flex-row-fluid">
+            <MicroApp.Sidebar.Toggle className="start-0" />
+            {React.Children.map(children, (o: any) => {
+              o.props.location.state = {
+                module,
+                baseUrl: '/modules/' + id,
+              };
+              return o;
+            })}
+          </div>
         </>
       )}
     </MicroApp>
   );
 }
 
-export default ProjectView;
+export default ModuleView;

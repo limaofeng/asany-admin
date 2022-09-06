@@ -1,11 +1,11 @@
-import React, { useCallback, useReducer, useRef, useState } from 'react';
+import { useCallback, useReducer, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 import Icon from '@asany/icons';
 import { Resizer } from '@asany/sunmao';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import { dragNodes } from '../nodeTypes';
+import { nodeTypeGroups } from '../nodeTypes';
 
 import FlowNode from './FlowNode';
 
@@ -103,7 +103,12 @@ function Sidebar(props: SidebarProps) {
         </div>
         <div className="sidebar-subpanel-body">
           <div className="sidebar-node-types-classics">
-            {dragNodes.classics.map((item) => React.createElement(item, { key: item.name }))}
+            {nodeTypeGroups.classics.map((item) => (
+              <FlowNode key={item.type} type={item.type}>
+                <Icon name={item.icon} />
+                {item.name}
+              </FlowNode>
+            ))}
           </div>
         </div>
       </Resizer>

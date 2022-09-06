@@ -100,13 +100,15 @@ const OverviewFlow = (props: OverviewFlowProps) => {
   );
 
   const handleNodeDragStop = useCallback(
-    (event: React.MouseEvent, node: Node) => {
+    (event: React.MouseEvent, node: Node, _nodes: Node[]) => {
+      console.log(node, _nodes);
       setNodes((prevNodes) =>
         prevNodes.map((e) => {
-          if (e.id === node.id) {
+          const _index = _nodes.findIndex((n) => n.id == e.id);
+          if (_index > -1) {
             return {
               ...e,
-              position: node.position,
+              position: _nodes[_index].position,
             };
           }
           return e;
@@ -131,7 +133,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
       if (!targetIsPane) {
         return;
       }
-      console.log('handleClick', e.target);
+      // console.log('handleClick', e.target);
       onClick(e);
       hideQuickControls();
     },
@@ -146,7 +148,6 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         onClick={handleClick}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onNodeClick={props.onNodeClick}
         onEdgeClick={props.onEdgeClick}
         onNodesDelete={props.onNodesDelete}
         onEdgesDelete={props.onEdgesDelete}

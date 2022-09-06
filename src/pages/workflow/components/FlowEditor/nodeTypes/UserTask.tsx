@@ -4,7 +4,6 @@ import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
 
-import FlowNode from '../components/FlowNode';
 import useDelete from '../tools/useDelete';
 
 function UserTask({ data, ...props }: NodeProps) {
@@ -40,13 +39,10 @@ function UserTask({ data, ...props }: NodeProps) {
   );
 }
 
-export const DragNodeOfUserTask = () => {
-  return (
-    <FlowNode type="UserTask">
-      <Icon name="Bootstrap/person-workspace" />
-      用户任务
-    </FlowNode>
-  );
+UserTask.info = {
+  icon: 'Bootstrap/person-workspace',
+  type: 'UserTask',
+  name: '用户任务',
 };
 
 export default UserTask;

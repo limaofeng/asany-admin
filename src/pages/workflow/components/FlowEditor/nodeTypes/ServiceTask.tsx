@@ -4,7 +4,6 @@ import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
 
-import FlowNode from '../components/FlowNode';
 import useDelete from '../tools/useDelete';
 
 function ServiceTask({ data, ...props }: NodeProps) {
@@ -25,7 +24,7 @@ function ServiceTask({ data, ...props }: NodeProps) {
         <div className="react-flow__node-icon">
           <Icon name="Bootstrap/filetype-java" />
         </div>
-        <div className="react-flow__node-title">服务任务</div>{' '}
+        <div className="react-flow__node-title">服务任务</div>
         <div onClick={handleDelete} className="react-flow__node-header__delete">
           <Icon name="Bootstrap/x" />
         </div>
@@ -40,13 +39,10 @@ function ServiceTask({ data, ...props }: NodeProps) {
   );
 }
 
-export const DragNodeOfServiceTask = () => {
-  return (
-    <FlowNode type="ServiceTask">
-      <Icon name="Bootstrap/filetype-java" />
-      服务任务
-    </FlowNode>
-  );
+ServiceTask.info = {
+  icon: 'Bootstrap/filetype-java',
+  type: 'ServiceTask',
+  name: '服务任务',
 };
 
 export default ServiceTask;

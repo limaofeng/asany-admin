@@ -2,8 +2,6 @@ import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
 
-import FlowNode from '../components/FlowNode';
-
 function ExclusiveGateway({ data }: NodeProps) {
   // const onChange = useCallback((evt: any) => {
   //   console.log(evt.target.value);
@@ -26,13 +24,10 @@ function ExclusiveGateway({ data }: NodeProps) {
   );
 }
 
-export const DragNodeOfExclusiveGateway = () => {
-  return (
-    <FlowNode type="ExclusiveGateway">
-      <Icon name="Bootstrap/diamond" />
-      排它网关
-    </FlowNode>
-  );
+ExclusiveGateway.info = {
+  icon: 'Bootstrap/diamond',
+  type: 'ExclusiveGateway',
+  name: '排它网关',
 };
 
 export default ExclusiveGateway;

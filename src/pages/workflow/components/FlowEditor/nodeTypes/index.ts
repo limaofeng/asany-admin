@@ -2,11 +2,11 @@ import React from 'react';
 
 import type { NodeTypes } from 'react-flow-renderer';
 
-import EndNoneEvent, { DragNodeOfEndNoneEvent } from './EndNoneEvent';
-import ExclusiveGateway, { DragNodeOfExclusiveGateway } from './ExclusiveGateway';
-import ServiceTask, { DragNodeOfServiceTask } from './ServiceTask';
-import StartNoneEvent, { DragNodeOfStartNoneEvent } from './StartNoneEvent';
-import UserTask, { DragNodeOfUserTask } from './UserTask';
+import EndNoneEvent from './EndNoneEvent';
+import ExclusiveGateway from './ExclusiveGateway';
+import ServiceTask from './ServiceTask';
+import StartNoneEvent from './StartNoneEvent';
+import UserTask from './UserTask';
 
 const nodeTypes = {
   StartNoneEvent,
@@ -16,15 +16,16 @@ const nodeTypes = {
   ExclusiveGateway,
 } as NodeTypes;
 
-export const dragNodes = {
-  simple: [DragNodeOfStartNoneEvent, DragNodeOfEndNoneEvent],
+export const nodeTypeGroups = {
+  simple: [StartNoneEvent.info, EndNoneEvent.info],
   classics: [
-    DragNodeOfStartNoneEvent,
-    DragNodeOfEndNoneEvent,
-    DragNodeOfUserTask,
-    DragNodeOfServiceTask,
-    DragNodeOfExclusiveGateway,
+    StartNoneEvent.info,
+    EndNoneEvent.info,
+    UserTask.info,
+    ServiceTask.info,
+    ExclusiveGateway.info,
   ],
+  quick: [UserTask.info, ServiceTask.info, ExclusiveGateway.info],
 };
 
 export const renderNodeTypeDragPreview = (nodeType: string) => {

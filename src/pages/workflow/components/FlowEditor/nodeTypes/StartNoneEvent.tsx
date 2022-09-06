@@ -4,7 +4,6 @@ import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
 
-import FlowNode from '../components/FlowNode';
 import useDelete from '../tools/useDelete';
 
 function StartNoneEvent(props: NodeProps) {
@@ -39,13 +38,10 @@ function StartNoneEvent(props: NodeProps) {
   );
 }
 
-export const DragNodeOfStartNoneEvent = () => {
-  return (
-    <FlowNode type="StartNoneEvent">
-      <Icon name="Bootstrap/play-fill" />
-      开始
-    </FlowNode>
-  );
+StartNoneEvent.info = {
+  type: 'StartNoneEvent',
+  icon: 'Bootstrap/play-fill',
+  name: '开始',
 };
 
 export default StartNoneEvent;

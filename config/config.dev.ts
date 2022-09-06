@@ -3,11 +3,11 @@ import { defineConfig } from 'umi';
 
 export default defineConfig({
   apollo: {
-    uri: 'http://localhost:8081/graphql',
+    uri: 'http://localhost:8080/graphql',
   },
   define: {
     'process.env.WEBSITE_URL': '//localhost:8001',
-    'process.env.STORAGE_URL': '//localhost:8081',
+    'process.env.STORAGE_URL': '//localhost:8080',
     'process.env.MOBILE_URL': '//localhost:8001',
   },
   plugins: [

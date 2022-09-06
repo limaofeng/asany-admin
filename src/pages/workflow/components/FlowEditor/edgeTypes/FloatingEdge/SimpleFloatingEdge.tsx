@@ -21,44 +21,15 @@ function SimpleFloatingEdge({ id, source, target, markerEnd, style }: EdgeProps)
   const zoom = useStore((s) => s.transform[2]);
   const [{ edgeId }, { show: showQuickControls }] = useQuickControls();
 
-  const handleClick = useCallback((event: React.MouseEvent) => {
-    event.stopPropagation();
-    event.preventDefault();
-
-    // const targetIsPane = (event.target! as HTMLElement).classList.contains('react-flow__pane');
-    // console.log('targetIsPane', targetIsPane);
-    // if (targetIsPane) {
-    // we need to remove the wrapper bounds, in order to get the correct position
-    // const { top, left } = (
-    //   document.querySelector('.reactflow-wrapper') as HTMLDivElement
-    // ).getBoundingClientRect();
-
-    // const edgeQuick = document.querySelector('.edge-quick') as HTMLDivElement;
-    // if (!edgeQuick) {
-    //   return;
-    // }
-    // const quickHeight = edgeQuick.getBoundingClientRect().height;
-
-    const { x: clientX, y: clientY, width, height } = edge.current!.getBoundingClientRect();
-    showQuickControls(id, { x: clientX, y: clientY, width, height });
-    // const position = project({
-    //   x: clientX + width - left,
-    //   y: clientY - top + height / 2 - quickHeight / 2,
-    // });
-    // edgeQuick.style.transform = `translate(${position.x}px, ${position.y}px)`;
-    //  const newNode = {
-    //    id,
-    //    // we are removing the half of the node width (75) to center the new node
-    //    position: project({ x: event.clientX - left - 75, y: event.clientY - top }),
-    //    data: { label: `Node ${id}` },
-    //  };
-    //  setNodes((nds) => nds.concat(newNode));
-    //  setEdges((eds) =>
-    //    eds.concat({ id: getId(), source: connectingNodeId.current, target: id })
-    //  );
-    //  }
-    // }
-  }, []);
+  const handleClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const { x: clientX, y: clientY, width, height } = edge.current!.getBoundingClientRect();
+      showQuickControls(id, { x: clientX, y: clientY, width, height });
+    },
+    [id, showQuickControls],
+  );
 
   useEffect(() => {
     if (edgeId != id) {
