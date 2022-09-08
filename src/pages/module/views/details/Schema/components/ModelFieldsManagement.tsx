@@ -1,6 +1,8 @@
 import { useCallback, useMemo } from 'react';
+import React from 'react';
 
 import type { ISortableItem, SortableChangeEvent } from '@asany/sortable';
+import { dragPreview } from '@asany/sortable';
 import Sortable from '@asany/sortable';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
@@ -47,6 +49,14 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
           // allowDrop={handleAllowDrop}
           items={fields}
           itemRender={ModelField}
+          preview={{
+            render: dragPreview(
+              React.createElement(ModelField, {
+                preview: true,
+              } as any),
+            ),
+            container: document.body,
+          }}
         />
       </OverlayScrollbarsComponent>
       <div className="model-field-types">
