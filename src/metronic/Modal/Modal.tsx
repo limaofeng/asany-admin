@@ -180,7 +180,9 @@ function Modal(props: ModalProps) {
       onHide={onCancel as any}
     >
       {React.cloneElement(header as React.ReactElement, { closable, onCancel })}
-      {React.cloneElement(body as React.ReactElement, { visible: !!show })}
+      {React.cloneElement(body as React.ReactElement, {
+        /*visible: !!show // TODO: 是否应该支持属性穿透 */
+      })}
       {footer && React.cloneElement(footer as React.ReactElement)}
     </BsModal>
   );

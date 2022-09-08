@@ -247,6 +247,7 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
           'validateFirst',
           'valuePropName',
           'wrapperCol',
+          'requiredMark',
           '_internalItemRender' as any,
         ])}
       >
@@ -395,7 +396,7 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
             'Form.Item',
             '`name` is only used for validate React element. If you are using Form.Item as layout display, please remove `name` instead.',
           );
-          childNode = children;
+          childNode = children as any;
         }
 
         return renderLayout(childNode, fieldId, isRequired);

@@ -1,0 +1,34 @@
+query schema {
+  models(filter: { type: ENTITY }) {
+    id
+    code
+    name
+    description
+  }
+}
+
+query model($id: ID) {
+  model(id: $id) {
+    id
+    code
+    name
+    description
+    fields {
+      id
+      code
+      type {
+        id
+        code
+      }
+      name
+      description
+    }
+  }
+}
+
+mutation createModel($input: ModelCreateInput!) {
+  createModel(input: $input) {
+    id
+    name
+  }
+}

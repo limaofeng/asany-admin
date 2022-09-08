@@ -14,6 +14,7 @@
   &>.secondary_sidebar-inner {
     background-color: var(--kt-aside-bg-color);
     overflow: hidden;
+    height: 100vh;
   }
 
   .handle::before {
@@ -108,4 +109,3 @@
     }
   }
 }
-

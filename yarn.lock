@@ -205,6 +205,16 @@
     lodash-es "^4.17.21"
     react-flip-toolkit "^7.0.14"
 
+"@asany/sortable@^0.1.37":
+  version "0.1.37"
+  resolved "https://registry.npmjs.org/@asany/sortable/-/sortable-0.1.37.tgz#345e93b2ff49b60ac504571c4e60d4e16ddf4454"
+  integrity sha512-Hg3g/QNtHGxNDjXU52KiBdrfTw+Nt0efDPjyFsRZrMEw25xxxf76nBe8urASlJWlf4oZHkgA9iZYo6I57Lr1DQ==
+  dependencies:
+    classnames "^2.3.1"
+    immutability-helper "^3.1.1"
+    lodash-es "^4.17.21"
+    react-flip-toolkit "^7.0.14"
+
 "@asany/sunmao@^1.0.34":
   version "1.0.34"
   resolved "https://registry.npmjs.org/@asany/sunmao/-/sunmao-1.0.34.tgz#19d799fb5902c233da4b0eb75475c8f30f18188c"

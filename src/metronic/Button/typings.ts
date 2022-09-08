@@ -15,7 +15,7 @@ export type Variant =
 
 export type VariantStyle = 'light' | 'background';
 
-export type ACTIVE_LIGHT_STYLE =
+export type LIGHT_STYLE =
   | 'light-white'
   | 'light-primary'
   | 'light-secondary'
@@ -47,17 +47,17 @@ export type ButtonColor =
   | 'gray-900'
   | 'light-dark';
 
-export type ActiveColor = Variant | ACTIVE_LIGHT_STYLE;
+export type ActiveColor = Variant | LIGHT_STYLE;
 
 export interface ButtonProps<AsProps = any> {
   as?: 'button' | 'a' | 'span' | string | React.ComponentType<AsProps>;
   id?: string;
-  variant?: Variant | 'clean' | false;
-  variantStyle?: VariantStyle;
+  variant?: Variant | LIGHT_STYLE | 'clean' | false;
   type?: 'dashed' | 'link' | 'solid' | 'circle';
+  background?: Variant;
   disabled?: boolean;
   icon?: React.ReactNode;
-  color?: ButtonColor;
+  color?: ButtonColor | false;
   iconColor?: ButtonColor;
   activeIconColor?: ButtonColor;
   textColor?: ButtonColor;

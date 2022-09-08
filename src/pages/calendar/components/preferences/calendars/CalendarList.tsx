@@ -11,7 +11,7 @@ import { useClickAway } from 'react-use';
 
 import CalendarListFooter from './CalendarListFooter';
 
-import type { InputRef, OptionData } from '@/metronic';
+import type { InputRef, OptionData } from '@/metronic/typings';
 import { Checkbox, Form, Input, Modal, Popover, Select } from '@/metronic';
 import { darkenColor, lightenColor } from '@/metronic/utils/color';
 import {
@@ -57,7 +57,7 @@ const CalendarListItem = React.forwardRef(function (props: CalendarListItemProps
     onSelect(data.id);
   }, [data.id, onSelect]);
 
-  const handleInputChange = useCallback((e) => {
+  const handleInputChange = useCallback((e: any) => {
     setValue(e.target.value);
   }, []);
 
@@ -110,7 +110,7 @@ const CalendarListItem = React.forwardRef(function (props: CalendarListItemProps
   );
 
   const handleChange = useCallback(
-    (e) => {
+    (e: any) => {
       onCheck(data.id, e.target.checked);
     },
     [data, onCheck],
@@ -288,7 +288,7 @@ function CalendarList(props: CalendarListProps) {
   const handleSort = useCallback(() => {}, []);
 
   const handleDrop = useCallback(
-    async (e) => {
+    async (e: any) => {
       const _dropPosition = getDropPosition(
         e.node._rect,
         e.node,
@@ -318,11 +318,11 @@ function CalendarList(props: CalendarListProps) {
     [refetch, updateCalendar],
   );
 
-  const handleAllowDrag = useCallback((e) => {
+  const handleAllowDrag = useCallback((e: any) => {
     return temp.current.editing?.key != e.id;
   }, []);
 
-  const handleAllowDrop = useCallback((e) => {
+  const handleAllowDrop = useCallback((e: any) => {
     if (isNaN(e.dropPosition)) {
       return false;
     }

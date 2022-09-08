@@ -16,10 +16,23 @@ class Module {
   });
   @component({ name: 'details.ModuleSchema', title: '架构', tags: ['自定义模块/详情'] })
   ModuleSchema = dynamic({
-    loader: () => import('./views/details/Schema'),
+    loader: () => import('./views/details/Schema/Layout'),
     loading: LoadingComponent,
   });
-  @component({ name: 'details.ModuleSchemaModel', title: '模型', tags: ['自定义模块/详情'] })
+  @component({
+    name: 'details.ModuleSchemaModelOverview',
+    title: '模型总览',
+    tags: ['自定义模块/详情/架构'],
+  })
+  ModuleSchemaModelOverview = dynamic({
+    loader: () => import('./views/details/Schema/ModelOverview'),
+    loading: LoadingComponent,
+  });
+  @component({
+    name: 'details.ModuleSchemaModel',
+    title: '模型详情',
+    tags: ['自定义模块/详情/架构'],
+  })
   ModuleSchemaModel = dynamic({
     loader: () => import('./views/details/Schema/ModelView'),
     loading: LoadingComponent,

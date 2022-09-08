@@ -1,0 +1,30 @@
+.module_secondary_sidebar {
+  .menu-section-container {
+    margin-bottom: 8px;
+    margin-top: 20px;
+
+    .menu-content {
+      padding: 0;
+    }
+
+    .menu-section {
+      padding: 0;
+      line-height: 24px;
+    }
+
+    &:first-child {
+      margin-top: 12px;
+    }
+  }
+
+  .menu-item {
+    height: 32px;
+    margin-bottom: 2px;
+
+    .menu-link {
+      padding: 8px !important;
+      line-height: 16px;
+      font-size: 13px;
+    }
+  }
+}

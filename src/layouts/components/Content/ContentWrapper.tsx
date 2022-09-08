@@ -62,7 +62,12 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
         loading={loading}
       >
         {header && <ContentHeader {...header} breadcrumb={breadcrumb} />}
-        <Content className={contentClassName}>{children}</Content>
+        <Content
+          style={{ minHeight: `calc(100vh - ${!!header ? 100 : 0}px - ${!!footer ? 70 : 0}px)` }}
+          className={contentClassName}
+        >
+          {children}
+        </Content>
         {footer && <ContentFooter {...footer} />}
       </BlockUI>
     </div>

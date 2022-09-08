@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import classnames from 'classnames';
@@ -10,6 +11,8 @@ interface TabsProps {
   className?: string;
   activeKey?: string;
   tabPosition?: 'left' | 'top';
+  tabBarStyle?: CSSProperties;
+  tabBarClassName?: string;
   type?: 'tabs' | 'pills-custom' | 'pills' | 'line-tabs';
   renderContainer?: boolean;
   defaultActiveKey?: string;
@@ -23,15 +26,16 @@ type TabBarProps = {
   key: string;
   active: boolean;
   className?: string;
+  style?: CSSProperties;
   children?: React.ReactNode;
   onClick: (e: React.MouseEvent) => void;
 };
 
 function TabBar(props: TabBarProps) {
-  const { className, active, children, onClick } = props;
+  const { style, className, active, children, onClick } = props;
   return (
     <li key={props.id} className="nav-item">
-      <a onClick={onClick} className={classnames('nav-link', className, { active })}>
+      <a onClick={onClick} style={style} className={classnames('nav-link', className, { active })}>
         {children}
       </a>
     </li>
@@ -50,7 +54,7 @@ function Tabs(props: TabsProps) {
 
   const panes = useMemo(() => {
     return React.Children.map(children, (item) => ({
-      id: item.key as string,
+      id: (item.key || item.props.tab) as string,
       name: item.props.tab,
       content: item,
     }));
@@ -105,7 +109,8 @@ function Tabs(props: TabsProps) {
           renderTabBar({
             id: item.id,
             key: item.id,
-            className: classnames({
+            style: props.tabBarStyle,
+            className: classnames(props.tabBarClassName, {
               active: activeKey == item.id,
             }),
             active: activeKey == item.id,
@@ -115,7 +120,9 @@ function Tabs(props: TabsProps) {
         )}
       </ul>
       <div key="tab-content" className="tab-content">
-        {panes.map((item) => React.cloneElement(item.content, { active: activeKey == item.id }))}
+        {panes.map((item) =>
+          React.cloneElement(item.content, { key: item.id, active: activeKey == item.id }),
+        )}
       </div>
     </>
   );

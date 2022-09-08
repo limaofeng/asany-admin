@@ -3,12 +3,26 @@
     border-color: #f1416c;
   }
 }
+
+.form-extra {
+  min-height: 17px;
+  margin: 4px 0 2px;
+  color: #57606a;
+  font-size: 12px;
+}
+
 .form-item-help {
   min-height: 17px;
   margin: 4px 0 2px;
   color: #57606a;
   font-size: 12px;
 }
+
+.form-item-optional {
+  padding-left: 4px;
+  color: rgb(157, 166, 199);
+}
+
 .asany-form-item.fv-row {
   &.form-item-with-help {
     .form-item-explain.form-explain-connected {
@@ -16,26 +30,31 @@
       margin: 4px 0 2px;
       color: #57606a;
       font-size: 12px;
+
       .form-item-explain-error {
         color: var(--bs-red);
       }
     }
   }
 }
+
 .form-control,
 .form-select:not(.select2-selection) {
   min-height: 32px;
   padding: 4px 11px;
   border-radius: 6px;
+
   &.form-control-sm {
     min-height: 24px;
     padding: 0 7px;
   }
+
   &.form-control-lg {
     padding: 6.5px 11px;
     font-size: 16px;
   }
 }
+
 .form-control {
   &-borderless {
     background-color: transparent;
@@ -43,12 +62,14 @@
     box-shadow: none;
   }
 }
+
 .form-control-xs {
   min-height: calc(1em + 0.8rem + 2px);
   padding: 0.25rem 0.5rem;
   font-size: 0.725rem;
   border-radius: 0.25rem;
 }
+
 .asany-form-horizontal {
   .asany-form-item {
     display: flex;
@@ -56,12 +77,14 @@
     flex-direction: row;
     align-items: self-start;
     padding: 0 0.5rem;
+
     .form-label {
       flex: none;
       width: 48px;
       margin-right: 0.5rem;
       margin-bottom: 0;
       text-align: right;
+
       &::after {
         padding: 0 2px;
         color: inherit;
@@ -69,14 +92,17 @@
         content: ':';
       }
     }
+
     .fv-control-wrapper {
       flex: 1;
     }
+
     .form-control {
       flex: 1;
     }
   }
 }
+
 .asany-form-xs {
   .form-label {
     font-size: 1rem;

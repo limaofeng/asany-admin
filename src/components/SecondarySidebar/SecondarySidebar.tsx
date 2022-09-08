@@ -16,6 +16,7 @@ type SecondarySidebarState = {
 
 type SecondarySidebarProps = {
   width: number;
+  className: string;
   minWidth?: number;
   maxWidth?: number;
   collapsible?: boolean;
@@ -28,6 +29,7 @@ function SecondarySidebar(props: SecondarySidebarProps) {
     maxWidth = DEFAULT_MAX_WIDTH,
     collapsible = true,
     children,
+    className,
   } = props;
   const state = useRef<SecondarySidebarState>({
     minimized: false,
@@ -92,7 +94,7 @@ function SecondarySidebar(props: SecondarySidebarProps) {
 
   return (
     <Resizer
-      className={classnames('secondary_sidebar-resizer d-flex flex-column flex-lg-row', {
+      className={classnames('secondary_sidebar-resizer d-flex flex-column flex-lg-row', className, {
         'secondary_sidebar-resizer-minimized': minimized,
       })}
       style={{ width: minimized ? undefined : width }}

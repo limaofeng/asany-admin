@@ -8,6 +8,8 @@ import { useModuleQuery } from '../hooks/api';
 import { MicroApp } from '@/layouts/Demo7';
 import { BlockUI, Menu, Symbol } from '@/metronic';
 
+import '../style/index.scss';
+
 type ModuleViewProps = RouteComponentProps<{ id: string }> & {
   children: React.ReactNode;
 };
@@ -88,7 +90,7 @@ function ModuleView(props: ModuleViewProps) {
                   bullet={true}
                   icon="Fonticon/layers"
                   title="架构"
-                  url={`/modules/${module.id}/schema/models`}
+                  url={`/modules/${module.id}/schema`}
                 />
                 <Menu.Item
                   bullet={true}
