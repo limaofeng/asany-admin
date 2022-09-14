@@ -1,3 +1,9 @@
+## [0.2.32](https://github.com/limaofeng/asany-admin/compare/v0.2.31...v0.2.32) (2022-09-14)
+
+### Bug Fixes
+
+- 修改生产环境地址 ([966ea82](https://github.com/limaofeng/asany-admin/commit/966ea824e023092cba3591249c0497fa575483af))
+
 ## [0.2.31](https://github.com/limaofeng/asany-admin/compare/v0.2.30...v0.2.31) (2022-09-14)
 
 ### Bug Fixes
