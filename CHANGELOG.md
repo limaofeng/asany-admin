@@ -1,3 +1,40 @@
+## [0.2.31](https://github.com/limaofeng/asany-admin/compare/v0.2.30...v0.2.31) (2022-09-14)
+
+### Bug Fixes
+
+- 修复聊天框 con_nomore 样式 ([53574a1](https://github.com/limaofeng/asany-admin/commit/53574a1fba1b9649844c968fac46ceb1490574d9))
+- **工作流:** 删除节点时，关闭属性面板 ([eac242c](https://github.com/limaofeng/asany-admin/commit/eac242c52f5e069827b99058156f581f025410f1))
+- 模型字段 拖拽时，隐藏真实的元素 ([513020a](https://github.com/limaofeng/asany-admin/commit/513020a62057fed199445ab5a173f653b174b287))
+
+### Features
+
+- 实现门户 ([1455cea](https://github.com/limaofeng/asany-admin/commit/1455ceaefba013555135d33f3bdb5fc45b665b85))
+- 流程模型列表及流程设计器加载真实数据 ([3f723c4](https://github.com/limaofeng/asany-admin/commit/3f723c4417103f83817fc818f5e8dc7ecb7ced33))
+- 为流程节点添加自定义样式 ([40485be](https://github.com/limaofeng/asany-admin/commit/40485bee89eaf17afaf4f62efc6233265ec7e205))
+- 删除冗余的图标 svg ([907ead8](https://github.com/limaofeng/asany-admin/commit/907ead84e1435b0223410afb5c01daf6fb71fd3e))
+- 升级 metronic_v8.1.1 ([7529981](https://github.com/limaofeng/asany-admin/commit/7529981e645c023022786a58d15d6415dd227e96))
+- 即时加载消息 ([6c7299a](https://github.com/limaofeng/asany-admin/commit/6c7299adc5f4e14fd4b8ef25a6e6b15b5a8d3b74))
+- 完善 IM 基础界面 ([42744e9](https://github.com/limaofeng/asany-admin/commit/42744e9a6107e759ecb32848fa9a932a9fb5c074))
+- 完成子应用布局二级侧边栏组件 ([af52617](https://github.com/limaofeng/asany-admin/commit/af526178a8ee3f8fa1605e792f017e623d55543e))
+- 完成组件管理基本功能 ([ca4d23a](https://github.com/limaofeng/asany-admin/commit/ca4d23abca713995bebc932abc18b5022b5c6af6))
+- **工作流:** 工作流节点拖拽预览 ([764780a](https://github.com/limaofeng/asany-admin/commit/764780ad3593002d1cdbd4dba2e0f0b2be43122d))
+- **工作流:** 点击节点打开属性面板 ([10adb8f](https://github.com/limaofeng/asany-admin/commit/10adb8fbf75fb0dc8cecfb1112e937b91a83dd86))
+- 撤回消息显示已经消息加载效果优化 ([932f3f0](https://github.com/limaofeng/asany-admin/commit/932f3f0bd5f29e04c272a87c81701c8eaece9ce5))
+- 明亮主题切换 ([008bc54](https://github.com/limaofeng/asany-admin/commit/008bc54960e69ece65038755d1574d16b007bf51))
+- 模型字段管理 ([65d3844](https://github.com/limaofeng/asany-admin/commit/65d3844207fe0634a6fb1b962124b2ca98db7ada))
+- 流程线上添加快捷面板 ([f17905b](https://github.com/limaofeng/asany-admin/commit/f17905b5c6c26f79d26ca3af3aa240f9afd430c1))
+- 流程编辑时的时光机功能 ([372b75c](https://github.com/limaofeng/asany-admin/commit/372b75c1ed0630cce56c1ca34933767abdd37526))
+- 流程设计器 Demo ([a1370f7](https://github.com/limaofeng/asany-admin/commit/a1370f78f3f4649180d067951d845cbff4d8e43e))
+- 消息列表自动更新状态 ([f34f893](https://github.com/limaofeng/asany-admin/commit/f34f893c3d697ac5f0574ca5598a68ac4d7c3634))
+- 消息发送 ([4813dec](https://github.com/limaofeng/asany-admin/commit/4813dec7c259bba530e53173662e5797314e7453))
+- 添加几个仪表盘部件 ([50f1fde](https://github.com/limaofeng/asany-admin/commit/50f1fde1eec6e4320c2b0b5a81239d7678dd9670))
+- 添加模型详情页面 ([03bbbd2](https://github.com/limaofeng/asany-admin/commit/03bbbd2715ef87787b682b5ab885d2518936be08))
+- 添加消息模块 ([16dfd5c](https://github.com/limaofeng/asany-admin/commit/16dfd5c6e92c9b86acf58aabe26ac2042a31445d))
+- 组件 QuickControls 显示位置优化 ([c78f7c1](https://github.com/limaofeng/asany-admin/commit/c78f7c1eab18e8e4a3f797db4fa6de398f7d9102))
+- 组件列表使用真实数据 ([fb9c1b9](https://github.com/limaofeng/asany-admin/commit/fb9c1b9e95f5f1a0e35a3dd6da756ee52573d84e))
+- 组件新增 ([47f8a55](https://github.com/limaofeng/asany-admin/commit/47f8a5523d029afc1a2e8ffe738e5b0c2325aea1))
+- 迷你聊天窗口 ([719260d](https://github.com/limaofeng/asany-admin/commit/719260dcaf7c79fe46df7fcc574ebf01ba09b8fe))
+
 ## [0.2.30](https://github.com/limaofeng/asany-admin/compare/v0.2.29...v0.2.30) (2022-07-08)
 
 ### Bug Fixes
