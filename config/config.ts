@@ -4,16 +4,16 @@ import routes from './routes';
 
 export default defineConfig({
   apollo: {
-    uri: '//api.asany.cn/graphql',
+    uri: 'https://api.asany.cn/graphql',
     logging: process.env.NODE_ENV === 'development',
   },
   app: {
     id: '6068485332c5fc853a65',
   },
   define: {
-    'process.env.STORAGE_URL': '//api.asany.cn/graphql',
-    'process.env.MOBILE_URL': '//47.103.119.188:8002',
-    'process.env.WEBSITE_URL': '//47.103.119.188:8001',
+    'process.env.STORAGE_URL': 'https://api.asany.cn/graphql',
+    'process.env.MOBILE_URL': 'http://47.103.119.188:8002',
+    'process.env.WEBSITE_URL': 'http://47.103.119.188:8001',
     'process.env.OPEN_IM_URL': 'ws://47.103.119.188:10003',
   },
   hash: true,
