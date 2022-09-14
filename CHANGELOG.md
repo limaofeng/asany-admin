@@ -1,3 +1,9 @@
+## [0.2.33](https://github.com/limaofeng/asany-admin/compare/v0.2.32...v0.2.33) (2022-09-14)
+
+### Bug Fixes
+
+- 测试打包问题 ([1b0a73f](https://github.com/limaofeng/asany-admin/commit/1b0a73f60b56383f19bb390a3f83aeaf38387bbc))
+
 ## [0.2.32](https://github.com/limaofeng/asany-admin/compare/v0.2.31...v0.2.32) (2022-09-14)
 
 ### Bug Fixes
