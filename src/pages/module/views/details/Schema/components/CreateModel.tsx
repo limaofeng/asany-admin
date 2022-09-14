@@ -45,6 +45,7 @@ function CreateModel(props: CreateModelProps) {
       width={592}
       centered
       visible={visible}
+      closable={false}
       onCancel={onClose}
       onOk={handleSave}
     >
@@ -73,7 +74,7 @@ function CreateModel(props: CreateModelProps) {
               高级
             </Button>
           </div>
-          <div className={classnames({ 'd-none': activeTabKey != 'settings' })}>
+          <div className={classnames('modal-tabpane', { 'd-none': activeTabKey != 'settings' })}>
             <Form.Item
               required={false}
               className="mb-5"
@@ -104,7 +105,7 @@ function CreateModel(props: CreateModelProps) {
               <Input.TextArea solid autoSize={{ maxRows: 4, minRows: 2 }} />
             </Form.Item>
           </div>
-          <div className={classnames({ 'd-none': activeTabKey != 'advanced' })}>
+          <div className={classnames('modal-tabpane', { 'd-none': activeTabKey != 'advanced' })}>
             <Form.Item
               className="mb-5"
               name={['metadata', 'databaseTableName']}

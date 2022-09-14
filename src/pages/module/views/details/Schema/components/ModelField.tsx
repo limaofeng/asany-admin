@@ -1,16 +1,61 @@
+import React, { useMemo } from 'react';
+
 import type { SortableItemProps, SortableItemRefObject } from '@asany/sortable';
 import classnames from 'classnames';
+import { Icon } from '@asany/icons';
+
+import type { ModelField as IModelFiled } from '@/types';
+import { Badge, Button } from '@/metronic';
 
 type ModelFieldProps = SortableItemProps<any>;
 
 function ModelField(props: ModelFieldProps, ref: SortableItemRefObject) {
-  console.log('ModelField props', props, ref);
-  const { drag, animated, className } = props;
+  const { drag, style, animated, className } = props;
+
+  const data = props.data.data as IModelFiled;
+  console.log('ModelField props', style);
+
+  const fieldType = useMemo(() => {
+    return data.fieldType.id.toLowerCase();
+  }, [data]);
+
   return (
-    <div {...animated} ref={drag(ref)} className={classnames('model-field', className)}>
-      <div className="field-item-wrapper">sdsdf</div>
+    <div {...animated} style={style} ref={ref} className={classnames('model-field', className)}>
+      <div className="field-item-wrapper">
+        <div ref={drag} className="field-item-drag-handle">
+          <svg viewBox="0 0.5 9 13" focusable="false">
+            <g fillRule="evenodd" transform="translate(0 .5)">
+              <circle cx="1.5" cy="1.5" r="1.5" />
+              <circle cx="7.5" cy="1.5" r="1.5" />
+              <circle cx="1.5" cy="6.5" r="1.5" />
+              <circle cx="7.5" cy="6.5" r="1.5" />
+              <circle cx="1.5" cy="11.5" r="1.5" />
+              <circle cx="7.5" cy="11.5" r="1.5" />
+            </g>
+          </svg>
+        </div>
+        <div className={classnames('field-item-type', `model-field-type__${fieldType}`)}>
+          <Icon name={`FieldType/${fieldType}`} />
+        </div>
+        <div className="field-item-content">
+          <div className="field-item-content__intro">
+            <div className="field-item-content__name">{data.name}</div>
+            <div className="field-item-content__code">#{data.code}</div>
+            {data.description && <Icon name="Bootstrap/info-circle-fill" />}
+          </div>
+          <div className="field-item-content__details">
+            <div className="field-item-content__labels">
+              <Badge>{data.fieldType.graphQLType}</Badge>
+            </div>
+            <div className="field-item-content__actions">
+              <Button>编辑字段</Button>
+              <Button variant="danger">删除字段</Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default ModelField;
+export default React.forwardRef(ModelField);

@@ -514,8 +514,7 @@ function Mailbox(props: MailboxProps) {
                   <div className="box-actions">
                     <Button
                       className="trash-clear"
-                      variantStyle="light"
-                      variant="danger"
+                      variant="light-danger"
                       size="sm"
                       activeColor="light-danger"
                       onClick={handleTrashClear}

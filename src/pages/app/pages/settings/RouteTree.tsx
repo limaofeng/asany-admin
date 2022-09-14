@@ -39,8 +39,7 @@ function RouteActions(props: RouteActionsProps) {
     >
       <div className="ms-2">
         <Button
-          variant="danger"
-          variantStyle="light"
+          variant="light-danger"
           onClick={handleDelete}
           icon={<Icon className="svg-icon-2" name="Duotune/arr088" />}
         />

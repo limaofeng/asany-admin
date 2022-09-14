@@ -349,8 +349,7 @@ function MenuDrawer(props: MenuDrawerProps) {
               <Button
                 style={{ letterSpacing: '1rem' }}
                 className="w-100"
-                variant="danger"
-                variantStyle="light"
+                variant="light-danger"
                 onClick={handleDelete}
               >
                 删除

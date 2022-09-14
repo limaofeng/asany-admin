@@ -20,4 +20,8 @@ export default defineConfig({
     babelPlugins: [],
     babelOptions: {},
   },
+  devServer: {
+    host: 'localhost',
+    port: 8000,
+  },
 });

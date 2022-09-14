@@ -23,6 +23,7 @@ import { Alert, Badge, BlockUI, Button, Card, Input, Modal, Table, Toast } from 
 import type { DataSource, Sorter } from '@/metronic/typings';
 import { fileSize } from '@/metronic/utils/format';
 import type { FileFilter, FileObject } from '@/types';
+import type { OnChange } from '@/metronic/Table/typings';
 
 type ListFilesProps = {
   toolbar?: 'default' | 'starred' | 'trash';
@@ -67,7 +68,7 @@ function ListFiles(props: ListFilesProps) {
     rootFolder?: FileObject;
     currentFolder?: FileObject;
     newFolderVisible: boolean;
-    sorter: Sorter;
+    sorter?: Sorter;
     renameFile?: FileObject;
   }>({
     sorter: props.orderBy || { field: 'name', order: 'ascend' },
@@ -144,7 +145,7 @@ function ListFiles(props: ListFilesProps) {
   }, [loadFolderResult?.currentFolder, props.currentFolder]);
 
   const handleRowSelectionChange = useCallback(
-    (_selectedKeys) => {
+    (_selectedKeys: string[]) => {
       setSelectedKeys(_selectedKeys);
     },
     [setSelectedKeys],
@@ -248,7 +249,7 @@ function ListFiles(props: ListFilesProps) {
     .filter((item) => selectedKeys.includes(item.id))
     .every((item) => item.starred);
 
-  const handleChange = useCallback((_pagination, _filters, _sorter) => {
+  const handleChange: OnChange = useCallback((_pagination, _filters, _sorter) => {
     temp.current.sorter = _sorter;
     forceRender();
   }, []);
@@ -275,7 +276,7 @@ function ListFiles(props: ListFilesProps) {
   }, [currentFolderId, rootFolder?.name]);
 
   const onDrop = useCallback(
-    (acceptedFiles) => {
+    (acceptedFiles: File[]) => {
       upload(acceptedFiles, {
         space: cloudDrive!.space,
         folder: currentFolderId!,
@@ -291,8 +292,8 @@ function ListFiles(props: ListFilesProps) {
   const { role, tabIndex, onClick: browseLocalFiles, ...rootProps } = getRootProps();
 
   const handleUpload = useCallback(
-    (e) => {
-      browseLocalFiles(e);
+    (e: React.MouseEvent<HTMLElement>) => {
+      browseLocalFiles && browseLocalFiles(e);
     },
     [browseLocalFiles],
   );
@@ -520,8 +521,7 @@ function ListFiles(props: ListFilesProps) {
                   )}
                   {toolbar == 'default' && rootFolder?.isRootFolder && (
                     <Button
-                      variantStyle="light"
-                      variant="primary"
+                      variant="light-primary"
                       className="rounded-2"
                       icon={<Icon className="svg-icon-2" name="Duotune/fil013" />}
                       onClick={handleOpenNewFolderModal}
@@ -533,8 +533,7 @@ function ListFiles(props: ListFilesProps) {
               )}
               {['row', 'multi-row'].includes(row_selection_state) && (
                 <Button
-                  variantStyle="light"
-                  variant="primary"
+                  variant="light-primary"
                   className="rounded-2"
                   icon={<Icon className="svg-icon-2" name="Duotune/arr095" />}
                 >
@@ -543,8 +542,7 @@ function ListFiles(props: ListFilesProps) {
               )}
               {['row', 'multi-row'].includes(row_selection_state) && (
                 <Button
-                  variantStyle="light"
-                  variant="primary"
+                  variant="light-primary"
                   className="rounded-2"
                   icon={
                     <Icon
@@ -560,8 +558,7 @@ function ListFiles(props: ListFilesProps) {
               )}
               {['row', 'multi-row'].includes(row_selection_state) && (
                 <Button
-                  variantStyle="light"
-                  variant="primary"
+                  variant="light-primary"
                   className="rounded-2"
                   icon={<Icon className="svg-icon-2" name="Duotune/gen027" />}
                   onClick={handleDelete}
@@ -572,8 +569,7 @@ function ListFiles(props: ListFilesProps) {
               {row_selection_state == 'row' && (
                 <Button
                   as="button"
-                  variantStyle="light"
-                  variant="primary"
+                  variant="light-primary"
                   className="rounded-2"
                   icon={<Icon className="svg-icon-2" name="Duotune/gen055" />}
                   onClick={handleRename}
@@ -583,8 +579,7 @@ function ListFiles(props: ListFilesProps) {
               )}
               {['row', 'multi-row'].includes(row_selection_state) && (
                 <Button
-                  variantStyle="light"
-                  variant="primary"
+                  variant="light-primary"
                   className="rounded-2"
                   icon={<Icon className="svg-icon-2" name="Duotune/arr033" />}
                 >
@@ -593,8 +588,7 @@ function ListFiles(props: ListFilesProps) {
               )}
               {['row', 'multi-row'].includes(row_selection_state) && (
                 <Button
-                  variantStyle="light"
-                  variant="primary"
+                  variant="light-primary"
                   className="rounded-2"
                   icon={<Icon className="svg-icon-2" name="Duotune/abs024" />}
                   onClick={handleStar}
@@ -619,12 +613,7 @@ function ListFiles(props: ListFilesProps) {
               theme="Light"
               type="primary"
               action={
-                <Button
-                  onClick={handleClearTrash}
-                  variantStyle="light"
-                  variant="primary"
-                  className="me-3 ls-1"
-                >
+                <Button onClick={handleClearTrash} variant="light-primary" className="me-3 ls-1">
                   清空回收站
                 </Button>
               }
@@ -657,7 +646,7 @@ function ListFiles(props: ListFilesProps) {
                     title: <span className="ps-2">文件名</span>,
                     className: 'min-w-250px',
                     sorter: true,
-                    sortOrder: sorter.field == 'name' ? sorter.order : undefined,
+                    sortOrder: sorter?.field == 'name' ? sorter.order : undefined,
                     render: (_, record) => {
                       return (
                         <FileName
@@ -675,14 +664,14 @@ function ListFiles(props: ListFilesProps) {
                     title: '更新时间',
                     sorter: true,
                     className: 'min-w-125px',
-                    sortOrder: sorter.field == 'lastModified' ? sorter.order : undefined,
+                    sortOrder: sorter?.field == 'lastModified' ? sorter.order : undefined,
                   },
                   {
                     key: 'size',
                     title: '文件大小',
                     sorter: true,
                     className: 'min-w-100px',
-                    sortOrder: sorter.field == 'size' ? sorter.order : undefined,
+                    sortOrder: sorter?.field == 'size' ? sorter.order : undefined,
                     render(value, record) {
                       return record.isDirectory ? '-' : fileSize(value);
                     },

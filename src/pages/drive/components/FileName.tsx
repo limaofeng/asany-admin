@@ -28,7 +28,7 @@ function FileName(props: FileNameProps) {
 
   const [rename] = useRenameFileMutation();
 
-  const handleChange = useCallback((e) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   }, []);
 
@@ -154,8 +154,7 @@ function FileName(props: FileNameProps) {
           <Button
             as="button"
             loading={saving}
-            variantStyle="light"
-            variant="primary"
+            variant="light-primary"
             size="sm"
             icon={<Icon name="Duotune/arr085" className="svg-icon-1" />}
             className="me-3"
@@ -163,9 +162,8 @@ function FileName(props: FileNameProps) {
           />
           <Button
             as="button"
-            variantStyle="light"
             size="sm"
-            variant="danger"
+            variant="light-danger"
             icon={<Icon name="Duotune/arr088" className="svg-icon-1" />}
             className="svg-icon-1"
             onClick={handleCancel}

@@ -89,8 +89,7 @@ function ArticleSettings({ isNew, onChange }: ArticleSettingsProps) {
         <Button
           icon={<Icon name="Duotune/arr015" className="svg-icon-2" />}
           activeColor="danger"
-          variantStyle="light"
-          variant="danger"
+          variant="light-danger"
           className="mb-10"
         >
           删除文章
@@ -172,7 +171,7 @@ function ArticleEditor(props: ArticleEditorProps) {
     state.status = STATUS_MAPPINGS[state.data!.status!] as IArticleStatus;
     forceRender();
 
-    const values = { ...state.data, content: (state.data.content as any)?.text };
+    const values = { ...state.data, content: (state.data.body as any)?.text };
     for (const key in values) {
       if (values[key] == null) {
         values[key] = undefined;

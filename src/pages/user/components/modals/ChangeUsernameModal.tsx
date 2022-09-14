@@ -40,12 +40,7 @@ function ChangeUsernameModal(props: ChangeUsernameModalProps) {
             <ul className="mb-6 ms-6">
               <li>重命名可能需要几分钟才能完成。</li>
             </ul>
-            <Button
-              onClick={handleContinue}
-              className="confirm-to-continue"
-              variantStyle="light"
-              variant="danger"
-            >
+            <Button onClick={handleContinue} className="confirm-to-continue" variant="light-danger">
               我明白了，继续更改用户名
             </Button>
           </div>

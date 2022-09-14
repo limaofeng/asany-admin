@@ -25,7 +25,7 @@ function ModelView(props: ModelViewProps) {
   const model = data?.model;
 
   return (
-    <ContentWrapper className="pages-model-view" loading={loading} footer={false}>
+    <ContentWrapper className="pages-model-view" header={false} loading={loading} footer={false}>
       <Card bodyClassName="px-0">
         <div className="pb-4 model-view-header">
           <div className="h-40px d-flex align-items-center">

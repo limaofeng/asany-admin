@@ -161,8 +161,7 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
             <Button
               onClick={handleDelete}
               className="mb-3"
-              variantStyle="light"
-              variant="danger"
+              variant="light-danger"
               icon={<Icon className="svg-icon-2" name="Bootstrap/trash" />}
             >
               删除

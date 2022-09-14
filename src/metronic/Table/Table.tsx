@@ -16,6 +16,7 @@ import type {
   DataSource,
   NewTableColumn,
   NoContentRenderer,
+  OnChange,
   RowHeightFunc,
   RowSelection,
   Sorter,
@@ -25,13 +26,6 @@ import { getRowKey } from './utils';
 import VirtualList from './VirtualList';
 
 import './Table.scss';
-
-type OnChange = (
-  pagination: PaginationProps | undefined,
-  filters: any | undefined,
-  sorter: Sorter | undefined,
-  extra: { action: 'paginate' | 'sort' | 'filter' },
-) => void;
 
 export interface TableProps<T> {
   responsive?: boolean;

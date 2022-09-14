@@ -58,8 +58,7 @@ function ArticleChannel(props: ArticleChannelProps) {
             as={Link}
             className="me-3"
             size="sm"
-            variantStyle="background"
-            variant="light"
+            background="light"
             activeTextColor="primary"
             to="/cms/articles/new"
           >
@@ -84,8 +83,7 @@ function ArticleChannel(props: ArticleChannelProps) {
             >
               <Button
                 size="sm"
-                variantStyle="background"
-                variant="light"
+                background="light"
                 activeTextColor="primary"
                 icon={<i className="bi bi-three-dots fs-3" />}
               />

@@ -1,5 +1,7 @@
 import type { CSSProperties } from 'react';
 
+import type { PaginationProps } from './Pagination';
+
 export type SortDirection = 'descend' | 'ascend';
 
 export type DataRecoverer<T> = (data: T) => () => void;
@@ -8,6 +10,13 @@ export type Sorter = {
   order: SortDirection;
   field: string;
 };
+
+export type OnChange = (
+  pagination: PaginationProps | undefined,
+  filters: any | undefined,
+  sorter: Sorter | undefined,
+  extra: { action: 'paginate' | 'sort' | 'filter' },
+) => void;
 
 type RenderResult = {
   children: React.ReactNode | string;

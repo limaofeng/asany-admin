@@ -34,8 +34,7 @@ function MenuActions(props: MenuActionsProps) {
     >
       <div className="ms-2">
         <Button
-          variant="danger"
-          variantStyle="light"
+          variant="light-danger"
           icon={<Icon className="svg-icon-2" name="Duotune/arr088" />}
           onClick={handleDelete}
         />

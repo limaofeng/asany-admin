@@ -223,8 +223,7 @@ function ArticleChannelNew(props: ArticleChannelNewProps) {
                           {size > 1 && (
                             <Button
                               size="sm"
-                              variantStyle="light"
-                              variant="danger"
+                              variant="light-danger"
                               onClick={remove}
                               icon={<Icon className="svg-icon-2" name="Duotune/arr088" />}
                             />

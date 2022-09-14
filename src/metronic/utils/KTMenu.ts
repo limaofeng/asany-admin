@@ -1,9 +1,12 @@
+import type { OptionsGeneric, Placement, PositioningStrategy } from '@popperjs/core';
 import { createPopper } from '@popperjs/core';
 
 import * as KTUtil from './KTUtil';
 
+export type OffsetValue = [number, number];
+
 // Init dropdown popper(new)
-export function initDropdownPopper(item: any, sub: any, placement: string) {
+export function initDropdownPopper(item: any, sub: any, placement: string, offset?: OffsetValue) {
   // Setup popper instance
   let reference;
   const attach = getItemOption(item, 'attach');
@@ -18,7 +21,11 @@ export function initDropdownPopper(item: any, sub: any, placement: string) {
     reference = item;
   }
 
-  const popper = createPopper(reference, sub, _getDropdownPopperConfig(item, placement) as any);
+  const popper = createPopper(
+    reference,
+    sub,
+    _getDropdownPopperConfig(item, placement as any, offset),
+  );
   KTUtil.data(item).set('popper', popper);
 }
 
@@ -29,19 +36,22 @@ export function destroyDropdownPopper(item: any) {
   }
 }
 
-export function _getDropdownPopperConfig(item: any, placement: string) {
+export function _getDropdownPopperConfig(
+  item: any,
+  placement: Placement,
+  _offset?: OffsetValue,
+): OptionsGeneric<any> {
   // Offset
   const offsetValue = getItemOption(item, 'offset');
-  const offset = offsetValue ? offsetValue.split(',') : [];
+  const offset = _offset || (offsetValue ? offsetValue.split(',') : []);
 
   // Strategy
-  const strategy = getItemOption(item, 'overflow') === true ? 'absolute' : 'fixed';
+  const strategy =
+    getItemOption(item, 'overflow') === true ? 'absolute' : ('fixed' as PositioningStrategy);
 
   const altAxis = getItemOption(item, 'flip') !== false ? true : false;
 
-  // console.log('offset', offset, strategy);
-
-  const popperConfig = {
+  const popperConfig: OptionsGeneric<any> = {
     placement: placement,
     strategy: strategy,
     modifiers: [

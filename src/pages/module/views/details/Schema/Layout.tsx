@@ -5,7 +5,7 @@ import { Icon } from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { matchPath } from 'react-router';
 
-import CreateModel from '../../../components/CreateModel';
+import CreateModel from './components/CreateModel';
 
 import SecondarySidebar from '@/components/SecondarySidebar';
 import { Button, Menu } from '@/metronic';

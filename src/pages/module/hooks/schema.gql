@@ -22,7 +22,22 @@ query model($id: ID) {
       }
       name
       description
+      fieldType {
+        id
+        name
+        description
+        graphQLType
+      }
     }
+  }
+}
+
+query modelFiledTypes {
+  filedTypes: modelFiledTypes {
+    id
+    name
+    description
+    family
   }
 }
 

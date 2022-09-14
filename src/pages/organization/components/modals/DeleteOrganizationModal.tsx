@@ -17,7 +17,7 @@ function DeleteOrganizationModal(props: DeleteOrganizationModalProps) {
   const [disabled, setDisabled] = useState(true);
 
   const handleValuesChange = useCallback(
-    (_, values) => {
+    (_: any, values: any) => {
       setDisabled(!(values.code == data?.code));
     },
     [data],
@@ -52,8 +52,7 @@ function DeleteOrganizationModal(props: DeleteOrganizationModalProps) {
             htmlType="submit"
             className="confirm-delete-account"
             disabled={disabled}
-            variantStyle="light"
-            variant="danger"
+            variant="light-danger"
           >
             删除组织
           </Button>

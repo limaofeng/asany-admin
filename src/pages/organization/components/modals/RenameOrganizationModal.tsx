@@ -22,7 +22,7 @@ function RenameOrganizationModal(props: RenameOrganizationModalProps) {
   const [renameOrganizationCode, { loading: submiting }] = useRenameOrganizationCodeMutation();
 
   const handleRename = useCallback(
-    async (values) => {
+    async (values: any) => {
       await renameOrganizationCode({
         variables: {
           id: data!.id,
@@ -67,12 +67,7 @@ function RenameOrganizationModal(props: RenameOrganizationModalProps) {
             <ul className="mb-6 ms-6">
               <li>修改组织代码可能需要几分钟才能完成。</li>
             </ul>
-            <Button
-              onClick={handleContinue}
-              className="confirm-to-continue"
-              variantStyle="light"
-              variant="danger"
-            >
+            <Button onClick={handleContinue} className="confirm-to-continue" variant="light-danger">
               我明白了，继续修改
             </Button>
           </div>

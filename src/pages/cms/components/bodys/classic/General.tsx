@@ -42,8 +42,7 @@ function General(props: GeneralProps) {
           <Upload.Queue ref={queueUpload} namespace="email" />
         </Form.Item>
         <Button
-          variantStyle="light"
-          variant="primary"
+          variant="light-primary"
           className="me-3 mt-4"
           onClick={handleUploadAttachment}
           icon={<Icon className="svg-icon-2" name="Duotune/com008" />}

@@ -9,6 +9,7 @@ import useMergedRef from '@react-hook/merged-ref';
 import Menu from '../Menu';
 import * as KTMenu from '../utils/KTMenu';
 import * as KTUtil from '../utils/KTUtil';
+import type { OffsetValue } from '../utils/KTMenu';
 
 import './Dropdown.scss';
 
@@ -28,6 +29,7 @@ type DropdownProps = {
   className?: string;
   overlay: React.ReactElement;
   zindex?: number;
+  offset?: OffsetValue;
   onVisibleChange?: (visible: boolean) => void;
   children: React.ReactNode;
   getPopupContainer?: () => Element;
@@ -153,7 +155,12 @@ function Dropdown(props: DropdownProps) {
       KTUtil.css(sub, 'overflow', '');
 
       // Init popper(new)
-      KTMenu.initDropdownPopper(item, sub, placementMapping[props.placement || 'bottomLeft']);
+      KTMenu.initDropdownPopper(
+        item,
+        sub,
+        placementMapping[props.placement || 'bottomLeft'],
+        props.offset,
+      );
 
       KTUtil.addClass(item, 'show');
       KTUtil.addClass(item, 'menu-dropdown');

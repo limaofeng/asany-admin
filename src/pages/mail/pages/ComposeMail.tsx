@@ -141,7 +141,7 @@ function ComposeMail(props: ComposeMailProps) {
             </div>
             <div className="d-flex justify-content-between">
               <div className="fw-bold">
-                <Button variantStyle="light" variant="danger" onClick={handleDoNotStore(onConfirm)}>
+                <Button variant="light-danger" onClick={handleDoNotStore(onConfirm)}>
                   不存储
                 </Button>
               </div>

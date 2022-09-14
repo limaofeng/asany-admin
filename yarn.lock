@@ -205,10 +205,10 @@
     lodash-es "^4.17.21"
     react-flip-toolkit "^7.0.14"
 
-"@asany/sortable@^0.1.37":
-  version "0.1.37"
-  resolved "https://registry.npmjs.org/@asany/sortable/-/sortable-0.1.37.tgz#345e93b2ff49b60ac504571c4e60d4e16ddf4454"
-  integrity sha512-Hg3g/QNtHGxNDjXU52KiBdrfTw+Nt0efDPjyFsRZrMEw25xxxf76nBe8urASlJWlf4oZHkgA9iZYo6I57Lr1DQ==
+"@asany/sortable@^0.1.40":
+  version "0.1.40"
+  resolved "https://registry.npmjs.org/@asany/sortable/-/sortable-0.1.40.tgz#5bca81185ed62efe6e12ddd8423993b974a3e984"
+  integrity sha512-ZWIS3Rw0jHDmO8EzWpr+DQT3RyQncGKQ/Yz3PX+pSjB2cSK4fIVFg91gSf7xk0EJNTYKXw9h0gCaS0lKqmeHEQ==
   dependencies:
     classnames "^2.3.1"
     immutability-helper "^3.1.1"

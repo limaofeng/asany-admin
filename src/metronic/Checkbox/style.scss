@@ -1,14 +1,17 @@
 .form-radio-group {
   min-height: 32px;
 }
+
 .form-check.form-check-custom {
   .form-check-input {
     width: 18px;
     height: 18px;
   }
+
   &.form-check-sm {
     padding: 0.55rem 0.75rem;
   }
+
   &.form-check-xs {
     .form-check-input {
       width: 1.2rem;
@@ -16,4 +19,8 @@
       border-radius: 0.35em;
     }
   }
+}
+
+.metronic-checkbox-group {
+
 }

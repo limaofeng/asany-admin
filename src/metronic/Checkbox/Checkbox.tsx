@@ -80,4 +80,25 @@ function Checkbox(props: CheckboxProps) {
   );
 }
 
+type Option = {
+  label: string;
+  value: string;
+  disabled?: boolean;
+};
+
+type CheckboxGroupProps = {
+  options: Option[];
+};
+
+Checkbox.Group = function (props: CheckboxGroupProps) {
+  const { options = [] } = props;
+  return (
+    <div className="metronic-checkbox-group">
+      {options.map((o) => (
+        <Checkbox key={o.value} value={o.value} label={o.value} />
+      ))}
+    </div>
+  );
+};
+
 export default Checkbox;

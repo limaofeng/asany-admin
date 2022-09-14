@@ -18,7 +18,7 @@ function DeleteAccountModal(props: DeleteAccountModalProps) {
   const { data: user } = useCurrentuser();
 
   const handleValuesChange = useCallback(
-    (_, values) => {
+    (_: any, values: any) => {
       setDisabled(
         !(values.account == user?.account && values.verify === '删除我的账户' && values.password),
       );
@@ -60,12 +60,7 @@ function DeleteAccountModal(props: DeleteAccountModalProps) {
             <Input.Password solid />
           </Form.Item>
         </Form>
-        <Button
-          className="confirm-delete-account"
-          disabled={disabled}
-          variantStyle="light"
-          variant="danger"
-        >
+        <Button className="confirm-delete-account" disabled={disabled} variant="light-danger">
           删除此账户
         </Button>
       </div>
