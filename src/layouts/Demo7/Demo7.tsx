@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
+import { Inspector } from 'react-dev-inspector';
 import { getMatchMenu, transformRoute } from '@umijs/route-utils';
 import type { Route } from '@umijs/route-utils/dist/types';
 import type { RouteComponentProps } from 'react-router';
@@ -19,6 +20,8 @@ import type { MenuData } from '@/.umi/app/typings';
 import * as utils from '@/utils';
 
 import './style.scss';
+
+const isDev = process.env.NODE_ENV === 'development';
 
 interface LayoutProps extends RouteComponentProps {
   /**
@@ -197,6 +200,23 @@ function LayoutWrapper(props: LayoutProps) {
         >
           {children}
         </LayoutInner>
+        {isDev}
+        {isDev && (
+          <Inspector
+            keys={['control', 'shift', 'command', 'c']}
+            // disableLaunchEditor={!isDev}
+            // onHoverElement={(inspect: InspectParams) => {
+            //   console.debug(inspect);
+            //   if (isDev || !inspect.codeInfo?.relativePath) return;
+            // }}
+            // onClickElement={(inspect: InspectParams) => {
+            //   console.debug(inspect);
+            //   if (isDev || !inspect.codeInfo?.relativePath) return;
+            //   // const { relativePath, lineNumber } = inspect.codeInfo;
+            //   // window.open(`${projectRepo}/blob/master/examples/umi3/${relativePath}#L${lineNumber}`);
+            // }}
+          />
+        )}
       </LayoutProvider>
     </ThemeModeProvider>
   );
