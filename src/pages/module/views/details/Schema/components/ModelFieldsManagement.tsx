@@ -5,6 +5,7 @@ import type { ISortableItem, SortableChangeEvent } from '@asany/sortable';
 import { dragPreview } from '@asany/sortable';
 import Sortable from '@asany/sortable';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import classnames from 'classnames';
 
 import ModelField from './ModelField';
 import ModelFieldType, { ModelFieldTypeGroup } from './ModelFieldType';
@@ -38,6 +39,7 @@ type ModelFieldsManagementState = {
   visible: boolean;
   fieldType?: IModelFiledType;
   data?: IModelField;
+  includeSystemFields: boolean;
 };
 
 function ModelFieldsManagement(props: ModelFieldsManagementProps) {
@@ -46,10 +48,28 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
   const [state, setState] = useState<ModelFieldsManagementState>({
     mode: 'new',
     visible: false,
+    includeSystemFields: false,
   });
 
-  const fields = useMemo(() => {
-    return model.fields.map((item) => ({ id: item.id, data: item, type: 'custom' }));
+  const handleShowSystemFields = useCallback((checked: boolean) => {
+    setState((prevState) => ({ ...prevState, includeSystemFields: checked }));
+  }, []);
+
+  const { systemFields, customFields } = useMemo(() => {
+    return model.fields.reduce(
+      (fieldSets, field) => {
+        if (field.system) {
+          fieldSets.systemFields.push({ id: field.id, data: field, type: 'system' });
+        } else {
+          fieldSets.customFields.push({ id: field.id, data: field, type: 'custom' });
+        }
+        return fieldSets;
+      },
+      {
+        systemFields: [] as { id: string; data: IModelField; type: 'system' }[],
+        customFields: [] as { id: string; data: IModelField; type: 'custom' }[],
+      },
+    );
   }, [model.fields]);
 
   const handleSort = useCallback((value: ISortableItem[], event: SortableChangeEvent) => {
@@ -82,12 +102,18 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
 
   const handleCreateByFiledType = useCallback((fieldType: IModelFiledType) => {
     setState((prevState) => {
-      return { ...prevState, visible: true, fieldType };
+      return { ...prevState, mode: 'new', visible: true, fieldType };
     });
   }, []);
 
   const handleCloseFieldModal = useCallback(() => {
     setState((prevState) => ({ ...prevState, visible: false }));
+  }, []);
+
+  const handleEditFieldModal = useCallback((field: IModelField) => {
+    setState((prevState) => {
+      return { ...prevState, mode: 'edit', data: field, visible: true, fieldType: field.fieldType };
+    });
   }, []);
 
   return (
@@ -99,23 +125,31 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
         }}
       >
         <div className="model-fields-header">
-          <Switch label="显示系统字段" />
+          <Switch
+            checked={state.includeSystemFields}
+            onChange={handleShowSystemFields}
+            label="显示系统字段"
+          />
         </div>
-        {/* {model?.fields.map(() => (
-          <div>111111</div>
-        ))} */}
+        <Sortable
+          onChange={() => {}}
+          draggable={false}
+          className={classnames('system-fields', { 'd-none': !state.includeSystemFields })}
+          tag="ul"
+          items={systemFields}
+          itemRender={ModelField}
+        />
         <Sortable
           onChange={handleSort}
           tag="ul"
           accept={['custom']}
-          // onDrop={handleDrop}
-          // draggable={handleAllowDrag}
-          // allowDrop={handleAllowDrop}
-          items={fields}
-          itemRender={ModelField}
+          items={customFields}
+          itemRender={React.createElement(ModelField, {
+            onClickEdit: handleEditFieldModal,
+          } as any)}
           preview={{
             render: dragPreview(React.createElement(ModelField), {
-              scale: 1.1,
+              scale: 1,
             }),
             axisLocked: true,
           }}
@@ -142,6 +176,9 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
         fieldTypeFamilies={fieldTypeGroups}
         fieldType={state.fieldType}
         visible={state.visible}
+        data={state.data}
+        mode={state.mode}
+        model={model}
         onClose={handleCloseFieldModal}
       />
     </div>

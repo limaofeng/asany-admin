@@ -1,23 +1,29 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import type { SortableItemProps, SortableItemRefObject } from '@asany/sortable';
 import classnames from 'classnames';
 import { Icon } from '@asany/icons';
 
-import type { ModelField as IModelFiled } from '@/types';
+import type { ModelField as IModelField } from '@/types';
 import { Badge, Button } from '@/metronic';
 
-type ModelFieldProps = SortableItemProps<any>;
+type ModelFieldProps = SortableItemProps<any> & {
+  onClickEdit: (data: IModelField) => void;
+};
 
 function ModelField(props: ModelFieldProps, ref: SortableItemRefObject) {
-  const { drag, style, animated, className } = props;
+  const { drag, style, animated, className, onClickEdit } = props;
 
-  const data = props.data.data as IModelFiled;
+  const data = props.data.data as IModelField;
   console.log('ModelField props', style);
 
   const fieldType = useMemo(() => {
     return data.fieldType.id.toLowerCase();
   }, [data]);
+
+  const handleCliclEditButton = useCallback(() => {
+    onClickEdit(data);
+  }, [data, onClickEdit]);
 
   return (
     <div {...animated} style={style} ref={ref} className={classnames('model-field', className)}>
@@ -48,7 +54,7 @@ function ModelField(props: ModelFieldProps, ref: SortableItemRefObject) {
               <Badge>{data.fieldType.graphQLType}</Badge>
             </div>
             <div className="field-item-content__actions">
-              <Button>编辑字段</Button>
+              <Button onClick={handleCliclEditButton}>编辑字段</Button>
               <Button variant="danger">删除字段</Button>
             </div>
           </div>

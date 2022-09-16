@@ -33,6 +33,7 @@ export type AvatarProps = {
   gap?: number;
   labelClassName?: string;
   badge?: React.ReactElement<any> | false;
+  autoColor?: boolean;
 };
 
 export type SymbolProps = AvatarProps;

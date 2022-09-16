@@ -16,6 +16,7 @@ query model($id: ID) {
     fields {
       id
       code
+      system
       type {
         id
         code
@@ -25,6 +26,7 @@ query model($id: ID) {
       fieldType {
         id
         name
+        family
         description
         graphQLType
       }
@@ -43,6 +45,13 @@ query modelFiledTypes {
 
 mutation createModel($input: ModelCreateInput!) {
   createModel(input: $input) {
+    id
+    name
+  }
+}
+
+mutation addModelField($modelId: ID!, $input: ModelFieldInput!) {
+  addModelField(modelId: $modelId, input: $input) {
     id
     name
   }

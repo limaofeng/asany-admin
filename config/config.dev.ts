@@ -3,12 +3,13 @@ import { defineConfig } from 'umi';
 
 export default defineConfig({
   apollo: {
-    uri: 'http://localhost:8080/graphql',
+    uri: '//localhost:8080/graphql',
   },
   define: {
     'process.env.WEBSITE_URL': '//localhost:8001',
     'process.env.STORAGE_URL': '//localhost:8080',
     'process.env.MOBILE_URL': '//localhost:8001',
+    'process.env.OPEN_IM_URL': 'ws://47.103.119.188:10003',
   },
   plugins: [
     // https://github.com/zthxxx/react-dev-inspector
@@ -19,9 +20,5 @@ export default defineConfig({
     exclude: [],
     babelPlugins: [],
     babelOptions: {},
-  },
-  devServer: {
-    host: 'localhost',
-    port: 8000,
   },
 });

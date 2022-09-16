@@ -110,9 +110,7 @@ function Tabs(props: TabsProps) {
             id: item.id,
             key: item.id,
             style: props.tabBarStyle,
-            className: classnames(props.tabBarClassName, {
-              active: activeKey == item.id,
-            }),
+            className: classnames(props.tabBarClassName),
             active: activeKey == item.id,
             onClick: handleSelect(item.id),
             children: item.name,

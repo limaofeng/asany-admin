@@ -7,8 +7,8 @@ import { Icon } from '@asany/icons';
 import allFieldForms from './field-forms';
 
 import { Dropdown, Form, Menu, Modal, Toast } from '@/metronic';
-import { useCreateModelMutation } from '@/pages/module/hooks';
-import type { ModelFiledType as IModelFiledType } from '@/types';
+import { ModelDocument, useAddModelFieldMutation } from '@/pages/module/hooks';
+import type { ModelField as IModelField, ModelFiledType as IModelFiledType, Model } from '@/types';
 import type { SelectEvent } from '@/metronic/Menu/typings';
 
 type FieldTypeSelectProps = {
@@ -20,6 +20,7 @@ type FieldTypeSelectProps = {
   fieldType: IModelFiledType;
   onChange: (fieldType: IModelFiledType) => void;
 };
+
 function FieldTypeSelect(props: FieldTypeSelectProps) {
   const { family, fieldType, onChange } = props;
 
@@ -89,6 +90,9 @@ function FieldTypeSelect(props: FieldTypeSelectProps) {
 }
 
 type CreateOrUpdateModelFieldModalProps = {
+  mode: 'new' | 'edit';
+  model: Model;
+  data?: IModelField;
   fieldTypeFamilies: {
     key: string;
     name: string;
@@ -100,24 +104,44 @@ type CreateOrUpdateModelFieldModalProps = {
 };
 
 function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps) {
-  const { visible, onClose, fieldTypeFamilies } = props;
+  const { mode, visible, model, onClose, fieldTypeFamilies } = props;
 
   const form = Form.useForm();
-  const [createModel, { loading }] = useCreateModelMutation();
+  const [createField, { loading }] = useAddModelFieldMutation({
+    refetchQueries() {
+      return [
+        {
+          query: ModelDocument,
+          variables: {
+            id: model.id,
+          },
+        },
+      ];
+    },
+  });
 
   const handleSave = useCallback(async () => {
-    const values = await form.validateFields();
-    if (!values.metadata.databaseTableName) {
-      values.metadata.databaseTableName = values.code;
+    const {
+      allowMultipleValues: list = false,
+      required = false,
+      unique = false,
+      ...values
+    } = await form.validateFields();
+    if (!values.metadata.databaseColumnName) {
+      values.metadata.databaseColumnName = values.code;
     }
-    await createModel({
-      variables: { input: { ...values, features: ['master', 'system-fields'] } },
-    });
-    Toast.success(`模型 “${values.name}” 新增成功`, 2000, {
-      placement: 'bottom-start',
-      progressBar: true,
-    });
-  }, [createModel, form]);
+    console.log('xxx', model.id, { ...values, required, list, unique });
+    if (mode == 'new') {
+      await createField({
+        variables: { modelId: model.id, input: { ...values } },
+      });
+      Toast.success(`字段 “${values.name}” 新增成功`, 2000, {
+        placement: 'bottom-end',
+        progressBar: true,
+      });
+    } else {
+    }
+  }, [createField, form, mode, model.id]);
 
   const [fieldType, setFieldType] = useState(props.fieldType);
 
@@ -125,13 +149,27 @@ function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps
     setFieldType(props.fieldType);
   }, [props.fieldType]);
 
+  useEffect(() => {
+    if (props.data) {
+      form.setFieldsValue({ ...props.data });
+    } else {
+      form.resetFields();
+    }
+  }, [form, props.data]);
+
+  const handleClose = useCallback(() => {
+    onClose();
+    form.resetFields();
+  }, [form, onClose]);
+
   return (
     <Modal
       confirmLoading={loading}
       width={592}
       centered
+      maskClosable={!loading}
       visible={visible}
-      onCancel={onClose}
+      onCancel={handleClose}
       onOk={handleSave}
       closable={false}
       dialogClassName="model-field-modal"
@@ -144,13 +182,14 @@ function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps
               onChange={setFieldType}
               family={fieldTypeFamilies.find((item) => item.key == fieldType.family)!}
             />
-            <h4 className="flex-row-fluid">创建字段</h4>
+            <h4 className="flex-row-fluid">{mode === 'edit' ? props.data?.name : '创建字段'}</h4>
             <span className="field-type-name">{fieldType.name}</span>
           </div>
         )}
       </Modal.Header>
       <Modal.Body>
-        {!!fieldType?.family && React.createElement(allFieldForms[fieldType.family], { form })}
+        {!!fieldType?.family &&
+          React.createElement(allFieldForms[fieldType.family], { form, mode })}
       </Modal.Body>
     </Modal>
   );

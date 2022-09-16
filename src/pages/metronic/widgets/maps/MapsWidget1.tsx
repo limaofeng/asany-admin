@@ -10,12 +10,11 @@ import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import am5geodata_worldLow from '@amcharts/amcharts5-geodata/worldLow';
 import { Icon } from '@asany/icons';
 import { useBlock } from '@asany/sunmao';
-import { Input } from '@asany/sunmao';
 
 import type { GridItemActions, IGridItem } from '../../GridLayout/typings';
 
 import * as KTUtil from '@/metronic/utils/KTUtil';
-import { Button, Card, Dropdown, Menu, Switch } from '@/metronic';
+import { Button, Card, Dropdown, Input, Menu, Switch } from '@/metronic';
 
 type MapsWidget1Props = {
   id?: string;

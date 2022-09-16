@@ -26,12 +26,26 @@ const AvatarLable = styled.div<AvatarLableProps>`
 `;
 
 function Avatar(props: AvatarProps, ref: any) {
-  const { onClick, shape, className, light, labelClassName, src, gap, alt, badge, ...otherProps } =
-    props;
+  const {
+    onClick,
+    shape,
+    className,
+    light,
+    labelClassName,
+    src,
+    gap,
+    alt,
+    badge,
+    autoColor = true,
+    ...otherProps
+  } = props;
 
   const [state, setState] = useState<'init' | 'succeed' | 'error'>('init');
 
   const backgroundColor = useMemo(() => {
+    if (!autoColor) {
+      return;
+    }
     if (typeof alt == 'string') {
       let _backgroundColor = generateBackgroundColor(alt);
       if (light) {
@@ -43,7 +57,7 @@ function Avatar(props: AvatarProps, ref: any) {
       return _backgroundColor;
     }
     return undefined;
-  }, [alt, light]);
+  }, [alt, autoColor, light]);
   const color = useMemo(() => {
     if (backgroundColor) {
       return contrastTextColor(light ? darkenColor(backgroundColor, 20) : backgroundColor);

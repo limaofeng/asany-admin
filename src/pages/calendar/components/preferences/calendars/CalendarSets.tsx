@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Shortcuts } from '@asany/shortcuts';
-import type { SortableItemProps } from '@asany/sortable';
+import type { AllowDropInfo, ISortableItem, OnDrop, SortableItemProps } from '@asany/sortable';
 import Sortable from '@asany/sortable';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
@@ -61,7 +61,7 @@ const CalendarSetItem = React.forwardRef(function (props: CalendarSetItemProps, 
     }
   }, [data.name, onEdit, saveCalendarSet, value]);
 
-  const handleInputChange = useCallback((e) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   }, []);
 
@@ -104,7 +104,7 @@ const CalendarSetItem = React.forwardRef(function (props: CalendarSetItemProps, 
     <Shortcuts
       tag={
         <li
-          ref={drag(ref)}
+          ref={drag(ref) as any}
           onClick={handleClick}
           onDoubleClick={handleDoubleClick}
           className={classnames('calendarset-item', {
@@ -233,7 +233,7 @@ function CalendarSets(props: CalendarSetsProps) {
     }));
   }, [activeKey, data, editing]);
 
-  const handleDrop = useCallback(
+  const handleDrop: OnDrop = useCallback(
     async (e) => {
       const _dropPosition = getDropPosition(
         e.node._rect,
@@ -264,11 +264,11 @@ function CalendarSets(props: CalendarSetsProps) {
     [refresh, updateCalendarSet],
   );
 
-  const handleAllowDrag = useCallback((e) => {
+  const handleAllowDrag = useCallback((e: ISortableItem) => {
     return temp.current.editing != e.id;
   }, []);
 
-  const handleAllowDrop = useCallback((e) => {
+  const handleAllowDrop = useCallback((e: AllowDropInfo) => {
     if (isNaN(e.dropPosition)) {
       return false;
     }

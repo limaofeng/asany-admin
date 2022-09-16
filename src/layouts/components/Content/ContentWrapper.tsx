@@ -17,12 +17,16 @@ export type ContentWrapperProps = {
   contentClassName?: string;
   loading?: boolean;
   onClick?: () => void;
-  header?: ContentHeaderProps | false;
+  header?: ContentHeaderProps | false | React.ReactNode;
   footer?: ContentFooterProps | false;
   breadcrumb?: React.ReactElement<typeof Breadcrumb>;
   style?: CSSProperties;
   children?: React.ReactNode;
 };
+
+function renderHeader(props: ContentHeaderProps) {
+  return <ContentHeader {...props} />;
+}
 
 function ContentWrapper(props: ContentWrapperProps, ref: any) {
   const {
@@ -61,7 +65,13 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
         message="加载中..."
         loading={loading}
       >
-        {header && <ContentHeader {...header} breadcrumb={breadcrumb} />}
+        {!!header &&
+          renderHeader({
+            ...(React.isValidElement(header)
+              ? { children: header }
+              : (header as ContentHeaderProps)),
+            breadcrumb,
+          })}
         <Content
           style={{ minHeight: `calc(100vh - ${!!header ? 100 : 0}px - ${!!footer ? 70 : 0}px)` }}
           className={contentClassName}

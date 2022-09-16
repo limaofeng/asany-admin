@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 
+import { pinyin } from 'pinyin-pro';
 import classnames from 'classnames';
 
 import { Button, Checkbox, Form, Input } from '@/metronic';
@@ -7,10 +8,11 @@ import type { FormInstance } from '@/metronic/typings';
 
 type StringFieldFormProps = {
   form: FormInstance<any>;
+  mode: 'new' | 'edit';
 };
 
 function StringFieldForm(props: StringFieldFormProps) {
-  const { form } = props;
+  const { form, mode } = props;
 
   const [activeTabKey, setActiveTabKey] = useState('settings');
 
@@ -21,8 +23,35 @@ function StringFieldForm(props: StringFieldFormProps) {
     [],
   );
 
+  const [codeLinkageable, setCodeLinkageable] = useState(true);
+  const [dbColumnNameLinkageable, setDbColumnNameLinkageable] = useState(true);
+
+  const handleValuesChange = useCallback(
+    (changedValues: any) => {
+      if (Object.hasOwn(changedValues, 'name') && codeLinkageable) {
+        const pyCode = pinyin(changedValues.name, { toneType: 'none', type: 'array' }).join('');
+        form.setFieldValue('code', pyCode);
+        if (dbColumnNameLinkageable) {
+          form.setFieldValue(['metadata', 'databaseColumnName'], pyCode.toLowerCase());
+        }
+      }
+      if (Object.hasOwn(changedValues, 'code') && dbColumnNameLinkageable) {
+        form.setFieldValue(['metadata', 'databaseColumnName'], changedValues.code.toLowerCase());
+      }
+    },
+    [codeLinkageable, dbColumnNameLinkageable, form],
+  );
+
+  const handleStopCodeLinkage = useCallback(() => {
+    setCodeLinkageable(false);
+  }, []);
+
+  const handleStopDbColumnNameLinkageable = useCallback(() => {
+    setDbColumnNameLinkageable(false);
+  }, []);
+
   return (
-    <Form form={form}>
+    <Form form={form} onValuesChange={handleValuesChange}>
       <div className="mb-5">
         <Button
           color={activeTabKey != 'settings' && 'gray-700'}
@@ -71,9 +100,15 @@ function StringFieldForm(props: StringFieldFormProps) {
           name="code"
           label="编码"
           help="用于通过 API 访问此模型的 ID, 不能为中文"
-          rules={[{ required: true, message: '编码不能为空' }]}
+          rules={[
+            { required: true, message: '编码不能为空' },
+            {
+              pattern: /^([a-z])([a-z1-9])*(_([a-z1-9]+))*/,
+              message: '请遵循 Java 命名规范',
+            },
+          ]}
         >
-          <Input solid />
+          <Input solid onChange={handleStopCodeLinkage} />
         </Form.Item>
         <Form.Item
           name="description"
@@ -86,19 +121,20 @@ function StringFieldForm(props: StringFieldFormProps) {
         <div className="field-options">
           <div className="field-options__name text-dark fs-base fw-semibold">字段选项</div>
           <div className="field-options__list d-flex flex-column">
-            <Form.Item
+            {/* <Form.Item
               valuePropName="checked"
               name="useTitleField"
               help={<div style={{ marginLeft: 26 }}>在关系中显示此字段的值而不是 ID</div>}
             >
               <Checkbox solid label="用作标题字段" />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item
               valuePropName="checked"
               name="allowMultipleValues"
+              className={classnames({ 'form-item__disabled': mode == 'edit' })}
               help={<div style={{ marginLeft: 26 }}>存储值列表而不是单个值</div>}
             >
-              <Checkbox solid label="允许多个值" />
+              <Checkbox disabled={mode == 'edit'} solid label="允许多个值" />
             </Form.Item>
           </div>
         </div>
@@ -170,15 +206,26 @@ function StringFieldForm(props: StringFieldFormProps) {
               </Form.Item>
             </div>
           </div>
+          <div className="field-advanced">
+            <div className="field-options__name text-dark fs-base fw-semibold">数据库设置</div>
+            <div className="field-advanced__list d-flex flex-column">
+              <Form.Item
+                className="mb-5"
+                name={['metadata', 'databaseColumnName']}
+                label="列名"
+                help="映射到数据库中的列名"
+                rules={[
+                  {
+                    pattern: /^([a-z])([a-z1-9])*(_([a-z1-9]+))*/,
+                    message: '请遵循数据库命名规范',
+                  },
+                ]}
+              >
+                <Input onChange={handleStopDbColumnNameLinkageable} solid />
+              </Form.Item>
+            </div>
+          </div>
         </div>
-        {/* <Form.Item
-          className="mb-5"
-          name={['metadata', 'databaseTableName']}
-          label="表名"
-          help="映射到数据库中的表名"
-        >
-          <Input solid />
-        </Form.Item> */}
       </div>
     </Form>
   );

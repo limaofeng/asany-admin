@@ -9,6 +9,11 @@ import LoadingComponent from '@/components/PageLoading';
   namespace: 'cn.asany.ui.admin.module',
 })
 class Module {
+  @component({ name: 'ModuleList', title: '模块列表', tags: ['自定义模块'] })
+  ModuleList = dynamic({
+    loader: () => import('./views/ModuleList'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'ModuleView', title: '模块详情', tags: ['自定义模块'] })
   ModuleView = dynamic({
     loader: () => import('./views/ModuleView'),

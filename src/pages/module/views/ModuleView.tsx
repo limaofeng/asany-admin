@@ -28,16 +28,15 @@ function ModuleView(props: ModuleViewProps) {
   const module = data.module;
 
   const menuKey = useMemo(() => {
-    const channelMatch = matchPath<{ sid: string; cid: string }>(location.pathname, {
-      path: '/module/:id/:key',
+    const match = matchPath<{ id: string; feat: string }>(location.pathname, {
+      path: '/modules/:id/:feat',
       exact: false,
       strict: true,
     });
-    console.log('channelMatch', channelMatch);
-    if (channelMatch) {
-      return `category_${channelMatch.params.cid}`;
+    if (match) {
+      return match.params.feat;
     }
-    return 'my-drive';
+    return '';
   }, [location.pathname]);
 
   const [selectedKey, setSelectedKey] = useState<string>(menuKey);
@@ -87,6 +86,7 @@ function ModuleView(props: ModuleViewProps) {
                 // onOpenChange={handleOpenChange}
               >
                 <Menu.Item
+                  key="schema"
                   bullet={true}
                   icon="Fonticon/layers"
                   title="架构"
@@ -94,15 +94,17 @@ function ModuleView(props: ModuleViewProps) {
                 />
                 <Menu.Item
                   bullet={true}
+                  key="content"
                   icon="Fonticon/alignment-right"
                   title="内容管理"
                   url={`/modules/${module.id}/content`}
                 />
                 <Menu.Item
+                  key="assets"
                   bullet={true}
                   icon="Fonticon/attachments"
                   title="静态资源"
-                  url={`/modules/${module.id}/content`}
+                  url={`/modules/${module.id}/assets`}
                 />
                 {/* <Menu.Section contentClassName="pt-6 pb-0">基础功能</Menu.Section>
                 <Menu.Item bullet={true} title="目标" url={`/projects/${module.id}/targets`} />
@@ -112,10 +114,11 @@ function ModuleView(props: ModuleViewProps) {
                 <Menu.Item bullet={true} title="文档" url={`/projects/${module.id}/files`} />
                 <Menu.Item bullet={true} title="活动" url={`/projects/${module.id}/activity`} /> */}
                 <Menu.Item
+                  key="settings"
                   bullet={true}
                   icon="Fonticon/settings"
                   title="模块设置"
-                  url={`/modules/${module.id}/content`}
+                  url={`/modules/${module.id}/settings`}
                 />
               </Menu>
             </BlockUI>

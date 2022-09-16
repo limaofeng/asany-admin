@@ -104,6 +104,7 @@
     "overlayscrollbars": "^1.13.3",
     "overlayscrollbars-react": "^0.3.0",
     "path-to-regexp": "^6.2.1",
+    "pinyin-pro": "^3.11.0",
     "qrcode.react": "^3.1.0",
     "rc-field-form": "1.27.1",
     "react": "^18.2.0",

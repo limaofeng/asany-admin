@@ -25,7 +25,7 @@ import {
   Toast,
 } from '@/metronic';
 // import type { Sorter } from '@/metronic/typings';
-import type { TableColumn } from '@/metronic/Table/typings';
+import type { OnChange, TableColumn } from '@/metronic/Table/typings';
 
 /* type ActionsProps = {
   history: History;
@@ -196,13 +196,13 @@ function GeneralList<T>(props: GeneralListProps<T>) {
   }, [data?.connection, loading, previousData?.connection]);
 
   const handleSearch = useCallback(
-    (text) => {
+    (text: string) => {
       history.replace(location.pathname + '?' + qs.stringify({ q: text }));
     },
     [history, location.pathname],
   );
 
-  const handleChange = useCallback(
+  const handleChange: OnChange = useCallback(
     (_pagination, _filters, _sorter) => {
       const _query: any = {};
       if (variables.filter?.name_contains) {
@@ -211,7 +211,7 @@ function GeneralList<T>(props: GeneralListProps<T>) {
       if (!!_sorter) {
         _query.orderBy = _sorter.field + '_' + (_sorter.order == 'ascend' ? 'asc' : 'desc');
       }
-      _query.page = _pagination.current;
+      _query.page = _pagination?.current;
       history.replace(location.pathname + '?' + qs.stringify(_query));
     },
     [history, location.pathname, variables.filter?.name_contains],

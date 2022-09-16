@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import classnames from 'classnames';
 
@@ -13,7 +13,7 @@ type SwitchProps = {
   solid?: boolean;
   checked?: boolean;
   value?: string;
-  onChange?: (e: any) => void;
+  onChange?: (checked: boolean, e: any) => void;
 };
 
 function Switch(props: SwitchProps) {
@@ -29,8 +29,8 @@ function Switch(props: SwitchProps) {
   } = props;
 
   const handleChange = useCallback(
-    (e: any) => {
-      onChange && onChange(e);
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange && onChange(e.target.checked, e);
     },
     [onChange],
   );

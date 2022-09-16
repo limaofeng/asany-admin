@@ -67,9 +67,10 @@ function TextArea(props: TextAreaProps, eref: React.ForwardedRef<TextAreaRef | n
 
     if (typeof autoSize === 'object' && Object.hasOwn(autoSize, 'maxRows')) {
       const height = parseFloat(KTUtil.css(ele, 'height')!);
-      const lineHeight = parseFloat(KTUtil.css(ele, 'line-height')!);
-
-      setMaxHeight(height + (autoSize.maxRows! - autoSize.minRows!) * lineHeight);
+      if (!isNaN(height)) {
+        const lineHeight = parseFloat(KTUtil.css(ele, 'line-height')!);
+        setMaxHeight(height + (autoSize.maxRows! - autoSize.minRows!) * lineHeight);
+      }
     }
 
     autosize(ele);

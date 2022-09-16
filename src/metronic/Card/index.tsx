@@ -19,6 +19,7 @@ interface CardProps {
   style?: CSSProperties;
   children: React.ReactNode;
   to?: string;
+  onClick?: () => void;
 }
 
 type CardToolbarProps = {
@@ -34,7 +35,7 @@ function CardToolbar(props: CardToolbarProps) {
 type CardFooterProps = {
   id?: string;
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 function CardFooter(props: CardFooterProps) {
@@ -149,7 +150,7 @@ function CardBody(props: CardBodyProps) {
   );
 }
 
-function Card(props: CardProps & { to?: string }, ref: any) {
+function Card(props: CardProps & { to?: string; onClick?: () => void }, ref: any) {
   const {
     as,
     shadow,

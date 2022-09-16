@@ -73,6 +73,7 @@ function Toolbar(props: ToolbarProps) {
 export type ContentHeaderProps = {
   title?: string;
   toolbar?: React.ReactNode;
+  children?: React.ReactNode;
   breadcrumb?: React.ReactElement<typeof Breadcrumb>;
 };
 
@@ -135,8 +136,14 @@ function ContentHeader(props: ContentHeaderProps) {
         id="kt_header_container"
       >
         <div className="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-2 pb-2 pb-lg-0">
-          <h1 className="text-dark fw-bolder my-0 fs-2">{props.title || title}</h1>
-          {breadcrumb}
+          {props.children ? (
+            props.children
+          ) : (
+            <>
+              <h1 className="text-dark fw-bolder my-0 fs-2">{props.title || title}</h1>
+              {breadcrumb}
+            </>
+          )}
         </div>
         <div className="d-flex d-lg-none align-items-center ms-n2 me-2">
           <div className="btn btn-icon btn-active-icon-primary" id="kt_aside_mobile_toggle">
