@@ -100,7 +100,10 @@ function SecondarySidebar(props: SecondarySidebarProps) {
 
   return (
     <>
-      <div style={{ width: minimized ? undefined : width }} />
+      <div
+        className="secondary_sidebar-resizer__mirror"
+        style={{ width: minimized ? undefined : width }}
+      />
       <Resizer
         className={classnames(
           'secondary_sidebar-resizer d-flex flex-column flex-lg-row',

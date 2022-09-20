@@ -4,6 +4,11 @@
   }
 }
 
+.secondary_sidebar-resizer__mirror {
+  width: 0px;
+  transition: width .3s ease;
+}
+
 .secondary_sidebar-resizer {
   --box-shadow-color-rgb: rgba(9, 30, 66, 0.08);
   min-height: 100vh;
