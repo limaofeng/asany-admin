@@ -1,41 +1,102 @@
-.fv-row.form-item-has-error {
+.fv-row.asany-form-item-has-error {
   .form-control {
     border-color: #f1416c;
   }
 }
 
-.form-extra {
+.asany-form-extra {
   min-height: 17px;
   margin: 4px 0 2px;
   color: #57606a;
   font-size: 12px;
 }
 
-.form-item-help {
+.asany-form-item-with-help {
   min-height: 17px;
   margin: 4px 0 2px;
   color: #57606a;
   font-size: 12px;
 }
 
-.form-item-optional {
+.asany-form-item-optional {
   padding-left: 4px;
   color: rgb(157, 166, 199);
 }
 
-.asany-form-item.fv-row {
-  &.form-item-with-help {
-    .form-item-explain.form-explain-connected {
-      min-height: 17px;
-      margin: 4px 0 2px;
-      color: #57606a;
-      font-size: 12px;
+.asany-form-item {
 
-      .form-item-explain-error {
-        color: var(--bs-red);
+  // .asany-form-item-control-wrapper {
+  //   position: relative;
+
+  //   .asany-form-item-error-list {
+  //     position: absolute;
+  //     display: flex;
+  //     flex-wrap: nowrap;
+  //   }
+  // }
+
+  .asany-input-suffix {
+    position: relative;
+    border-left-width: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .asany-form-item-feedback-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &-error {
+      .svg-icon {
+        color: var(--kt-text-danger);
       }
     }
+
+    &-warning {
+      .svg-icon {
+        color: var(--kt-text-warning);
+      }
+    }
+
+    &-success {
+      .svg-icon {
+        color: var(--kt-text-primary);
+      }
+    }
+
   }
+
+  .validate-loading {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    border: 0.185em solid var(--kt-text-muted);
+    border-right-color: transparent;
+    vertical-align: var(--bs-spinner-vertical-align);
+    border-radius: 50%;
+    animation: 0.65s linear infinite spinner-border;
+  }
+
+}
+
+.asany-form-item.asany-form-item-with-help .asany-form-item-row {
+  .asany-form-item-explain.asany-form-explain-connected {
+    min-height: 17px;
+    margin: 4px 0 2px;
+    color: #57606a;
+    font-size: 12px;
+
+    .asany-form-item-explain-error {
+      color: var(--bs-red);
+    }
+  }
+}
+
+.asany-form-item-feedback-icon {
+  width: 100%;
+  height: 100%;
 }
 
 .form-control,

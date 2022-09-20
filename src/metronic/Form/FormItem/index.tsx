@@ -1,24 +1,18 @@
 import React, { useContext } from 'react';
 
-import classNames from 'classnames';
-import type { FormInstance } from 'rc-field-form';
 import { Field } from 'rc-field-form';
-import type { FieldProps } from 'rc-field-form/lib/Field';
 import FieldContext from 'rc-field-form/lib/FieldContext';
 import type { Meta, NamePath } from 'rc-field-form/lib/interface';
-import omit from 'rc-util/lib/omit';
 import { supportRef } from 'rc-util/lib/ref';
 
-import { FormContext, NoStyleItemContext } from './context';
-import type { FormItemInputProps } from './FormItemInput';
-import FormItemInput from './FormItemInput';
-import type { FormItemLabelProps, LabelTooltipType } from './FormItemLabel';
-import FormItemLabel from './FormItemLabel';
-import useDebounce from './hooks/useDebounce';
-import useFrameState from './hooks/useFrameState';
-import useItemRef from './hooks/useItemRef';
-import { cloneElement, getFieldId, isValidElement, toArray, tuple } from './util';
-import devWarning from './utils/devWarning';
+import { FormContext, NoStyleItemContext } from '../context';
+import useFrameState from '../hooks/useFrameState';
+import useItemRef from '../hooks/useItemRef';
+import { cloneElement, getFieldId, isValidElement, toArray } from '../util';
+import devWarning from '../utils/devWarning';
+import type { FormItemProps, RenderChildren } from '../typings';
+
+import ItemHolder from './ItemHolder';
 
 const NAME_SPLIT = '__SPLIT__';
 
@@ -26,13 +20,6 @@ interface FieldError {
   errors: string[];
   warnings: string[];
 }
-
-const ValidateStatuses = tuple('success', 'warning', 'error', 'validating', '');
-export type ValidateStatus = typeof ValidateStatuses[number];
-
-type RenderChildren<Values = any> = (form: FormInstance<Values>) => React.ReactNode;
-type RcFieldProps<Values = any> = Omit<FieldProps<Values>, 'children'>;
-type ChildrenType<Values = any> = RenderChildren<Values> | React.ReactNode;
 
 interface MemoInputProps {
   value: any;
@@ -44,28 +31,6 @@ const MemoInput = React.memo(
   ({ children }: MemoInputProps) => children as JSX.Element,
   (prev, next) => prev.value === next.value && prev.update === next.update,
 );
-
-export interface FormItemProps<Values = any>
-  extends FormItemLabelProps,
-    FormItemInputProps,
-    RcFieldProps<Values> {
-  prefixCls?: string;
-  noStyle?: boolean;
-  style?: React.CSSProperties;
-  className?: string;
-  labelClassName?: string;
-  children?: ChildrenType<Values>;
-  id?: string;
-  hasFeedback?: boolean;
-  validateStatus?: ValidateStatus;
-  required?: boolean;
-  hidden?: boolean;
-  initialValue?: any;
-  messageVariables?: Record<string, string>;
-  tooltip?: LabelTooltipType;
-  /** Auto passed by List render props. User should not use this. */
-  fieldKey?: React.Key | React.Key[];
-}
 
 function hasValidName(name?: NamePath): boolean {
   if (name === null) {
@@ -91,14 +56,8 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
     noStyle,
     dependencies,
     prefixCls: customizePrefixCls,
-    style,
-    className,
-    labelClassName,
     shouldUpdate,
-    hasFeedback,
-    help,
     rules,
-    validateStatus,
     children,
     required,
     label,
@@ -106,10 +65,8 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
     trigger = 'onChange',
     validateTrigger,
     hidden,
-    extra,
-    ...restProps
   } = props;
-  const { name: formName, requiredMark, size } = useContext(FormContext);
+  const { name: formName, size } = useContext(FormContext);
   const isRenderProps = typeof children === 'function';
   const notifyParentMetaChange = useContext(NoStyleItemContext);
 
@@ -119,7 +76,7 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
 
   const hasName = hasValidName(name);
 
-  const prefixCls = 'form';
+  const prefixCls = customizePrefixCls || 'asany-form';
 
   // ======================== Errors ========================
   // >>>>> Collect sub field errors
@@ -182,8 +139,8 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
     return [errorList, warningList];
   }, [subFieldErrors, meta.errors, meta.warnings]);
 
-  const debounceErrors = useDebounce(mergedErrors);
-  const debounceWarnings = useDebounce(mergedWarnings);
+  // const debounceErrors = useDebounce(mergedErrors);
+  // const debounceWarnings = useDebounce(mergedWarnings);
 
   // ===================== Children Ref =====================
   const getItemRef = useItemRef();
@@ -197,85 +154,21 @@ function FormItem<Values = any>(props: FormItemProps<Values>): React.ReactElemen
     if (noStyle && !hidden) {
       return baseChildren;
     }
-    // ======================== Status ========================
-    let mergedValidateStatus: ValidateStatus = '';
-    if (validateStatus !== undefined) {
-      mergedValidateStatus = validateStatus;
-    } else if (meta?.validating) {
-      mergedValidateStatus = 'validating';
-    } else if (debounceErrors.length) {
-      mergedValidateStatus = 'error';
-    } else if (debounceWarnings.length) {
-      mergedValidateStatus = 'warning';
-    } else if (meta?.touched) {
-      mergedValidateStatus = 'success';
-    }
 
-    const itemClassName = {
-      [`${prefixCls}-item-with-help`]: help || debounceErrors.length || debounceWarnings.length,
-      [`${className}`]: !!className,
-
-      // Status
-      [`${prefixCls}-item-has-feedback`]: mergedValidateStatus && hasFeedback,
-      [`${prefixCls}-item-has-success`]: mergedValidateStatus === 'success',
-      [`${prefixCls}-item-has-warning`]: mergedValidateStatus === 'warning',
-      [`${prefixCls}-item-has-error`]: mergedValidateStatus === 'error',
-      [`${prefixCls}-item-is-validating`]: mergedValidateStatus === 'validating',
-      [`${prefixCls}-item-hidden`]: hidden,
-    };
-
-    // ======================= Children =======================
     return (
-      <div
-        className={classNames('asany-form-item fv-row', itemClassName)}
-        style={style}
+      <ItemHolder
         key="row"
-        {...omit(restProps, [
-          'colon',
-          'extra',
-          'getValueFromEvent',
-          'getValueProps',
-          'htmlFor',
-          'id', // It is deprecated because `htmlFor` is its replacement.
-          'initialValue',
-          'isListField',
-          'labelAlign',
-          'labelCol',
-          'normalize',
-          'preserve',
-          'tooltip',
-          'validateFirst',
-          'valuePropName',
-          'wrapperCol',
-          'requiredMark',
-          '_internalItemRender' as any,
-        ])}
+        {...props}
+        prefixCls={prefixCls}
+        fieldId={fieldId}
+        isRequired={isRequired}
+        errors={mergedErrors}
+        warnings={mergedWarnings}
+        meta={meta}
+        onSubItemMetaChange={onSubItemMetaChange}
       >
-        {/* Label */}
-        <FormItemLabel
-          htmlFor={fieldId}
-          required={isRequired}
-          requiredMark={requiredMark}
-          {...props}
-          className={labelClassName}
-          prefixCls={prefixCls}
-        />
-        {/* Input Group */}
-        <FormItemInput
-          {...props}
-          {...meta}
-          errors={debounceErrors}
-          warnings={debounceWarnings}
-          prefixCls={prefixCls}
-          status={mergedValidateStatus}
-          validateStatus={mergedValidateStatus}
-          help={help}
-        >
-          <NoStyleItemContext.Provider value={onSubItemMetaChange}>
-            {baseChildren}
-          </NoStyleItemContext.Provider>
-        </FormItemInput>
-      </div>
+        {baseChildren}
+      </ItemHolder>
     );
   }
 

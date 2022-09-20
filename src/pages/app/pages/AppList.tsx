@@ -1,3 +1,5 @@
+import { Link } from 'umi';
+
 import { useMyAppsQuery } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
@@ -19,7 +21,7 @@ function AppList() {
         {apps.map((item) => (
           <Col key={item.id} md={6} xl={4}>
             {/*----begin::Card--*/}
-            <Card as="a" to={`/apps/${item.id}`} className="border-hover-primary">
+            <Card as={Link} to={`/apps/${item.id}`} className="border-hover-primary">
               <Card.Header border={false} className="pt-9">
                 <Card.Title className="m-0">
                   <Symbol.Avatar

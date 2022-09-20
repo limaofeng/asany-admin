@@ -28,3 +28,53 @@
     }
   }
 }
+
+.module-view-app {
+
+  &-sidebar {
+    .os-content {
+      min-height: 100%;
+      display: flex;
+
+      &>.blockui {
+        width: 100%;
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    &__menu_container {
+      width: 100%;
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 20px;
+
+      .menu>.menu-fit {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+        flex-direction: column;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 0;
+        height: 36px;
+
+        .menu-icon {
+          width: 40px;
+          height: 36px;
+        }
+
+        .menu-link {
+          padding: 0;
+        }
+      }
+    }
+  }
+}

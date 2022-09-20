@@ -107,7 +107,7 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
   }, []);
 
   const handleCloseFieldModal = useCallback(() => {
-    setState((prevState) => ({ ...prevState, visible: false }));
+    setState((prevState) => ({ ...prevState, data: undefined, visible: false }));
   }, []);
 
   const handleEditFieldModal = useCallback((field: IModelField) => {

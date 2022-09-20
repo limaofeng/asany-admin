@@ -2,7 +2,7 @@ import React from 'react';
 
 import { FormContext, FormItemPrefixContext } from './context';
 import ErrorList from './ErrorList';
-import type { ValidateStatus } from './FormItem';
+import type { ValidateStatus } from './typings';
 
 interface FormItemInputMiscProps {
   prefixCls: string;
@@ -11,6 +11,8 @@ interface FormItemInputMiscProps {
   warnings: React.ReactNode[];
   hasFeedback?: boolean;
   validateStatus?: ValidateStatus;
+  marginBottom?: number | null;
+  onErrorVisibleChanged?: (visible: boolean) => void;
   /** @private Internal Usage, do not use in any of your production. */
   _internalItemRender?: {
     mark: string;
@@ -18,7 +20,7 @@ interface FormItemInputMiscProps {
       props: FormItemInputProps & FormItemInputMiscProps,
       domList: {
         input: JSX.Element;
-        errorList: JSX.Element;
+        errorList: JSX.Element | null;
         extra: JSX.Element | null;
       },
     ) => React.ReactNode;
@@ -38,7 +40,9 @@ const FormItemInput: React.FC<FormItemInputProps & FormItemInputMiscProps> = (pr
     children,
     errors,
     warnings,
+    marginBottom,
     _internalItemRender: formItemRender,
+    onErrorVisibleChanged,
     extra,
     help,
   } = props;
@@ -55,27 +59,32 @@ const FormItemInput: React.FC<FormItemInputProps & FormItemInputMiscProps> = (pr
     </div>
   );
 
-  const errorListDom = (
-    <FormItemPrefixContext.Provider value={{ prefixCls, status }}>
-      <ErrorList
-        errors={errors}
-        warnings={warnings}
-        help={help}
-        helpStatus={status}
-        className={`${baseClassName}-explain-connected`}
-      />
-    </FormItemPrefixContext.Provider>
-  );
+  const hasHelp = help !== undefined && help !== null;
+  const hasError = !!(hasHelp || errors.length || warnings.length);
 
-  // If extra = 0, && will goes wrong
-  // 0&&error -> 0
+  const errorListDom = hasError ? (
+    <div className="asany-form-item-error-list">
+      <FormItemPrefixContext.Provider value={{ prefixCls, status }}>
+        <ErrorList
+          errors={errors}
+          warnings={warnings}
+          help={help}
+          helpStatus={status}
+          className={`${baseClassName}-explain-connected`}
+          onVisibleChanged={onErrorVisibleChanged}
+        />
+      </FormItemPrefixContext.Provider>
+      {!!marginBottom && <div style={{ width: 0, height: marginBottom }} />}
+    </div>
+  ) : null;
+
   const extraDom = extra ? <div className={`${baseClassName}-extra`}>{extra}</div> : null;
 
   const dom =
     formItemRender && formItemRender.render ? (
       formItemRender.render(props, { input: inputDom, errorList: errorListDom, extra: extraDom })
     ) : (
-      <div className="fv-control-wrapper">
+      <div className="fv-control-wrapper asany-form-item-control-wrapper">
         {inputDom}
         {errorListDom}
         {extraDom}

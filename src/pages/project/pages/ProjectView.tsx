@@ -52,8 +52,6 @@ function ProjectView(props: ProjectViewProps) {
     setSelectedKey(e.key);
   }, []);
 
-  console.log('children', children);
-
   return (
     <MicroApp loading={loading}>
       {project && (

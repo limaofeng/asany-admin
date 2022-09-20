@@ -23,9 +23,16 @@ type ModuleSchemaProps = RouteComponentProps<
 function ModuleSchema(props: ModuleSchemaProps) {
   const { location, history, children } = props;
 
+  const { module } = location.state;
+
   const [visibleCreateModel, setVisibleCreateModel] = useState(false);
 
-  const { data } = useSchemaQuery();
+  const { data, loading } = useSchemaQuery({
+    variables: {
+      module: module.id,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
 
   const { models = [] } = data || {};
 
@@ -86,7 +93,7 @@ function ModuleSchema(props: ModuleSchemaProps) {
                 sectionClassName="d-flex align-items-center"
               >
                 <span className="menu-section text-muted text-uppercase fs-8 ls-1 flex-row-fluid">
-                  模型 {/*loading && ' - loading...'*/}
+                  模型 {loading && ' - 加载中...'}
                 </span>
                 <Button
                   icon={
@@ -106,14 +113,13 @@ function ModuleSchema(props: ModuleSchemaProps) {
                   {item.name}
                 </Menu.Item>
               ))}
-              <Menu.Item>xxxx2</Menu.Item>
               <Menu.Item>xxxx3</Menu.Item>
-              <Menu.Section
+              {/* <Menu.Section
                 className="menu-section-container"
                 sectionClassName="d-flex align-items-center"
               >
                 <span className="menu-section text-muted text-uppercase fs-8 ls-1 flex-row-fluid">
-                  枚举1 {/*loading && ' - loading...'*/}
+                  枚举
                 </span>
                 <Button
                   icon={
@@ -126,9 +132,7 @@ function ModuleSchema(props: ModuleSchemaProps) {
                   新增
                 </Button>
               </Menu.Section>
-              <Menu.Item>xxxx1</Menu.Item>
-              <Menu.Item>xxxx2</Menu.Item>
-              <Menu.Item>xxxx3</Menu.Item>
+              <Menu.Item>xxxx1</Menu.Item> */}
             </Menu>
           </OverlayScrollbarsComponent>
         </div>

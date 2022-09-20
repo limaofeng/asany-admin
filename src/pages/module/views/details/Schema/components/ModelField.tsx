@@ -15,7 +15,6 @@ function ModelField(props: ModelFieldProps, ref: SortableItemRefObject) {
   const { drag, style, animated, className, onClickEdit } = props;
 
   const data = props.data.data as IModelField;
-  console.log('ModelField props', style);
 
   const fieldType = useMemo(() => {
     return data.fieldType.id.toLowerCase();

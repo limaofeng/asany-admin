@@ -2,6 +2,26 @@ query module($id: ID!) {
   module(id: $id) {
     id
     name
+    picture
+    description
+  }
+}
+
+query modules($filter: ModuleFilter, $limit: Int) {
+  modules(filter: $filter, limit: $limit) {
+    id
+    name
+    picture
+    description
+  }
+}
+
+mutation createModule($input: ModuleCreateInput!) {
+  createModule(input: $input) {
+    id
+    code
+    name
+    picture
     description
   }
 }

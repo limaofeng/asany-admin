@@ -67,7 +67,7 @@ function Actions({ data, history, onDelete, onShowQRCode }: ActionsProps) {
   );
 
   const handleMenuClick = useCallback(
-    (event) => {
+    (event: any) => {
       if (event.key == 'view') {
         history.push(`/website/landing/pages/${data.id}`);
       } else if (event.key == 'delete') {
@@ -183,7 +183,7 @@ function WebsiteList(props: WebsiteListProps) {
   const websites = data?.websites || [];
 
   const handleSearch = useCallback(
-    (text) => {
+    (text: string) => {
       history.replace(location.pathname + '?' + qs.stringify({ q: text }));
     },
     [history, location.pathname],
@@ -297,7 +297,7 @@ function WebsiteList(props: WebsiteListProps) {
               {websites.map((item) => (
                 <Col key={item.id} md={6} xl={4}>
                   {/*----begin::Card--*/}
-                  <Card as="a" to={`/websites/${item.id}`} className="border-hover-primary">
+                  <Card as={Link} to={`/websites/${item.id}`} className="border-hover-primary">
                     <Card.Header border={false} className="pt-9">
                       <Card.Title className="m-0">
                         <Symbol.Avatar

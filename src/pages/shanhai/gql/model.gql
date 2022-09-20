@@ -1,5 +1,5 @@
 query QUEERY_MODELS {
-  models(filter: { type: OBJECT }, offset: 100) {
+  models(module: 1, filter: { type: OBJECT }, offset: 100) {
     id
     name
   }

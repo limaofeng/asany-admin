@@ -1,17 +1,23 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
-import { Link } from 'umi';
+import { history, Link } from 'umi';
 import { Icon } from '@asany/icons';
 
 import NewModule from '../components/NewModule';
+import { useModulesQuery } from '../hooks';
 
 import { PageContent } from '@/layouts/components';
 import { Card, Col, Row, Symbol } from '@/metronic';
+import type { Module } from '@/types';
 
 import '../style/ModuleList.scss';
 
 function ModuleList() {
   const [visibleNewModule, setVisibleNewModule] = useState(false);
+
+  const { data, loading, previousData, refetch } = useModulesQuery({
+    fetchPolicy: 'cache-and-network',
+  });
 
   const handleCloseNewModule = useCallback(() => {
     setVisibleNewModule(false);
@@ -21,10 +27,23 @@ function ModuleList() {
     setVisibleNewModule(true);
   }, []);
 
+  const handleSuccess = useCallback(
+    (module: Module) => {
+      refetch();
+      history.push(`/modules/${module.id}`);
+    },
+    [refetch],
+  );
+
+  const modules = useMemo(
+    () => data?.modules || previousData?.modules || [],
+    [data?.modules, previousData],
+  );
+
   return (
-    <PageContent className="module-list">
+    <PageContent loading={loading} className="module-list">
       <div className="my-modules">
-        <h1 className="anchor fw-bold mb-5">我的模块(2)</h1>
+        <h1 className="anchor fw-bold mb-5">我的模块({modules.length})</h1>
         <Row
           className="py-2"
           cols={{
@@ -36,9 +55,9 @@ function ModuleList() {
             xl: 9,
           }}
         >
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-            <Col key={item} md={4}>
-              <Card as={Link} to="/modules/0" className="module-card card-p-0">
+          {modules.map((item) => (
+            <Col key={item.id} md={4}>
+              <Card as={Link} to={`/modules/${item.id}`} className="module-card card-p-0">
                 <Card.Body>
                   <Symbol
                     autoColor={false}
@@ -48,10 +67,8 @@ function ModuleList() {
                 </Card.Body>
                 <Card.Footer className="p-4">
                   <div className="d-flex flex-column">
-                    <h3>Blog</h3>
-                    <span className="tw-text-ellipsis overflow-hidden">
-                      Simple blog focused on content with programmatic page generation.
-                    </span>
+                    <h3>{item.name}</h3>
+                    <span className="tw-text-ellipsis overflow-hidden">{item.description}</span>
                   </div>
                 </Card.Footer>
               </Card>
@@ -92,7 +109,11 @@ function ModuleList() {
             </Card>
           </Col>
         </Row>
-        <NewModule visible={visibleNewModule} onClose={handleCloseNewModule} />
+        <NewModule
+          visible={visibleNewModule}
+          onSuccess={handleSuccess}
+          onClose={handleCloseNewModule}
+        />
       </div>
     </PageContent>
   );

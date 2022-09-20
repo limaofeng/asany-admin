@@ -150,11 +150,7 @@ function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps
   }, [props.fieldType]);
 
   useEffect(() => {
-    if (props.data) {
-      form.setFieldsValue({ ...props.data });
-    } else {
-      form.resetFields();
-    }
+    props.data && form.setFieldsValue({ ...props.data });
   }, [form, props.data]);
 
   const handleClose = useCallback(() => {

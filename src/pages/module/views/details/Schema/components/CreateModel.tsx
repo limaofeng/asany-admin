@@ -42,6 +42,7 @@ function CreateModel(props: CreateModelProps) {
   return (
     <Modal
       confirmLoading={loading}
+      maskClosable={!loading}
       width={592}
       centered
       visible={visible}

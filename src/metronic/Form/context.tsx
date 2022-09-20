@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import React from 'react';
 
 import { FormProvider as RcFormProvider } from 'rc-field-form';
@@ -6,7 +7,7 @@ import type { Meta } from 'rc-field-form/lib/interface';
 import omit from 'rc-util/lib/omit';
 
 import type { RequiredMark, SizeType } from './Form';
-import type { ValidateStatus } from './FormItem';
+import type { ValidateStatus } from './typings';
 
 /** Form Context. Set top form style and pass to Form Item usage. */
 export interface FormContextProps {
@@ -46,3 +47,12 @@ export interface FormItemPrefixContextProps {
 export const FormItemPrefixContext = React.createContext<FormItemPrefixContextProps>({
   prefixCls: '',
 });
+
+export interface FormItemStatusContextProps {
+  isFormItemInput?: boolean;
+  status?: ValidateStatus;
+  hasFeedback?: boolean;
+  feedbackIcon?: ReactNode;
+}
+
+export const FormItemInputContext = React.createContext<FormItemStatusContextProps>({});

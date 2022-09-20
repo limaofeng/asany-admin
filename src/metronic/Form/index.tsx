@@ -5,12 +5,12 @@ import type { ErrorListProps } from './ErrorList';
 import ErrorList from './ErrorList';
 import type { FormProps } from './Form';
 import InternalForm, { useForm } from './Form';
-import type { FormItemProps } from './FormItem';
 import Item from './FormItem';
 import type { FormListProps } from './FormList';
 import List from './FormList';
 import FormRepeater from './FormRepeater';
 import type { FormInstance } from './hooks/useForm';
+import type { FormItemProps } from './typings';
 
 type InternalFormType = typeof InternalForm;
 

@@ -1,5 +1,5 @@
-query schema {
-  models(filter: { type: ENTITY }) {
+query schema($module: ID!) {
+  models(module: $module, filter: { type: ENTITY }) {
     id
     code
     name

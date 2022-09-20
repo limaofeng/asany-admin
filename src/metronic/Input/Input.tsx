@@ -1,7 +1,12 @@
 import type { DOMAttributes } from 'react';
+import { useContext } from 'react';
 import React, { useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
 import classnames from 'classnames';
+
+import type { InputStatus } from '../_util/statusUtils';
+import { getMergedStatus, getStatusClassNames } from '../_util/statusUtils';
+import { FormItemInputContext } from '../Form/context';
 
 import './style.scss';
 
@@ -14,12 +19,13 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
   type?: 'text' | 'password';
   autoComplete?: boolean;
   bordered?: boolean;
-  prefix?: React.ReactNode;
   transparent?: boolean;
   onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   boxClassName?: string;
+  status?: InputStatus;
+  addonBefore?: React.ReactNode;
 }
 
 export type InputRef = {
@@ -35,7 +41,7 @@ export type InputRef = {
 function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   const {
     solid,
-    prefix,
+    addonBefore,
     type = 'text',
     bordered = true,
     autoComplete = false,
@@ -46,6 +52,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     onChange,
     className,
     boxClassName,
+    status: customStatus,
     ...otherProps
   } = props;
 
@@ -54,7 +61,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   const [value, setValue] = useState(props.value != null ? props.value : props.defaultValue || '');
 
   const handleChange = useCallback(
-    (e) => {
+    (e: any) => {
       onChange ? onChange(e) : setValue(e.target.value);
     },
     [onChange],
@@ -113,17 +120,30 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     [],
   );
 
+  const {
+    hasFeedback,
+    status: contextStatus,
+    isFormItemInput,
+    feedbackIcon,
+  } = useContext(FormItemInputContext);
+  const mergedStatus = getMergedStatus(contextStatus, customStatus);
+
   const input = (
     <input
       {...otherProps}
       ref={inputRef}
       onKeyDown={handleKeyDown}
-      className={classnames('form-control', className, {
-        [`form-control-${size}`]: !!size,
-        'form-control-solid': solid,
-        'form-control-transparent': transparent,
-        'form-control-borderless': !bordered,
-      })}
+      className={classnames(
+        'form-control',
+        className,
+        {
+          [`form-control-${size}`]: !!size,
+          'form-control-solid': solid,
+          'form-control-transparent': transparent,
+          'form-control-borderless': !bordered,
+        },
+        getStatusClassNames('form-item', mergedStatus),
+      )}
       defaultValue={props.defaultValue}
       value={onChange ? newValue : undefined}
       onChange={onChange ? handleChange : undefined}
@@ -132,11 +152,22 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     />
   );
 
-  if (!!prefix) {
+  if (!!addonBefore || (isFormItemInput && hasFeedback)) {
     return (
-      <div className={classnames('d-flex align-items-center position-relative', boxClassName)}>
-        {prefix}
+      <div
+        className={classnames('input-group', boxClassName, {
+          'input-group-solid': solid,
+        })}
+      >
+        {typeof addonBefore === 'string' ? (
+          <span className="input-group-text" id="basic-addon3">
+            {addonBefore}
+          </span>
+        ) : (
+          addonBefore
+        )}
         {input}
+        <span className="input-group-text asany-input-suffix">{feedbackIcon}</span>
       </div>
     );
   }

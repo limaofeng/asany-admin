@@ -64,8 +64,6 @@ function Tabs(props: TabsProps) {
     props.activeKey || props.defaultActiveKey || panes[0].id,
   );
 
-  console.log('activeKey', activeKey);
-
   const handleSelect = useCallback(
     (key: string) => (e: React.MouseEvent) => {
       e.stopPropagation();

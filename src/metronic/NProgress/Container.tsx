@@ -4,6 +4,7 @@ const Container: React.FC<{
   animationDuration: number;
   isFinished: boolean;
   position: 'top' | 'bottom';
+  children?: React.ReactNode;
 }> = ({ animationDuration, children, isFinished, position }) => (
   <div
     style={{

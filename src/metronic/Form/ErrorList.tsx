@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import classnames from 'classnames';
 
 import { FormItemPrefixContext } from './context';
-import type { ValidateStatus } from './FormItem';
+import type { ValidateStatus } from './typings';
 
 const EMPTY_LIST: React.ReactNode[] = [];
 
@@ -32,6 +32,7 @@ export interface ErrorListProps {
   errors?: React.ReactNode[];
   warnings?: React.ReactNode[];
   className?: string;
+  onVisibleChanged?: (visible: boolean) => void;
 }
 
 function ErrorList({
@@ -40,6 +41,7 @@ function ErrorList({
   errors = EMPTY_LIST,
   warnings = EMPTY_LIST,
   className: rootClassName,
+  onVisibleChanged,
 }: ErrorListProps) {
   const { prefixCls } = React.useContext(FormItemPrefixContext);
 
@@ -55,6 +57,10 @@ function ErrorList({
       ...warnings.map((warning, index) => toErrorEntity(warning, 'warning', 'warning', index)),
     ];
   }, [help, helpStatus, errors, warnings]);
+
+  useEffect(() => {
+    onVisibleChanged && onVisibleChanged(false);
+  }, [onVisibleChanged]);
 
   if (!fullKeyList.length) {
     return <></>;

@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 
 import classnames from 'classnames';
 import { Card as BsCard } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 
 interface CardProps {
   id?: string;
@@ -197,7 +196,7 @@ function Card(props: CardProps & { to?: string; onClick?: () => void }, ref: any
   }, [children, _title, titleClassName, bodyClassName]);
 
   return React.createElement(
-    (as == 'a' ? Link : as) || 'div',
+    as || 'div',
     {
       ...otherProps,
       ref,

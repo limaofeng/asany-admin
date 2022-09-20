@@ -1,3 +1,5 @@
+import { Link } from 'umi';
+
 import { Card, Symbol } from '@/metronic';
 import type { Project } from '@/types';
 
@@ -6,7 +8,7 @@ type ProjectCardProps = Project;
 function ProjectCard(props: ProjectCardProps) {
   const { name, description, id } = props;
   return (
-    <Card as="a" to={`/projects/${id}`} hoverable className="border-hover-primary">
+    <Card as={Link} to={`/projects/${id}`} hoverable className="border-hover-primary">
       <Card.Header className=" border-0 pt-9">
         <Card.Title className="m-0">
           <div className="symbol symbol-50px w-50px bg-light">
