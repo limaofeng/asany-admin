@@ -62,7 +62,7 @@ function ModuleSchema(props: ModuleSchemaProps) {
         maxWidth={maxWidth}
       >
         <div className="h-100">
-          <div className="mx-2 p-5 mt-5">
+          <div className="mx-2 p-5 mt-7 mb-1">
             <h3 className="fw-bold text-dark mx-0 mb-0">设置</h3>
           </div>
           <OverlayScrollbarsComponent

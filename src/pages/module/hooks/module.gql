@@ -1,6 +1,7 @@
 query module($id: ID!) {
   module(id: $id) {
     id
+    code
     name
     picture
     description
@@ -11,6 +12,7 @@ query modules($filter: ModuleFilter, $limit: Int) {
   modules(filter: $filter, limit: $limit) {
     id
     name
+    code
     picture
     description
   }
@@ -24,4 +26,22 @@ mutation createModule($input: ModuleCreateInput!) {
     picture
     description
   }
+}
+
+mutation updateModule($id: ID!, $input: ModuleUpdateInput!) {
+  updateModule(id: $id, input: $input) {
+    id
+    code
+    name
+    picture
+    description
+  }
+}
+
+mutation deleteModule($id: ID!) {
+  deleteModule(id: $id)
+}
+
+mutation deleteManyModules($ids: [ID!]!) {
+  deleteManyModules(ids: $ids)
 }

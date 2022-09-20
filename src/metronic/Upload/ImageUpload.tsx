@@ -20,7 +20,7 @@ type ImageUploadProps = {
   height?: number;
   accept?: string;
   value?: string;
-  backgroundImage?: string;
+  background?: React.ReactNode;
   onChange?: (id?: string, file?: UploadFileData) => void;
   crop?:
     | false
@@ -41,7 +41,7 @@ function ImageUpload(props: ImageUploadProps) {
     height,
     crop = false,
     space,
-    backgroundImage = DEFAULT_PREVIEW_URL,
+    background = DEFAULT_PREVIEW_URL,
     accept = '.png, .jpg, .jpeg',
     onChange,
   } = props;
@@ -49,11 +49,11 @@ function ImageUpload(props: ImageUploadProps) {
   const state = useRef<{
     value?: string;
     image?: File;
-    preview: string;
+    preview: React.ReactNode;
     imageCropperModalVisible: boolean;
   }>({
     value: props.value,
-    preview: backgroundImage,
+    preview: background,
     imageCropperModalVisible: false,
   });
   const [, forceRender] = useReducer((s) => s + 1, 0);
@@ -83,7 +83,7 @@ function ImageUpload(props: ImageUploadProps) {
   );
 
   const onDrop = useCallback(
-    (acceptedFiles) => {
+    (acceptedFiles: File[]) => {
       if (crop) {
         state.current.image = acceptedFiles[0];
         state.current.imageCropperModalVisible = true;
@@ -101,7 +101,7 @@ function ImageUpload(props: ImageUploadProps) {
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept,
+    accept: accept as any,
     maxFiles: 1,
   });
   const { role, tabIndex, onClick: browseLocalFiles, ...rootProps } = getRootProps();
@@ -137,10 +137,10 @@ function ImageUpload(props: ImageUploadProps) {
   const handleRemove = useCallback(() => {
     state.current.value = undefined;
     state.current.image = undefined;
-    state.current.preview = backgroundImage;
+    state.current.preview = background;
     onChange && onChange();
     forceRender();
-  }, [backgroundImage, onChange]);
+  }, [background, onChange]);
 
   return (
     <div
@@ -150,15 +150,22 @@ function ImageUpload(props: ImageUploadProps) {
       data-kt-image-input="true"
       // style={{ backgroundImage: "url('/assets/media/svg/avatars/blank.svg')" }}
     >
-      <div
-        {...rootProps}
-        className={'image-input-wrapper'}
-        style={{ backgroundImage: `url('${preview}')`, width, height }}
-      />
+      {typeof preview == 'string' ? (
+        <div
+          {...rootProps}
+          className={'image-input-wrapper'}
+          style={{ backgroundImage: `url('${preview}')`, width, height }}
+        />
+      ) : (
+        <div {...rootProps} style={{ width, height }} className={'image-input-wrapper'}>
+          {preview}
+        </div>
+      )}
       <Tooltip title="上传图片">
         <Button
           as="label"
           type="circle"
+          variant={false}
           data-kt-image-input-action="change"
           className="btn-icon btn-active-color-primary w-25px h-25px bg-body shadow"
         >
@@ -171,6 +178,7 @@ function ImageUpload(props: ImageUploadProps) {
         <Button
           as="span"
           type="circle"
+          variant={false}
           onClick={handleRemove}
           data-kt-image-input-action="remove"
           className={'btn-icon btn-active-color-primary w-25px h-25px bg-body shadow'}

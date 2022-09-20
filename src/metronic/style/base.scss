@@ -63,3 +63,16 @@
 .daterangepicker {
   z-index: 1100;
 }
+
+.asany-confirm-modal {
+  .alert {
+    margin-bottom: 0;
+    border-right-width: 0;
+    border-left-width: 0;
+    border-radius: 0;
+    --bs-alert-padding-y: .75rem;
+  }
+  .asany-confirm-modal-button {
+    width: 100%;
+  }
+}

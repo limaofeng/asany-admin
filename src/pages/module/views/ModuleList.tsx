@@ -62,7 +62,7 @@ function ModuleList() {
                   <Symbol
                     autoColor={false}
                     labelClassName="bg-dark text-inverse-info fs-5tx"
-                    alt="Blog"
+                    alt={item.name}
                   />
                 </Card.Body>
                 <Card.Footer className="p-4">

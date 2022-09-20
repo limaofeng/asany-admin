@@ -56,12 +56,12 @@ function Account() {
         </Card.Header>
         <Card.Body>
           {organizations.length ? (
-            <div>
+            <div className="fs-7">
               <p>您的帐户目前是这些组织的所有者： w-asany 您必须先 删除自己、 转移所有权或</p>
               <p>在删除用户之前，必须先将自己从组织中移除、转移所有权或删除这些组织。</p>
             </div>
           ) : (
-            <p className="mb-3">帐户删除后，将无法恢复。请谨慎操作</p>
+            <p className="mb-3 fs-7">帐户删除后，将无法恢复。请谨慎操作</p>
           )}
           <Button variant="danger" onClick={handleDeleteAccount} disabled={!!organizations.length}>
             删除账户

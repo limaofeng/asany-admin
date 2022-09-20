@@ -36,7 +36,7 @@ function DeleteAccountModal(props: DeleteAccountModalProps) {
     >
       <Alert type="danger" message="请仔细阅读以下事项" />
       <div className="inner-body">
-        <p>
+        <p className="fs-7">
           您即将永久删除 <b>您的帐户</b>，以及与您的帐户关联的所有内容。一旦确认
           删除帐户，此操作便无法撤销和恢复。
         </p>

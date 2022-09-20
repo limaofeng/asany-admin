@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import React from 'react';
 
 import Icon from '@asany/icons';
@@ -10,6 +11,7 @@ type AlertType = 'primary' | 'success' | 'info' | 'warning' | 'danger';
 type AlertProps = {
   action?: React.ReactNode;
   icon?: React.ReactElement;
+  style?: CSSProperties;
   message: string;
   description?: string;
   closable?: boolean;
@@ -38,9 +40,11 @@ function Alert(props: AlertProps) {
     description,
     theme = 'Default',
     closable,
+    style,
   } = props;
   return (
     <div
+      style={style}
       className={classnames('alert d-flex align-items-center', {
         [`bg-${type}`]: theme == 'Solid',
         [`alert-${type}`]: theme == 'Default',
