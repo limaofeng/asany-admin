@@ -18,6 +18,7 @@ type MicroAppContainerProps = {
 };
 
 const MicroAppContainer = styled.div<MicroAppContainerProps>`
+  --root-aside-width: ${(props) => (props.minimize ? '100px' : `${props.width}px`)};
   --met-aside-width: ${(props) => (props.minimize ? '100px' : `${props.width}px`)};
 `;
 

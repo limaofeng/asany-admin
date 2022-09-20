@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { useCallback, useEffect } from 'react';
 
 import { Icon } from '@asany/icons';
@@ -44,6 +45,7 @@ function AppSidebar(props: AppSidebarProps) {
 }
 
 type ToggleProps = {
+  style?: CSSProperties;
   className: string;
 };
 
@@ -61,10 +63,11 @@ function Toggle(props: ToggleProps) {
 
   return (
     <Button
-      style={{ marginBottom: '1.35rem', zIndex: 10 }}
+      style={{ marginBottom: '1.35rem', zIndex: 105, ...props.style }}
       onClick={handleAsideToggle}
       activeColor="primary"
       className={classnames(
+        'micro-app-aside-toggle',
         'btn-icon bg-body btn-color-gray-700 rounded-2 position-absolute translate-middle bottom-0 shadow-sm d-none d-lg-flex',
         props.className,
         { active: minimize },

@@ -74,6 +74,7 @@ type RootLayoutProps = {
 };
 
 const RootLayout = styled.div<RootLayoutProps>`
+  --root-aside-width: ${(props) => (props.minimize ? '100px' : `${props.width}px`)};
   --met-aside-width: ${(props) => (props.minimize ? '100px' : `${props.width}px`)};
 `;
 

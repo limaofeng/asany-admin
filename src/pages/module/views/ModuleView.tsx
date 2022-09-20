@@ -137,7 +137,16 @@ function ModuleView(props: ModuleViewProps) {
             </BlockUI>
           </MicroApp.Sidebar>
           <div style={{ zIndex: 99 }} className="position-relative d-flex flex-row flex-row-fluid">
-            <MicroApp.Sidebar.Toggle className="start-0" />
+            <div
+              style={{
+                position: 'fixed',
+                height: '100vh',
+                width: '1px',
+                zIndex: 105,
+              }}
+            >
+              <MicroApp.Sidebar.Toggle className="start-0" />
+            </div>
             {React.Children.map(children, (o: any) => {
               o.props.location.state = {
                 module,

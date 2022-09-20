@@ -9,7 +9,8 @@
   min-height: 100vh;
   box-shadow: 1px 0px 2px 0px rgb(56 71 109 / 8%);
   transition: width .3s ease;
-  z-index: 3;
+  position: fixed;
+  z-index: 103;
 
   &>.secondary_sidebar-inner {
     background-color: var(--kt-aside-bg-color);

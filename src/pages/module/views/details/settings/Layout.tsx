@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { RouteComponentProps } from 'react-router';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { matchPath } from 'react-router';
 import { Link } from 'umi';
+import styled from 'styled-components';
 
 import SecondarySidebar from '@/components/SecondarySidebar';
 import { Menu } from '@/metronic';
@@ -16,6 +17,14 @@ type ModuleSchemaProps = RouteComponentProps<
 > & {
   children: React.ReactNode;
 };
+
+type SecondaryLayoutProps = {
+  width: number;
+};
+
+const SecondaryLayout = styled.div<SecondaryLayoutProps>`
+  --met-aside-width: ${(props) => `calc(var(--root-aside-width) + ${props.width}px)`};
+`;
 
 function ModuleSchema(props: ModuleSchemaProps) {
   const { location, children } = props;
@@ -34,9 +43,24 @@ function ModuleSchema(props: ModuleSchemaProps) {
     return '';
   }, [baseUrl, location.pathname]);
 
+  const [width, setWidth] = useState(260);
+
+  const clientWidth = document.body.clientWidth;
+
+  const maxWidth = useMemo(() => ((clientWidth - 100 - 216) / 5) * 2, [clientWidth]);
+
+  const handleWidthChange = useCallback((w: number) => {
+    setWidth(w);
+  }, []);
+
   return (
-    <>
-      <SecondarySidebar className="module_secondary_sidebar" width={260}>
+    <SecondaryLayout width={width} className="flex-row-fluid d-flex">
+      <SecondarySidebar
+        className="module_secondary_sidebar"
+        onWidthChange={handleWidthChange}
+        width={260}
+        maxWidth={maxWidth}
+      >
         <div className="h-100">
           <div className="mx-2 p-5 mt-5">
             <h3 className="fw-bold text-dark mx-0 mb-0">设置</h3>
@@ -73,7 +97,7 @@ function ModuleSchema(props: ModuleSchemaProps) {
         </div>
       </SecondarySidebar>
       {children}
-    </>
+    </SecondaryLayout>
   );
 }
 

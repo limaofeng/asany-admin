@@ -14,6 +14,7 @@
 .aside-fixed {
   .micro-app-container {
     &.aside-minimize {
+      --root-aside-width: 0px;
       --met-aside-width: 0px;
       .aside {
         width: 0;
