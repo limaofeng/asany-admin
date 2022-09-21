@@ -289,7 +289,7 @@ function StoreDetails(props: StoreDetailsProps) {
                     height={250}
                     space="orX8kLOV"
                     crop={{ height: 450, zoomable: false, aspectRatio: 1 }}
-                    backgroundImage="/assets/media/background/qrcode_icon.png"
+                    background="/assets/media/background/qrcode_icon.png"
                   />
                 </Form.Item>
               </div>

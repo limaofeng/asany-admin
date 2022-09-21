@@ -114,7 +114,7 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
               className="mb-3"
               space="Ohc2OaZ4"
               accept=".png, .jpg, .jpeg"
-              backgroundImage="/assets/media/svg/files/blank-image.svg"
+              background="/assets/media/svg/files/blank-image.svg"
             />
           </Form.Item>
           <div className="text-muted fs-7 mb-6">

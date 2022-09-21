@@ -69,7 +69,7 @@ function ComponentForm(props: ComponentFormProps) {
               height={125}
               space="Ohc2OaZ4" // TODO: 需要通过 app 中的配置动态获取
               crop={{ height: 300, zoomable: false, aspectRatio: 1 }}
-              backgroundImage="/assets/media/svg/avatars/blank.svg"
+              background="/assets/media/svg/avatars/blank.svg"
             />
           </Form.Item>
         </Col>

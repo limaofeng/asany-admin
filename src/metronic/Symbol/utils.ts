@@ -12,6 +12,9 @@ export function useSymbolSize(size?: SymbolSize) {
     if (typeof size === 'number') {
       return `symbol-${size}px`;
     }
+    if (typeof size === 'string') {
+      return `symbol-${size}px`;
+    }
     return classnames(
       ...Object.keys(size).map((breakpoint) => `symbol-${breakpoint}-${size[breakpoint]}px`),
     );

@@ -41,6 +41,7 @@ function Avatar(props: AvatarProps, ref: any) {
   } = props;
 
   const [state, setState] = useState<'init' | 'succeed' | 'error'>('init');
+  const [imageData, setImageData] = useState<any>();
 
   const backgroundColor = useMemo(() => {
     if (!autoColor) {
@@ -69,21 +70,32 @@ function Avatar(props: AvatarProps, ref: any) {
     setState('error');
   }, []);
 
+  const url = useMemo(() => {
+    if (typeof src !== 'string') {
+      return src;
+    }
+    if (src.startsWith('https://') || src.startsWith('http://') || src.startsWith('//')) {
+      return src;
+    }
+    return process.env.STORAGE_URL + src;
+  }, [src]);
+
   useLayoutEffect(() => {
-    if (!src) {
+    if (!url) {
       setState('error');
       return;
     }
-    if (typeof src !== 'string') {
+    if (typeof url !== 'string') {
       setState('succeed');
       return;
     }
-    loadImage(src)
-      .then(() => {
+    loadImage(url)
+      .then((data) => {
+        setImageData(data);
         setState('succeed');
       })
       .catch(handleError);
-  }, [handleError, src]);
+  }, [handleError, url]);
 
   const sizeClass = useSymbolSize(props.size);
 
@@ -118,7 +130,7 @@ function Avatar(props: AvatarProps, ref: any) {
           </AvatarLable>
         )
       ) : (
-        state == 'succeed' && renderImg(src, gap, handleError)
+        state == 'succeed' && renderImg(src, gap, handleError, imageData)
       )}
       {badge &&
         React.cloneElement(badge, { className: classnames('symbol-badge', badge.props.className) })}
@@ -130,10 +142,22 @@ function isChinese(word: string) {
   return /^[\u4e00-\u9fa5]+.*$/.test(word);
 }
 
+type ImageObjectProps = {
+  src: any;
+  data: any;
+  className?: string;
+  onError?: (e: any) => void;
+};
+
+function ImageObject(props: ImageObjectProps) {
+  return <img src={props.data || props.src} className={props.className} onError={props.onError} />;
+}
+
 function renderImg(
   src: string | React.ReactNode,
   gap: number | undefined,
   onError: (e: any) => void,
+  data: any,
 ) {
   if (!src) {
     onError(new Error('SRC 为空'));
@@ -142,7 +166,15 @@ function renderImg(
   if (React.isValidElement(src)) {
     return src;
   }
-  return <img src={src as any} className={classnames({ [`p-${gap}`]: !!gap })} onError={onError} />;
+
+  return (
+    <ImageObject
+      src={src}
+      data={data}
+      className={classnames({ [`p-${gap}`]: !!gap })}
+      onError={onError}
+    />
+  );
 }
 
 const AvatarWrapper = React.forwardRef(Avatar);

@@ -117,16 +117,21 @@ function Information(props: InformationProps) {
 
   const domain = 'cn.asany';
 
-  const [updateModule, {}] = useUpdateModuleMutation();
+  const [updateModule, { loading: submitting }] = useUpdateModuleMutation();
 
   const handleUpdate = useCallback(async () => {
     const values = await form.validateFields();
-    console.log('values', values, updateModule);
+    await updateModule({
+      variables: {
+        id: module.id,
+        input: { ...values, code: domain + '.' + values.code },
+      },
+    });
     Toast.success(`模块 “${values.name}” 更新成功`, 2000, {
       placement: 'bottom-end',
       progressBar: true,
     });
-  }, [form, updateModule]);
+  }, [form, module.id, updateModule]);
 
   const handleCloseDeleteModuleConfirmModal = useCallback(() => {
     setDeleteModuleConfirmModalVisible(false);
@@ -137,7 +142,11 @@ function Information(props: InformationProps) {
   }, []);
 
   useEffect(() => {
-    form.setFieldsValue({ ...module, code: module.code?.replaceAll(domain + '.', '') });
+    form.setFieldsValue({
+      ...module,
+      code: module.code?.replaceAll(domain + '.', ''),
+      picture: module.picture?.id,
+    });
   }, [form, module]);
 
   return (
@@ -227,6 +236,7 @@ function Information(props: InformationProps) {
                     height={148}
                     space="7VE4SSrk"
                     crop={{ height: 300, zoomable: false, aspectRatio: 1 }}
+                    accept=".png, .jpg, .jpeg"
                     background={
                       <Symbol
                         autoColor={false}
@@ -239,7 +249,7 @@ function Information(props: InformationProps) {
               </div>
             </div>
           </Form>
-          <Button loading={false} onClick={handleUpdate}>
+          <Button loading={submitting} onClick={handleUpdate}>
             更新模块信息
           </Button>
         </Card.Body>

@@ -91,7 +91,7 @@ function ArticleChannelNew(props: ArticleChannelNewProps) {
                 space="orX8kLOV"
                 accept=".png, .jpg, .jpeg"
                 crop={{ height: 300, zoomable: false, aspectRatio: 1 }}
-                backgroundImage="/assets/media/svg/files/blank-image.svg"
+                background="/assets/media/svg/files/blank-image.svg"
               />
             </Form.Item>
             <div className="text-muted fs-7">

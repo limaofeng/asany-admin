@@ -91,7 +91,7 @@ export function diff<T>(lvalue: T, rvalue: T): Dictionary<T> {
   if (isEqual(lvalue, rvalue)) {
     return {};
   }
-  const keys = uniq(Object.keys(lvalue).concat(Object.keys(rvalue))).filter(
+  const keys = uniq(Object.keys(lvalue as any).concat(Object.keys(rvalue as any))).filter(
     (key) => !isEqual(lvalue[key], rvalue[key]),
   );
   const values = keys.map((key) => rvalue[key]);
@@ -193,17 +193,45 @@ export function networkSpeed(
   return fileSize(Math.min(bitrate, e.total));
 }
 
-export function loadImage(url: string): Promise<HTMLImageElement> {
+export function loadImage(url: string): Promise<string | null> {
   return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.setAttribute('crossOrigin', 'Anonymous');
-    img.onload = function () {
-      resolve(img);
-    };
-    img.onerror = function () {
-      reject('图片加载失败');
-    };
-    img.src = url;
+    if (url.startsWith(process.env.STORAGE_URL!)) {
+      const request = new XMLHttpRequest();
+      request.responseType = 'blob';
+      request.open('get', url, true);
+      const token = localStorage.getItem('credentials');
+      if (token) {
+        request.setRequestHeader('authorization', `bearer ${token}`);
+      }
+      request.onreadystatechange = () => {
+        if (request.readyState == XMLHttpRequest.DONE) {
+          if (request.status == 200) {
+            const reader = new FileReader();
+            reader.onload = function (el: any) {
+              resolve(el.target.result);
+            };
+            reader.onerror = function () {
+              reject();
+            };
+            reader.readAsDataURL(request.response);
+          } else {
+            reject();
+          }
+        }
+      };
+
+      request.send(null);
+    } else {
+      const img = new Image();
+      img.setAttribute('crossOrigin', 'Anonymous');
+      img.onload = function () {
+        resolve(null);
+      };
+      img.onerror = function () {
+        reject('图片加载失败');
+      };
+      img.src = url;
+    }
   });
 }
 

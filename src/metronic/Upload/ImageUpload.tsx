@@ -1,10 +1,13 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import classnames from 'classnames';
+import type { Accept } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
+import mime from 'mime-types';
 
 import Button from '../Button';
 import Tooltip from '../Tooltip';
+import { loadImage } from '../utils';
 
 import { ImageCropperModal } from './ImageCropper';
 import type { CropOptions } from './typings';
@@ -18,7 +21,7 @@ type ImageUploadProps = {
   className?: string;
   width?: number;
   height?: number;
-  accept?: string;
+  accept?: string | Accept;
   value?: string;
   background?: React.ReactNode;
   onChange?: (id?: string, file?: UploadFileData) => void;
@@ -42,7 +45,6 @@ function ImageUpload(props: ImageUploadProps) {
     crop = false,
     space,
     background = DEFAULT_PREVIEW_URL,
-    accept = '.png, .jpg, .jpeg',
     onChange,
   } = props;
 
@@ -74,8 +76,11 @@ function ImageUpload(props: ImageUploadProps) {
     async (file: File) => {
       const fileData = await upload(file);
       state.current.value = fileData.id;
-      state.current.preview = process.env.STORAGE_URL + `/preview/${fileData.id}`;
       state.current.imageCropperModalVisible = false;
+
+      const data = await loadImage(process.env.STORAGE_URL + `/preview/${fileData.id}`);
+      state.current.preview = data;
+
       forceRender();
       onChange && onChange(fileData.id, fileData);
     },
@@ -99,9 +104,28 @@ function ImageUpload(props: ImageUploadProps) {
     setImageCropperModalVisible(false);
   }, [setImageCropperModalVisible]);
 
+  const accept = useMemo(() => {
+    if (typeof props.accept === 'string') {
+      return props.accept.split(',').reduce((_accept, item) => {
+        let fileExtension = item.trim();
+        fileExtension = fileExtension.startsWith('.') ? fileExtension : '.' + fileExtension;
+        const key = mime.lookup(fileExtension);
+        if (!key) {
+          return _accept;
+        }
+        if (!_accept[key]) {
+          _accept[key] = [];
+        }
+        _accept[key].push(fileExtension);
+        return _accept;
+      }, {} as Accept);
+    }
+    return props.accept;
+  }, [props.accept]);
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: accept as any,
+    accept,
     maxFiles: 1,
   });
   const { role, tabIndex, onClick: browseLocalFiles, ...rootProps } = getRootProps();
@@ -111,8 +135,10 @@ function ImageUpload(props: ImageUploadProps) {
       return;
     }
     state.current.value = props.value;
-    state.current.preview = process.env.STORAGE_URL + `/preview/${props.value}`;
-    forceRender();
+    loadImage(process.env.STORAGE_URL + `/preview/${props.value}`).then((data) => {
+      state.current.preview = data;
+      forceRender();
+    });
   }, [props.value]);
 
   const handleCrop = useCallback(

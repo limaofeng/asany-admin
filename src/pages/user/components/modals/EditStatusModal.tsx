@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import Icon from '@asany/icons';
+import type { EmojiData } from 'emoji-mart';
 import { Emoji, Picker } from 'emoji-mart';
 import 'emoji-mart/css/emoji-mart.css';
 
@@ -24,9 +25,9 @@ function EditStatusModal(props: EditStatusModalProps) {
   }, [onClose]);
 
   const handleEmojiChange = useCallback(
-    (_emoji) => {
+    (_emoji: EmojiData) => {
       console.log('emoji', _emoji.id);
-      setEmoji(_emoji.id);
+      setEmoji(_emoji.id!);
       setEmojiPickerVisible(false);
     },
     [setEmojiPickerVisible],
