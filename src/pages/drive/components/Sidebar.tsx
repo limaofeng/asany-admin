@@ -241,7 +241,7 @@ function Sidebar() {
               其他
             </Menu.Item>
           </Menu.SubMenu>
-          <Menu.Separator />
+          <Menu.Separator className="my-1" />
           {/*
           <Menu.Item
             className="mb-2"
@@ -317,7 +317,7 @@ function Sidebar() {
                 ))}
               </>
             )} */}
-          <Menu.Separator />
+          <Menu.Separator className="my-1" />
           <Menu.Item
             key="quota"
             url="/drive/quota"

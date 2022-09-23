@@ -61,9 +61,8 @@ function ModuleList() {
                 <Card.Body>
                   <Symbol
                     autoColor={false}
-                    // size={}
                     labelClassName="bg-dark text-inverse-info fs-5tx"
-                    src={(item as any).pictureUrl}
+                    src={item.picture?.url}
                     alt={item.name}
                   />
                 </Card.Body>

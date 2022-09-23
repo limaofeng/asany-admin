@@ -1,6 +1,7 @@
 .drive-quota {
   padding: 0.65rem 1rem;
 }
+
 .app-drive-sidebar {
   .file-transfer-icon {
     position: absolute;
@@ -18,6 +19,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+
       .progress-circle {
         position: absolute;
         top: 0;
@@ -32,11 +34,13 @@
     .pulse {
       color: #7e8299;
       background-color: transparent !important;
+
       &:hover {
         background-color: transparent !important;
       }
     }
   }
+
   .app-sidebar-body {
     height: calc(100vh - 80px - 40px);
 
@@ -47,6 +51,7 @@
       }
     }
   }
+
   .app-sidebar-footer {
     height: 40px;
   }
@@ -65,9 +70,11 @@ $transfers_border_color: #f4f4f4;
     display: flex;
     flex-direction: row;
     border-bottom-color: $transfers_border_color;
+
     .popover-title {
       flex: 1;
     }
+
     .popover-toolbar {
       padding-right: 24px;
     }
@@ -91,9 +98,11 @@ $transfers_border_color: #f4f4f4;
     align-items: center;
     justify-content: center;
     height: 100%;
+
     img {
       height: 50%;
     }
+
     .empty-title {
       color: #858585;
     }
@@ -113,6 +122,7 @@ $transfers_border_color: #f4f4f4;
             padding-top: 16px;
             padding-bottom: 0;
           }
+
           .file-transfer-progress {
             display: none;
           }
@@ -202,45 +212,55 @@ $transfers_border_color: #f4f4f4;
 
   .nav-tabs {
     padding: 12px;
+
     .nav-item .nav-link {
       justify-content: center;
       width: 120px;
       color: #7e8299;
+
       &.active {
         color: #04c8c8;
         background-color: #dcfdfd;
       }
     }
   }
+
   .tab-content {
     .custom-scrollbar {
       height: 360px;
     }
+
     flex: 1;
   }
 }
+
 .app-drive-main {
   &.pages-starred {
-    .container-xxl > .card > .card-body .table-virtualized-scroll {
+    .container-xxl>.card>.card-body .table-virtualized-scroll {
       height: calc(100vh - 122px);
     }
   }
+
   &.pages-trash {
-    .container-xxl > .card > .card-body .table-virtualized-scroll {
+    .container-xxl>.card>.card-body .table-virtualized-scroll {
       height: calc(100vh - 197px);
     }
+
     .trash-restore {
       font-size: 14px;
       letter-spacing: 2px;
     }
   }
+
   .file-action-group {
     color: #04c8c8;
     background-color: #dcfdfd;
     border-radius: 0.475rem;
+
     .btn {
       &:not(:last-child) {
         position: relative;
+
         &::after {
           position: absolute;
           top: 20%;
@@ -252,31 +272,37 @@ $transfers_border_color: #f4f4f4;
         }
       }
     }
+
     .btn.btn-light-primary {
+
       &:hover:not(.btn-active),
       &:active,
       &:focus {
         color: #00afaf;
         background-color: inherit !important;
+
         .svg-icon svg [fill]:not(.permanent):not(g) {
           fill: #00afaf;
         }
       }
     }
   }
+
   .container-xxl {
     min-height: 100vh !important;
     padding: 0;
-    & > .card {
+
+    &>.card {
       min-height: 100%;
       border-radius: 0;
       box-shadow: none;
-      & > .card-body {
+
+      &>.card-body {
         height: 100%;
         padding-bottom: 0;
 
         .folder-path {
-          & > div {
+          &>div {
             height: 32px;
           }
         }
@@ -293,19 +319,23 @@ $transfers_border_color: #f4f4f4;
           .title-icon-container {
             width: 40px;
             height: 40px;
+
             img {
               width: 32px;
               height: 32px;
             }
+
             .starred-flag {
               top: 50% !important;
               left: 50% !important;
               color: #ffc700;
               transform: translate(-50%, -50%) !important;
+
               svg {
                 width: 1rem;
                 height: 1rem;
               }
+
               path {
                 opacity: 1;
                 fill-opacity: 1 !important;
@@ -350,10 +380,12 @@ $transfers_border_color: #f4f4f4;
                 .tab-content {
                   display: flex;
                   flex: 1;
+
                   .tab-pane.active {
                     display: flex;
                     flex: 1;
                   }
+
                   .custom-scrollbar {
                     width: 270px;
                     padding-right: 14px;
@@ -368,7 +400,8 @@ $transfers_border_color: #f4f4f4;
                 height: 134px;
                 background-color: #fff;
                 border-radius: 13px;
-                .symbol > img {
+
+                .symbol>img {
                   width: auto;
                   height: 134px;
                   border-radius: 0;
@@ -378,6 +411,7 @@ $transfers_border_color: #f4f4f4;
               .persons-with-authority ul li {
                 &:not(:last-child) {
                   position: relative;
+
                   &::after {
                     position: absolute;
                     top: 10%;

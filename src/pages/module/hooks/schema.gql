@@ -19,16 +19,15 @@ query model($id: ID) {
       system
       type {
         id
-        code
-      }
-      name
-      description
-      fieldType {
-        id
         name
         family
         description
         graphQLType
+      }
+      name
+      description
+      metadata {
+        databaseColumnName
       }
     }
   }
@@ -40,6 +39,14 @@ query modelFiledTypes {
     name
     description
     family
+  }
+}
+
+query modelFields($model: ID!, $filter: ModelFieldFilter, $limit: Int) {
+  listFields: modelFields(model: $model, filter: $filter, limit: $limit) {
+    id
+    name
+    description
   }
 }
 
@@ -55,4 +62,8 @@ mutation addModelField($modelId: ID!, $input: ModelFieldInput!) {
     id
     name
   }
+}
+
+mutation removeModelField($modelId: ID!, $fieldId: ID!) {
+  removeModelField(modelId: $modelId, fieldId: $fieldId)
 }

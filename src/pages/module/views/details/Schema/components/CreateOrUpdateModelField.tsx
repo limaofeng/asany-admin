@@ -107,6 +107,8 @@ function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps
   const { mode, visible, model, onClose, fieldTypeFamilies } = props;
 
   const form = Form.useForm();
+  const [fieldType, setFieldType] = useState(props.fieldType);
+
   const [createField, { loading }] = useAddModelFieldMutation({
     refetchQueries() {
       return [
@@ -120,6 +122,11 @@ function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps
     },
   });
 
+  const handleClose = useCallback(() => {
+    onClose();
+    form.resetFields();
+  }, [form, onClose]);
+
   const handleSave = useCallback(async () => {
     const {
       allowMultipleValues: list = false,
@@ -127,36 +134,43 @@ function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps
       unique = false,
       ...values
     } = await form.validateFields();
-    if (!values.metadata.databaseColumnName) {
-      values.metadata.databaseColumnName = values.code;
+    if (!values.databaseColumnName) {
+      values.databaseColumnName = values.toUpperCase();
     }
-    console.log('xxx', model.id, { ...values, required, list, unique });
-    if (mode == 'new') {
-      await createField({
-        variables: { modelId: model.id, input: { ...values } },
-      });
-      Toast.success(`字段 “${values.name}” 新增成功`, 2000, {
+    try {
+      if (mode == 'new') {
+        await createField({
+          variables: {
+            modelId: model.id,
+            input: { ...values, required, list, unique, type: fieldType!.id },
+          },
+        });
+        Toast.success(`字段 “${values.name}” 新增成功`, 2000, {
+          placement: 'bottom-end',
+          progressBar: true,
+        });
+        handleClose();
+      } else {
+      }
+    } catch (e: any) {
+      Toast.success(e.message, 2000, {
         placement: 'bottom-end',
         progressBar: true,
       });
-    } else {
     }
-  }, [createField, form, mode, model.id]);
-
-  const [fieldType, setFieldType] = useState(props.fieldType);
+  }, [createField, fieldType, form, handleClose, mode, model.id]);
 
   useEffect(() => {
     setFieldType(props.fieldType);
   }, [props.fieldType]);
 
   useEffect(() => {
-    props.data && form.setFieldsValue({ ...props.data });
+    props.data &&
+      form.setFieldsValue({
+        ...props.data,
+        databaseColumnName: props.data.metadata?.databaseColumnName,
+      });
   }, [form, props.data]);
-
-  const handleClose = useCallback(() => {
-    onClose();
-    form.resetFields();
-  }, [form, onClose]);
 
   return (
     <Modal
@@ -185,7 +199,7 @@ function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps
       </Modal.Header>
       <Modal.Body>
         {!!fieldType?.family &&
-          React.createElement(allFieldForms[fieldType.family], { form, mode })}
+          React.createElement(allFieldForms[fieldType.family], { form, mode, model })}
       </Modal.Body>
     </Modal>
   );

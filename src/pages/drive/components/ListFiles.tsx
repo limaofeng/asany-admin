@@ -504,7 +504,7 @@ function ListFiles(props: ListFilesProps) {
           <Card.Toolbar>
             <div
               className={classnames('d-flex justify-content-end', {
-                'file-action-group px-3 gap-2': ['row', 'multi-row'].includes(row_selection_state),
+                'file-action-group gap-2': ['row', 'multi-row'].includes(row_selection_state),
               })}
             >
               {row_selection_state == 'no_rows' && (

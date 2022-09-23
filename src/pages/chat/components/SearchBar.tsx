@@ -23,16 +23,21 @@ function SearchBar(props: SearchBarProps) {
   );
 
   return (
-    <div className={classnames('cve-searchbar ps-6 pe-6 d-flex align-items-center', className)}>
+    <div
+      className={classnames(
+        'cve-searchbar ps-6 pe-6 d-flex justify-content-sm-between align-items-center',
+        className,
+      )}
+    >
       <Input.Search
         solid
         size="lg"
-        boxClassName="flex-row-fluid"
+        boxClassName="flex-row-fluid me-2"
         value={value}
         onChange={handleChange}
         placeholder="搜索..."
       />
-      <a className={classnames('cve-searchbar-actions ms-4')}>
+      <a className={classnames('cve-searchbar-actions')}>
         <Icon className={classnames('svg-icon-2x svg-icon-dark')} name="Duotune/arr087" />
       </a>
     </div>

@@ -7,13 +7,18 @@ import Sortable from '@asany/sortable';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import classnames from 'classnames';
 
+import {
+  ModelDocument,
+  useModelFiledTypesQuery,
+  useRemoveModelFieldMutation,
+} from '../../../../hooks';
+
 import ModelField from './ModelField';
 import ModelFieldType, { ModelFieldTypeGroup } from './ModelFieldType';
 import CreateOrUpdateModelField from './CreateOrUpdateModelField';
 
-import { Switch } from '@/metronic';
+import { Modal, Switch, Toast } from '@/metronic';
 import type { ModelField as IModelField, ModelFiledType as IModelFiledType, Model } from '@/types';
-import { useModelFiledTypesQuery } from '@/pages/module/hooks';
 
 type ModelFieldsManagementProps = {
   model: Model;
@@ -112,9 +117,53 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
 
   const handleEditFieldModal = useCallback((field: IModelField) => {
     setState((prevState) => {
-      return { ...prevState, mode: 'edit', data: field, visible: true, fieldType: field.fieldType };
+      return { ...prevState, mode: 'edit', data: field, visible: true, fieldType: field.type };
     });
   }, []);
+
+  const [removeField] = useRemoveModelFieldMutation({
+    refetchQueries: [
+      {
+        query: ModelDocument,
+        variables: {
+          id: model.id,
+        },
+        fetchPolicy: 'network-only',
+      },
+    ],
+  });
+
+  const handleDelete = useCallback(
+    async (field: IModelField) => {
+      const result = await Modal.confirm({
+        title: '删除字段',
+        content: (
+          <>
+            <p className="tip-confirm">
+              您确定要删除字段 <b>{field.name}</b>
+            </p>
+            <p>删除后，存储在此字段中的数据将丢失</p>
+          </>
+        ),
+        okClassName: 'btn-danger',
+        okText: '删除',
+      });
+      if (!result.isConfirmed) {
+        return;
+      }
+      await removeField({
+        variables: {
+          modelId: model.id,
+          fieldId: field.id,
+        },
+      });
+      Toast.success(`字段 “${field.name}” 已成功`, 2000, {
+        placement: 'bottom-end',
+        progressBar: true,
+      });
+    },
+    [model.id, removeField],
+  );
 
   return (
     <div className="model-fields-management">
@@ -146,6 +195,7 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
           items={customFields}
           itemRender={React.createElement(ModelField, {
             onClickEdit: handleEditFieldModal,
+            onDelete: handleDelete,
           } as any)}
           preview={{
             render: dragPreview(React.createElement(ModelField), {

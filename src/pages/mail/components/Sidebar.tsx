@@ -60,10 +60,10 @@ function Sidebar() {
       const inbox = DEFAULT_MAILBOXES.INBOX;
       const outbox = DEFAULT_MAILBOXES.Outbox;
       return {
-        inbox: { ...inbox, title: inbox.name, key: inbox.name.toLowerCase() },
-        outbox: { ...outbox, title: outbox.name, key: outbox.name.toLowerCase() },
+        inbox: { ...inbox, title: inbox.name, key: inbox.id.toLowerCase() },
+        outbox: { ...outbox, title: outbox.name, key: outbox.id.toLowerCase() },
         private: DEFAULT_MAILBOXES_ALL.filter((item) => !['Outbox', 'INBOX'].includes(item.id)).map(
-          (item) => ({ ...item, title: item.name, key: item.name.toLowerCase(), count: 0 }),
+          (item) => ({ ...item, title: item.name, key: item.id.toLowerCase(), count: 0 }),
         ),
         smart: [],
         custom: [],

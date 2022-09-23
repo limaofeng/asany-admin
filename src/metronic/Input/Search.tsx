@@ -39,19 +39,24 @@ function Search({ size, className, onSearch, ...props }: SearchProps) {
   );
 
   return (
-    <Input
-      prefix={
-        <Icon
-          name="Duotune/gen021"
-          className={classnames('position-absolute', sizeClass.iconClassName)}
-        />
-      }
-      className={classnames(className, sizeClass.inputClassName)}
-      boxClassName={classnames(sizeClass.boxClassName, props.boxClassName)}
-      size={size}
-      onChange={handleSearch}
-      {...props}
-    />
+    <div
+      className={classnames(
+        'd-flex align-items-center position-relative',
+        sizeClass.boxClassName,
+        props.boxClassName,
+      )}
+    >
+      <Icon
+        name="Duotune/gen021"
+        className={classnames('position-absolute', sizeClass.iconClassName)}
+      />
+      <Input
+        className={classnames(className, sizeClass.inputClassName)}
+        size={size}
+        onChange={handleSearch}
+        {...props}
+      />
+    </div>
   );
 }
 

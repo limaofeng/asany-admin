@@ -99,7 +99,12 @@
   height: 100%;
 }
 
+.form-check.form-check-custom {
+  padding-left: 0;
+}
+
 .form-control,
+.form-check,
 .form-select:not(.select2-selection) {
   min-height: 32px;
   padding: 4px 11px;
@@ -138,6 +143,35 @@
     flex-direction: row;
     align-items: self-start;
     padding: 0 0.5rem;
+
+    .row>.form-label,
+    .row>.asany-form-item-control-wrapper {
+      padding: 0;
+      margin: 0;
+    }
+
+    .asany-form-item-row {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .form-label {
+        width: unset;
+      }
+
+      .asany-form-item-control-wrapper {
+        width: auto;
+        display: flex;
+        align-items: center;
+
+        .asany-form-control-input {
+          .asany-form-control-input-content {
+            display: flex;
+          }
+        }
+      }
+    }
 
     .form-label {
       flex: none;

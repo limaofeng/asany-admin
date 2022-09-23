@@ -34,7 +34,7 @@ export function flowableToReactflow(source: ProcessDefinition) {
       flowdata.nodes.push({
         id: shape.resourceId,
         type: shape.stencil.id,
-        dragHandle: '.react-flow__node-header',
+        // dragHandle: '.react-flow__node-header',
         data: {
           label: shape.properties.name,
         },

@@ -89,7 +89,7 @@ function DatePicker(props: DatePickerProps) {
           autoUpdateInput: false,
           singleDatePicker: true,
           showDropdowns: true,
-          drops: 'up',
+          drops: 'auto',
           locale: { format, ...LOCALE },
         },
         handleChange,

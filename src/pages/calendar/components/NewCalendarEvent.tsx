@@ -9,7 +9,7 @@ import { useAddCalendarEventMutation } from '../hooks';
 
 import CalendarPicker from './CalendarPicker';
 
-import type { OptionData } from '@/metronic';
+import type { OptionData } from '@/metronic/typings';
 import { Button, Checkbox, DatePicker, Form, Input, Select } from '@/metronic';
 import type { CalendarEvent, CalendarSet } from '@/types';
 
@@ -219,7 +219,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
   }, [calendarSet, calendarSets, form]);
 
   const handleSubmit = useCallback(
-    async ({ calendar, alert, ...values }) => {
+    async ({ calendar, alert, ...values }: any) => {
       const remind = alertOptions.find((item) => item.value == alert)?.remind;
       const { data } = await addCalendarEvent({
         variables: {
@@ -246,19 +246,18 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
           onFinish={handleSubmit}
           form={form}
           onKeyUp={handleEsc as any}
-          size="sm"
           layout="horizontal"
           initialValues={formInitialValues.current}
         >
           <ul>
             <li>
               <Form.Item name="title" noStyle>
-                <Input size="sm" solid placeholder="新建日程" />
+                <Input solid placeholder="新建日程" />
               </Form.Item>
             </li>
             <li>
               <Form.Item name="allDay" valuePropName="checked" label="全天">
-                <Checkbox size="sm" />
+                <Checkbox />
               </Form.Item>
             </li>
             <li>
@@ -267,7 +266,6 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
                   <Form.Item name="starts" label="开始时间">
                     <DatePicker
                       solid
-                      size="sm"
                       timePicker={!form.getFieldValue('allDay')}
                       format={form.getFieldValue('allDay') ? 'YYYY-MM-DD' : 'YYYY-MM-DD A HH:mm'}
                     />
@@ -281,7 +279,6 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
                   <Form.Item name="ends" label="结束时间">
                     <DatePicker
                       solid
-                      size="sm"
                       minDate={form.getFieldValue('starts')}
                       timePicker={!form.getFieldValue('allDay')}
                       format={form.getFieldValue('allDay') ? 'YYYY-MM-DD' : 'YYYY-MM-DD A HH:mm'}
@@ -315,7 +312,6 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
                   return (
                     <Form.Item name="alert" label="提醒">
                       <Select
-                        size="sm"
                         solid
                         options={alertOptions.filter((opt) =>
                           opt.scope.includes(form.getFieldValue('allDay') ? 'all-day' : 'general'),

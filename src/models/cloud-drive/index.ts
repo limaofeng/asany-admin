@@ -296,9 +296,9 @@ export default function useCloudDriveModel() {
         folder: string;
       },
     ) => {
-      console.log('upload files', files);
+      console.log('upload files', files, state.current.cloudDrive);
 
-      const space = '292eb203e6444c2287b545d8afbc7cee';
+      const space = state.current.cloudDrive!.space;
       const folder = options.folder;
 
       const _uploadFiles = files.map((file) => {

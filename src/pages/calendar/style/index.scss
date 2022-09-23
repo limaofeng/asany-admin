@@ -101,7 +101,7 @@
           align-items: center;
           min-height: 32px;
           color: #3f4254 !important;
-          .fv-row {
+          .asany-form-item-row {
             display: flex;
             flex: 1;
             flex-direction: row;
@@ -117,7 +117,7 @@
               }
             }
           }
-          input {
+          input:not(.form-check-input) {
             height: 34px;
             font-weight: normal;
             font-size: inherit;

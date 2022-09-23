@@ -149,6 +149,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onEdgeClick={props.onEdgeClick}
+        onNodeClick={props.onNodeClick}
         onNodesDelete={props.onNodesDelete}
         onEdgesDelete={props.onEdgesDelete}
         onNodeDragStop={handleNodeDragStop}
