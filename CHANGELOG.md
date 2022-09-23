@@ -1,3 +1,22 @@
+## [0.2.35](https://github.com/limaofeng/asany-admin/compare/v0.2.34...v0.2.35) (2022-09-23)
+
+### Bug Fixes
+
+- 二级侧边栏，展开与收起效果优化 ([69b021f](https://github.com/limaofeng/asany-admin/commit/69b021f45d052a2aa1a4893ecb25aac9b4fc6941))
+- 优化 MicroApp 二级折叠效果 ([a036166](https://github.com/limaofeng/asany-admin/commit/a03616663cc79a765e9e87ecafc69d5753916591))
+
+### Features
+
+- 安全的图片请求方式 ([482933b](https://github.com/limaofeng/asany-admin/commit/482933bc9e73ac9fe4c928998c138b8461f69b07))
+- 实体新增字段删除（字符串类型） ([9dc1fe0](https://github.com/limaofeng/asany-admin/commit/9dc1fe0ab64210d3de771cf96b4c72f15e97f911))
+- 添加删除与更新模块逻辑 ([fd4b0c3](https://github.com/limaofeng/asany-admin/commit/fd4b0c3db8c662da4774c8d5e16464de92ed9592))
+- 自定义模块列表页 ([9c6ac6f](https://github.com/limaofeng/asany-admin/commit/9c6ac6fbdcbc0d82e9e1bc7c6fd5d498ed727f35))
+- 自定义模块添加详情页面 ([696461b](https://github.com/limaofeng/asany-admin/commit/696461b11fb760565384c85ee7fad9e0388ed16f))
+
+### Performance Improvements
+
+- 启用 react-dev-inspector 插件 ([46ac880](https://github.com/limaofeng/asany-admin/commit/46ac880c5b4124e58f7a803b86ecbc108f200446))
+
 ## [0.2.34](https://github.com/limaofeng/asany-admin/compare/v0.2.33...v0.2.34) (2022-09-14)
 
 ### Bug Fixes
