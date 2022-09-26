@@ -193,8 +193,11 @@ function FileDetails(props: FileDetailsProps) {
     if (type === 'many_file_details') {
       return '多个文件';
     }
+    if (currentFolder?.isRootFolder) {
+      return '请选择一个文件';
+    }
     return currentFolder?.name || '';
-  }, [currentFolder?.name, files, type]);
+  }, [currentFolder?.isRootFolder, currentFolder?.name, files, type]);
 
   const [title, suffix] = useMemo(() => {
     const index = titleFull.lastIndexOf('.');
