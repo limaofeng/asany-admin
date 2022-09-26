@@ -10,16 +10,18 @@ type FieldAdvancedProps = {
 function FieldAdvanced(props: FieldAdvancedProps) {
   const { model, data, mode } = props;
   return (
-    <div className="field-advanced">
-      <div className="field-options__name text-dark fs-base fw-semibold">初始化</div>
-      <div className="field-advanced__list d-flex flex-column">
-        <Form.Item
-          valuePropName="checked"
-          name="required"
-          help={<div style={{ marginLeft: 26 }}>使用此值预填充表单输入</div>}
-        >
-          <Checkbox solid label="设置初始值" />
-        </Form.Item>
+    <>
+      <div className="field-advanced">
+        <div className="field-options__name text-dark fs-base fw-semibold">初始化</div>
+        <div className="field-advanced__list d-flex flex-column">
+          <Form.Item
+            valuePropName="checked"
+            name="required"
+            help={<div style={{ marginLeft: 26 }}>使用此值预填充表单输入</div>}
+          >
+            <Checkbox solid label="设置初始值" />
+          </Form.Item>
+        </div>
       </div>
       <div className="field-advanced">
         <div className="field-options__name text-dark fs-base fw-semibold">可见性</div>
@@ -68,11 +70,11 @@ function FieldAdvanced(props: FieldAdvancedProps) {
               },
             ]}
           >
-            <Input solid style={{ textTransform: 'uppercase' }} />
+            <Input solid boxClassName="w-75" style={{ textTransform: 'uppercase' }} />
           </Form.Item>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -36,7 +36,7 @@ function General(props: GeneralProps) {
           },
         ]}
       >
-        <Input solid />
+        <Input solid boxClassName="w-75" />
       </Form.Item>
       <Form.Item
         required={false}
@@ -66,7 +66,7 @@ function General(props: GeneralProps) {
           },
         ]}
       >
-        <Input solid />
+        <Input solid boxClassName="w-75" />
       </Form.Item>
       <Form.Item
         name="description"
@@ -74,7 +74,7 @@ function General(props: GeneralProps) {
         help="为内容编辑者和 API 用户显示提示"
         requiredMark="optional"
       >
-        <Input.TextArea solid autoSize={{ maxRows: 4, minRows: 2 }} />
+        <Input.TextArea solid className="w-75" autoSize={{ maxRows: 4, minRows: 2 }} />
       </Form.Item>
     </>
   );

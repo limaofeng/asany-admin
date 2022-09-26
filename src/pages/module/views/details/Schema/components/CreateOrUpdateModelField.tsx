@@ -163,11 +163,16 @@ function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps
             input: { ...values, required, list, unique, type: fieldType!.id },
           },
         });
-        Toast.success(`字段 “${values.name}” 新增成功`, 2000, {
-          placement: 'bottom-end',
-          progressBar: true,
-        });
-        handleClose();
+        Toast.success(
+          <>
+            字段 “<b>{values.name}</b>” 新增成功
+          </>,
+          2000,
+          {
+            placement: 'bottom-end',
+            progressBar: true,
+          },
+        );
       } else {
         console.log('update field:', {
           modelId: model.id,
@@ -180,11 +185,18 @@ function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps
             input: { ...values, required, list, unique, type: fieldType!.id },
           },
         });
-        Toast.success(`字段 “${values.name}” 新增修改成功`, 2000, {
-          placement: 'bottom-end',
-          progressBar: true,
-        });
+        Toast.success(
+          <>
+            字段 “<b>{values.name}</b>” 修改成功
+          </>,
+          2000,
+          {
+            placement: 'bottom-end',
+            progressBar: true,
+          },
+        );
       }
+      handleClose();
     } catch (e: any) {
       Toast.error(e.message, 2000, {
         placement: 'bottom-end',

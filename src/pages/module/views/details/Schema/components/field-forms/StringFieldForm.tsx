@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react';
 
-import { pinyin } from 'pinyin-pro';
 import classnames from 'classnames';
 
 import General from '../form-widgets/General';
 import FieldOptions from '../form-widgets/FieldOptions';
 import FieldAdvanced from '../form-widgets/FieldAdvanced';
+import useValuesChange from '../hooks/useValuesChange';
 
 import { Button, Checkbox, Form } from '@/metronic';
 import type { FormInstance } from '@/metronic/typings';
@@ -19,7 +19,7 @@ type StringFieldFormProps = {
 };
 
 function StringFieldForm(props: StringFieldFormProps) {
-  const { form, mode } = props;
+  const { form, model, mode, data } = props;
 
   const [activeTabKey, setActiveTabKey] = useState('settings');
 
@@ -30,30 +30,7 @@ function StringFieldForm(props: StringFieldFormProps) {
     [],
   );
 
-  const [codeLinkageable, setCodeLinkageable] = useState(true);
-  const [dbColumnNameLinkageable, setDbColumnNameLinkageable] = useState(true);
-
-  const handleValuesChange = useCallback(
-    (changedValues: any) => {
-      if (Object.hasOwn(changedValues, 'code')) {
-        setCodeLinkageable(false);
-      }
-      if (Object.hasOwn(changedValues, 'databaseColumnName')) {
-        setDbColumnNameLinkageable(false);
-      }
-      if (Object.hasOwn(changedValues, 'name') && codeLinkageable) {
-        const pyCode = pinyin(changedValues.name, { toneType: 'none', type: 'array' }).join('');
-        form.setFieldValue('code', pyCode);
-        if (dbColumnNameLinkageable) {
-          form.setFieldValue('databaseColumnName', pyCode.toUpperCase());
-        }
-      }
-      if (Object.hasOwn(changedValues, 'code') && dbColumnNameLinkageable) {
-        form.setFieldValue('databaseColumnName', changedValues.code.toUpperCase());
-      }
-    },
-    [codeLinkageable, dbColumnNameLinkageable, form],
-  );
+  const handleValuesChange = useValuesChange(form, mode);
 
   return (
     <Form form={form} onValuesChange={handleValuesChange}>
@@ -91,8 +68,8 @@ function StringFieldForm(props: StringFieldFormProps) {
           'd-none': activeTabKey != 'settings',
         })}
       >
-        <General model={props.model} mode={mode} data={props.data} />
-        <FieldOptions model={props.model} mode={mode} data={props.data} />
+        <General model={model} mode={mode} data={data} />
+        <FieldOptions model={model} mode={mode} data={data} />
       </div>
       <div className={classnames('modal-tabpane', { 'd-none': activeTabKey != 'validations' })}>
         <div className="field-validations">
@@ -137,8 +114,12 @@ function StringFieldForm(props: StringFieldFormProps) {
           </div>
         </div>
       </div>
-      <div className={classnames('modal-tabpane', { 'd-none': activeTabKey != 'advanced' })}>
-        <FieldAdvanced model={props.model} mode={mode} data={props.data} />
+      <div
+        className={classnames('modal-tabpane d-flex flex-column gap-6', {
+          'd-none': activeTabKey != 'advanced',
+        })}
+      >
+        <FieldAdvanced model={model} mode={mode} data={data} />
       </div>
     </Form>
   );

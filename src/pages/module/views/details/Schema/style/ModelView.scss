@@ -89,6 +89,7 @@
         .system-fields {
           .model-field .field-item-wrapper {
             background-color: var(--kt-light);
+
             .field-item-drag-handle {
               opacity: 0;
               cursor: default;
@@ -105,7 +106,7 @@
             .field-item-content__labels {
               .badge {
                 color: var(--kt-info-inverse) !important;
-                background-color: rgba(var(--kt-dark-rgb), .45)!important;
+                background-color: rgba(var(--kt-dark-rgb), .45) !important;
               }
             }
 
@@ -540,7 +541,7 @@
   .field-options,
   .field-validations {
     &__name {
-      margin-bottom: 12px;
+      margin-bottom: 4px;
     }
 
     .fv-control-wrapper {
@@ -669,5 +670,5 @@
 }
 
 .modal-tabpane {
-  min-height: 300px;
+  min-height: 400px;
 }

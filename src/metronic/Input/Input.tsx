@@ -139,6 +139,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
       className={classnames(
         'form-control',
         className,
+        boxClassName,
         {
           [`form-control-${size}`]: !!size,
           'form-control-solid': solid,

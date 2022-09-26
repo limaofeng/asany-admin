@@ -7,10 +7,11 @@ type FieldOptionsProps = {
   data?: ModelField;
   model: Model;
   mode: 'new' | 'edit';
+  isTitle?: boolean;
 };
 
 function FieldOptions(props: FieldOptionsProps) {
-  const { mode } = props;
+  const { mode /*isTitle = true*/ } = props;
   return (
     <div className="field-options">
       <div className="field-options__name text-dark fs-base fw-semibold">字段选项</div>

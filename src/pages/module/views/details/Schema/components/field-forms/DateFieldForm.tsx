@@ -2,15 +2,24 @@ import { useCallback, useState } from 'react';
 
 import classnames from 'classnames';
 
-import { Button, Checkbox, Form, Input } from '@/metronic';
+import FieldAdvanced from '../form-widgets/FieldAdvanced';
+import FieldOptions from '../form-widgets/FieldOptions';
+import General from '../form-widgets/General';
+import useValuesChange from '../hooks/useValuesChange';
+
+import { Button, Checkbox, Form } from '@/metronic';
 import type { FormInstance } from '@/metronic/typings';
+import type { Model, ModelField } from '@/types';
 
 type DateFieldFormProps = {
+  data?: ModelField;
+  model: Model;
   form: FormInstance<any>;
+  mode: 'new' | 'edit';
 };
 
 function DateFieldForm(props: DateFieldFormProps) {
-  const { form } = props;
+  const { form, model, mode, data } = props;
 
   const [activeTabKey, setActiveTabKey] = useState('settings');
 
@@ -21,8 +30,10 @@ function DateFieldForm(props: DateFieldFormProps) {
     [],
   );
 
+  const handleValuesChange = useValuesChange(form, mode);
+
   return (
-    <Form form={form}>
+    <Form form={form} onValuesChange={handleValuesChange}>
       <div className="mb-5">
         <Button
           color={activeTabKey != 'settings' && 'gray-700'}
@@ -57,51 +68,8 @@ function DateFieldForm(props: DateFieldFormProps) {
           'd-none': activeTabKey != 'settings',
         })}
       >
-        <Form.Item
-          required={false}
-          name="name"
-          label="显示名称"
-          help="配置模型时显示的名称, 通常为中文"
-          rules={[{ required: true, message: '显示名称不能为空' }]}
-        >
-          <Input solid />
-        </Form.Item>
-        <Form.Item
-          required={false}
-          name="code"
-          label="编码"
-          help="用于通过 API 访问此模型的 ID, 不能为中文"
-          rules={[{ required: true, message: '编码不能为空' }]}
-        >
-          <Input solid />
-        </Form.Item>
-        <Form.Item
-          name="description"
-          label="描述"
-          help="为内容编辑者和 API 用户显示提示"
-          requiredMark="optional"
-        >
-          <Input.TextArea solid autoSize={{ maxRows: 4, minRows: 2 }} />
-        </Form.Item>
-        <div className="field-options">
-          <div className="field-options__name text-dark fs-base fw-semibold">字段选项</div>
-          <div className="field-options__list d-flex flex-column">
-            <Form.Item
-              valuePropName="checked"
-              name="useTitleField"
-              help={<div style={{ marginLeft: 26 }}>在关系中显示此字段的值而不是 ID</div>}
-            >
-              <Checkbox solid label="用作标题字段" />
-            </Form.Item>
-            <Form.Item
-              valuePropName="checked"
-              name="allowMultipleValues"
-              help={<div style={{ marginLeft: 26 }}>存储值列表而不是单个值</div>}
-            >
-              <Checkbox solid label="允许多个值" />
-            </Form.Item>
-          </div>
-        </div>
+        <General model={model} mode={mode} data={data} />
+        <FieldOptions isTitle={false} model={model} mode={mode} data={data} />
       </div>
       <div className={classnames('modal-tabpane', { 'd-none': activeTabKey != 'validations' })}>
         <div className="field-validations">
@@ -146,39 +114,12 @@ function DateFieldForm(props: DateFieldFormProps) {
           </div>
         </div>
       </div>
-      <div className={classnames('modal-tabpane', { 'd-none': activeTabKey != 'advanced' })}>
-        <div className="field-advanced">
-          <div className="field-options__name text-dark fs-base fw-semibold">初始化</div>
-          <div className="field-advanced__list d-flex flex-column">
-            <Form.Item
-              valuePropName="checked"
-              name="required"
-              help={<div style={{ marginLeft: 26 }}>使用此值预填充表单输入</div>}
-            >
-              <Checkbox solid label="设置初始值" />
-            </Form.Item>
-          </div>
-          <div className="field-advanced">
-            <div className="field-options__name text-dark fs-base fw-semibold">可见性</div>
-            <div className="field-advanced__list d-flex flex-column">
-              <Form.Item
-                valuePropName="checked"
-                name="required"
-                help={<div style={{ marginLeft: 26 }}>使用此值预填充表单输入</div>}
-              >
-                <Checkbox solid label="设置初始值" />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        {/* <Form.Item
-          className="mb-5"
-          name={['metadata', 'databaseTableName']}
-          label="表名"
-          help="映射到数据库中的表名"
-        >
-          <Input solid />
-        </Form.Item> */}
+      <div
+        className={classnames('modal-tabpane  d-flex flex-column gap-6', {
+          'd-none': activeTabKey != 'advanced',
+        })}
+      >
+        <FieldAdvanced model={model} mode={mode} data={data} />
       </div>
     </Form>
   );
