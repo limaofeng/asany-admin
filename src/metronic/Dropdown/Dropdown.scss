@@ -1,11 +1,23 @@
 .menu-state-bg-light-primary.menu.menu-sub-dropdown {
+
+  .menu-item .menu-link .menu-icon {
+    margin-left: -0.5rem;
+  }
+
   .actions-delete.menu-item:not(.here) {
     .menu-link:hover:not(.disabled):not(.active):not(.here) {
       background-color: #fff5f8;
       border-color: #fff5f8;
       color: #f1416c;
+
       .menu-title {
         color: #f1416c;
+      }
+
+      .menu-icon {
+        svg {
+          color: #f1416c;
+        }
       }
     }
   }
