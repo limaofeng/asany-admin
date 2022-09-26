@@ -7,6 +7,12 @@ query schema($module: ID!) {
   }
 }
 
+query models($moduleId: ID!, $filter: ModelFilter, $limit: Int) {
+  models(module: $moduleId, filter: $filter, limit: $limit) {
+    id
+  }
+}
+
 query model($id: ID) {
   model(id: $id) {
     id

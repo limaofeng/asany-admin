@@ -46,6 +46,14 @@ function ModuleSchema(props: ModuleSchemaProps) {
 
   const { baseUrl = '' } = location.state;
 
+  const handleCreateModelSuccess = useCallback(
+    (model: Model) => {
+      handleCloseCreateModel();
+      history.push(`${baseUrl}/schema/models/${model.id}`);
+    },
+    [baseUrl, handleCloseCreateModel, history],
+  );
+
   const handleClickModel = useCallback(
     (m: Model) => () => {
       history.push(`${baseUrl}/schema/models/${m.id}`);
@@ -137,7 +145,12 @@ function ModuleSchema(props: ModuleSchemaProps) {
           </OverlayScrollbarsComponent>
         </div>
       </SecondarySidebar>
-      <CreateModel visible={visibleCreateModel} onClose={handleCloseCreateModel} />
+      <CreateModel
+        module={module}
+        onSuccess={handleCreateModelSuccess}
+        visible={visibleCreateModel}
+        onClose={handleCloseCreateModel}
+      />
       {children}
     </>
   );
