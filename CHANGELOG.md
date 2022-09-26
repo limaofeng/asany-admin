@@ -1,3 +1,9 @@
+## [0.2.36](https://github.com/limaofeng/asany-admin/compare/v0.2.35...v0.2.36) (2022-09-26)
+
+### Features
+
+- 添加字段更新逻辑 ([2170af8](https://github.com/limaofeng/asany-admin/commit/2170af8c60116bcdbd21ead06616259b45bcf971))
+
 ## [0.2.35](https://github.com/limaofeng/asany-admin/compare/v0.2.34...v0.2.35) (2022-09-23)
 
 ### Bug Fixes
