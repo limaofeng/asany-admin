@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import React from 'react';
 
 import type { ISortableItem, SortableChangeEvent } from '@asany/sortable';
@@ -16,9 +16,11 @@ import {
 import ModelField from './ModelField';
 import ModelFieldType, { ModelFieldTypeGroup } from './ModelFieldType';
 import CreateOrUpdateModelField from './CreateOrUpdateModelField';
+import NoFields from './NoFields';
 
 import { Modal, Switch, Toast } from '@/metronic';
 import type { ModelField as IModelField, ModelFiledType as IModelFiledType, Model } from '@/types';
+import { delay } from '@/utils';
 
 type ModelFieldsManagementProps = {
   model: Model;
@@ -121,6 +123,7 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
     });
   }, []);
 
+  const deleting = useRef(false);
   const [removeField] = useRemoveModelFieldMutation({
     refetchQueries: [
       {
@@ -133,37 +136,65 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
     ],
   });
 
-  const handleDelete = useCallback(
-    async (field: IModelField) => {
-      const result = await Modal.confirm({
-        title: '删除字段',
-        content: (
-          <>
-            <p className="tip-confirm">
-              您确定要删除字段 <b>{field.name}</b>
-            </p>
-            <p>删除后，存储在此字段中的数据将丢失</p>
-          </>
-        ),
-        okClassName: 'btn-danger',
-        okText: '删除',
-      });
-      if (!result.isConfirmed) {
-        return;
-      }
-      await removeField({
-        variables: {
-          modelId: model.id,
-          fieldId: field.id,
-        },
-      });
-      Toast.success(`字段 “${field.name}” 已成功`, 2000, {
-        placement: 'bottom-end',
-        progressBar: true,
-      });
-    },
-    [model.id, removeField],
-  );
+  const temp = useRef({ removeField, model });
+  temp.current.removeField = removeField;
+  temp.current.model = model;
+
+  const handleDelete = useCallback(async (field: IModelField) => {
+    const modelId = temp.current.model.id;
+    const _removeField = temp.current.removeField;
+    const result = await Modal.confirm({
+      title: '删除字段',
+      content: (
+        <>
+          <p className="tip-confirm">
+            您确定要删除字段 <b>{field.name}</b>
+          </p>
+          <p>删除后，存储在此字段中的数据将丢失</p>
+        </>
+      ),
+      okClassName: 'btn-danger',
+      okText: '删除',
+      allowOutsideClick: () => {
+        return !deleting.current;
+      },
+      preConfirm: async () => {
+        deleting.current = true;
+        try {
+          const okButton = document.querySelector('.swal2-confirm')!;
+          okButton.textContent = '删除中...';
+          const spinner = document.createElement('span');
+          spinner.classList.add('spinner-border-sm', 'ms-2', 'spinner-border', 'align-middle');
+          okButton.appendChild(spinner);
+          console.log('model.id', modelId);
+          const _result = await delay(
+            _removeField({
+              variables: {
+                modelId,
+                fieldId: field.id,
+              },
+            }),
+            350,
+          );
+          console.log(_result);
+        } catch (e: any) {
+          Toast.error(e.message, 2000, {
+            placement: 'bottom-end',
+            progressBar: true,
+          });
+        } finally {
+          deleting.current = false;
+        }
+      },
+    });
+    if (!result.isConfirmed) {
+      return;
+    }
+    Toast.success(`字段 “${field.name}” 已删除`, 2000, {
+      placement: 'bottom-end',
+      progressBar: true,
+    });
+  }, []);
 
   return (
     <div className="model-fields-management">
@@ -204,6 +235,7 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
             axisLocked: true,
           }}
         />
+        {!customFields.length && !state.includeSystemFields && <NoFields />}
       </OverlayScrollbarsComponent>
       <OverlayScrollbarsComponent
         className="model-field-types custom-scrollbar"
