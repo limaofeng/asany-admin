@@ -11,7 +11,7 @@ export default defineConfig({
     id: '6068485332c5fc853a65',
   },
   define: {
-    'process.env.STORAGE_URL': 'https://api.asany.cn/graphql',
+    'process.env.STORAGE_URL': 'https://api.asany.cn',
     'process.env.MOBILE_URL': 'http://wap.asany.cn',
     'process.env.WEBSITE_URL': 'http://www.asany.cn',
     'process.env.OPEN_IM_URL': 'ws://47.103.119.188:10003',

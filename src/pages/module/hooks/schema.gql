@@ -60,7 +60,40 @@ mutation createModel($input: ModelCreateInput!) {
 mutation addModelField($modelId: ID!, $input: ModelFieldInput!) {
   addModelField(modelId: $modelId, input: $input) {
     id
+    code
+    system
+    type {
+      id
+      name
+      family
+      description
+      graphQLType
+    }
     name
+    description
+    metadata {
+      databaseColumnName
+    }
+  }
+}
+
+mutation updateModelField($modelId: ID!, $fieldId: ID!, $input: ModelFieldInput!) {
+  updateModelField(modelId: $modelId, fieldId: $fieldId, input: $input) {
+    id
+    code
+    system
+    type {
+      id
+      name
+      family
+      description
+      graphQLType
+    }
+    name
+    description
+    metadata {
+      databaseColumnName
+    }
   }
 }
 

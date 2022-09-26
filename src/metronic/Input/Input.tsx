@@ -26,6 +26,7 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
   boxClassName?: string;
   status?: InputStatus;
   addonBefore?: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 export type InputRef = {
@@ -53,6 +54,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     className,
     boxClassName,
     status: customStatus,
+    style,
     ...otherProps
   } = props;
 
@@ -132,6 +134,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     <input
       {...otherProps}
       ref={inputRef}
+      style={style}
       onKeyDown={handleKeyDown}
       className={classnames(
         'form-control',

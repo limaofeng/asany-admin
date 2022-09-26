@@ -9,9 +9,10 @@ import FieldAdvanced from '../form-widgets/FieldAdvanced';
 
 import { Button, Checkbox, Form } from '@/metronic';
 import type { FormInstance } from '@/metronic/typings';
-import type { Model } from '@/types';
+import type { Model, ModelField } from '@/types';
 
 type StringFieldFormProps = {
+  data?: ModelField;
   model: Model;
   form: FormInstance<any>;
   mode: 'new' | 'edit';
@@ -44,7 +45,7 @@ function StringFieldForm(props: StringFieldFormProps) {
         const pyCode = pinyin(changedValues.name, { toneType: 'none', type: 'array' }).join('');
         form.setFieldValue('code', pyCode);
         if (dbColumnNameLinkageable) {
-          form.setFieldValue('databaseColumnName', pyCode.toLowerCase());
+          form.setFieldValue('databaseColumnName', pyCode.toUpperCase());
         }
       }
       if (Object.hasOwn(changedValues, 'code') && dbColumnNameLinkageable) {
@@ -90,8 +91,8 @@ function StringFieldForm(props: StringFieldFormProps) {
           'd-none': activeTabKey != 'settings',
         })}
       >
-        <General model={props.model} />
-        <FieldOptions mode={mode} />
+        <General model={props.model} mode={mode} data={props.data} />
+        <FieldOptions model={props.model} mode={mode} data={props.data} />
       </div>
       <div className={classnames('modal-tabpane', { 'd-none': activeTabKey != 'validations' })}>
         <div className="field-validations">
@@ -137,7 +138,7 @@ function StringFieldForm(props: StringFieldFormProps) {
         </div>
       </div>
       <div className={classnames('modal-tabpane', { 'd-none': activeTabKey != 'advanced' })}>
-        <FieldAdvanced model={props.model} />
+        <FieldAdvanced model={props.model} mode={mode} data={props.data} />
       </div>
     </Form>
   );

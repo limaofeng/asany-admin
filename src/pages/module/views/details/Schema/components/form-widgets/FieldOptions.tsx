@@ -1,8 +1,11 @@
 import classnames from 'classnames';
 
 import { Checkbox, Form } from '@/metronic';
+import type { Model, ModelField } from '@/types';
 
 type FieldOptionsProps = {
+  data?: ModelField;
+  model: Model;
   mode: 'new' | 'edit';
 };
 

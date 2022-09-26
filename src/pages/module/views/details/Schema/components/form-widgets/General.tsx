@@ -1,12 +1,14 @@
 import { Form, Input } from '@/metronic';
-import type { Model } from '@/types';
+import type { Model, ModelField } from '@/types';
 
 type GeneralProps = {
+  data?: ModelField;
   model: Model;
+  mode: 'new' | 'edit';
 };
 
 function General(props: GeneralProps) {
-  const { model } = props;
+  const { model, data, mode } = props;
 
   return (
     <>
@@ -23,9 +25,9 @@ function General(props: GeneralProps) {
               if (!value) {
                 return;
               }
-              // if (_code == module.code) {
-              //   return;
-              // }
+              if (value == data?.name && mode == 'edit') {
+                return;
+              }
               if (model.fields.some((f) => f.name == value)) {
                 throw new Error(rule.message as string);
               }
@@ -53,9 +55,9 @@ function General(props: GeneralProps) {
               if (!value) {
                 return;
               }
-              // if (_code == module.code) {
-              //   return;
-              // }
+              if (value == data?.code && mode == 'edit') {
+                return;
+              }
               if (model.fields.some((f) => f.code == value)) {
                 throw new Error(rule.message as string);
               }
