@@ -100,7 +100,12 @@ function CreateModel(props: CreateModelProps) {
     try {
       const { data: rdata } = await createModel({
         variables: {
-          input: { ...values, features: ['master', 'system-fields'], module: module.id },
+          input: {
+            ...values,
+            code: values.code.charAt(0).toUpperCase() + values.code.substring(1),
+            features: ['master', 'system-fields'],
+            module: module.id,
+          },
         },
       });
       Toast.success(`模型 “${values.name}” 新增成功`, 2000, {
@@ -214,7 +219,7 @@ function CreateModel(props: CreateModelProps) {
                 },
               ]}
             >
-              <Input solid boxClassName="w-75" />
+              <Input style={{ textTransform: 'capitalize' }} solid boxClassName="w-75" />
             </Form.Item>
             <Form.Item
               className="mt-5"

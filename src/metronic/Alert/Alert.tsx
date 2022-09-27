@@ -17,6 +17,7 @@ type AlertProps = {
   closable?: boolean;
   type?: AlertType;
   theme?: 'Solid' | 'Light' | 'Default';
+  className?: string;
 };
 
 const icons: Record<AlertType, React.ReactElement> = {
@@ -41,11 +42,12 @@ function Alert(props: AlertProps) {
     theme = 'Default',
     closable,
     style,
+    className,
   } = props;
   return (
     <div
       style={style}
-      className={classnames('alert d-flex align-items-center', {
+      className={classnames('alert d-flex align-items-center', className, {
         [`bg-${type}`]: theme == 'Solid',
         [`alert-${type}`]: theme == 'Default',
         [`bg-light-${type}`]: theme == 'Light',

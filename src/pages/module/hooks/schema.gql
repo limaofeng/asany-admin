@@ -63,6 +63,10 @@ mutation createModel($input: ModelCreateInput!) {
   }
 }
 
+mutation deleteModel($id: ID!) {
+  deleteModel(id: $id)
+}
+
 mutation addModelField($modelId: ID!, $input: ModelFieldInput!) {
   addModelField(modelId: $modelId, input: $input) {
     id

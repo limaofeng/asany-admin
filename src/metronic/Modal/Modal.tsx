@@ -280,7 +280,7 @@ Modal.confirm = async (options: ModalOptions) => {
       container: classnames('modal-confirm', { 'has-icon': !!icon }),
       closeButton: 'btn btn-icon btn-active-light-primary ms-2',
       title: 'text-left pe-0',
-      htmlContainer: classnames(' pe-0 ms-0', { 'text-left': !icon }),
+      htmlContainer: classnames(' pe-0 mx-0', { 'text-left': !icon }),
       actions: classnames('justify-content-end ', { 'w-100': !icon }),
       confirmButton: classnames('btn btn-primary', okClassName),
       cancelButton: classnames('btn btn-secondary', cancelClassName),

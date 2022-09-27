@@ -1,30 +1,108 @@
+import { useCallback, useRef } from 'react';
+
 import type { RouteComponentProps } from 'react-router';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 
-import { useModelQuery } from '../../../hooks';
+import { useDeleteModelMutation, useModelQuery } from '../../../hooks';
 
 import ModelFieldsManagement from './components/ModelFieldsManagement';
 
-import { Button, Card, Dropdown, Menu, Tabs } from '@/metronic';
+import { Alert, Button, Card, Dropdown, Menu, Modal, Tabs, Toast } from '@/metronic';
 import { ContentWrapper } from '@/layouts/components';
-import type { Model } from '@/types';
+import type { Model, Module } from '@/types';
+import { delay } from '@/utils';
 
-type ModelViewProps = RouteComponentProps<{ mid: string }>;
+type ModelViewProps = RouteComponentProps<
+  { mid: string },
+  any,
+  { module: Module; baseUrl: string }
+>;
 
 import './style/ModelView.scss';
 
 function ModelView(props: ModelViewProps) {
   const {
     match: { params },
+    location,
+    history,
   } = props;
+
+  const { baseUrl } = location.state;
 
   const { data, loading } = useModelQuery({
     variables: { id: params.mid },
     fetchPolicy: 'cache-and-network',
   });
+  const [deleteModel] = useDeleteModelMutation();
 
+  const deleting = useRef(false);
   const model = data?.model;
+  const temp = useRef({ model, deleteModel });
+  temp.current.model = model;
+  temp.current.deleteModel = deleteModel;
+
+  const handleEdit = useCallback(() => {}, []);
+
+  const handleDelete = useCallback(async () => {
+    const _model = temp.current.model!;
+    const _deleteModel = temp.current.deleteModel;
+    const result = await Modal.confirm({
+      title: '删除实体',
+      content: (
+        <>
+          <p className="tip-confirm">
+            您确定要删除实体 <b>{_model.name}</b> 吗
+          </p>
+          <Alert
+            type="warning"
+            theme="Light"
+            className="mb-0"
+            message="删除后，存储在实体中的数据将丢失"
+          />
+        </>
+      ),
+      okClassName: 'btn-danger',
+      okText: '删除',
+      allowOutsideClick: () => {
+        return !deleting.current;
+      },
+      preConfirm: async () => {
+        deleting.current = true;
+        try {
+          const okButton = document.querySelector('.swal2-confirm')!;
+          okButton.textContent = '删除中...';
+          const spinner = document.createElement('span');
+          spinner.classList.add('spinner-border-sm', 'ms-2', 'spinner-border', 'align-middle');
+          okButton.appendChild(spinner);
+          const _result = await delay(
+            _deleteModel({
+              variables: {
+                id: _model.id,
+              },
+            }),
+            350,
+          );
+          console.log(_result);
+        } catch (e: any) {
+          Toast.error(e.message, 2000, {
+            placement: 'bottom-end',
+            progressBar: true,
+          });
+        } finally {
+          deleting.current = false;
+        }
+      },
+    });
+    if (!result.isConfirmed) {
+      return;
+    }
+    Toast.success(`实体 “${_model.name}” 已删除`, 2000, {
+      placement: 'bottom-end',
+      progressBar: true,
+    });
+    history.push(baseUrl);
+  }, [baseUrl, history]);
 
   return (
     <ContentWrapper
@@ -37,7 +115,6 @@ function ModelView(props: ModelViewProps) {
                 <h1 className="mb-0 me-2">{model.name}</h1>
                 <span className="text-muted">#{model.code}</span>
                 <Dropdown
-                  // offset={[-32, 0]}
                   placement="bottomLeft"
                   overlay={
                     <Menu
@@ -46,6 +123,8 @@ function ModelView(props: ModelViewProps) {
                       className="menu-state-bg-light-primary p-1 gap-1 menu-sub-dropdown menu-title-gray-700 menu-state-primary fw-semibold fs-base w-125px"
                     >
                       <Menu.Item
+                        className="p-0"
+                        onClick={handleEdit}
                         icon={
                           <div className={classnames('')}>
                             <Icon name="Bootstrap/pencil-square" />
@@ -55,12 +134,13 @@ function ModelView(props: ModelViewProps) {
                         编辑
                       </Menu.Item>
                       <Menu.Item
-                        className="actions-delete"
+                        className="actions-delete p-0"
                         icon={
                           <div className={classnames('')}>
                             <Icon name="Bootstrap/trash" />
                           </div>
                         }
+                        onClick={handleDelete}
                       >
                         删除
                       </Menu.Item>

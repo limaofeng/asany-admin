@@ -1,9 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
+import React from 'react';
 
 import type { RouteComponentProps } from 'react-router';
 import { Icon } from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { matchPath } from 'react-router';
+import { Link } from 'umi';
+import classnames from 'classnames';
 
 import CreateModel from './components/CreateModel';
 
@@ -11,6 +14,8 @@ import SecondarySidebar from '@/components/SecondarySidebar';
 import { Button, Menu } from '@/metronic';
 import { useSchemaQuery } from '@/pages/module/hooks';
 import type { Model, Module } from '@/types';
+
+import './style/Layout.scss';
 
 type ModuleSchemaProps = RouteComponentProps<
   { mid?: string },
@@ -23,7 +28,7 @@ type ModuleSchemaProps = RouteComponentProps<
 function ModuleSchema(props: ModuleSchemaProps) {
   const { location, history, children } = props;
 
-  const { module } = location.state;
+  const { module, baseUrl = '' } = location.state;
 
   const [visibleCreateModel, setVisibleCreateModel] = useState(false);
 
@@ -44,8 +49,6 @@ function ModuleSchema(props: ModuleSchemaProps) {
     setVisibleCreateModel(false);
   }, []);
 
-  const { baseUrl = '' } = location.state;
-
   const handleCreateModelSuccess = useCallback(
     (model: Model) => {
       handleCloseCreateModel();
@@ -62,13 +65,21 @@ function ModuleSchema(props: ModuleSchemaProps) {
   );
 
   const menuKey = useMemo(() => {
-    const match = matchPath<{ mid: string }>(location.pathname, {
+    let match = matchPath<{ mid: string }>(location.pathname, {
       path: `${baseUrl}/schema/models/:mid`,
       exact: true,
       strict: true,
     });
     if (match) {
       return 'model_' + match.params.mid;
+    }
+    match = matchPath<{ mid: string }>(location.pathname, {
+      path: `${baseUrl}/schema/models`,
+      exact: true,
+      strict: true,
+    });
+    if (match) {
+      return 'model_overview';
     }
     return '';
   }, [baseUrl, location.pathname]);
@@ -78,7 +89,7 @@ function ModuleSchema(props: ModuleSchemaProps) {
       <SecondarySidebar className="module_secondary_sidebar" width={260}>
         <div className="h-100">
           <div className="mx-2 p-5 mt-5">
-            <h3 className="fw-bold text-dark mx-0 mb-0">架构</h3>
+            <h3 className="fw-bold text-dark mx-0 mb-0">结构</h3>
           </div>
           <OverlayScrollbarsComponent
             className="d-flex h-100 flex-column custom-scrollbar"
@@ -101,7 +112,15 @@ function ModuleSchema(props: ModuleSchemaProps) {
                 sectionClassName="d-flex align-items-center"
               >
                 <span className="menu-section text-muted text-uppercase fs-8 ls-1 flex-row-fluid">
-                  模型 {loading && ' - 加载中...'}
+                  <Link
+                    to={`${baseUrl}/schema/models`}
+                    className={classnames('menu-section__link cursor-pointer text-muted', {
+                      checked: menuKey == 'model_overview',
+                    })}
+                  >
+                    实体
+                  </Link>
+                  {loading && ' - 加载中...'}
                 </span>
                 <Button
                   icon={
@@ -121,26 +140,6 @@ function ModuleSchema(props: ModuleSchemaProps) {
                   {item.name}
                 </Menu.Item>
               ))}
-              <Menu.Item>xxxx3</Menu.Item>
-              {/* <Menu.Section
-                className="menu-section-container"
-                sectionClassName="d-flex align-items-center"
-              >
-                <span className="menu-section text-muted text-uppercase fs-8 ls-1 flex-row-fluid">
-                  枚举
-                </span>
-                <Button
-                  icon={
-                    <Icon style={{ marginRight: '.2rem' }} name="Duotune/arr087" className="" />
-                  }
-                  size="sm"
-                  variant="white"
-                  className="px-3 me-n4"
-                >
-                  新增
-                </Button>
-              </Menu.Section>
-              <Menu.Item>xxxx1</Menu.Item> */}
             </Menu>
           </OverlayScrollbarsComponent>
         </div>
