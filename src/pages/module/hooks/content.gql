@@ -1,0 +1,27 @@
+query content($module: ID!) {
+  models(module: $module, filter: { type: ENTITY }) {
+    id
+    code
+    name
+    description
+    defaultView {
+      id
+      name
+    }
+  }
+}
+
+query modelView($id: ID!) {
+  view: modelView(id: $id) {
+    id
+    name
+    component {
+      id
+      template
+      blocks {
+        key
+        props
+      }
+    }
+  }
+}

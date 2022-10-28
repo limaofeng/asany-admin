@@ -55,9 +55,9 @@ function Breadcrumb(props: BreadcrumbProps) {
               const isMatch = urlMatch(location.pathname);
 
               if (isMatch == false) {
-                console.log('urlMatch', isMatch, item.path);
                 return null;
               }
+
               const params = (isMatch as any).params;
               const url = !!item.path ? generatePath(item.path, params) : undefined;
               const isLast = array.length == index + 1;

@@ -1,28 +1,37 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import classnames from 'classnames';
 import { pinyin } from 'pinyin-pro';
 
 import { Button, Form, Input, Modal, Toast } from '@/metronic';
-import { SchemaDocument, useCreateModelMutation, useModelsLazyQuery } from '@/pages/module/hooks';
+import {
+  ModelDocument,
+  SchemaDocument,
+  useCreateModelMutation,
+  useModelsLazyQuery,
+  useUpdateModelMutation,
+} from '@/pages/module/hooks';
 import { useAjaxValidator } from '@/metronic/hooks';
 import type { Model, Module } from '@/types';
 
-type CreateModelProps = {
+type ModelModalProps = {
   module: Module;
   visible: boolean;
+  data?: Model;
   onClose: () => void;
   onSuccess: (model: Model) => void;
 };
 
-function CreateModel(props: CreateModelProps) {
-  const { module, visible, onClose, onSuccess } = props;
+function ModelModal(props: ModelModalProps) {
+  const { module, visible, onClose, data, onSuccess } = props;
 
   const [activeTabKey, setActiveTabKey] = useState('settings');
 
   const form = Form.useForm();
-  const [loadModels] = useModelsLazyQuery();
-  const [createModel, { loading }] = useCreateModelMutation({
+  const [loadModelsByName] = useModelsLazyQuery();
+  const [loadModelsByCode] = useModelsLazyQuery();
+  const [loadModelsByDbName] = useModelsLazyQuery();
+  const [createModel, { loading: creating }] = useCreateModelMutation({
     refetchQueries: [
       {
         query: SchemaDocument,
@@ -32,9 +41,41 @@ function CreateModel(props: CreateModelProps) {
       },
     ],
   });
+  const [updateModel, { loading: updating }] = useUpdateModelMutation({
+    refetchQueries: [
+      {
+        query: SchemaDocument,
+        variables: {
+          module: module.id,
+        },
+      },
+      {
+        query: ModelDocument,
+        variables: {
+          id: data?.id,
+        },
+      },
+    ],
+  });
+
+  const loading = useMemo(() => creating || updating, [creating, updating]);
+
+  const codePrefix = useMemo(() => {
+    return (module.code || '')
+      .split('.')
+      .map((item) => item.charAt(0).toUpperCase() + item.substring(1))
+      .join('');
+  }, [module]);
+
+  const tablePrefix = useMemo(() => {
+    return (module.code || '').replaceAll('.', '_').toUpperCase() + '_';
+  }, [module]);
 
   const nameUniqueValidator = useAjaxValidator(async (rule, value, signal) => {
-    const { data: _rdata } = await loadModels({
+    if (data && value == data.name) {
+      return true;
+    }
+    const { data: _rdata } = await loadModelsByName({
       variables: {
         moduleId: module.id,
         filter: {
@@ -51,11 +92,18 @@ function CreateModel(props: CreateModelProps) {
     return !_rdata?.models.length;
   });
   const codeUniqueValidator = useAjaxValidator(async (rule, value, signal) => {
-    const { data: _rdata } = await loadModels({
+    if (!value) {
+      return true;
+    }
+    const code = codePrefix + value.charAt(0).toUpperCase() + value.substring(1);
+    if (data && code == data.code) {
+      return true;
+    }
+    const { data: _rdata } = await loadModelsByCode({
       variables: {
         moduleId: module.id,
         filter: {
-          code: value,
+          code,
         },
       },
       fetchPolicy: 'network-only',
@@ -68,11 +116,15 @@ function CreateModel(props: CreateModelProps) {
     return !_rdata?.models.length;
   });
   const dbNameUniqueValidator = useAjaxValidator(async (rule, value, signal) => {
-    const { data: _rdata } = await loadModels({
+    const databaseTableName = tablePrefix + (value || '').toUpperCase();
+    if (data && databaseTableName == data.metadata?.databaseTableName) {
+      return true;
+    }
+    const { data: _rdata } = await loadModelsByDbName({
       variables: {
         moduleId: module.id,
         filter: {
-          databaseTableName: value,
+          databaseTableName,
         },
       },
       fetchPolicy: 'network-only',
@@ -94,57 +146,88 @@ function CreateModel(props: CreateModelProps) {
 
   const handleSave = useCallback(async () => {
     const values = await form.validateFields();
-    if (!values.databaseTableName) {
-      values.databaseTableName = values.code;
-    }
+
+    const databaseTableName = tablePrefix + (values.databaseTableName || values.code).toUpperCase();
+    const code = codePrefix + values.code.charAt(0).toUpperCase() + values.code.substring(1);
+
     try {
-      const { data: rdata } = await createModel({
-        variables: {
-          input: {
-            ...values,
-            code: values.code.charAt(0).toUpperCase() + values.code.substring(1),
-            features: ['master', 'system-fields'],
-            module: module.id,
+      if (!data) {
+        const { data: rdata } = await createModel({
+          variables: {
+            input: {
+              ...values,
+              databaseTableName,
+              code,
+              features: ['master', 'system-fields'],
+              module: module.id,
+            },
           },
-        },
-      });
-      Toast.success(`模型 “${values.name}” 新增成功`, 2000, {
-        placement: 'bottom-end',
-        progressBar: true,
-      });
-      onSuccess(rdata?.createModel as Model);
+        });
+        Toast.success(`实体 “${values.name}” 新增成功`, 2000, {
+          placement: 'bottom-end',
+          progressBar: true,
+        });
+        onSuccess(rdata?.createModel as Model);
+      } else {
+        const { data: rdata } = await updateModel({
+          variables: {
+            id: data.id,
+            input: {
+              ...values,
+              databaseTableName,
+              code,
+              features: ['master', 'system-fields'],
+            },
+          },
+        });
+        Toast.success(`实体 “${values.name}” 更新成功`, 2000, {
+          placement: 'bottom-end',
+          progressBar: true,
+        });
+        onSuccess(rdata?.updateModel as Model);
+      }
     } catch (e: any) {
       Toast.error(e.message, 2000, {
         placement: 'bottom-end',
         progressBar: true,
       });
     }
-  }, [createModel, form, module.id, onSuccess]);
+  }, [codePrefix, createModel, data, form, module.id, onSuccess, tablePrefix, updateModel]);
 
   const [codeLinkageable, setCodeLinkageable] = useState(true);
-  const [dbColumnNameLinkageable, setDbColumnNameLinkageable] = useState(true);
+  const [databaseTableNameLinkageable, setDatabaseTableNameLinkageable] = useState(true);
 
   const handleValuesChange = useCallback(
     (changedValues: any) => {
       if (Object.hasOwn(changedValues, 'code')) {
         setCodeLinkageable(false);
       }
-      if (Object.hasOwn(changedValues, 'databaseColumnName')) {
-        setDbColumnNameLinkageable(false);
+      if (Object.hasOwn(changedValues, 'databaseTableName')) {
+        setDatabaseTableNameLinkageable(false);
       }
       if (Object.hasOwn(changedValues, 'name') && codeLinkageable) {
         const pyCode = pinyin(changedValues.name, { toneType: 'none', type: 'array' }).join('');
         form.setFieldValue('code', pyCode);
-        if (dbColumnNameLinkageable) {
-          form.setFieldValue('databaseColumnName', pyCode.toUpperCase());
+        if (databaseTableNameLinkageable) {
+          form.setFieldValue('databaseTableName', pyCode.toUpperCase());
         }
       }
-      if (Object.hasOwn(changedValues, 'code') && dbColumnNameLinkageable) {
-        form.setFieldValue('databaseColumnName', changedValues.code.toUpperCase());
+      if (Object.hasOwn(changedValues, 'code') && databaseTableNameLinkageable) {
+        form.setFieldValue('databaseTableName', changedValues.code.toUpperCase());
       }
     },
-    [codeLinkageable, dbColumnNameLinkageable, form],
+    [codeLinkageable, databaseTableNameLinkageable, form],
   );
+
+  useEffect(() => {
+    if (data) {
+      form.setFieldsValue({
+        ...data,
+        code: data.code.substring(codePrefix.length),
+        databaseTableName: data.metadata?.databaseTableName?.substring(tablePrefix.length),
+      });
+    }
+  }, [codePrefix, data, form, tablePrefix.length]);
 
   return (
     <Modal
@@ -158,10 +241,10 @@ function CreateModel(props: CreateModelProps) {
       onOk={handleSave}
     >
       <Modal.Header>
-        <h4>创建模型</h4>
+        <h4>{data ? '编辑实体' : '新增实体'}</h4>
       </Modal.Header>
       <Modal.Body>
-        <Form form={form} onValuesChange={handleValuesChange}>
+        <Form form={form} onValuesChange={!data ? handleValuesChange : undefined}>
           <div className="mb-5">
             <Button
               color={activeTabKey != 'settings' && 'gray-700'}
@@ -189,12 +272,12 @@ function CreateModel(props: CreateModelProps) {
               name="name"
               hasFeedback
               label="显示名称"
-              help="配置模型时显示的名称, 通常为中文"
+              help="配置实体时显示的名称, 通常为中文"
               rules={[
                 { required: true, message: '显示名称不能为空' },
                 {
                   validator: nameUniqueValidator,
-                  message: '编码重复',
+                  message: '名称重复',
                 },
               ]}
             >
@@ -206,7 +289,7 @@ function CreateModel(props: CreateModelProps) {
               name="code"
               label="编码"
               hasFeedback
-              help="用于通过 API 访问此模型的 ID, 不能为中文"
+              help="用于通过 API 访问此实体的 ID, 不能为中文"
               rules={[
                 { required: true, message: '编码不能为空' },
                 {
@@ -219,7 +302,12 @@ function CreateModel(props: CreateModelProps) {
                 },
               ]}
             >
-              <Input style={{ textTransform: 'capitalize' }} solid boxClassName="w-75" />
+              <Input
+                addonBefore={codePrefix}
+                style={{ textTransform: 'capitalize' }}
+                solid
+                boxClassName="w-75"
+              />
             </Form.Item>
             <Form.Item
               className="mt-5"
@@ -240,7 +328,7 @@ function CreateModel(props: CreateModelProps) {
               help="映射到数据库中的表名"
               rules={[
                 {
-                  pattern: /^([a-z])([a-z1-9])*(_([a-z1-9]+))*/i,
+                  pattern: /(^_([A-Z0-9]_?)*$)|(^[A-Z](_?[A-Z0-9])*_?$)/i,
                   message: '请遵循数据库命名规范',
                 },
                 {
@@ -249,7 +337,12 @@ function CreateModel(props: CreateModelProps) {
                 },
               ]}
             >
-              <Input solid boxClassName="w-75" />
+              <Input
+                solid
+                addonBefore={tablePrefix}
+                boxClassName="w-75"
+                className="text-uppercase"
+              />
             </Form.Item>
           </div>
         </Form>
@@ -258,4 +351,4 @@ function CreateModel(props: CreateModelProps) {
   );
 }
 
-export default CreateModel;
+export default ModelModal;

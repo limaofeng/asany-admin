@@ -60,6 +60,7 @@ function ModelField(props: ModelFieldProps, ref: SortableItemRefObject) {
               )}
               <Badge>{data.type.name}</Badge>
               {data.system && <Badge>系统字段</Badge>}
+              {data.required && <Badge>必填</Badge>}
             </div>
             <div className="field-item-content__actions">
               <Button onClick={handleCliclEditButton}>编辑字段</Button>

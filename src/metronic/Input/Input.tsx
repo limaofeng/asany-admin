@@ -159,7 +159,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   if (!!addonBefore || (isFormItemInput && hasFeedback)) {
     return (
       <div
-        className={classnames('input-group', boxClassName, {
+        className={classnames('input-group d-flex flex-row', boxClassName, {
           'input-group-solid': solid,
         })}
       >
@@ -170,7 +170,9 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
         ) : (
           addonBefore
         )}
-        {input}
+        {React.cloneElement(input, {
+          className: classnames('flex-root', input.props.className),
+        })}
         <span className="input-group-text asany-input-suffix">{feedbackIcon}</span>
       </div>
     );

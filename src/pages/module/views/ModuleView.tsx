@@ -94,7 +94,7 @@ function ModuleView(props: ModuleViewProps) {
                     key="schema"
                     bullet={true}
                     icon="Fonticon/layers"
-                    title="架构"
+                    title="结构定义"
                     url={`/modules/${module.id}/schema`}
                   />
                   <Menu.Item

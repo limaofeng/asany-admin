@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import type { RouteComponentProps } from 'react-router';
 import { Icon } from '@asany/icons';
 
-import CreateModel from './components/CreateModel';
+import ModelModal from './components/ModelModal';
 
 import { PageContent } from '@/layouts/components';
 import { Button } from '@/metronic';
@@ -22,22 +22,22 @@ function ModelDescription(props: ModelDescriptionProps) {
 
   const { module, baseUrl = '' } = location.state;
 
-  const [visibleCreateModel, setVisibleCreateModel] = useState(false);
+  const [visibleModelModal, setVisibleModelModal] = useState(false);
 
-  const handleOpenCreateModel = useCallback(() => {
-    setVisibleCreateModel(true);
+  const handleOpenModelModal = useCallback(() => {
+    setVisibleModelModal(true);
   }, []);
 
-  const handleCloseCreateModel = useCallback(() => {
-    setVisibleCreateModel(false);
+  const handleCloseModelModal = useCallback(() => {
+    setVisibleModelModal(false);
   }, []);
 
-  const handleCreateModelSuccess = useCallback(
+  const handleModelModalSuccess = useCallback(
     (model: Model) => {
-      handleCloseCreateModel();
+      handleCloseModelModal();
       history.push(`${baseUrl}/schema/models/${model.id}`);
     },
-    [baseUrl, handleCloseCreateModel, history],
+    [baseUrl, handleCloseModelModal, history],
   );
 
   return (
@@ -336,18 +336,18 @@ function ModelDescription(props: ModelDescriptionProps) {
             <Button
               icon={<Icon name="Bootstrap/plus" />}
               variant="secondary"
-              onClick={handleOpenCreateModel}
+              onClick={handleOpenModelModal}
             >
               新增实体
             </Button>
           </div>
         </div>
       </div>
-      <CreateModel
+      <ModelModal
         module={module}
-        onSuccess={handleCreateModelSuccess}
-        visible={visibleCreateModel}
-        onClose={handleCloseCreateModel}
+        onSuccess={handleModelModalSuccess}
+        visible={visibleModelModal}
+        onClose={handleCloseModelModal}
       />
     </PageContent>
   );

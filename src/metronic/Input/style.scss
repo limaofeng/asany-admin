@@ -1,26 +1,34 @@
 .input-textarea {
   width: 100%;
 }
+
 .input-textarea-show-count {
   position: relative;
+
   .show-count {
     position: absolute;
     color: #00000073;
     white-space: nowrap;
     pointer-events: none;
+
     &.beyond-limit {
       --bs-bg-opacity: 1;
       color: rgba(var(--bs-danger-rgb), var(--bs-bg-opacity));
     }
   }
 }
+
 .input-group {
   .input-group-text {
     padding: 4px 11px;
   }
+
+  .form-control.flex-root {
+    flex: 1;
+  }
 }
 
-.password-meter-control > div {
+.password-meter-control>div {
   --bs-bg-opacity: 1;
   background-color: rgba(var(--bs-secondary-rgb), var(--bs-bg-opacity));
 }

@@ -15,7 +15,7 @@ import {
 
 import ModelField from './ModelField';
 import ModelFieldType, { ModelFieldTypeGroup } from './ModelFieldType';
-import CreateOrUpdateModelField from './CreateOrUpdateModelField';
+import CreateOrUpdateModelField from './ModelFieldModal';
 import NoFields from './NoFields';
 
 import { Modal, Switch, Toast } from '@/metronic';

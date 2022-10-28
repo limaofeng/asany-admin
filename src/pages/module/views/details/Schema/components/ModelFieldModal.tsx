@@ -93,7 +93,7 @@ function FieldTypeSelect(props: FieldTypeSelectProps) {
   );
 }
 
-type CreateOrUpdateModelFieldModalProps = {
+type ModelFieldModalProps = {
   mode: 'new' | 'edit';
   model: Model;
   data?: IModelField;
@@ -107,7 +107,7 @@ type CreateOrUpdateModelFieldModalProps = {
   onClose: () => void;
 };
 
-function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps) {
+function ModelFieldModal(props: ModelFieldModalProps) {
   const { mode, visible, model, onClose, fieldTypeFamilies, data: fieldData } = props;
 
   const form = Form.useForm();
@@ -255,4 +255,4 @@ function CreateOrUpdateModelFieldModal(props: CreateOrUpdateModelFieldModalProps
   );
 }
 
-export default CreateOrUpdateModelFieldModal;
+export default ModelFieldModal;

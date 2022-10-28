@@ -8,7 +8,7 @@ import { matchPath } from 'react-router';
 import { Link } from 'umi';
 import classnames from 'classnames';
 
-import CreateModel from './components/CreateModel';
+import ModelModal from './components/ModelModal';
 
 import SecondarySidebar from '@/components/SecondarySidebar';
 import { Button, Menu } from '@/metronic';
@@ -30,7 +30,7 @@ function ModuleSchema(props: ModuleSchemaProps) {
 
   const { module, baseUrl = '' } = location.state;
 
-  const [visibleCreateModel, setVisibleCreateModel] = useState(false);
+  const [visibleModelModal, setVisibleModelModal] = useState(false);
 
   const { data, loading } = useSchemaQuery({
     variables: {
@@ -41,20 +41,20 @@ function ModuleSchema(props: ModuleSchemaProps) {
 
   const { models = [] } = data || {};
 
-  const handleOpenCreateModel = useCallback(() => {
-    setVisibleCreateModel(true);
+  const handleOpenModelModal = useCallback(() => {
+    setVisibleModelModal(true);
   }, []);
 
-  const handleCloseCreateModel = useCallback(() => {
-    setVisibleCreateModel(false);
+  const handleCloseModelModal = useCallback(() => {
+    setVisibleModelModal(false);
   }, []);
 
-  const handleCreateModelSuccess = useCallback(
+  const handleModelModalSuccess = useCallback(
     (model: Model) => {
-      handleCloseCreateModel();
+      handleCloseModelModal();
       history.push(`${baseUrl}/schema/models/${model.id}`);
     },
-    [baseUrl, handleCloseCreateModel, history],
+    [baseUrl, handleCloseModelModal, history],
   );
 
   const handleClickModel = useCallback(
@@ -89,7 +89,7 @@ function ModuleSchema(props: ModuleSchemaProps) {
       <SecondarySidebar className="module_secondary_sidebar" width={260}>
         <div className="h-100">
           <div className="mx-2 p-5 mt-5">
-            <h3 className="fw-bold text-dark mx-0 mb-0">结构</h3>
+            <h3 className="fw-bold text-dark mx-0 mb-0">结构定义</h3>
           </div>
           <OverlayScrollbarsComponent
             className="d-flex h-100 flex-column custom-scrollbar"
@@ -130,7 +130,7 @@ function ModuleSchema(props: ModuleSchemaProps) {
                   variant="white"
                   activeColor="light"
                   className="px-3 me-n4"
-                  onClick={handleOpenCreateModel}
+                  onClick={handleOpenModelModal}
                 >
                   新增
                 </Button>
@@ -144,11 +144,11 @@ function ModuleSchema(props: ModuleSchemaProps) {
           </OverlayScrollbarsComponent>
         </div>
       </SecondarySidebar>
-      <CreateModel
+      <ModelModal
         module={module}
-        onSuccess={handleCreateModelSuccess}
-        visible={visibleCreateModel}
-        onClose={handleCloseCreateModel}
+        onSuccess={handleModelModalSuccess}
+        visible={visibleModelModal}
+        onClose={handleCloseModelModal}
       />
       {children}
     </>

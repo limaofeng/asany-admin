@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import type { RouteComponentProps } from 'react-router';
 import { Icon } from '@asany/icons';
@@ -7,19 +7,20 @@ import classnames from 'classnames';
 import { useDeleteModelMutation, useModelQuery } from '../../../hooks';
 
 import ModelFieldsManagement from './components/ModelFieldsManagement';
+import ModelModal from './components/ModelModal';
 
 import { Alert, Button, Card, Dropdown, Menu, Modal, Tabs, Toast } from '@/metronic';
 import { ContentWrapper } from '@/layouts/components';
 import type { Model, Module } from '@/types';
 import { delay } from '@/utils';
 
+import './style/ModelView.scss';
+
 type ModelViewProps = RouteComponentProps<
   { mid: string },
   any,
   { module: Module; baseUrl: string }
 >;
-
-import './style/ModelView.scss';
 
 function ModelView(props: ModelViewProps) {
   const {
@@ -28,7 +29,7 @@ function ModelView(props: ModelViewProps) {
     history,
   } = props;
 
-  const { baseUrl } = location.state;
+  const { module, baseUrl } = location.state;
 
   const { data, loading } = useModelQuery({
     variables: { id: params.mid },
@@ -41,8 +42,6 @@ function ModelView(props: ModelViewProps) {
   const temp = useRef({ model, deleteModel });
   temp.current.model = model;
   temp.current.deleteModel = deleteModel;
-
-  const handleEdit = useCallback(() => {}, []);
 
   const handleDelete = useCallback(async () => {
     const _model = temp.current.model!;
@@ -104,6 +103,20 @@ function ModelView(props: ModelViewProps) {
     history.push(baseUrl);
   }, [baseUrl, history]);
 
+  const [visibleModelModal, setVisibleModelModal] = useState(false);
+
+  const handleOpenModelModal = useCallback(() => {
+    setVisibleModelModal(true);
+  }, []);
+
+  const handleCloseModelModal = useCallback(() => {
+    setVisibleModelModal(false);
+  }, []);
+
+  const handleModelModalSuccess = useCallback(() => {
+    handleCloseModelModal();
+  }, [handleCloseModelModal]);
+
   return (
     <ContentWrapper
       className="pages-model-view"
@@ -113,7 +126,9 @@ function ModelView(props: ModelViewProps) {
             <div className="h-40px d-flex align-items-center">
               <div className="d-flex align-items-end position-relative">
                 <h1 className="mb-0 me-2">{model.name}</h1>
-                <span className="text-muted">#{model.code}</span>
+                <span className="text-muted">
+                  #{model.code.substring(module.code.replace('.', '').length - 1)}
+                </span>
                 <Dropdown
                   placement="bottomLeft"
                   overlay={
@@ -124,7 +139,7 @@ function ModelView(props: ModelViewProps) {
                     >
                       <Menu.Item
                         className="p-0"
-                        onClick={handleEdit}
+                        onClick={handleOpenModelModal}
                         icon={
                           <div className={classnames('')}>
                             <Icon name="Bootstrap/pencil-square" />
@@ -170,6 +185,13 @@ function ModelView(props: ModelViewProps) {
           </Tabs.TabPane>
         </Tabs>
       </Card>
+      <ModelModal
+        module={module}
+        data={model as any}
+        onSuccess={handleModelModalSuccess}
+        visible={visibleModelModal}
+        onClose={handleCloseModelModal}
+      />
     </ContentWrapper>
   );
 }

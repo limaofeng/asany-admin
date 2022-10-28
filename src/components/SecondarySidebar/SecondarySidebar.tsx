@@ -21,6 +21,7 @@ type SecondarySidebarProps = {
   maxWidth?: number;
   collapsible?: boolean;
   children?: React.ReactNode;
+  loading?: boolean;
   onWidthChange?: (width: number) => void;
 };
 

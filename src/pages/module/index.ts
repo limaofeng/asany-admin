@@ -28,6 +28,15 @@ class Module {
     loader: () => import('./components/breadcrumb/ModuleBreadcrumbItem'),
     loading: LoadingComponent,
   });
+  @component({
+    name: 'breadcrumb.ModelBreadcrumbItem',
+    title: '实体面包屑转义',
+    tags: ['自定义模块/其他'],
+  })
+  ModelBreadcrumbItem = dynamic({
+    loader: () => import('./components/breadcrumb/ModelBreadcrumbItem'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'details.ModuleSchema', title: '架构', tags: ['自定义模块/详情'] })
   ModuleSchema = dynamic({
     loader: () => import('./views/details/Schema/Layout'),
@@ -51,6 +60,20 @@ class Module {
     loader: () => import('./views/details/Schema/ModelView'),
     loading: LoadingComponent,
   });
+  @component({ name: 'details.ModuleContent', title: '内容', tags: ['自定义模块/详情'] })
+  ModuleContent = dynamic({
+    loader: () => import('./views/details/Content/Layout'),
+    loading: LoadingComponent,
+  });
+  @component({
+    name: 'details.ModuleContentView',
+    title: '视图',
+    tags: ['自定义模块/详情/内容'],
+  })
+  ModuleContentView = dynamic({
+    loader: () => import('./views/details/Content/View'),
+    loading: LoadingComponent,
+  });
   @component({ name: 'settings.ModuleSettings', title: '布局', tags: ['自定义模块/设置'] })
   ModuleSettings = dynamic({
     loader: () => import('./views/details/settings/Layout'),
@@ -59,6 +82,15 @@ class Module {
   @component({ name: 'settings.ModuleInformation', title: '详情', tags: ['自定义模块/设置'] })
   ModuleInformation = dynamic({
     loader: () => import('./views/details/settings/Information'),
+    loading: LoadingComponent,
+  });
+  @component({
+    name: 'templates.DefaultListView',
+    title: '默认列表模版',
+    tags: ['自定义模块/显示模版'],
+  })
+  DefaultListView = dynamic({
+    loader: () => import('./views/details/Content/templates/DefaultListView'),
     loading: LoadingComponent,
   });
 }

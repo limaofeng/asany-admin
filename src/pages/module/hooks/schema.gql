@@ -23,6 +23,7 @@ query model($id: ID) {
       id
       code
       system
+      required
       type {
         id
         name
@@ -35,6 +36,9 @@ query model($id: ID) {
       metadata {
         databaseColumnName
       }
+    }
+    metadata {
+      databaseTableName
     }
   }
 }
@@ -58,6 +62,13 @@ query modelFields($model: ID!, $filter: ModelFieldFilter, $limit: Int) {
 
 mutation createModel($input: ModelCreateInput!) {
   createModel(input: $input) {
+    id
+    name
+  }
+}
+
+mutation updateModel($id: ID!, $input: ModelUpdateInput!) {
+  updateModel(id: $id, input: $input) {
     id
     name
   }

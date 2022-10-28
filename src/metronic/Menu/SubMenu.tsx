@@ -216,7 +216,7 @@ function SubMenu(props: SubMenuProps) {
     <div
       ref={itemRef}
       data-menu-key={menuKey}
-      className={classnames(className, 'menu-item menu-accordion', {
+      className={classnames(className, 'menu-sub-item menu-item menu-accordion', {
         hover: !selectable && opened,
         show: opened,
         here: subSelected,
