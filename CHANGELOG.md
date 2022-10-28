@@ -1,3 +1,15 @@
+## [0.2.37](https://github.com/limaofeng/asany-admin/compare/v0.2.36...v0.2.37) (2022-10-28)
+
+### Features
+
+- 优化实体新增过程 ([580b89b](https://github.com/limaofeng/asany-admin/commit/580b89b2152ea04d9ecda5ca26a502d18143dd6b))
+- 字段类型支持 ([08ac9fe](https://github.com/limaofeng/asany-admin/commit/08ac9fe1670bb9d5dc3a2e55b50a3d640e496ae7))
+- 实体删除 ([a2772f4](https://github.com/limaofeng/asany-admin/commit/a2772f4f1e407cb60ea9fcc94527c78ca0ffe787))
+- 实体字段空列表样式 ([bdb00bc](https://github.com/limaofeng/asany-admin/commit/bdb00bc6cddd96889c81f99f87a1515f0e19bd69))
+- 实体操作菜单样式 ([aa617be](https://github.com/limaofeng/asany-admin/commit/aa617beb81ac10a2d277a7cd3cb8fb97ca60a2d1))
+- 添加建模实体视图功能 ([bcf259b](https://github.com/limaofeng/asany-admin/commit/bcf259bd821c864e5b95bd88dd12aa652adfb0c8))
+- 网盘文件预览区域，根目录时显示文字修改 ([7ece5f4](https://github.com/limaofeng/asany-admin/commit/7ece5f44315ec6496a5bb3fb0aabd9368b984e14))
+
 ## [0.2.36](https://github.com/limaofeng/asany-admin/compare/v0.2.35...v0.2.36) (2022-09-26)
 
 ### Features
