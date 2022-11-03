@@ -13,7 +13,7 @@ function NavigationPromptModal({ onConfirm, onCancel }: NavigationPromptModalPro
       onCancel={onCancel}
       cancelText="留 下"
       onOk={onConfirm}
-      footer={null}
+      footer={false}
       okText="离 开"
       dialogClassName="mw-550px"
       bodyClassName="mx-5 pt-0 pb-15"

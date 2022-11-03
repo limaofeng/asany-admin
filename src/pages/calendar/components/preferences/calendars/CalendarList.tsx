@@ -141,7 +141,7 @@ const CalendarListItem = React.forwardRef(function (props: CalendarListItemProps
     <Shortcuts
       tag={
         <li
-          ref={drag(ref)}
+          ref={drag(ref) as any}
           onClick={handleClick}
           onDoubleClick={handleDoubleClick}
           className={classnames('calendar-list-item', {
@@ -552,7 +552,7 @@ function UpdateCalendarModal(props: UpdateCalendarModalProps) {
     <Modal
       centered
       visible={visible}
-      dialogClassName="modal-dialog-concise-style w-400px"
+      dialogClassName="modal-dialog-concise-style modal-dialog-small w-400px"
       onCancel={handleClose}
       onOk={handleOk}
       header={false}

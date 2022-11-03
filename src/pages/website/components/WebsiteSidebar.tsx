@@ -153,10 +153,14 @@ function WebsiteSidebar(props: WebsiteSidebarProps) {
         openKeys={openKeys}
         onOpenChange={handleOpenChange}
       >
-        <Menu.Section className="pt-8 pb-2" key="website-manage-section" title="网站管理" />
-        <Menu.Item bullet={true} key="websites" icon="" title="网站列表" url="" />
-        <Menu.Section className="pt-8 pb-0 d-flex align-items-center">
-          <span className="menu-section text-muted text-uppercase fs-8 ls-1 flex-row-fluid">
+        {/* <Menu.Section className="pt-8 pb-2" key="website-manage-section">网站管理</Menu.Section>
+        <Menu.Item bullet={true} key="websites" icon="" title="网站列表" url="" /> */}
+        <Menu.Section
+          className="pt-8 pb-0 flex-row-fluid align-items-center"
+          contentClassName="d-flex flex-row-fluid"
+          sectionClassName="d-flex flex-row-fluid"
+        >
+          <span className="text-muted text-uppercase fs-8 ls-1 align-items-center d-flex flex-row-fluid">
             栏目 {loading && ' - loading...'}
           </span>
           <Button

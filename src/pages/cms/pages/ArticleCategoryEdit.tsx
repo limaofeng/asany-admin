@@ -126,6 +126,7 @@ function ArticleChannelSettings(props: ArticleChannelSettingsProps) {
           <Tabs
             defaultActiveKey="general"
             renderContainer={false}
+            type="line-tabs"
             className="border-0 fs-4 fw-bold mb-n2 nav-line-tabs-2x"
           >
             <Tabs.TabPane key="general" tab="基本信息" forceRender>

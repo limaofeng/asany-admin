@@ -124,7 +124,7 @@ function ComposeMail(props: ComposeMailProps) {
           <Modal
             centered
             visible={true}
-            footer={null}
+            footer={false}
             onCancel={onCancel}
             dialogClassName="mw-550px"
             bodyClassName="mx-5 pt-0 pb-15"
