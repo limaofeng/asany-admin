@@ -22,6 +22,7 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
   transparent?: boolean;
   onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
   className?: string;
   boxClassName?: string;
   status?: InputStatus;
@@ -47,6 +48,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     bordered = true,
     autoComplete = false,
     transparent,
+    onClick,
     onKeyDown,
     onPressEnter,
     size,
@@ -130,11 +132,19 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   } = useContext(FormItemInputContext);
   const mergedStatus = getMergedStatus(contextStatus, customStatus);
 
+  const handleClick = useCallback(
+    (e: any) => {
+      onClick && onClick(e);
+    },
+    [onClick],
+  );
+
   const input = (
     <input
       {...otherProps}
       ref={inputRef}
       style={style}
+      onClick={handleClick}
       onKeyDown={handleKeyDown}
       className={classnames(
         'form-control',
