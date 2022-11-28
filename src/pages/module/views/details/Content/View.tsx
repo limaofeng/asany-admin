@@ -1,9 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 
 import type { RouteComponentProps } from 'react-router';
-import { SketchProvider, useReactComponent, useSketch } from '@asany/sunmao';
-
-import ViewSettings from './ViewSettings';
+import { SketchProvider, useReactComponent } from '@asany/sunmao';
 
 import type { Component, Module } from '@/types';
 import { useModelViewQuery } from '@/pages/module/hooks';
@@ -22,14 +20,14 @@ type ViewLoaderProps = {
 };
 
 function ViewLoader(props: ViewLoaderProps) {
-  const sketch = useSketch();
+  // const sketch = useSketch();
 
   const component = useReactComponent(props.component?.template || '', props.component?.blocks, {
     id: 'root',
     dev: true,
   });
 
-  const [settingsVisible, setSettingsVisible] = useState(false);
+  /* const [settingsVisible, setSettingsVisible] = useState(false);
 
   const handleOpenSettings = useCallback(() => {
     setSettingsVisible(true);
@@ -49,9 +47,9 @@ function ViewLoader(props: ViewLoaderProps) {
 
   const handleBlockMouseLeave = useCallback(() => {
     // console.log('handleBlockMouseLeave', key);
-  }, []);
+  }, []); */
 
-  useEffect(() => {
+  /*  useEffect(() => {
     const unbindBlockClick = sketch.on('block-click', handleBlockClick);
     const unbindBlockMouseEnter = sketch.on('block-mouse-enter', handleBlockMouseEnter);
     const unbindBlockMouseLeave = sketch.on('block-mouse-leave', handleBlockMouseLeave);
@@ -61,11 +59,12 @@ function ViewLoader(props: ViewLoaderProps) {
       unbindBlockMouseLeave();
     };
   }, [handleBlockClick, handleBlockMouseEnter, handleBlockMouseLeave, sketch]);
+ */
 
   return (
     <>
       {component && React.createElement(component)}
-      <div className="engage-toolbar d-flex position-fixed px-5 fw-bold zindex-2 top-50 end-0 transform-90 mt-5 mt-lg-20 gap-2">
+      {/* <div className="engage-toolbar d-flex position-fixed px-5 fw-bold zindex-2 top-50 end-0 transform-90 mt-5 mt-lg-20 gap-2">
         <button
           className="engage-demos-toggle engage-btn btn shadow-sm fs-6 px-4 rounded-top-0"
           onClick={handleOpenSettings}
@@ -76,7 +75,7 @@ function ViewLoader(props: ViewLoaderProps) {
           高级定制化
         </button>
       </div>
-      <ViewSettings visible={settingsVisible} onClose={handleCloseSettings} />
+      <ViewSettings visible={settingsVisible} onClose={handleCloseSettings} /> */}
     </>
   );
 }
@@ -91,6 +90,8 @@ function ContentView(props: ContentViewProps) {
   });
 
   const view = data?.view;
+
+  console.log('DefaultListView', data, id);
 
   return (
     <PageContent className="pages-module-content-model-view" loading={loading}>

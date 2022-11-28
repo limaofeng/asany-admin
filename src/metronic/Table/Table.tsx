@@ -363,6 +363,11 @@ function Table<T>(props: TableProps<T>) {
     return _newColumns as NewTableColumn<T>[];
   }, [rowSelection, columns]);
 
+  useEffect(() => {
+    state.current.colgroups = new Map();
+    forceRender();
+  }, [newColumns.length]);
+
   const headerColumns = useMemo(() => {
     return newColumns.map((col) => ({
       ...col,

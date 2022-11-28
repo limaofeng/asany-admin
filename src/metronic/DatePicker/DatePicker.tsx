@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import 'daterangepicker';
 import $ from 'jquery';
+import 'daterangepicker';
 import type { Moment } from 'moment';
 import moment from 'moment';
 

@@ -220,7 +220,9 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
                     key={`th-${key}`}
                     col={col}
                     sortOrder={sorter?.field == col.key ? sorter?.order : undefined}
-                    className={classnames(col.className)}
+                    className={classnames(
+                      typeof col.className == 'function' ? col.className('th') : col.className,
+                    )}
                     onSort={handleSort}
                   />
                 );

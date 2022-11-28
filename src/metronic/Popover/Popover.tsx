@@ -17,6 +17,7 @@ type PopoverProps = {
   overlayClassName?: string;
   zIndex?: number;
   delay?: OverlayDelay;
+  offset?: Offset;
   onVisibleChange?: (visible: boolean) => void;
   trigger?: OverlayTriggerType | OverlayTriggerType[] | 'contextMenu';
   title?: React.ReactNode;
@@ -44,7 +45,7 @@ function Popover(props: PopoverProps) {
   const nodeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(props.visible || false);
-  const [offset, setOffset] = useState<Offset | undefined>();
+  const [offset, setOffset] = useState<Offset | undefined>(props.offset);
 
   const temp = useRef(visible);
   temp.current = visible;

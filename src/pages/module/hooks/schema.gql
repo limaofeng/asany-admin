@@ -24,6 +24,7 @@ query model($id: ID) {
       code
       system
       required
+      index
       type {
         id
         name

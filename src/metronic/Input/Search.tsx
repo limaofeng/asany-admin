@@ -7,6 +7,7 @@ import type { InputProps } from './Input';
 import Input from './Input';
 
 type SearchProps = InputProps & {
+  iconClassName?: string;
   onSearch?: (value: string) => void;
 };
 
@@ -23,12 +24,12 @@ const sizes = {
   },
   middle: {
     boxClassName: 'my-1',
-    iconClassName: 'svg-icon-1 ms-3',
+    iconClassName: 'svg-icon-3 ms-3',
     inputClassName: 'ps-13',
   },
 };
 
-function Search({ size, className, onSearch, ...props }: SearchProps) {
+function Search({ size, className, onSearch, iconClassName, ...props }: SearchProps) {
   const sizeClass = sizes[size || 'middle'];
 
   const handleSearch = useCallback(
@@ -48,7 +49,7 @@ function Search({ size, className, onSearch, ...props }: SearchProps) {
     >
       <Icon
         name="Duotune/gen021"
-        className={classnames('position-absolute', sizeClass.iconClassName)}
+        className={classnames('position-absolute', iconClassName || sizeClass.iconClassName)}
       />
       <Input
         className={classnames(className, sizeClass.inputClassName)}
