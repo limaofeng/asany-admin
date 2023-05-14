@@ -3,7 +3,8 @@ import { defineConfig } from 'umi';
 
 export default defineConfig({
   apollo: {
-    uri: '//localhost:8080/graphql',
+    url: 'http://localhost:8080/graphql',
+    wsUrl: 'ws://localhost:8080/subscriptions',
   },
   define: {
     'process.env.WEBSITE_URL': '//localhost:8001',

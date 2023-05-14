@@ -21,7 +21,7 @@ type SelectMenuBodyProps = {
 function renderMenus(options: OptionData[], itemRender?: OptionItemRender) {
   return options.map((option) => {
     if (option.type == 'separator') {
-      return <Menu.Separator key={option.type + '-' + uuid()} className="mx-1" />;
+      return <Menu.Separator key={option.type + '-' + uuid()} className="my-1 mx-1" />;
     }
     return (
       <Menu.Item icon="Duotune/arr085" data-key={option.value} className="px-3" key={option.value}>
@@ -35,7 +35,7 @@ const SelectMenuBody = React.forwardRef(function (props: SelectMenuBodyProps, re
   const { options, closeDropdown, onSelect, itemRender, value, className } = props;
 
   const handleSelect = useCallback(
-    (menu) => {
+    (menu: any) => {
       closeDropdown!();
       onSelect(menu.key);
     },
@@ -48,7 +48,7 @@ const SelectMenuBody = React.forwardRef(function (props: SelectMenuBodyProps, re
       rounded
       ref={ref}
       className={classnames(
-        'menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold py-4 w-auto',
+        'menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold py-1 w-auto',
         className,
       )}
       onSelect={handleSelect}

@@ -1,0 +1,16 @@
+.website-filemanager {
+  .list-files.card {
+    border-radius: var(--bs-card-border-radius);
+    box-shadow: var(--kt-card-box-shadow);
+
+    &>.card-body {
+      height: calc(100% - 30px);
+      .clouddrive-listfiles-no-rows {
+        min-height: calc(100vh - 192px);
+      }
+      .file-details-quick-preview .preview-container {
+        min-height: calc(100vh - 168px);
+      }
+    }
+  }
+}

@@ -46,7 +46,6 @@ interface DatePickerProps {
 }
 
 const CustomInput = forwardRef(({ className, onClick, size, solid, ...props }: any, ref: any) => {
-  console.log('CustomInput', props);
   return (
     <input
       ref={ref}
@@ -66,7 +65,7 @@ function DatePicker(props: DatePickerProps) {
     timePicker,
     minDate,
     maxDate,
-    format = 'yyyy-MM-dd',
+    format: _format = 'YYYY-MM-DD',
     onChange,
     allowClear = true,
     ...inputProps
@@ -84,6 +83,8 @@ function DatePicker(props: DatePickerProps) {
   useEffect(() => {
     setStartDate(toDate(value));
   }, [value]);
+
+  const format = _format.replace('YYYY', 'yyyy').replace('DD', 'dd');
 
   const handleChange = useCallback(
     (newValue: Date) => {

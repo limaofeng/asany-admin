@@ -1,5 +1,6 @@
-import { component, library } from '@asany/sunmao';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { dynamic } from 'umi';
+import { component, library } from '@asany/sunmao';
 
 import LoadingComponent from '@/components/PageLoading';
 
@@ -35,6 +36,11 @@ class Website {
   @component({ name: 'settings.WebsiteNavigation', title: '导航', tags: ['网站/网站管理'] })
   WebsiteNavigation = dynamic({
     loader: () => import('./pages/settings/WebsiteNavigation'),
+    loading: LoadingComponent,
+  });
+  @component({ name: 'settings.WebsiteFileManager', title: '文件管理', tags: ['网站/网站管理'] })
+  WebsiteFileManager = dynamic({
+    loader: () => import('./pages/settings/WebsiteFileManager'),
     loading: LoadingComponent,
   });
   @component({

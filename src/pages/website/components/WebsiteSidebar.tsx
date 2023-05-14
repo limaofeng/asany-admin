@@ -95,6 +95,14 @@ function WebsiteSidebar(props: WebsiteSidebarProps) {
     if (channelMatch) {
       return `category_${channelMatch.params.cid}`;
     }
+    const filesMatch = matchPath<{ sid: string; cid: string }>(location.pathname, {
+      path: '/websites/:sid/files',
+      exact: false,
+      strict: true,
+    });
+    if (filesMatch) {
+      return 'files';
+    }
     return 'my-drive';
   }, [location.pathname]);
 
@@ -181,6 +189,13 @@ function WebsiteSidebar(props: WebsiteSidebarProps) {
           icon=""
           title="通用设置"
           url={`/websites/${id}/settings/general`}
+        />
+        <Menu.Item
+          bullet={true}
+          key="files"
+          icon=""
+          title="文件管理"
+          url={`/websites/${id}/files`}
         />
         <Menu.Item
           bullet={true}

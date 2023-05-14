@@ -1,10 +1,36 @@
+import { useCallback } from 'react';
+
 import { Icon } from '@asany/icons';
 
 import { Modal } from '@/metronic';
+import type { Website } from '@/types';
 
-function CreateWebsite() {
+type CreateWebsiteProps = {
+  visible: boolean;
+  onClose: () => void;
+  onSuccess: (data: Website) => void;
+};
+
+function CreateWebsite(props: CreateWebsiteProps) {
+  const { visible, onClose, onSuccess } = props;
+
+  const loading = false;
+
+  console.log('onSuccess', onSuccess);
+
+  const handleSave = useCallback(() => {}, []);
+
   return (
-    <Modal>
+    <Modal
+      confirmLoading={loading}
+      maskClosable={!loading}
+      className="mw-900px"
+      centered
+      visible={visible}
+      closable={false}
+      onCancel={onClose}
+      onOk={handleSave}
+    >
       <Modal.Header>
         <div className="modal-header">
           {/*--begin::Modal title--*/}

@@ -25,6 +25,8 @@ import { fileSize } from '@/metronic/utils/format';
 import type { FileFilter, FileObject } from '@/types';
 import type { OnChange } from '@/metronic/Table/typings';
 
+import '../style/ListFiles.scss';
+
 type ListFilesProps = {
   toolbar?: 'default' | 'starred' | 'trash';
   orderBy?: Sorter;
@@ -490,7 +492,7 @@ function ListFiles(props: ListFilesProps) {
   }, [handleRestore, handleStar, toolbar]);
 
   return (
-    <Card flush>
+    <Card className="list-files" flush>
       {toolbar == 'default' && (
         <Card.Header className="pt-8 flex-row-reverse">
           <Card.Title>

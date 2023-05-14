@@ -4,7 +4,8 @@ import routes from './routes';
 
 export default defineConfig({
   apollo: {
-    uri: 'https://api.asany.cn/graphql',
+    url: 'https://api.asany.cn/graphql',
+    wsUrl: 'wss://api.asany.cn/subscriptions',
     logging: process.env.NODE_ENV === 'development',
   },
   app: {
