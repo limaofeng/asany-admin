@@ -28,7 +28,7 @@ mutation createWebsite($input: WebsiteCreateInput!) {
 }
 
 query websiteArticleCategories($id: ID!) {
-  categories: articleCategories(filter: { parent: { id: $id, subColumns: true } }) {
+  categories: articleCategories(where: { parent: { id: $id, subColumns: true } }) {
     id
     icon
     name

@@ -116,14 +116,14 @@ query folder($folder: ID!) {
 
 query listFiles(
   $rootFolder: ID!
-  $filter: FileFilter
+  $where: FileWhereInput
   $page: Int = 1
   $pageSize: Int = 30
   $orderBy: OrderBy
 ) {
   listFiles(
     rootFolder: $rootFolder
-    filter: $filter
+    where: $where
     page: $page
     pageSize: $pageSize
     orderBy: $orderBy

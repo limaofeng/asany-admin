@@ -21,7 +21,7 @@ query landingPage($id: ID!) {
 }
 
 query landingPages(
-  $filter: LandingPageFilter
+  $where: LandingPageWhereInput
   $page: Int
   $pageSize: Int
   $orderBy: OrderBy = "createdAt_desc"
@@ -30,7 +30,7 @@ query landingPages(
     totalCount
   }
   landingPages: landingPagesConnection(
-    filter: $filter
+    where: $where
     page: $page
     pageSize: $pageSize
     orderBy: $orderBy
@@ -70,7 +70,7 @@ query landingPoster($id: ID!) {
 }
 
 query landingPosters(
-  $filter: LandingPosterFilter
+  $where: LandingPosterWhereInput
   $page: Int
   $pageSize: Int
   $orderBy: OrderBy = "createdAt_desc"
@@ -79,7 +79,7 @@ query landingPosters(
     totalCount
   }
   landingPosters: landingPostersConnection(
-    filter: $filter
+    where: $where
     page: $page
     pageSize: $pageSize
     orderBy: $orderBy
@@ -119,7 +119,7 @@ query landingStore($id: ID!) {
 }
 
 query landingStores(
-  $filter: LandingStoreFilter
+  $where: LandingStoreWhereInput
   $page: Int
   $pageSize: Int
   $orderBy: OrderBy = "createdAt_desc"
@@ -128,7 +128,7 @@ query landingStores(
     totalCount
   }
   landingStores: landingStoresConnection(
-    filter: $filter
+    where: $where
     page: $page
     pageSize: $pageSize
     orderBy: $orderBy

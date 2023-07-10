@@ -179,7 +179,7 @@ function ModelView(props: ModelViewProps) {
       footer={false}
     >
       <Card bodyClassName="px-0">
-        <Tabs renderContainer={false} type="line-tabs">
+        <Tabs contentContainer={false} type="line-tabs">
           <Tabs.TabPane key="fields" tab="字段">
             {model && <ModelFieldsManagement model={model as Model} />}
           </Tabs.TabPane>

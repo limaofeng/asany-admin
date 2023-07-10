@@ -103,7 +103,7 @@ function useMailboxMessagesMagicQuery(mailbox: string): UseMailboxMessagesMagicQ
       }
       state.current.page = page;
       refetch({
-        filter: {
+        where: {
           mailbox: state.current.mailbox,
         },
         page: state.current.page,
@@ -137,7 +137,7 @@ function useMailboxMessagesMagicQuery(mailbox: string): UseMailboxMessagesMagicQ
       state.current.page = page;
       _loadMailboxMessages({
         variables: {
-          filter: {
+          where: {
             mailbox: state.current.mailbox,
           },
           page: state.current.page,
@@ -183,7 +183,7 @@ function useMailboxMessagesMagicQuery(mailbox: string): UseMailboxMessagesMagicQ
     }
     _loadMailboxMessages({
       variables: {
-        filter: {
+        where: {
           mailbox,
         },
         page: state.current.page,

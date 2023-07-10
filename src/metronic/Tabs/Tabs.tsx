@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import ReactDOM from 'react-dom';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import classnames from 'classnames';
@@ -14,7 +15,12 @@ interface TabsProps {
   tabBarStyle?: CSSProperties;
   tabBarClassName?: string;
   type?: 'tabs' | 'pills-custom' | 'pills' | 'line-tabs';
-  renderContainer?: boolean;
+  contentContainer?:
+    | Element
+    | DocumentFragment
+    | boolean
+    | (() => Element | DocumentFragment)
+    | null;
   defaultActiveKey?: string;
   children: React.ReactElement | React.ReactElement[];
   onChange?: (activeKey: string) => void;
@@ -49,7 +55,7 @@ function Tabs(props: TabsProps) {
     onChange,
     tabPosition = 'top',
     type = 'tabs',
-    renderContainer = true,
+    contentContainer = true,
   } = props;
 
   const panes = useMemo(() => {
@@ -91,50 +97,68 @@ function Tabs(props: TabsProps) {
     [_renderTabBar],
   );
 
-  const body = (
-    <>
-      <ul
-        key="nav-tabs"
-        className={classnames('nav ', className, {
-          'nav-tabs': type == 'tabs',
-          'nav-line-tabs': type == 'line-tabs',
-          'nav-pills': type == 'pills',
-          'nav-pills nav-pills-custom': type == 'pills-custom',
-          'nav-pills flex-row flex-md-column  border-bottom-0': tabPosition == 'left',
-        })}
-      >
-        {panes.map((item) =>
-          renderTabBar({
-            id: item.id,
-            key: item.id,
-            style: props.tabBarStyle,
-            className: classnames(props.tabBarClassName),
-            active: activeKey == item.id,
-            onClick: handleSelect(item.id),
-            children: item.name,
-          }),
-        )}
-      </ul>
-      <div key="tab-content" className="tab-content">
-        {panes.map((item) =>
-          React.cloneElement(item.content, { key: item.id, active: activeKey == item.id }),
-        )}
-      </div>
-    </>
-  );
-
-  if (!renderContainer) {
-    return body;
-  }
-
-  return (
-    <div
-      className={classnames('tabs-container', {
-        'd-flex flex-column flex-md-row': tabPosition == 'left',
+  const navTabs = (
+    <ul
+      key="nav-tabs"
+      className={classnames('nav ', className, {
+        'nav-tabs': type == 'tabs',
+        'nav-line-tabs': type == 'line-tabs',
+        'nav-pills': type == 'pills',
+        'nav-pills nav-pills-custom': type == 'pills-custom',
+        'nav-pills flex-row flex-md-column  border-bottom-0': tabPosition == 'left',
       })}
     >
-      {body}
+      {panes.map((item) =>
+        renderTabBar({
+          id: item.id,
+          key: item.id,
+          style: props.tabBarStyle,
+          className: classnames(props.tabBarClassName),
+          active: activeKey == item.id,
+          onClick: handleSelect(item.id),
+          children: item.name,
+        }),
+      )}
+    </ul>
+  );
+
+  const content = (
+    <div key="tab-content" className="tab-content">
+      {panes.map((item) =>
+        React.cloneElement(item.content, { key: item.id, active: activeKey == item.id }),
+      )}
     </div>
+  );
+
+  if (!contentContainer) {
+    return (
+      <>
+        {navTabs}
+        {content}
+      </>
+    );
+  }
+
+  if (contentContainer === true) {
+    return (
+      <div
+        className={classnames('tabs-container', {
+          'd-flex flex-column flex-md-row': tabPosition == 'left',
+        })}
+      >
+        {navTabs}
+        {content}
+      </div>
+    );
+  }
+
+  const container = typeof contentContainer === 'function' ? contentContainer() : contentContainer;
+
+  return (
+    <>
+      {navTabs}
+      {container && ReactDOM.createPortal(content, container)}
+    </>
   );
 }
 

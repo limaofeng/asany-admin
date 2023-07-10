@@ -5,8 +5,8 @@ query articleStoreTemplates {
   }
 }
 
-query articles($filter: ArticleFilter, $page: Int, $pageSize: Int) {
-  articles(filter: $filter, page: $page, pageSize: $pageSize) {
+query articles($where: ArticleWhereInput, $page: Int, $pageSize: Int) {
+  articles(where: $where, page: $page, pageSize: $pageSize) {
     total: totalCount
     current: currentPage
     totalPage
@@ -35,7 +35,7 @@ query articles($filter: ArticleFilter, $page: Int, $pageSize: Int) {
 }
 
 query articleCategories($id: ID!) {
-  categories: articleCategories(filter: { parent: { id: $id, subColumns: true } }) {
+  categories: articleCategories(where: { parent: { id: $id, subColumns: true } }) {
     id
     icon
     name

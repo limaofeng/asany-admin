@@ -1,8 +1,8 @@
-query processModels($filter: ProcessModelFilter, $page: Int, $pageSize: Int, $orderBy: OrderBy) {
-  total: processModels(pageSize: 1, filter: { user: "self" }) {
+query processModels($where: ProcessModelWhereInput, $page: Int, $pageSize: Int, $orderBy: OrderBy) {
+  total: processModels(pageSize: 1, where: { user: "self" }) {
     totalCount
   }
-  processModels(filter: $filter, page: $page, pageSize: $pageSize, orderBy: $orderBy) {
+  processModels(where: $where, page: $page, pageSize: $pageSize, orderBy: $orderBy) {
     totalPage
     pageSize
     current: currentPage

@@ -37,13 +37,19 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
   const { menus, activeKey, onSelect } = props;
 
   const [userMenuVisible, setUserMenuVisible] = useState(false);
+  const [notificationVisible, setNotificationVisible] = useState(false);
 
   const { data: user } = useCurrentuser();
 
   const UserAccountMenu = useReactComponent('cn.asany.ui.admin.user.UserAccountMenu');
+  const Notifications = useReactComponent('cn.asany.ui.admin.user.Notifications');
 
   const handleCloseUserMenu = useCallback(() => {
     setUserMenuVisible(false);
+  }, []);
+
+  const handleCloseNotifications = useCallback(() => {
+    setNotificationVisible(false);
   }, []);
 
   const handleClick = (menu: MenuData) => () => {
@@ -94,11 +100,22 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
         </div>
       ))}
       <div className="d-flex align-items-center mb-2">
-        <div
-          className="btn btn-icon btn-active-color-primary btn-color-gray-400 btn-active-light"
-          title="Notifications"
-        >
-          <Icon name="Duotune/gen025" className="svg-icon-2 svg-icon-lg-1" />
+        <div className="btn btn-icon btn-active-color-primary btn-color-gray-400 btn-active-light">
+          <Popover
+            placement="top-start"
+            zIndex={100}
+            visible={notificationVisible}
+            onVisibleChange={setNotificationVisible}
+            arrowProps={{ style: { display: 'none' } }}
+            overlayClassName="overlay-zero-gap overlay-no-arrow overlay-no-border"
+            content={
+              <Notifications close={handleCloseNotifications} visible={notificationVisible} />
+            }
+          >
+            <Tooltip title="通知" placement="right">
+              <Icon name="Duotune/gen007" className="svg-icon-2 svg-icon-lg-1" />
+            </Tooltip>
+          </Popover>
         </div>
       </div>
       <div className="d-flex align-items-center mb-10">
@@ -264,14 +281,4 @@ function Aside(props: AsideProps) {
 
 Aside.Workspace = AsideWorkspace;
 
-/* function renderMenu(menu?: MenuData) {
-  if (!menu) {
-    return <></>;
-  }
-  if (menu.component) {
-    return <CustomTabContent menu={menu} component={menu.component} />;
-  }
-  return <Navigation title={menu.name} menus={menu.children!} />;
-}
- */
 export default Aside;

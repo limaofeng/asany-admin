@@ -100,6 +100,15 @@ class User {
     loader: () => import('./components/UserAccountMenu'),
     loading: LoadingComponent,
   });
+  @component({
+    name: 'Notifications',
+    title: '通知面板',
+    tags: ['用户中心/其他'],
+  })
+  Notifications = dynamic({
+    loader: () => import('./components/Notifications'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new User();

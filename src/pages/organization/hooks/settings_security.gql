@@ -1,5 +1,5 @@
 query permissionsConnection(
-  $filter: PermissionFilter
+  $where: PermissionWhereInput
   $page: Int
   $pageSize: Int
   $orderBy: OrderBy = "createdAt_desc"
@@ -8,7 +8,7 @@ query permissionsConnection(
     totalCount
   }
   connection: permissionsConnection(
-    filter: $filter
+    where: $where
     page: $page
     pageSize: $pageSize
     orderBy: $orderBy

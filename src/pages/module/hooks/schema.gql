@@ -1,5 +1,5 @@
 query schema($module: ID!) {
-  models(module: $module, filter: { type: ENTITY }) {
+  models(module: $module, where: { type: ENTITY }) {
     id
     code
     name
@@ -7,8 +7,8 @@ query schema($module: ID!) {
   }
 }
 
-query models($moduleId: ID!, $filter: ModelFilter, $limit: Int) {
-  models(module: $moduleId, filter: $filter, limit: $limit) {
+query models($moduleId: ID!, $where: ModelWhereInput, $limit: Int) {
+  models(module: $moduleId, where: $where, limit: $limit) {
     id
   }
 }
@@ -53,8 +53,8 @@ query modelFiledTypes {
   }
 }
 
-query modelFields($model: ID!, $filter: ModelFieldFilter, $limit: Int) {
-  listFields: modelFields(model: $model, filter: $filter, limit: $limit) {
+query modelFields($model: ID!, $where: ModelFieldWhereInput, $limit: Int) {
+  listFields: modelFields(model: $model, where: $where, limit: $limit) {
     id
     name
     description

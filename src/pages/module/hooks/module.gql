@@ -8,8 +8,8 @@ query module($id: ID!) {
   }
 }
 
-query modules($filter: ModuleFilter, $limit: Int) {
-  modules(filter: $filter, limit: $limit) {
+query modules($where: ModuleWhereInput, $limit: Int) {
+  modules(where: $where, limit: $limit) {
     id
     name
     code

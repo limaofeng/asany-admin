@@ -30,8 +30,8 @@ query book($id: ID!, $namespace: String) {
   }
 }
 
-query contacts($filter: ContactFilter, $page: Int = 1) {
-  contacts(filter: $filter, page: $page) {
+query contacts($where: ContactWhereInput, $page: Int = 1) {
+  contacts(where: $where, page: $page) {
     currentPage
     pageSize
     totalPage

@@ -227,7 +227,7 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
         <div className="d-flex flex-column flex-row-fluid gap-7 gap-lg-10  me-lg-10">
           <Tabs
             defaultActiveKey="general"
-            renderContainer={false}
+            contentContainer={false}
             className="border-0 fs-4 fw-bold mb-n2 nav-line-tabs-2x"
           >
             <Tabs.TabPane key="general" tab="基本信息" forceRender>

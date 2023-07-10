@@ -10,3 +10,6 @@
     display: none;
   }
 }
+.overlay-no-border {
+  --bs-popover-border-width: 0;
+}

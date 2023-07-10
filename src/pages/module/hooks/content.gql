@@ -1,5 +1,5 @@
 query content($module: ID!) {
-  models(module: $module, filter: { type: ENTITY }) {
+  models(module: $module, where: { type: ENTITY }) {
     id
     code
     name

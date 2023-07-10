@@ -42,7 +42,9 @@ const InternalMenu = React.forwardRef(function (props: any, ref: any) {
       if (!child) {
         continue;
       }
-      if (child.type === React.Fragment) {
+      if (child.type === 'div') {
+        newChildren.push(child);
+      } else if (child.type === React.Fragment) {
         newChildren.push(
           ...unpack(child.props.children).map((x) => {
             const key = x.props['data-key'] || x.key.replace(/^[^$]+[$]/, '');
