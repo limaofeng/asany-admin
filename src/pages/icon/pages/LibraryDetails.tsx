@@ -1,19 +1,31 @@
-import React, { forwardRef, memo, useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 
 import { LoadingOutlined } from '@ant-design/icons';
 import Icon from '@asany/icons';
 import type { IconDefinition, IconLibraryDefinition } from '@asany/icons/types';
 import type { SortableItemProps } from '@asany/sortable';
 import Sortable from '@asany/sortable';
-import { Dropdown, Input, Menu, Spin } from 'antd';
 import classnames from 'classnames';
 import { useParams } from 'react-router-dom';
+import type { OnDrag } from 'react-selecto';
 import Selecto from 'react-selecto';
 
 import LibraryControlPanel from '../components/LibraryControlPanel';
 import { useIconLibraryQuery } from '../hooks';
 
+import { Dropdown, Input, Menu, Spin } from '@/metronic';
 import { ContentWrapper } from '@/layouts/components';
+
+import '../style/index.scss';
 
 type LibraryNameProps = {
   editing: boolean;
@@ -31,9 +43,11 @@ function LibraryName(props: LibraryNameProps) {
         <Spin spinning={loading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
           <a className="name-editing-cancel" onClick={onRevoke}>
             <Icon name="Ion/close" />
+            close
           </a>
           <a className="name-editing-ok">
             <Icon name="Ion/checkmark" />
+            checkmark
           </a>
         </Spin>
       </div>
@@ -45,19 +59,27 @@ function LibraryName(props: LibraryNameProps) {
 interface IconThumbProps extends SortableItemProps<IconDefinition> {
   clicked: boolean;
   icon: IconDefinition;
-  selected: boolean;
+  hasSelected: (id: string) => boolean;
+  onDragstart: () => void;
+  onDragend: () => void;
 }
 
 const IconMosaic = memo(
   forwardRef((props: IconThumbProps, ref: any) => {
-    const { drag, icon, selected, className, clicked } = props;
+    const { drag, icon, className, clicked, hasSelected, onDragstart, onDragend } = props;
+    useEffect(() => {
+      if (!onDragstart || !onDragend) {
+        return;
+      }
+      props.dragging ? onDragstart() : onDragend();
+    }, [onDragend, onDragstart, props.dragging]);
     return (
       <div
-        ref={drag(ref)}
+        ref={drag(ref) as any}
         className={classnames(
           'icon-mosaic',
           {
-            selected,
+            selected: hasSelected(icon.id),
             'sortable-item-dragging': clicked && !className?.includes('sortable-item-dragging'),
           },
           className,
@@ -81,18 +103,22 @@ function LibraryDetails() {
   const dropdownContainer = useRef<HTMLDivElement>(null);
   const mosaicContainer = useRef<HTMLDivElement>(null);
   const temp = useRef<{ selecto?: boolean; move?: boolean; selectedKeys: Set<string> }>({
+    selecto: true,
+    move: false,
     selectedKeys: new Set(),
   });
   const selecto = useRef<Selecto>(null);
   const params = useParams<{ id: string }>();
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
   const [editing, setEditing] = useState(false);
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  /*   temp.current.selecto = useSelector((state) => state.workspace.icon.selecto);
-  temp.current.move = useSelector((state) => state.workspace.icon.move); */
+  // temp.current.selecto = useSelector((state) => state.workspace.icon.selecto);
+  // temp.current.move = useSelector((state) => state.workspace.icon.move);
+
   temp.current.selectedKeys = selectedKeys;
 
-  const id = params.id || '762'; // TODO: 调试完成后，去掉固定变量
+  const id = params.id;
 
   const { data, loading, refetch } = useIconLibraryQuery({
     variables: { id },
@@ -111,8 +137,25 @@ function LibraryDetails() {
     console.log('sort change');
   }, []);
 
-  const handleSelectoDragCondition = useCallback(() => !!temp.current.selecto, []);
+  const handleDragstart = useCallback(() => {
+    temp.current.selecto = false;
+    forceRender();
+  }, []);
+  const handleDragend = useCallback(() => {
+    temp.current.selecto = true;
+    forceRender();
+  }, []);
 
+  const handleHasSelected = useCallback((key: string) => {
+    return temp.current.selectedKeys.has(key);
+  }, []);
+
+  const handleSelectoDragCondition = useCallback(() => !!temp.current.selecto, []);
+  const handleSelectoDrag = useCallback((e: OnDrag<any>) => {
+    if (!temp.current.selecto) {
+      e.stop();
+    }
+  }, []);
   const handleMoveDragCondition = useCallback(() => !!temp.current.move, []);
 
   const { library } = data || {};
@@ -150,8 +193,7 @@ function LibraryDetails() {
               </div>
               <div className="library-right" ref={dropdownContainer}>
                 <Dropdown
-                  transitionName=""
-                  trigger={['click']}
+                  trigger="click"
                   placement="bottomRight"
                   getPopupContainer={popupContainer}
                   overlay={
@@ -163,6 +205,7 @@ function LibraryDetails() {
                 >
                   <a className="ant-dropdown-link">
                     <Icon name="Ion/navicon" />
+                    xxxx
                   </a>
                 </Dropdown>
               </div>
@@ -177,7 +220,9 @@ function LibraryDetails() {
               <div className="icon-mosaic-set">
                 <div className="ims-header-section">
                   <span className="ims-hs-title">title</span>
-                  <div className="ims-hs-actions">{/* <Icon name="Ion/navicon" /> */}</div>
+                  <div className="ims-hs-actions">
+                    {/* <Icon name="Ion/navicon" /> */}Ion/navicon
+                  </div>
                 </div>
                 <Sortable
                   accept={['sortable-card']}
@@ -191,8 +236,10 @@ function LibraryDetails() {
                   itemRender={(props: any, ref) => (
                     <IconMosaic
                       {...props}
+                      onDragstart={handleDragstart}
+                      onDragend={handleDragend}
                       icon={props.data}
-                      selected={temp.current.selectedKeys.has(props.data.id)}
+                      hasSelected={handleHasSelected}
                       ref={ref}
                     />
                   )}
@@ -210,6 +257,7 @@ function LibraryDetails() {
                 keyContainer={window}
                 dragCondition={handleSelectoDragCondition}
                 hitRate={0}
+                onDrag={handleSelectoDrag}
                 onSelect={(e) => {
                   setSelectedKeys((_selectedKeys) => {
                     e.added
