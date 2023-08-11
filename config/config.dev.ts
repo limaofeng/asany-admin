@@ -10,7 +10,8 @@ export default defineConfig({
     'process.env.WEBSITE_URL': '//localhost:8001',
     'process.env.STORAGE_URL': '//localhost:8080',
     'process.env.MOBILE_URL': '//localhost:8001',
-    'process.env.OPEN_IM_URL': 'ws://47.103.119.188:10003',
+    'process.env.OPEN_IM_API_URL': 'http://10.226.116.180:10002',
+    'process.env.OPEN_IM_WS_URL': 'ws://10.226.116.180:10001',
   },
   plugins: [
     // https://github.com/zthxxx/react-dev-inspector

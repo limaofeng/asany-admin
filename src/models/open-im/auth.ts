@@ -2,6 +2,7 @@ import { useCallback, useEffect, useReducer, useState } from 'react';
 
 import { useModel } from 'umi';
 import { CbEvents, OpenIMSDK } from 'open-im-sdk';
+import { getSDK } from 'open-im-sdk-wasm';
 import type { FullUserItem, InitConfig } from 'open-im-sdk/types';
 
 import { getSelfInfo, getUnReadCount, setUnReadCount } from '@/utils/open-im/actions/user';
@@ -102,6 +103,7 @@ export default function useChatModel() {
     if (!currentUser) {
       return;
     }
+    const IMSDK = getSDK('/assets/plugins/custom/open-im-sdk/openIM.wasm');
 
     const config: InitConfig = {
       userID: currentUser.uid, // 用户ID
@@ -109,6 +111,16 @@ export default function useChatModel() {
       url: process.env.OPEN_IM_URL!, // jssdk server ws地址
       platformID: 5, // 平台号
     };
+
+    IMSDK.login({
+      platformID: 5,
+      apiAddr: process.env.OPEN_IM_API_URL!,
+      wsAddr: process.env.OPEN_IM_WS_URL!,
+      userID: currentUser.uid,
+      token: currentUser.imToken,
+    }).then((res) => {
+      console.log(res);
+    });
 
     im.login(config)
       .then((res) => {
