@@ -3,7 +3,10 @@
   "version": "0.2.38",
   "private": true,
   "description": "An out-of-box UI solution for enterprise applications",
+  "main": "main.js",
+  "homepage": ".",
   "scripts": {
+    "estart": "electron .",
     "postinstall": "husky install && umi g tmp && run-script-os",
     "postinstall:win32": "cd scripts && run.cmd",
     "postinstall:darwin:linux": "sh ./scripts/run.sh",
@@ -191,6 +194,7 @@
     "cross-port-killer": "^1.4.0",
     "date-fns": "^2.30.0",
     "detect-installer": "^1.0.2",
+    "electron": "^26.2.0",
     "enzyme": "^3.11.0",
     "eslint": "^8.23.1",
     "eslint-plugin-graphql": "^4.0.0",
