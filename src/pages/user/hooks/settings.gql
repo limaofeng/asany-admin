@@ -4,8 +4,8 @@ query profile {
   }
 }
 
-mutation updateProfile($input: UserUpdateInput!) {
-  profile: updateUser(input: $input) {
+mutation updateProfile($id: ID!, $input: UserUpdateInput!) {
+  profile: updateUser(id: $id, input: $input) {
     ...UserProfile
   }
 }
@@ -56,7 +56,7 @@ query organizations {
     logo
     role {
       id
-      code
+      # code
       name
     }
   }

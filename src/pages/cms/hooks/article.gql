@@ -6,7 +6,7 @@ query articleStoreTemplates {
 }
 
 query articles($where: ArticleWhereInput, $page: Int, $pageSize: Int) {
-  articles(where: $where, page: $page, pageSize: $pageSize) {
+  articles: articlesConnection(where: $where, page: $page, pageSize: $pageSize) {
     total: totalCount
     current: currentPage
     totalPage

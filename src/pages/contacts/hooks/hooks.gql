@@ -19,14 +19,14 @@ query book($id: ID!, $namespace: String) {
       id
       name
     }
-    groups(namespace: $namespace) {
-      id
-      name
-      namespace
-      path
-      index
-      parentId
-    }
+    # groups(namespace: $namespace) {
+    #   id
+    #   name
+    #   namespace
+    #   path
+    #   index
+    #   parentId
+    # }
   }
 }
 
