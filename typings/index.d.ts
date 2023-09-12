@@ -4,6 +4,8 @@ interface Window {
   KTUtilElementDataStore: any;
   KTUtilElementDataStoreID: number;
   KTUtilDelegatedEventHandlers: any;
+  luckysheet: any;
+  pdfjsLib: any;
 }
 interface HTMLElement {
   customDataTag?: number;

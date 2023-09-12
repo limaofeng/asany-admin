@@ -1,25 +1,122 @@
 .upload-avatar {
   .upload-dropzone {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
     height: 100%;
-    svg {
+
+    /*     svg {
       position: absolute;
       top: 0;
       background-color: #fafafa;
-    }
+    } */
     .upload-icon {
       position: relative;
     }
+
     .upload-preview {
       width: 88%;
       height: 88%;
-      > img {
+
+      >img {
         width: 100%;
         height: 100%;
       }
     }
   }
+}
+
+
+.dash-box {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dash-left {
+  width: 1px;
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  background-image: linear-gradient(to top, #ccc 0%, #ccc 50%, transparent 50%);
+  background-size: 1px 8px;
+}
+
+.dash-right {
+  width: 1px;
+  position: absolute;
+  right: 0;
+  top: 4px;
+  bottom: 4px;
+  background-image: linear-gradient(to bottom, #ccc 0%, #ccc 50%, transparent 50%);
+  background-size: 1px 8px;
+}
+
+.dash-top {
+  height: 1px;
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 0;
+  background-image: linear-gradient(to right, #ccc 0%, #ccc 50%, transparent 50%);
+  background-size: 8px 1px;
+}
+
+.dash-bottom {
+  height: 1px;
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 0;
+  background-image: linear-gradient(to left, #ccc 0%, #ccc 50%, transparent 50%);
+  background-size: 8px 1px
+}
+
+.dash-top-radius {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 2px;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-top-left-radius: 100%;
+}
+
+.dash-right-radius {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 2px;
+  height: 2px;
+  border-top: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-top-right-radius: 100%;
+}
+
+.dash-bottom-radius {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 2px;
+  height: 2px;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-bottom-right-radius: 100%;
+}
+
+.dash-left-radius {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 2px;
+  height: 2px;
+  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-bottom-left-radius: 100%;
 }

@@ -9,7 +9,7 @@ export default defineConfig({
     logging: process.env.NODE_ENV === 'development',
   },
   app: {
-    id: '6068485332c5fc853a65',
+    id: 'dae19885dc94eb73c399',
   },
   define: {
     'process.env.STORAGE_URL': 'https://api.asany.cn',

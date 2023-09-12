@@ -216,7 +216,7 @@ function Upload(props: UploadProps) {
   );
 }
 
-Upload.UploadAvatar = UploadAvatar;
+Upload.NewImage = UploadAvatar;
 Upload.Image = ImageUpload;
 Upload.Queue = QueueUpload;
 

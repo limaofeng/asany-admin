@@ -90,10 +90,13 @@ function Popover(props: PopoverProps) {
     if (trigger != 'contextMenu') {
       return;
     }
-    nodeRef.current?.addEventListener('contextmenu', (e: any) => {
+    nodeRef.current?.addEventListener("click", (e: any) => {
       const x = (getOffsetLeft(e.target, nodeRef.current!) + e.layerX) as number;
       const y = (getOffsetTop(e.target, nodeRef.current!) + e.layerY) as number;
-      setOffset([y - 6, x - nodeRef.current!.offsetWidth]);
+      setOffset([y - nodeRef.current!.offsetTop, x - nodeRef.current!.offsetWidth]);
+
+      console.log('xxxxx', [y - nodeRef.current!.offsetTop, x - nodeRef.current!.offsetWidth], nodeRef.current!.offsetHeight, nodeRef.current!.offsetTop)
+
       onVisibleChange ? onVisibleChange(true) : setVisible(true);
       e.stopPropagation();
       e.preventDefault();

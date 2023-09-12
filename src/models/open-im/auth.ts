@@ -103,7 +103,7 @@ export default function useChatModel() {
     if (!currentUser) {
       return;
     }
-    const IMSDK = getSDK('/assets/plugins/custom/open-im-sdk/openIM.wasm');
+    /* const IMSDK = getSDK('/assets/plugins/custom/open-im-sdk/openIM.wasm');
 
     const config: InitConfig = {
       userID: currentUser.uid, // 用户ID
@@ -152,7 +152,7 @@ export default function useChatModel() {
         .catch((err) => {
           console.log('logout failed...', err);
         });
-    };
+    }; */
   }, [currentUser]);
 
   return {

@@ -175,6 +175,17 @@ generates:
       afterAllFileWrite:
         - prettier --write
         - eslint --fix
+  src/pages/fples/hooks/api.ts:
+    documents: ["src/pages/fples/hooks/*.gql"]
+    plugins:
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+        - eslint --fix
   src/pages/module/hooks/api.ts:
     documents: ["src/pages/module/hooks/*.gql"]
     plugins:

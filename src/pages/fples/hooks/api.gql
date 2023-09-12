@@ -1,0 +1,25 @@
+query screens {
+  screens {
+    id
+    info
+    boundIp
+    operators
+    status
+    statusImage
+    documents
+    description
+  }
+}
+
+query screen($id: ID!) {
+  screen(id: $id) {
+    id
+    info
+    boundIp
+    operators
+    status
+    statusImage
+    documents
+    description
+  }
+}
