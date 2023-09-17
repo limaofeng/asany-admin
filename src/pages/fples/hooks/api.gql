@@ -3,7 +3,9 @@ query screens {
     id
     info
     boundIp
-    operators
+    operator1
+    operator2
+    operator3
     status
     statusImage
     documents
@@ -16,7 +18,81 @@ query screen($id: ID!) {
     id
     info
     boundIp
-    operators
+    operator1
+    operator2
+    operator3
+    status
+    statusImage
+    documents
+    description
+  }
+}
+
+mutation updateScreen($id: ID!, $input: FactoryScreenUpdateInput!) {
+  updateScreen(id: $id, input: $input) {
+    id
+    info
+    boundIp
+    operator1
+    operator2
+    operator3
+    status
+    statusImage
+    documents
+    description
+  }
+}
+
+mutation createScreen($input: FactoryScreenCreateInput!) {
+  createScreen(input: $input) {
+    id
+    info
+    boundIp
+    operator1
+    operator2
+    operator3
+    status
+    statusImage
+    documents
+    description
+  }
+}
+
+mutation validateAdminKey($key: String!) {
+  validateAdminKey(key: $key)
+}
+
+query ping {
+  ping
+}
+
+query getClientIp {
+  getClientIp
+}
+
+query getScreenForIp($ip: String!) {
+  getScreenForIp(ip: $ip) {
+    id
+    info
+    boundIp
+    operator1
+    operator2
+    operator3
+    status
+    statusImage
+    documents
+    description
+  }
+}
+
+subscription onUpdateScreen($id: ID) {
+  onUpdateScreen(id: $id) {
+    id
+    info
+    boundIp
+    operator1
+    operator2
+    operator3
     status
     statusImage
     documents

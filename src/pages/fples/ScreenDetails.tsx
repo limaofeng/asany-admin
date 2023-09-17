@@ -1,18 +1,18 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { MenuProps } from 'antd';
 import classnames from 'classnames';
-import type OverlayScrollbars from 'overlayscrollbars';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import type { RouteComponentProps } from 'react-router';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import PdfViewer from './viewers/PdfViewer';
 import DocumentCard from './DocumentCard';
+import { useOnUpdateScreenSubscription, useScreenQuery, useUpdateScreenMutation } from './hooks';
 
-import type { FactoryScreen } from '@/types';
 import Upload from '@/metronic/Upload';
-import { Menu, Popover } from '@/metronic';
-import { useScreenQuery } from './hooks';
+import { Menu, Popover, Toast } from '@/metronic';
+import type { UploadFileData } from '@/metronic/Upload/utils/upload';
+import { delay } from '@/utils';
 
 const switchMenu = (menu: any, i: number) => {
   if (menu.id === 'Separator') {
@@ -71,14 +71,25 @@ function ScreenDetails(props: ScreenDetailsProps) {
 
   const [status, setStatus] = useState(statusTexts[0]);
 
-  const { data, loading } = useScreenQuery({
+  const { data, loading, refetch } = useScreenQuery({
     variables: {
       id: match.params.id,
     },
     fetchPolicy: 'network-only',
   });
 
-  console.log('data', data, loading);
+  const [updateScreen, { loading: updateSubmiting }] = useUpdateScreenMutation();
+
+  const { data: newData } = useOnUpdateScreenSubscription({
+    variables: {
+      id: match.params.id,
+    },
+  });
+
+  useEffect(() => {
+    console.log('Subscription OnUpdate Screen', newData);
+    refetch();
+  }, [newData, refetch]);
 
   const handleChangeStatus = useCallback((item: (typeof statusTexts)[0]) => {
     return () => {
@@ -95,7 +106,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
           id: 'goBack',
           title: '返回列表',
           method: () => {
-            history.goBack();
+            history.replace('/screens');
           },
           hidden: false,
         },
@@ -140,6 +151,64 @@ function ScreenDetails(props: ScreenDetailsProps) {
     [handleChangeStatus, history],
   );
 
+  const handleUpdateInfo = useCallback(
+    async (value?: string, fileData?: UploadFileData) => {
+      console.log(value, fileData);
+      await Toast.promise(
+        delay(
+          updateScreen({
+            variables: {
+              id: data?.screen?.id,
+              input: { info: value },
+            },
+          }),
+          350,
+        ),
+        {
+          pending: '数据更新中...',
+          success: '数据更新成功',
+          error: '数据更新失败',
+        },
+        {
+          duration: 2000,
+          placement: 'top-center',
+        },
+      );
+      refetch();
+    },
+    [data?.screen?.id, refetch, updateScreen],
+  );
+
+  const handleUpdateOperators = useCallback(
+    (index: number) => {
+      return async (value?: string, fileData?: UploadFileData) => {
+        console.log(index, value, fileData);
+        await Toast.promise(
+          delay(
+            updateScreen({
+              variables: {
+                id: data?.screen?.id,
+                input: { ['operator' + index]: value },
+              },
+            }),
+            350,
+          ),
+          {
+            pending: '数据更新中...',
+            success: '数据更新成功',
+            error: '数据更新失败',
+          },
+          {
+            duration: 2000,
+            placement: 'top-center',
+          },
+        );
+        refetch();
+      };
+    },
+    [data?.screen?.id, refetch, updateScreen],
+  );
+
   const scrollbar = useRef<OverlayScrollbarsComponent>(null);
 
   const handleScroll = useCallback(() => {}, []);
@@ -149,7 +218,13 @@ function ScreenDetails(props: ScreenDetailsProps) {
       <div className="screen_one">
         <div className="screen_base">
           <div className="screen_info">
-            <Upload.NewImage />
+            <div className="frame-border">
+              <Upload.NewImage
+                value={data?.screen?.info?.id}
+                onChange={handleUpdateInfo}
+                placeholder={require('./assets/info_placeholder.jpg')}
+              />
+            </div>
           </div>
           <div className="screen_status">
             <Popover
@@ -188,14 +263,28 @@ function ScreenDetails(props: ScreenDetailsProps) {
           </div>
         </div>
         <div className="operators">
-          <div className="operator-item">
-            <Upload.NewImage />
-          </div>
-          <div className="operator-item">
-            <Upload.NewImage />
-          </div>
-          <div className="operator-item">
-            <Upload.NewImage />
+          <div className="operator-context">
+            <div className="operator-item">
+              <Upload.NewImage
+                value={data?.screen?.operator1?.id}
+                placeholder={require('./assets/operator_placeholder.jpg')}
+                onChange={handleUpdateOperators(1)}
+              />
+            </div>
+            <div className="operator-item">
+              <Upload.NewImage
+                value={data?.screen?.operator2?.id}
+                onChange={handleUpdateOperators(2)}
+                placeholder={require('./assets/operator_placeholder.jpg')}
+              />
+            </div>
+            <div className="operator-item">
+              <Upload.NewImage
+                value={data?.screen?.operator3?.id}
+                onChange={handleUpdateOperators(3)}
+                placeholder={require('./assets/operator_placeholder.jpg')}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -203,7 +292,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
       <div className="document-display-area">
         <OverlayScrollbarsComponent
           ref={scrollbar}
-          style={{ height: 1900 }}
+          style={{ height: 2100 }}
           className={classnames('custom-scrollbar infinite-scroll')}
           options={{
             scrollbars: { autoHide: 'scroll' },
@@ -212,22 +301,23 @@ function ScreenDetails(props: ScreenDetailsProps) {
             },
           }}
         >
-          <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-          />
-          <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-          />
-          <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-          />
-          <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-          />
-          <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-          />
-          {/*         <DocumentCard
+          <div className="document-content">
+            <DocumentCard
+              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+            />
+            <DocumentCard
+              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+            />
+            <DocumentCard
+              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+            />
+            <DocumentCard
+              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+            />
+            <DocumentCard
+              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+            />
+            {/*         <DocumentCard
           doc={{
             id: '',
             type: 'excel',
@@ -235,11 +325,14 @@ function ScreenDetails(props: ScreenDetailsProps) {
           }}
           height={1700}
         /> */}
-          <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/Production_order.pdf' }}
-          />
+            <DocumentCard
+              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/Production_order.pdf' }}
+            />
+          </div>
         </OverlayScrollbarsComponent>
+        <div className="document-display-area__sidebar">水电费水电费</div>
       </div>
+      <ToastContainer />
     </div>
   );
 }

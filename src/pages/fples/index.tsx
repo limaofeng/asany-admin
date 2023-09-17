@@ -26,6 +26,11 @@ class Screen {
     loader: () => import('./ScreenDetails'),
     loading: LoadingComponent,
   });
+  @component({ name: 'DefaultView' })
+  DefaultView = dynamic({
+    loader: () => import('./DefaultView'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Screen();

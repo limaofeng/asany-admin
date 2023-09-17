@@ -7,7 +7,8 @@ export default defineConfig({
     wsUrl: 'ws://localhost:8080/subscriptions',
   },
   define: {
-    'process.env.NODE_ENV': 'dev',
+    'process.env.APOLLO_URL': 'http://localhost:8080/graphql',
+    'process.env.APOLLO_WS': 'ws://localhost:8080/subscriptions',
     'process.env.WEBSITE_URL': '//localhost:8001',
     'process.env.STORAGE_URL': '//localhost:8080',
     'process.env.MOBILE_URL': '//localhost:8001',

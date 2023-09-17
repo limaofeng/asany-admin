@@ -17,13 +17,16 @@ function ScreenList(props: ScreenListProps) {
 
   console.log('data', screens);
 
-  const handleClick = useCallback((screen: FactoryScreen) => {
-    history.push(`/screens/${screen.id}`)
-  }, [history]);
+  const handleClick = useCallback(
+    (screen: FactoryScreen) => {
+      history.push(`/screens/${screen.id}`);
+    },
+    [history],
+  );
 
   return (
     <div className="fples_screen_list">
-      <h1>Screen List</h1>
+      <h1>屏幕列表</h1>
       <hr />
       <div className="fples_screen_list_container">
         {screens.map((screen) => (

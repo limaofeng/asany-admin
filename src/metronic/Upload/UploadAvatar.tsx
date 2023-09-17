@@ -1,30 +1,53 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo, useReducer, useRef } from 'react';
 
 import { useDropzone } from 'react-dropzone';
 
+import type { UploadFileData } from './utils/upload';
 import { useUpload } from './utils/upload';
 
 import './style/UploadAvatar.scss';
 
 type UploadAvatarProps = {
+  value?: string | null;
   width?: string | number;
   height?: string | number;
+  placeholder?: string;
+  onChange?: (id?: string, file?: UploadFileData) => void;
 };
 
 function UploadAvatar(props: UploadAvatarProps) {
-  const { width = '100%', height = '100%' } = props;
+  const { placeholder, width = '100%', height = '100%', value, onChange } = props;
 
   const [upload, { data, progress }] = useUpload({
-    space: '',
+    space: 'XXTIeJCp',
   });
 
-  console.log('progress: ', data, progress);
+  console.log('progress: ', data, progress, props);
+  const state = useRef<{
+    value?: string;
+    image?: File;
+  }>({
+    value: props.value,
+  });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    upload(acceptedFiles[0]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      const fileData = await upload(acceptedFiles[0]);
+      state.current.value = fileData.id;
+      forceRender();
+      onChange && onChange(fileData.id, fileData);
+    },
+    [onChange, upload],
+  );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+  const url = useMemo(() => {
+    if (!value) {
+      return null;
+    }
+    return process.env.STORAGE_URL + `/preview/${value}`;
+  }, [value]);
 
   return (
     <div className="upload-avatar" {...getRootProps()} style={{ width, height }}>
@@ -66,21 +89,23 @@ function UploadAvatar(props: UploadAvatarProps) {
       ) : (
         <div className="upload-dropzone">
           <div className="dash-box">
-            <div className="dash-top" />
+            {/* <div className="dash-top" />
             <div className="dash-right" />
             <div className="dash-bottom" />
             <div className="dash-left" />
             <div className="dash-top-radius" />
             <div className="dash-right-radius" />
             <div className="dash-bottom-radius" />
-            <div className="dash-left-radius" />
-            {data ? (
-            <div className="upload-preview symbol">
-              <img src={process.env.STORAGE_URL + `/thumbnail/${data.id}?size=120x120`} />
-            </div>
-          ) : (
-            <span>点击上传</span>
-          )}
+            <div className="dash-left-radius" /> */}
+            {url ? (
+              <div>
+                <img src={url} />
+              </div>
+            ) : (
+              <span>
+                <img src={placeholder} />
+              </span>
+            )}
           </div>
         </div>
       )}
