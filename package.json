@@ -50,19 +50,16 @@
     },
     "npmRebuild": false,
     "files": [
+      "main.js",
       "dist/**/*",
       "!node_modules/**/*"
     ],
-    "extraResources": [
-      "package_resources"
-    ],
-    "extraFiles": [
-      {
-        "from": "build/extra",
-        "to": "extraFiles",
-        "filter": "*.dll"
-      }
-    ]
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    }
   },
   "husky": {
     "hooks": {
@@ -222,6 +219,7 @@
     "date-fns": "^2.30.0",
     "detect-installer": "^1.0.2",
     "electron": "^26.2.0",
+    "electron-builder": "^24.6.4",
     "enzyme": "^3.11.0",
     "eslint": "^8.23.1",
     "eslint-plugin-graphql": "^4.0.0",
