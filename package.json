@@ -7,6 +7,7 @@
   "homepage": ".",
   "scripts": {
     "estart": "electron .",
+    "ebuild": "electron-builder",
     "postinstall": "husky install && umi g tmp && run-script-os",
     "postinstall:win32": "cd scripts && run.cmd",
     "postinstall:darwin:linux": "sh ./scripts/run.sh",
@@ -40,6 +41,28 @@
     "postpublish": "pinst --enable",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "postversion": "git push --follow-tags"
+  },
+  "build": {
+    "productName": "electron-desktop",
+    "appId": "com.keliq.electron-desktop",
+    "directories": {
+      "output": "builder-dist"
+    },
+    "npmRebuild": false,
+    "files": [
+      "dist/**/*",
+      "!node_modules/**/*"
+    ],
+    "extraResources": [
+      "package_resources"
+    ],
+    "extraFiles": [
+      {
+        "from": "build/extra",
+        "to": "extraFiles",
+        "filter": "*.dll"
+      }
+    ]
   },
   "husky": {
     "hooks": {
@@ -109,7 +132,6 @@
     "overlayscrollbars": "^1.13.3",
     "overlayscrollbars-react": "^0.3.0",
     "path-to-regexp": "^6.2.1",
-    "pdfjs-dist": "^3.10.111",
     "pinyin-pro": "^3.11.0",
     "qrcode.react": "^3.1.0",
     "rc-field-form": "1.27.3",
@@ -177,7 +199,6 @@
     "@types/mime-types": "^2.1.1",
     "@types/moment": "^2.13.0",
     "@types/overlayscrollbars": "^1.12.1",
-    "@types/pdfjs-dist": "^2.10.378",
     "@types/react": "^18.0.24",
     "@types/react-color": "^3.0.6",
     "@types/react-copy-to-clipboard": "^5.0.4",
