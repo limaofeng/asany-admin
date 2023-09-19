@@ -4,19 +4,19 @@ import routes from './routes';
 
 export default defineConfig({
   apollo: {
-    url: 'https://10.226.116.180/graphql',
-    wsUrl: 'wss://10.226.116.180/subscriptions',
+    url: 'http://localhost:8080/graphql',
+    wsUrl: 'ws://localhost:8080/subscriptions',
     logging: process.env.NODE_ENV === 'development',
   },
   app: {
     id: 'dae19885dc94eb73c399',
   },
   define: {
-    'process.env.APOLLO_URL': 'http://10.226.116.180:8080/graphql',
-    'process.env.APOLLO_WS': 'ws://10.226.116.180:8080/subscriptions',
-    'process.env.WEBSITE_URL': '//10.226.116.180:8001',
-    'process.env.STORAGE_URL': '//10.226.116.180:8080',
-    'process.env.MOBILE_URL': '//10.226.116.180:8001',
+    'process.env.APOLLO_URL': 'http://localhost:8080/graphql',
+    'process.env.APOLLO_WS': 'ws://localhost:8080/subscriptions',
+    'process.env.WEBSITE_URL': '//localhost:8001',
+    'process.env.STORAGE_URL': '//localhost:8080',
+    'process.env.MOBILE_URL': '//localhost:8001',
     'process.env.OPEN_IM_API_URL': 'http://10.226.116.180:10002',
     'process.env.OPEN_IM_WS_URL': 'ws://10.226.116.180:10001',
   },
@@ -41,10 +41,12 @@ export default defineConfig({
   esbuild: {},
   title: false,
   ignoreMomentLocale: true,
-  manifest: {
-    basePath: '/',
+  history: {
+    type: 'hash'
   },
-  runtimePublicPath: true,
+  base: './',
+  publicPath: './',
+  runtimePublicPath: false,
   // Fast Refresh 热更新
   fastRefresh: {},
   nodeModulesTransform: {

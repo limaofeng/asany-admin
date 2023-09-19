@@ -30,9 +30,9 @@ function Login() {
           ...s,
           currentUser: user,
         }));
-        const { query } = history.location as any;
-        const { redirect } = query as { redirect: string };
-        history.replace(redirect || '/');
+        // const { query } = history.location as any;
+        // const { redirect } = query as { redirect: string };
+        history.replace('/');
       } catch (e) {
         await Modal.error({
           content: '出错了, 请检查错误后，请重试.',

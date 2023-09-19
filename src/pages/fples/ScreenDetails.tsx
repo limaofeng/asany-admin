@@ -8,6 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import DocumentCard from './DocumentCard';
 import { useOnUpdateScreenSubscription, useScreenQuery, useUpdateScreenMutation } from './hooks';
+import infoPlaceholder from './assets/info_placeholder.jpg'
+import operatorPlaceholder from './assets/operator_placeholder.jpg'
 
 import Upload from '@/metronic/Upload';
 import { Menu, Popover, Toast } from '@/metronic';
@@ -222,7 +224,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
               <Upload.NewImage
                 value={data?.screen?.info?.id}
                 onChange={handleUpdateInfo}
-                placeholder={require('./assets/info_placeholder.jpg')}
+                placeholder={infoPlaceholder}
               />
             </div>
           </div>
@@ -267,7 +269,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
             <div className="operator-item">
               <Upload.NewImage
                 value={data?.screen?.operator1?.id}
-                placeholder={require('./assets/operator_placeholder.jpg')}
+                placeholder={operatorPlaceholder}
                 onChange={handleUpdateOperators(1)}
               />
             </div>
@@ -275,14 +277,14 @@ function ScreenDetails(props: ScreenDetailsProps) {
               <Upload.NewImage
                 value={data?.screen?.operator2?.id}
                 onChange={handleUpdateOperators(2)}
-                placeholder={require('./assets/operator_placeholder.jpg')}
+                placeholder={operatorPlaceholder}
               />
             </div>
             <div className="operator-item">
               <Upload.NewImage
                 value={data?.screen?.operator3?.id}
                 onChange={handleUpdateOperators(3)}
-                placeholder={require('./assets/operator_placeholder.jpg')}
+                placeholder={operatorPlaceholder}
               />
             </div>
           </div>

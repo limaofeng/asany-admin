@@ -25,7 +25,7 @@
     "lint:prettier": "prettier -c --write \"src/**/*.{ts,tsx,graphql,gql}\" --end-of-line auto",
     "precommit": "lint-staged",
     "prettier": "prettier -c --write \"src/**/*.{ts,tsx,graphql,gql}\"",
-    "start": "cross-env UMI_ENV=dev NODE_OPTIONS=--openssl-legacy-provider umi dev",
+    "start": "cross-env UMI_ENV=dev umi dev",
     "start:dev": "cross-env REACT_APP_ENV=dev MOCK=none UMI_ENV=dev umi dev",
     "start:no-mock": "cross-env MOCK=none UMI_ENV=dev umi dev",
     "start:no-ui": "cross-env UMI_UI=none UMI_ENV=dev umi dev",
@@ -51,6 +51,7 @@
     "npmRebuild": false,
     "files": [
       "main.js",
+      "preload.js",
       "dist/**/*",
       "!node_modules/**/*"
     ],

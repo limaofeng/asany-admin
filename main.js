@@ -16,7 +16,7 @@ function createWindow() {
   })
 
   // 加载应用----react 打包
-  mainWindow.loadURL(path.join('file://', __dirname, 'index.html'))
+  mainWindow.loadURL(path.join('file://', __dirname, 'dist/index.html'))
 
   // 加载应用----适用于 react 开发时项目
   // mainWindow.loadURL('http://localhost:8000/');
