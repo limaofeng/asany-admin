@@ -42,7 +42,7 @@ export default defineConfig({
   title: false,
   ignoreMomentLocale: true,
   history: {
-    type: 'hash'
+    type: 'hash',
   },
   base: './',
   publicPath: './',

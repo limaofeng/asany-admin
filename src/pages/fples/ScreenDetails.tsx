@@ -8,8 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import DocumentCard from './DocumentCard';
 import { useOnUpdateScreenSubscription, useScreenQuery, useUpdateScreenMutation } from './hooks';
-import infoPlaceholder from './assets/info_placeholder.jpg'
-import operatorPlaceholder from './assets/operator_placeholder.jpg'
+import infoPlaceholder from './assets/info_placeholder.jpg';
+import operatorPlaceholder from './assets/operator_placeholder.jpg';
 
 import Upload from '@/metronic/Upload';
 import { Menu, Popover, Toast } from '@/metronic';

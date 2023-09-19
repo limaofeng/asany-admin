@@ -1,6 +1,6 @@
-const path = require('path')
+const path = require('path');
 
-const { app, BrowserWindow, globalShortcut } = require('electron')
+const { app, BrowserWindow, globalShortcut } = require('electron');
 
 function createWindow() {
   // Create the browser window.
@@ -8,15 +8,15 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
     },
     nodeIntegration: true,
     webSecurity: false,
-    allowRunningInsecureContent: true
-  })
+    allowRunningInsecureContent: true,
+  });
 
   // 加载应用----react 打包
-  mainWindow.loadURL(path.join('file://', __dirname, 'dist/index.html'))
+  mainWindow.loadURL(path.join('file://', __dirname, 'dist/index.html'));
 
   // 加载应用----适用于 react 开发时项目
   // mainWindow.loadURL('http://localhost:8000/');
@@ -26,14 +26,14 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  createWindow()
+  createWindow();
 
   app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-})
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit()
-})
+  if (process.platform !== 'darwin') app.quit();
+});
