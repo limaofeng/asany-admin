@@ -4,21 +4,21 @@ import routes from './routes';
 
 export default defineConfig({
   apollo: {
-    url: 'http://localhost:8080/graphql',
-    wsUrl: 'ws://localhost:8080/subscriptions',
+    url: 'https://api.asany.cn/graphql',
+    wsUrl: 'wss://api.asany.cn/subscriptions',
     logging: process.env.NODE_ENV === 'development',
   },
   app: {
     id: 'dae19885dc94eb73c399',
   },
   define: {
-    'process.env.APOLLO_URL': 'http://localhost:8080/graphql',
-    'process.env.APOLLO_WS': 'ws://localhost:8080/subscriptions',
+    'process.env.APOLLO_URL': 'https://api.asany.cn/graphql',
+    'process.env.APOLLO_WS': 'wss://api.asany.cn/subscriptions',
     'process.env.WEBSITE_URL': '//localhost:8001',
-    'process.env.STORAGE_URL': '//localhost:8080',
+    'process.env.STORAGE_URL': '//api.asany.cn',
     'process.env.MOBILE_URL': '//localhost:8001',
-    'process.env.OPEN_IM_API_URL': 'http://10.226.116.180:10002',
-    'process.env.OPEN_IM_WS_URL': 'ws://10.226.116.180:10001',
+    'process.env.OPEN_IM_API_URL': 'https://api.asany.cn',
+    'process.env.OPEN_IM_WS_URL': 'wss://api.asany.cn:10001',
   },
   hash: true,
   antd: {},

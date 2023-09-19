@@ -45,4 +45,5 @@ src/pages/*/hooks.ts
 src/pages/*/hooks/api.ts
 
 build
+builder-dist
 tests
