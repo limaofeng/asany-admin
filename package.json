@@ -45,7 +45,6 @@
   "build": {
     "productName": "FlowStream",
     "appId": "cn.asany.apps.FlowStream",
-    "createDesktopShortcut": true,
     "directories": {
       "output": "builder-dist"
     },
@@ -60,8 +59,13 @@
       "target": "dmg"
     },
     "win": {
-      "target": "nsis",
-      "shortcutName": "电子屏幕"
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "My Custom Shortcut"
     }
   },
   "husky": {
