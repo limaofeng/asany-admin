@@ -57,11 +57,11 @@
     ],
     "mac": {
       "target": "dmg",
-      "icon": "public/icon.png"
+      "icon": "public/icon_512x512.png"
     },
     "win": {
       "target": "nsis",
-      "icon": "public/icon.png"
+      "icon": "public/icon_256x256.png"
     },
     "nsis": {
       "oneClick": true,
