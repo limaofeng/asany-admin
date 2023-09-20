@@ -11,8 +11,8 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
-    titleBarStyle: 'hidden',
-    frame: false,
+    // titleBarStyle: 'hidden',
+    frame: true,
     nodeIntegration: true,
     webSecurity: false,
     allowRunningInsecureContent: true,
