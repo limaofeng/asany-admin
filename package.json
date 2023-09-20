@@ -43,8 +43,9 @@
     "postversion": "git push --follow-tags"
   },
   "build": {
-    "productName": "electron-desktop",
-    "appId": "com.keliq.electron-desktop",
+    "productName": "FlowStream",
+    "appId": "cn.asany.apps.FlowStream",
+    "createDesktopShortcut": true,
     "directories": {
       "output": "builder-dist"
     },
@@ -59,7 +60,8 @@
       "target": "dmg"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "shortcutName": "电子屏幕"
     }
   },
   "husky": {

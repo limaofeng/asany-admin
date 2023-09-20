@@ -6,31 +6,31 @@ const { app, BrowserWindow, globalShortcut, Menu } = require('electron');
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 540,
+    height: 960,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
-    titleBarStyle: 'hidden',
-    frame: false,
+    // titleBarStyle: 'hidden',
+    frame: true,
     nodeIntegration: true,
     webSecurity: false,
     allowRunningInsecureContent: true,
   });
 
+  // 加载应用----适用于 react 开发时项目
+  mainWindow.loadURL('http://localhost:8000/');
   // 加载应用----react 打包
-  mainWindow.loadURL(path.join('file://', __dirname, 'dist/index.html'));
+  // mainWindow.loadURL(path.join('file://', __dirname, 'dist/index.html'));
 
   Menu.setApplicationMenu(null);
 
   if (process.platform !== 'darwin') {
     app.dock.hide();
   }
-  // 加载应用----适用于 react 开发时项目
-  // mainWindow.loadURL('http://localhost:8000/');
 
   // 打开调试.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
