@@ -8,6 +8,7 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 540,
     height: 960,
+    title: 'EES 看板 Monitor',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -19,9 +20,9 @@ function createWindow() {
   });
 
   // 加载应用----适用于 react 开发时项目
-  mainWindow.loadURL('http://localhost:8000/');
+  // mainWindow.loadURL('http://localhost:8000/');
   // 加载应用----react 打包
-  // mainWindow.loadURL(path.join('file://', __dirname, 'dist/index.html'));
+  mainWindow.loadURL(path.join('file://', __dirname, 'dist/index.html'));
 
   Menu.setApplicationMenu(null);
 

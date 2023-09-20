@@ -43,7 +43,7 @@
     "postversion": "git push --follow-tags"
   },
   "build": {
-    "productName": "FlowStream",
+    "productName": "EES 看板 Monitor",
     "appId": "cn.asany.apps.FlowStream",
     "directories": {
       "output": "builder-dist"
@@ -56,16 +56,18 @@
       "!node_modules/**/*"
     ],
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "public/icon.png"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "public/icon.png"
     },
     "nsis": {
       "oneClick": true,
       "perMachine": true,
       "createDesktopShortcut": true,
-      "shortcutName": "My Custom Shortcut"
+      "shortcutName": "EES 看板 Monitor"
     }
   },
   "husky": {
