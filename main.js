@@ -1,6 +1,7 @@
 const path = require('path');
+const { electron } = require('process');
 
-const { app, BrowserWindow, globalShortcut } = require('electron');
+const { app, BrowserWindow, globalShortcut, Menu } = require('electron');
 
 function createWindow() {
   // Create the browser window.
@@ -10,6 +11,8 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
+    titleBarStyle: 'hidden',
+    frame: false,
     nodeIntegration: true,
     webSecurity: false,
     allowRunningInsecureContent: true,
@@ -18,6 +21,11 @@ function createWindow() {
   // 加载应用----react 打包
   mainWindow.loadURL(path.join('file://', __dirname, 'dist/index.html'));
 
+  Menu.setApplicationMenu(null);
+
+  if (process.platform !== 'darwin') {
+    app.dock.hide();
+  }
   // 加载应用----适用于 react 开发时项目
   // mainWindow.loadURL('http://localhost:8000/');
 
