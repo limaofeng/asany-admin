@@ -31,7 +31,13 @@ function createWindow() {
   Menu.setApplicationMenu(null);
 
   mainWindow.on('maximize', () => {
-    mainWindow.setFullScreen(true);
+    // mainWindow.unmaximize();
+    // mainWindow.setFullScreen(true);
+  });
+
+  globalShortcut.register('ESC', () => {
+    // 注册 ESC 快捷键
+    mainWindow.setFullScreen(false);
   });
 
   // if (process.platform !== 'darwin') {

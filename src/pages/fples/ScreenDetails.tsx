@@ -19,7 +19,7 @@ import operatorPlaceholder from './assets/operator_placeholder.jpg';
 
 import { logout } from '@/hooks';
 import Upload from '@/metronic/Upload';
-import { Menu, Modal, Popover, Toast, Tooltip } from '@/metronic';
+import { Menu, Modal, Popover, Spin, Toast, Tooltip } from '@/metronic';
 import type { UploadFileData } from '@/metronic/Upload/utils/upload';
 import { delay, sleep } from '@/utils';
 
@@ -78,6 +78,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
   const { history, match } = props;
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const deleting = useRef(false);
+  const [refreshLoading, setRefreshLoading] = useState(false);
 
   const [status, setStatus] = useState(statusTexts[0]);
 
@@ -89,13 +90,19 @@ function ScreenDetails(props: ScreenDetailsProps) {
   });
 
   const [updateScreen, { loading: updateSubmiting }] = useUpdateScreenMutation();
-  const [deleteScreen] = useDeleteScreenMutation();
+  const [deleteScreen, { loading: deleteing }] = useDeleteScreenMutation();
 
-  const { data: newData } = useOnUpdateScreenSubscription({
+  const {
+    data: newData,
+    loading: subLoading,
+    error: subError,
+  } = useOnUpdateScreenSubscription({
     variables: {
       id: match.params.id,
     },
   });
+
+  console.log('Subscription OnUpdate Screen', newData, subLoading, subError);
 
   useEffect(() => {
     console.log('Subscription OnUpdate Screen', newData);
@@ -129,6 +136,12 @@ function ScreenDetails(props: ScreenDetailsProps) {
     [handleChangeStatus],
   );
 
+  const handleRefetch = useCallback(async () => {
+    setRefreshLoading(true);
+    await delay(refetch(), 350);
+    setRefreshLoading(false);
+  }, [refetch]);
+
   const handleUpdateInfo = useCallback(
     async (value?: string, fileData?: UploadFileData) => {
       console.log(value, fileData);
@@ -152,14 +165,10 @@ function ScreenDetails(props: ScreenDetailsProps) {
           placement: 'top-center',
         },
       );
-      refetch();
+      handleRefetch();
     },
-    [data?.screen?.id, refetch, updateScreen],
+    [data?.screen?.id, handleRefetch, updateScreen],
   );
-
-  const handleRefetch = useCallback(() => {
-    refetch();
-  }, [refetch]);
 
   const handleGoBack = useCallback(() => {
     history.replace('/screens');
@@ -187,10 +196,9 @@ function ScreenDetails(props: ScreenDetailsProps) {
           spinner.classList.add('spinner-border-sm', 'ms-2', 'spinner-border', 'align-middle');
           okButton.appendChild(spinner);
           const _result = await delay(
-            // deleteScreen({
-            //   variables: { id: data?.screen?.id },
-            // }),
-            sleep(2000),
+            deleteScreen({
+              variables: { id: data?.screen?.id },
+            }),
             350,
           );
           console.log(_result);
@@ -246,7 +254,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
     });
     await sleep(2000);
     history.replace('/login');
-  }, []);
+  }, [history]);
 
   const handleUpdateOperators = useCallback(
     (index: number) => {
@@ -278,9 +286,56 @@ function ScreenDetails(props: ScreenDetailsProps) {
     [data?.screen?.id, refetch, updateScreen],
   );
 
+  const toggleFullScreen = useCallback(() => {
+    // 支持 requestFullscreen 方法的浏览器
+    const isFullscreen =
+      document.fullscreenElement ||
+      document.fullscreenElement ||
+      document.fullscreenElement ||
+      document.fullscreenElement;
+    if (isFullscreen) {
+      // 如果已经全屏，则退出全屏
+      document.exitFullscreen();
+    } else {
+      // 否则，请求全屏
+      document.documentElement.requestFullscreen();
+    }
+  }, []);
+
   const scrollbar = useRef<OverlayScrollbarsComponent>(null);
 
   const handleScroll = useCallback(() => {}, []);
+
+  const logouting = deleting.current;
+
+  const networkStatus = useMemo(() => {
+    console.log('subLoading', subLoading);
+    let message = '';
+    if (loading) {
+      message = '数据加载中...';
+    }
+    if (refreshLoading) {
+      message = '数据刷新中...';
+    }
+    if (updateSubmiting) {
+      message = '数据更新中...';
+    }
+    if (deleteing) {
+      message = '删除设备中...';
+    }
+    if (logouting) {
+      message = '注销设备中...';
+    }
+
+    const _loading = loading || updateSubmiting || deleteing || logouting || refreshLoading;
+
+    return {
+      status: _loading ? 'loading' : 'ok',
+      loading: _loading,
+      message: message || _loading ? '数据加载中...' : '设备在线',
+      error: '',
+    };
+  }, [deleteing, loading, logouting, subLoading, updateSubmiting, refreshLoading]);
 
   return (
     <div className="fples_screen_view">
@@ -302,12 +357,26 @@ function ScreenDetails(props: ScreenDetailsProps) {
                   <Icon name="Duotune/arr074" className="svg-icon-2x" />
                 </a>
               </Tooltip>
-              <div>
+              <div className="network-details">
                 IP: {data?.screen?.boundIp}
                 <br />
-                {process.env.STORAGE_URL}
+                {networkStatus.message}
+              </div>
+              <div className="network_status_flag">
+                {networkStatus.status == 'ok' && (
+                  <Icon name="Duotune/gen043" className="svg-icon-1 svg-icon-success" />
+                )}
+                {networkStatus.status == 'error' && (
+                  <Icon name="Duotune/gen044" className="svg-icon-1 svg-icon-danger" />
+                )}
+                {networkStatus.status == 'loading' && <Spin spinning={true} size="small" />}
               </div>
               <div className="admin-actions">
+                <Tooltip inverse title="切换全屏">
+                  <a onClick={toggleFullScreen}>
+                    <Icon name="Duotune/gen054" className="svg-icon-2" />
+                  </a>
+                </Tooltip>
                 <Tooltip inverse title="重新加载">
                   <a onClick={handleRefetch}>
                     <Icon name="Duotune/arr029" className="svg-icon-2" />
