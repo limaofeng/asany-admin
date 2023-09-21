@@ -44,6 +44,7 @@
   },
   "build": {
     "productName": "EES 看板 Monitor",
+    "executableName": "EES Board Monitor",
     "appId": "cn.asany.apps.FlowStream",
     "directories": {
       "output": "builder-dist"
@@ -138,6 +139,7 @@
     "overlayscrollbars": "^1.13.3",
     "overlayscrollbars-react": "^0.3.0",
     "path-to-regexp": "^6.2.1",
+    "pdfjs-dist": "2.16.105",
     "pinyin-pro": "^3.11.0",
     "qrcode.react": "^3.1.0",
     "rc-field-form": "1.27.3",

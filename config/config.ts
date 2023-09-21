@@ -15,7 +15,7 @@ export default defineConfig({
     'process.env.APOLLO_URL': 'https://api.asany.cn/graphql',
     'process.env.APOLLO_WS': 'wss://api.asany.cn/subscriptions',
     'process.env.WEBSITE_URL': '//localhost:8001',
-    'process.env.STORAGE_URL': '//api.asany.cn',
+    'process.env.STORAGE_URL': 'https://api.asany.cn',
     'process.env.MOBILE_URL': '//localhost:8001',
     'process.env.OPEN_IM_API_URL': 'https://api.asany.cn',
     'process.env.OPEN_IM_WS_URL': 'wss://api.asany.cn:10001',

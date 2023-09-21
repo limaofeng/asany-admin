@@ -6,9 +6,13 @@ const { app, BrowserWindow, globalShortcut, Menu } = require('electron');
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 540,
-    height: 960,
+    width: 1080,
+    height: 1920,
+    minWidth: 540, // 设置窗口的最小宽度
+    minHeight: 960, // 设置窗口的最小高度
     title: 'EES 看板 Monitor',
+    // icon: path.join(__dirname, '/public/icon_256x256.png'),
+    icon: path.join(__dirname, '/dist/icon_256x256.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -26,12 +30,12 @@ function createWindow() {
 
   Menu.setApplicationMenu(null);
 
-  if (process.platform !== 'darwin') {
-    app.dock.hide();
-  }
+  // if (process.platform !== 'darwin') {
+  //   app.dock.hide();
+  // }
 
   // 打开调试.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {

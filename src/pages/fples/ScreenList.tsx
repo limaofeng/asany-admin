@@ -33,7 +33,7 @@ function ScreenList(props: ScreenListProps) {
           <Card hoverable className="screen_card hover-scale" key={screen.id}>
             <Card.Header>
               <Card.Title>
-                #{screen.id} {screen.description}
+                #{screen.id} {screen.boundIp}
               </Card.Title>
             </Card.Header>
             <Card.Body>

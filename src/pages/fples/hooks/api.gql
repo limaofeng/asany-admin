@@ -58,6 +58,21 @@ mutation createScreen($input: FactoryScreenCreateInput!) {
   }
 }
 
+mutation deleteScreen($id: ID!) {
+  deleteScreen(id: $id) {
+    id
+    info
+    boundIp
+    operator1
+    operator2
+    operator3
+    status
+    statusImage
+    documents
+    description
+  }
+}
+
 mutation validateAdminKey($key: String!) {
   validateAdminKey(key: $key)
 }

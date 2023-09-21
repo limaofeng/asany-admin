@@ -5,16 +5,23 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import type { RouteComponentProps } from 'react-router';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Icon } from '@asany/icons';
 
 import DocumentCard from './DocumentCard';
-import { useOnUpdateScreenSubscription, useScreenQuery, useUpdateScreenMutation } from './hooks';
+import {
+  useDeleteScreenMutation,
+  useOnUpdateScreenSubscription,
+  useScreenQuery,
+  useUpdateScreenMutation,
+} from './hooks';
 import infoPlaceholder from './assets/info_placeholder.jpg';
 import operatorPlaceholder from './assets/operator_placeholder.jpg';
 
+import { logout } from '@/hooks';
 import Upload from '@/metronic/Upload';
-import { Menu, Popover, Toast } from '@/metronic';
+import { Menu, Modal, Popover, Toast, Tooltip } from '@/metronic';
 import type { UploadFileData } from '@/metronic/Upload/utils/upload';
-import { delay } from '@/utils';
+import { delay, sleep } from '@/utils';
 
 const switchMenu = (menu: any, i: number) => {
   if (menu.id === 'Separator') {
@@ -70,6 +77,7 @@ type ScreenDetailsProps = RouteComponentProps<any>;
 function ScreenDetails(props: ScreenDetailsProps) {
   const { history, match } = props;
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const deleting = useRef(false);
 
   const [status, setStatus] = useState(statusTexts[0]);
 
@@ -81,6 +89,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
   });
 
   const [updateScreen, { loading: updateSubmiting }] = useUpdateScreenMutation();
+  const [deleteScreen] = useDeleteScreenMutation();
 
   const { data: newData } = useOnUpdateScreenSubscription({
     variables: {
@@ -105,24 +114,8 @@ function ScreenDetails(props: ScreenDetailsProps) {
     () => [
       ...[
         {
-          id: 'goBack',
-          title: '返回列表',
-          method: () => {
-            history.replace('/screens');
-          },
-          hidden: false,
-        },
-        {
-          id: 'Separator',
-        },
-        {
           id: 'SelectImage',
           title: '选择图片',
-        },
-        {
-          id: 'RotateImage',
-          title: '旋转图片',
-          method: () => {},
         },
         {
           id: 'Separator',
@@ -132,25 +125,8 @@ function ScreenDetails(props: ScreenDetailsProps) {
         ...item,
         method: handleChangeStatus(item),
       })),
-      ...[
-        {
-          id: 'Separator',
-        },
-        {
-          id: 'logout',
-          title: '离线',
-          method: () => {},
-          hidden: false,
-        },
-        {
-          id: 'destroy',
-          title: '注销',
-          method: () => {},
-          hidden: false,
-        },
-      ],
     ],
-    [handleChangeStatus, history],
+    [handleChangeStatus],
   );
 
   const handleUpdateInfo = useCallback(
@@ -180,6 +156,97 @@ function ScreenDetails(props: ScreenDetailsProps) {
     },
     [data?.screen?.id, refetch, updateScreen],
   );
+
+  const handleRefetch = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleGoBack = useCallback(() => {
+    history.replace('/screens');
+  }, [history]);
+
+  const handleRemoveScreen = useCallback(async () => {
+    const result = await Modal.confirm({
+      title: '删除设备',
+      content: (
+        <>
+          <p>会清除设备数据，请谨慎操作</p>
+        </>
+      ),
+      okClassName: 'btn-danger',
+      okText: '删除',
+      allowOutsideClick: () => {
+        return !deleting.current;
+      },
+      preConfirm: async () => {
+        deleting.current = true;
+        try {
+          const okButton = document.querySelector('.swal2-confirm')!;
+          okButton.textContent = '删除中...';
+          const spinner = document.createElement('span');
+          spinner.classList.add('spinner-border-sm', 'ms-2', 'spinner-border', 'align-middle');
+          okButton.appendChild(spinner);
+          const _result = await delay(
+            // deleteScreen({
+            //   variables: { id: data?.screen?.id },
+            // }),
+            sleep(2000),
+            350,
+          );
+          console.log(_result);
+        } finally {
+          deleting.current = false;
+        }
+      },
+    });
+    if (!result.isConfirmed) {
+      return;
+    }
+    Toast.success(`设备数据已删除`, 2000, {
+      placement: 'top-center',
+      progressBar: true,
+    });
+    await sleep(2000);
+    history.replace('/login');
+  }, [data?.screen?.id, deleteScreen, history]);
+
+  const handleLogout = useCallback(async () => {
+    const result = await Modal.confirm({
+      title: '注销设备',
+      content: (
+        <>
+          <p>只会将设备离线,不会清除数据</p>
+        </>
+      ),
+      okClassName: 'btn-primary',
+      okText: '注销',
+      allowOutsideClick: () => {
+        return !deleting.current;
+      },
+      preConfirm: async () => {
+        deleting.current = true;
+        try {
+          const okButton = document.querySelector('.swal2-confirm')!;
+          okButton.textContent = '注销中...';
+          const spinner = document.createElement('span');
+          spinner.classList.add('spinner-border-sm', 'ms-2', 'spinner-border', 'align-middle');
+          okButton.appendChild(spinner);
+          await delay(logout(), 350);
+        } finally {
+          deleting.current = false;
+        }
+      },
+    });
+    if (!result.isConfirmed) {
+      return;
+    }
+    Toast.success(`注销成功`, 2000, {
+      placement: 'top-center',
+      progressBar: true,
+    });
+    await sleep(2000);
+    history.replace('/login');
+  }, []);
 
   const handleUpdateOperators = useCallback(
     (index: number) => {
@@ -228,28 +295,36 @@ function ScreenDetails(props: ScreenDetailsProps) {
               />
             </div>
           </div>
-          <div className="screen_status">
-            <Popover
-              trigger="contextMenu"
-              visible={contextMenuVisible}
-              onVisibleChange={setContextMenuVisible}
-              content={
-                <Menu className="menu-sub show menu-sub-dropdown show menu-gray-600 menu-state-bg-light-primary fw-bold fs-1 w-175px py-2">
-                  {menus.map(switchMenu)}
-                </Menu>
-              }
-              overlayClassName="overlay-no-arrow fples_screen_item_menu_popover"
-            >
-              <div
-                className={classnames('status_content py-3', {
-                  status_text: !!status,
-                  ['status_no_' + status?.id]: !!status,
-                })}
-                style={{ height: '100%' }}
-              >
-                {status && status.title}
+          <div className="network_status">
+            <div className={classnames('status_content py-3')} style={{ height: '100%' }}>
+              <Tooltip inverse title="返回列表">
+                <a onClick={handleGoBack}>
+                  <Icon name="Duotune/arr074" className="svg-icon-2x" />
+                </a>
+              </Tooltip>
+              <div>
+                IP: {data?.screen?.boundIp}
+                <br />
+                {process.env.STORAGE_URL}
               </div>
-            </Popover>
+              <div className="admin-actions">
+                <Tooltip inverse title="重新加载">
+                  <a onClick={handleRefetch}>
+                    <Icon name="Duotune/arr029" className="svg-icon-2" />
+                  </a>
+                </Tooltip>
+                <Tooltip inverse title="退出">
+                  <a onClick={handleLogout}>
+                    <Icon name="Duotune/arr076" className="svg-icon-2" />
+                  </a>
+                </Tooltip>
+                <Tooltip inverse title="删除屏幕数据">
+                  <a onClick={handleRemoveScreen}>
+                    <Icon name="Duotune/gen040" className="svg-icon-2" />
+                  </a>
+                </Tooltip>
+              </div>
+            </div>
             {/* <Dropdown menu={{ items }} trigger={['click']}>
               <div
                 className="site-dropdown-context-menu"
@@ -289,6 +364,29 @@ function ScreenDetails(props: ScreenDetailsProps) {
             </div>
           </div>
         </div>
+      </div>
+      <div className="screen_status">
+        <Popover
+          trigger="contextMenu"
+          visible={contextMenuVisible}
+          onVisibleChange={setContextMenuVisible}
+          content={
+            <Menu className="menu-sub show menu-sub-dropdown show menu-gray-600 menu-state-bg-light-primary fw-bold fs-1 w-175px py-2">
+              {menus.map(switchMenu)}
+            </Menu>
+          }
+          overlayClassName="overlay-no-arrow fples_screen_item_menu_popover"
+        >
+          <div
+            className={classnames('status_content py-3', {
+              status_text: !!status,
+              ['status_no_' + status?.id]: !!status,
+            })}
+            style={{ height: '100%' }}
+          >
+            {status && status.title}
+          </div>
+        </Popover>
       </div>
 
       <div className="document-display-area">
@@ -332,7 +430,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
             />
           </div>
         </OverlayScrollbarsComponent>
-        <div className="document-display-area__sidebar">水电费水电费</div>
+        {/* <div className="document-display-area__sidebar">水电费水电费</div> */}
       </div>
       <ToastContainer />
     </div>

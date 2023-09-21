@@ -1,3 +1,29 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown):not(.modal-open), html.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
+    overflow: hidden !important;
+}
+
+::-webkit-scrollbar {
+    background-color: transparent;
+    width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 8px;
+    background-clip: content-box;
+    border: 2px solid transparent;
+}
+
+body[scroll]::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, .5);
+}
+
 .page-fples-sigin {
     background: #fff;
     height: 100%;
@@ -99,11 +125,30 @@
                 }
             }
 
-            .screen_status {
+            .network_status {
                 position: relative;
                 padding: 10px;
                 flex: 1;
                 // height: 116px;
+
+                .status_content {
+                    background-color: #ddebfa;
+                    position: relative;
+                    padding: 6px;
+                    display: flex;
+                    align-items: center;
+                    border-radius: 8px;
+                   
+
+                    .admin-actions {
+                        position: absolute;
+                        right: 16px;
+                        bottom: 16px;
+                        width: 100px;
+                        display: flex;
+                        justify-content: space-between;
+                    }
+                }
 
                 &::after {
                     top: 10px;
@@ -118,26 +163,6 @@
                     pointer-events: none;
                 }
 
-                .status_content {
-                    border-radius: 4px;
-                    overflow: hidden;
-                    padding: 5px;
-
-                    &.status_text {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        font-size: 2em;
-
-                        transition: background-color 0.5s ease;
-                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    }
-
-                    &.status_no_1 {
-                        background-color: greenyellow;
-                    }
-                }
-
             }
 
         }
@@ -146,6 +171,8 @@
             width: 55%;
             position: relative;
             padding: 10px;
+            display: flex;
+            align-items: center;
 
             &::after {
                 position: absolute;
@@ -162,6 +189,7 @@
 
             .operator-context {
                 padding: 10px;
+                flex: 1;
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
@@ -181,9 +209,37 @@
             }
         }
 
-        box-shadow: rgba(56, 71, 109, 0.075) 0px 10px 35px 0px;
+
         background-color: #ffffff;
     }
+
+    .screen_status {
+        height: 160px;
+        background-color: #fff;
+        padding: 0 30px 30px 30px;
+        box-shadow: rgba(56, 71, 109, 0.075) -16px 20px 12px 6px;
+
+        .status_content {
+            border-radius: 4px;
+            padding: 30px;
+            box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.3);
+
+            &.status_text {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 2em;
+
+                transition: background-color 0.5s ease;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            &.status_no_1 {
+                background-color: greenyellow;
+            }
+        }
+    }
+
 
     .document-display-area {
         height: calc(100vh - 456px);
@@ -229,8 +285,8 @@
         flex-wrap: wrap;
 
         .screen_card {
-            width: 400px;
-            height: 712px;
+            width: 270px;
+            height: 480px;
             margin: 24px;
 
             .screen-thumbnail {
@@ -264,6 +320,27 @@
     background-color: black;
     height: 100%;
     padding: 10em;
+
+    .xterm-viewport {
+        overflow: overlay;
+    }
+
+    ::-webkit-scrollbar {
+        background-color: transparent;
+        width: 12px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: transparent;
+        border-radius: 8px;
+        background-clip: content-box;
+        border: 2px solid transparent;
+    }
+
+    .xterm-viewport[scroll]::-webkit-scrollbar-thumb,
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0, 0, 0, .5);
+    }
 
     .console {
         height: 100%;

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
-const pdfjsLib = window.pdfjsLib;
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//${location.host}/assets/plugins/pdfjs/build/pdf.worker.js`;
+import * as pdfjsLib from 'pdfjs-dist';
+// const pdfjsLib = window.pdfjsLib;
+pdfjsLib.GlobalWorkerOptions.workerSrc = require('pdfjs-dist/build/pdf.worker.entry');
 
 import './PdfViewer.scss';
 
