@@ -30,6 +30,10 @@ function createWindow() {
 
   Menu.setApplicationMenu(null);
 
+  mainWindow.on('maximize', () => {
+    mainWindow.setFullScreen(true);
+  });
+
   // if (process.platform !== 'darwin') {
   //   app.dock.hide();
   // }
