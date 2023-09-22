@@ -451,7 +451,6 @@ function ScreenDetails(props: ScreenDetailsProps) {
               status_text: !!status,
               ['status_no_' + status?.id]: !!status,
             })}
-            style={{ height: '100%' }}
           >
             {status && status.title}
           </div>
@@ -461,7 +460,6 @@ function ScreenDetails(props: ScreenDetailsProps) {
       <div className="document-display-area">
         <OverlayScrollbarsComponent
           ref={scrollbar}
-          style={{ height: 2100 }}
           className={classnames('custom-scrollbar infinite-scroll')}
           options={{
             scrollbars: { autoHide: 'scroll' },
