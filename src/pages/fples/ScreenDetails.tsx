@@ -79,8 +79,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const deleting = useRef(false);
   const [refreshLoading, setRefreshLoading] = useState(false);
-
-  const [status, setStatus] = useState(statusTexts[0]);
+  const [updating, setUpdating] = useState(false);
 
   const { data, loading, refetch } = useScreenQuery({
     variables: {
@@ -89,7 +88,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
     fetchPolicy: 'network-only',
   });
 
-  const [updateScreen, { loading: updateSubmiting }] = useUpdateScreenMutation();
+  const [updateScreen, {}] = useUpdateScreenMutation();
   const [deleteScreen, { loading: deleteing }] = useDeleteScreenMutation();
 
   const {
@@ -109,13 +108,36 @@ function ScreenDetails(props: ScreenDetailsProps) {
     refetch();
   }, [newData, refetch]);
 
-  const handleChangeStatus = useCallback((item: (typeof statusTexts)[0]) => {
-    return () => {
-      console.log(item);
-      setStatus(item);
-      setContextMenuVisible(false);
-    };
-  }, []);
+  const handleRefetch = useCallback(async () => {
+    setRefreshLoading(true);
+    await delay(refetch(), 350);
+    setRefreshLoading(false);
+  }, [refetch]);
+
+  const handleChangeStatus = useCallback(
+    (item: (typeof statusTexts)[0]) => {
+      return async () => {
+        console.log(item);
+        setUpdating(true);
+        try {
+          await delay(
+            updateScreen({
+              variables: {
+                id: data?.screen?.id,
+                input: { status: item.id },
+              },
+            }),
+            350,
+          );
+          handleRefetch();
+        } finally {
+          setUpdating(false);
+          setContextMenuVisible(false);
+        }
+      };
+    },
+    [data?.screen?.id, handleRefetch, updateScreen],
+  );
 
   const menus = useMemo(
     () => [
@@ -136,35 +158,34 @@ function ScreenDetails(props: ScreenDetailsProps) {
     [handleChangeStatus],
   );
 
-  const handleRefetch = useCallback(async () => {
-    setRefreshLoading(true);
-    await delay(refetch(), 350);
-    setRefreshLoading(false);
-  }, [refetch]);
-
   const handleUpdateInfo = useCallback(
     async (value?: string, fileData?: UploadFileData) => {
       console.log(value, fileData);
-      await Toast.promise(
-        delay(
-          updateScreen({
-            variables: {
-              id: data?.screen?.id,
-              input: { info: value },
-            },
-          }),
-          350,
-        ),
-        {
-          pending: '数据更新中...',
-          success: '数据更新成功',
-          error: '数据更新失败',
-        },
-        {
-          duration: 2000,
-          placement: 'top-center',
-        },
-      );
+      setUpdating(true);
+      try {
+        await Toast.promise(
+          delay(
+            updateScreen({
+              variables: {
+                id: data?.screen?.id,
+                input: { info: value },
+              },
+            }),
+            350,
+          ),
+          {
+            pending: '数据更新中...',
+            success: '数据更新成功',
+            error: '数据更新失败',
+          },
+          {
+            duration: 2000,
+            placement: 'top-center',
+          },
+        );
+      } finally {
+        setUpdating(false);
+      }
       handleRefetch();
     },
     [data?.screen?.id, handleRefetch, updateScreen],
@@ -260,30 +281,35 @@ function ScreenDetails(props: ScreenDetailsProps) {
     (index: number) => {
       return async (value?: string, fileData?: UploadFileData) => {
         console.log(index, value, fileData);
-        await Toast.promise(
-          delay(
-            updateScreen({
-              variables: {
-                id: data?.screen?.id,
-                input: { ['operator' + index]: value },
-              },
-            }),
-            350,
-          ),
-          {
-            pending: '数据更新中...',
-            success: '数据更新成功',
-            error: '数据更新失败',
-          },
-          {
-            duration: 2000,
-            placement: 'top-center',
-          },
-        );
-        refetch();
+        setUpdating(true);
+        try {
+          await Toast.promise(
+            delay(
+              updateScreen({
+                variables: {
+                  id: data?.screen?.id,
+                  input: { ['operator' + index]: value },
+                },
+              }),
+              350,
+            ),
+            {
+              pending: '数据更新中...',
+              success: '数据更新成功',
+              error: '数据更新失败',
+            },
+            {
+              duration: 2000,
+              placement: 'top-center',
+            },
+          );
+        } finally {
+          setUpdating(false);
+        }
+        handleRefetch();
       };
     },
-    [data?.screen?.id, refetch, updateScreen],
+    [data?.screen?.id, handleRefetch, updateScreen],
   );
 
   const toggleFullScreen = useCallback(() => {
@@ -309,33 +335,36 @@ function ScreenDetails(props: ScreenDetailsProps) {
   const logouting = deleting.current;
 
   const networkStatus = useMemo(() => {
-    console.log('subLoading', subLoading);
+    const _loading = loading || deleteing || logouting || updating || refreshLoading;
+
     let message = '';
-    if (loading) {
-      message = '数据加载中...';
-    }
+
     if (refreshLoading) {
       message = '数据刷新中...';
-    }
-    if (updateSubmiting) {
+    } else if (updating) {
       message = '数据更新中...';
-    }
-    if (deleteing) {
+    } else if (deleteing) {
       message = '删除设备中...';
-    }
-    if (logouting) {
+    } else if (logouting) {
       message = '注销设备中...';
+    } else if (loading) {
+      message = '数据加载中...';
+    } else {
+      message = '设备在线';
     }
-
-    const _loading = loading || updateSubmiting || deleteing || logouting || refreshLoading;
 
     return {
       status: _loading ? 'loading' : 'ok',
       loading: _loading,
-      message: message || _loading ? '数据加载中...' : '设备在线',
+      message: message,
       error: '',
     };
-  }, [deleteing, loading, logouting, subLoading, updateSubmiting, refreshLoading]);
+  }, [deleteing, loading, logouting, updating, refreshLoading]);
+
+  const status = useMemo(
+    () => statusTexts.find((s) => s.id == data?.screen?.status),
+    [data?.screen?.status],
+  );
 
   return (
     <div className="fples_screen_view">
@@ -440,7 +469,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
           visible={contextMenuVisible}
           onVisibleChange={setContextMenuVisible}
           content={
-            <Menu className="menu-sub show menu-sub-dropdown show menu-gray-600 menu-state-bg-light-primary fw-bold fs-1 w-175px py-2">
+            <Menu className="menu-sub show menu-sub-dropdown show menu-gray-600 menu-state-bg-light-primary fs-1 w-175px py-2">
               {menus.map(switchMenu)}
             </Menu>
           }
@@ -462,7 +491,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
           ref={scrollbar}
           className={classnames('custom-scrollbar infinite-scroll')}
           options={{
-            scrollbars: { autoHide: 'scroll' },
+            scrollbars: {},
             callbacks: {
               onScroll: handleScroll,
             },
