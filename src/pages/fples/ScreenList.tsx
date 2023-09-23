@@ -3,9 +3,11 @@ import { useCallback } from 'react';
 import type { RouteComponentProps } from 'react-router';
 
 import { useScreensQuery } from './hooks';
+import ScreenDetails from './ScreenDetails';
 
-import { Card } from '@/metronic';
+import { Button, Card, Modal } from '@/metronic';
 import type { FactoryScreen } from '@/types';
+import { logout } from '@/hooks';
 
 type ScreenListProps = RouteComponentProps<any>;
 
@@ -24,9 +26,27 @@ function ScreenList(props: ScreenListProps) {
     [history],
   );
 
+  const handleLogout = useCallback(async () => {
+    try {
+      await logout();
+      history.replace('/login');
+    } catch (e) {
+      Modal.error({
+        content: '退出失败，请重试.',
+      });
+    }
+  }, [history]);
+
   return (
     <div className="fples_screen_list">
-      <h1>屏幕列表</h1>
+      <h1 className="header">
+        <div className="header-title">设备列表</div>
+        <div className="header-tools">
+          <Button onClick={handleLogout} variant="light" color="muted">
+            退出
+          </Button>
+        </div>
+      </h1>
       <hr />
       <div className="fples_screen_list_container">
         {screens.map((screen) => (
@@ -38,7 +58,7 @@ function ScreenList(props: ScreenListProps) {
             </Card.Header>
             <Card.Body>
               <div onClick={() => handleClick(screen)} className="screen-thumbnail">
-                <p>{screen.description}</p>
+                <ScreenDetails {...props} screen={screen} />
               </div>
             </Card.Body>
           </Card>

@@ -11,6 +11,7 @@ import DocumentCard from './DocumentCard';
 import {
   useDeleteScreenMutation,
   useOnUpdateScreenSubscription,
+  useScreenLazyQuery,
   useScreenQuery,
   useUpdateScreenMutation,
 } from './hooks';
@@ -22,6 +23,7 @@ import Upload from '@/metronic/Upload';
 import { Menu, Modal, Popover, Spin, Toast, Tooltip } from '@/metronic';
 import type { UploadFileData } from '@/metronic/Upload/utils/upload';
 import { delay, sleep } from '@/utils';
+import { FactoryScreen } from '@/types';
 
 const switchMenu = (menu: any, i: number) => {
   if (menu.id === 'Separator') {
@@ -72,18 +74,23 @@ const statusTexts = [
   },
 ];
 
-type ScreenDetailsProps = RouteComponentProps<any>;
+type ScreenDetailsProps = RouteComponentProps<any> & {
+  screen?: FactoryScreen;
+};
 
 function ScreenDetails(props: ScreenDetailsProps) {
-  const { history, match } = props;
+  const { history, match, screen: cardData } = props;
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const deleting = useRef(false);
   const [refreshLoading, setRefreshLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
-  const { data, loading, refetch } = useScreenQuery({
+  const screenId = cardData?.id || match.params.id;
+  const mode = cardData?.id ? 'card' : 'view';
+
+  const [loadScreen, { data, loading, refetch }] = useScreenLazyQuery({
     variables: {
-      id: match.params.id,
+      id: screenId,
     },
     fetchPolicy: 'network-only',
   });
@@ -91,22 +98,25 @@ function ScreenDetails(props: ScreenDetailsProps) {
   const [updateScreen, {}] = useUpdateScreenMutation();
   const [deleteScreen, { loading: deleteing }] = useDeleteScreenMutation();
 
-  const {
-    data: newData,
-    loading: subLoading,
-    error: subError,
-  } = useOnUpdateScreenSubscription({
+  const { data: newData } = useOnUpdateScreenSubscription({
     variables: {
-      id: match.params.id,
+      id: screenId,
     },
   });
 
-  console.log('Subscription OnUpdate Screen', newData, subLoading, subError);
-
   useEffect(() => {
-    console.log('Subscription OnUpdate Screen', newData);
+    if (newData == null) {
+      return;
+    }
     refetch();
   }, [newData, refetch]);
+
+  useEffect(() => {
+    if (mode != 'view') {
+      return;
+    }
+    loadScreen();
+  }, [loadScreen, mode]);
 
   const handleRefetch = useCallback(async () => {
     setRefreshLoading(true);
@@ -123,7 +133,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
           await delay(
             updateScreen({
               variables: {
-                id: data?.screen?.id,
+                id: screenId,
                 input: { status: item.id },
               },
             }),
@@ -136,7 +146,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
         }
       };
     },
-    [data?.screen?.id, handleRefetch, updateScreen],
+    [screenId, handleRefetch, updateScreen],
   );
 
   const menus = useMemo(
@@ -167,7 +177,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
           delay(
             updateScreen({
               variables: {
-                id: data?.screen?.id,
+                id: screenId,
                 input: { info: value },
               },
             }),
@@ -188,7 +198,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
       }
       handleRefetch();
     },
-    [data?.screen?.id, handleRefetch, updateScreen],
+    [handleRefetch, screenId, updateScreen],
   );
 
   const handleGoBack = useCallback(() => {
@@ -218,7 +228,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
           okButton.appendChild(spinner);
           const _result = await delay(
             deleteScreen({
-              variables: { id: data?.screen?.id },
+              variables: { id: screenId },
             }),
             350,
           );
@@ -237,7 +247,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
     });
     await sleep(2000);
     history.replace('/login');
-  }, [data?.screen?.id, deleteScreen, history]);
+  }, [deleteScreen, history, screenId]);
 
   const handleLogout = useCallback(async () => {
     const result = await Modal.confirm({
@@ -287,7 +297,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
             delay(
               updateScreen({
                 variables: {
-                  id: data?.screen?.id,
+                  id: screenId,
                   input: { ['operator' + index]: value },
                 },
               }),
@@ -309,7 +319,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
         handleRefetch();
       };
     },
-    [data?.screen?.id, handleRefetch, updateScreen],
+    [handleRefetch, screenId, updateScreen],
   );
 
   const toggleFullScreen = useCallback(() => {
@@ -361,10 +371,9 @@ function ScreenDetails(props: ScreenDetailsProps) {
     };
   }, [deleteing, loading, logouting, updating, refreshLoading]);
 
-  const status = useMemo(
-    () => statusTexts.find((s) => s.id == data?.screen?.status),
-    [data?.screen?.status],
-  );
+  const screen = useMemo(() => data?.screen || cardData, [data?.screen, cardData]);
+
+  const status = useMemo(() => statusTexts.find((s) => s.id == screen?.status), [screen?.status]);
 
   return (
     <div className="fples_screen_view">
@@ -373,7 +382,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
           <div className="screen_info">
             <div className="frame-border">
               <Upload.NewImage
-                value={data?.screen?.info?.id}
+                value={screen?.info?.id}
                 onChange={handleUpdateInfo}
                 placeholder={infoPlaceholder}
               />
@@ -381,16 +390,19 @@ function ScreenDetails(props: ScreenDetailsProps) {
           </div>
           <div className="network_status">
             <div className={classnames('status_content py-3')} style={{ height: '100%' }}>
-              <Tooltip inverse title="返回列表">
-                <a onClick={handleGoBack}>
-                  <Icon name="Duotune/arr074" className="svg-icon-2x" />
-                </a>
-              </Tooltip>
+              {mode == 'view' && (
+                <Tooltip inverse title="返回列表">
+                  <a className="goback-list" onClick={handleGoBack}>
+                    <Icon name="Duotune/arr074" className="svg-icon-2x" />
+                  </a>
+                </Tooltip>
+              )}
               <div className="network-details">
-                IP: {data?.screen?.boundIp}
+                IP: {screen?.boundIp}
                 <br />
                 {networkStatus.message}
               </div>
+
               <div className="network_status_flag">
                 {networkStatus.status == 'ok' && (
                   <Icon name="Duotune/gen043" className="svg-icon-1 svg-icon-success" />
@@ -400,28 +412,30 @@ function ScreenDetails(props: ScreenDetailsProps) {
                 )}
                 {networkStatus.status == 'loading' && <Spin spinning={true} size="small" />}
               </div>
-              <div className="admin-actions">
-                <Tooltip inverse title="切换全屏">
-                  <a onClick={toggleFullScreen}>
-                    <Icon name="Duotune/gen054" className="svg-icon-2" />
-                  </a>
-                </Tooltip>
-                <Tooltip inverse title="重新加载">
-                  <a onClick={handleRefetch}>
-                    <Icon name="Duotune/arr029" className="svg-icon-2" />
-                  </a>
-                </Tooltip>
-                <Tooltip inverse title="退出">
-                  <a onClick={handleLogout}>
-                    <Icon name="Duotune/arr076" className="svg-icon-2" />
-                  </a>
-                </Tooltip>
-                <Tooltip inverse title="删除屏幕数据">
-                  <a onClick={handleRemoveScreen}>
-                    <Icon name="Duotune/gen040" className="svg-icon-2" />
-                  </a>
-                </Tooltip>
-              </div>
+              {mode == 'view' && (
+                <div className="admin-actions">
+                  <Tooltip inverse title="切换全屏">
+                    <a onClick={toggleFullScreen}>
+                      <Icon name="Duotune/gen054" className="svg-icon-2" />
+                    </a>
+                  </Tooltip>
+                  <Tooltip inverse title="重新加载">
+                    <a onClick={handleRefetch}>
+                      <Icon name="Duotune/arr029" className="svg-icon-2" />
+                    </a>
+                  </Tooltip>
+                  <Tooltip inverse title="退出">
+                    <a onClick={handleLogout}>
+                      <Icon name="Duotune/arr076" className="svg-icon-2" />
+                    </a>
+                  </Tooltip>
+                  <Tooltip inverse title="删除屏幕数据">
+                    <a onClick={handleRemoveScreen}>
+                      <Icon name="Duotune/gen040" className="svg-icon-2" />
+                    </a>
+                  </Tooltip>
+                </div>
+              )}
             </div>
             {/* <Dropdown menu={{ items }} trigger={['click']}>
               <div
@@ -441,21 +455,21 @@ function ScreenDetails(props: ScreenDetailsProps) {
           <div className="operator-context">
             <div className="operator-item">
               <Upload.NewImage
-                value={data?.screen?.operator1?.id}
+                value={screen?.operator1?.id}
                 placeholder={operatorPlaceholder}
                 onChange={handleUpdateOperators(1)}
               />
             </div>
             <div className="operator-item">
               <Upload.NewImage
-                value={data?.screen?.operator2?.id}
+                value={screen?.operator2?.id}
                 onChange={handleUpdateOperators(2)}
                 placeholder={operatorPlaceholder}
               />
             </div>
             <div className="operator-item">
               <Upload.NewImage
-                value={data?.screen?.operator3?.id}
+                value={screen?.operator3?.id}
                 onChange={handleUpdateOperators(3)}
                 placeholder={operatorPlaceholder}
               />
@@ -497,23 +511,24 @@ function ScreenDetails(props: ScreenDetailsProps) {
             },
           }}
         >
-          <div className="document-content">
-            <DocumentCard
-              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-            />
-            <DocumentCard
-              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-            />
-            <DocumentCard
-              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-            />
-            <DocumentCard
-              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-            />
-            <DocumentCard
-              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-            />
-            {/*         <DocumentCard
+          {mode == 'view' && (
+            <div className="document-content">
+              <DocumentCard
+                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+              />
+              <DocumentCard
+                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+              />
+              <DocumentCard
+                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+              />
+              <DocumentCard
+                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+              />
+              <DocumentCard
+                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+              />
+              {/*         <DocumentCard
           doc={{
             id: '',
             type: 'excel',
@@ -521,10 +536,11 @@ function ScreenDetails(props: ScreenDetailsProps) {
           }}
           height={1700}
         /> */}
-            <DocumentCard
-              doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/Production_order.pdf' }}
-            />
-          </div>
+              <DocumentCard
+                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/Production_order.pdf' }}
+              />
+            </div>
+          )}
         </OverlayScrollbarsComponent>
         {/* <div className="document-display-area__sidebar">水电费水电费</div> */}
       </div>
