@@ -1,3 +1,35 @@
+# [0.3.0](https://github.com/limaofeng/asany-admin/compare/v0.2.38...v0.3.0) (2023-09-23)
+
+### Bug Fixes
+
+- 修复 pdf 显示 ([1ce4104](https://github.com/limaofeng/asany-admin/commit/1ce410414a5081f3b8169d00196b5009e62a13eb))
+
+### Features
+
+- 打包优化 ([cf1e3b8](https://github.com/limaofeng/asany-admin/commit/cf1e3b889cf40f68347446a9bbbc6688afae8322))
+- 打包优化 ([e3da380](https://github.com/limaofeng/asany-admin/commit/e3da3804f14c4b2972a499dc2b4d57f6c38e697f))
+- 打包优化 ([cbc425f](https://github.com/limaofeng/asany-admin/commit/cbc425f4f899fd449dda108516868f1cb02645f1))
+- 隐藏菜单栏 ([7979473](https://github.com/limaofeng/asany-admin/commit/797947340217b4ee66f192a160100fc81e536f33))
+- 最大化时，设置全屏 ([098dc2a](https://github.com/limaofeng/asany-admin/commit/098dc2a54961978c961c4a8e08c4b38e09771706))
+- 接口调整 ([e3d5852](https://github.com/limaofeng/asany-admin/commit/e3d58527cad77672207cff5de9f5442d65757ebd))
+- 快捷方式 ([3c85e45](https://github.com/limaofeng/asany-admin/commit/3c85e4563fd2a6e311c0ca13084b663fd0232550))
+- 列表与详情接口接通 ([2766d21](https://github.com/limaofeng/asany-admin/commit/2766d21c3a93d9e04a61d3d12801fbeabdcec506))
+- 临时保存 ([9a7fd00](https://github.com/limaofeng/asany-admin/commit/9a7fd00e00616f8bf6ba0cc44846ab2339f52364))
+- 设备图标与操作员支持动态更新 ([96631b4](https://github.com/limaofeng/asany-admin/commit/96631b4c3c1d4bd5542ed7cc6cb965d68aa960b3))
+- 设置应用的名称 ([38315cd](https://github.com/limaofeng/asany-admin/commit/38315cd9f5d84be49b8e3ab8601fbe8790e80988))
+- 使用 open-im-sdk-wasm 替换 open-im-sdk ([fc511fc](https://github.com/limaofeng/asany-admin/commit/fc511fcb769b3edcd5029c9a430ec2ffed8e3c97))
+- 添加 electron-builder ([e3e1de2](https://github.com/limaofeng/asany-admin/commit/e3e1de2f664af65f67f0ee6ff0d2a629fb2540f2))
+- 添加 electron-builder ([ff70455](https://github.com/limaofeng/asany-admin/commit/ff7045511d4a72ae493d36afc2190725d5ebee98))
+- 添加管理端入口 ([32feb12](https://github.com/limaofeng/asany-admin/commit/32feb12bbe6dc50ef8ab50a738e7c3a3ee8c8fde))
+- 添加通知组件 ([24f4813](https://github.com/limaofeng/asany-admin/commit/24f4813a4b5a6b94c279250b369a742bb0f2d5a0))
+- 图标多尺寸 ([92e8fb0](https://github.com/limaofeng/asany-admin/commit/92e8fb0928058cecf48e9a3500df3e2dd49b83d2))
+- 网络状态位调整 ([77bfd81](https://github.com/limaofeng/asany-admin/commit/77bfd81fe265523f28e9c7a98cd82e0613e86308))
+- 文档展示区，滚动高度校准 ([d4fd446](https://github.com/limaofeng/asany-admin/commit/d4fd446c1e3ca766b04e35434ee6e4c00a2568e4))
+- 显示主窗体 ([0fcc33d](https://github.com/limaofeng/asany-admin/commit/0fcc33d039863168532b186be2beddb9c8ef1afd))
+- 修改部署时的接口 ([4bf7b0d](https://github.com/limaofeng/asany-admin/commit/4bf7b0d01ff41cf6cd30749f4fa00664611f8592))
+- 支持 node 18 ([8ef596d](https://github.com/limaofeng/asany-admin/commit/8ef596da1d2c616b0331ccadcc8ae33f0b5b4eaf))
+- 支持修改状态 ([a6bf8e1](https://github.com/limaofeng/asany-admin/commit/a6bf8e1c8cf0f757009d65c577fa0db4ea3f3302))
+
 ## [0.2.38](https://github.com/limaofeng/asany-admin/compare/v0.2.37...v0.2.38) (2023-05-14)
 
 ### Bug Fixes
