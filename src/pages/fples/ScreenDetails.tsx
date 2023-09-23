@@ -340,10 +340,6 @@ function ScreenDetails(props: ScreenDetailsProps) {
     }
   }, []);
 
-  const scrollbar = useRef<OverlayScrollbarsComponent>(null);
-
-  const handleScroll = useCallback(() => {}, []);
-
   const logouting = deleting.current;
 
   const networkStatus = useMemo(() => {
@@ -505,54 +501,156 @@ function ScreenDetails(props: ScreenDetailsProps) {
           </div>
         </Popover>
       </div>
+      {mode == 'view' && <DocumentView />}
 
-      <div className="document-display-area">
-        <OverlayScrollbarsComponent
-          ref={scrollbar}
-          className={classnames('custom-scrollbar infinite-scroll')}
-          options={{
-            scrollbars: {},
-            callbacks: {
-              onScroll: handleScroll,
-            },
-          }}
-        >
-          {mode == 'view' && (
-            <div className="document-content">
-              <DocumentCard
-                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-              />
-              <DocumentCard
-                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-              />
-              <DocumentCard
-                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-              />
-              <DocumentCard
-                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-              />
-              <DocumentCard
-                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-              />
-              {/*         <DocumentCard
-          doc={{
-            id: '',
-            type: 'excel',
-            url: 'http://upic.asany.cn/uPic/%E6%93%8D%E4%BD%9C%E4%BA%BA%E5%91%98%E7%82%B9%E6%A3%80%E8%A1%A8QR-PRO-07-12.xlsx',
-          }}
-          height={1700}
-        /> */}
-              <DocumentCard
-                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/Production_order.pdf' }}
-              />
-            </div>
-          )}
-        </OverlayScrollbarsComponent>
-        {/* <div className="document-display-area__sidebar">水电费水电费</div> */}
-      </div>
       <ToastContainer />
     </div>
   );
+}
+
+function DocumentView() {
+  const container = useRef<HTMLDivElement>(null);
+  const scrollbar = useRef<OverlayScrollbarsComponent>(null);
+  const [controlsVisible, setControlsVisible] = useState(true);
+
+  const handleScroll = useCallback(() => {}, []);
+
+  const handleShowControls = useCallback(() => {
+    setControlsVisible((visible) => {
+      return !visible;
+    });
+  }, []);
+
+  useEffect(() => {
+    addSwipeListener(
+      container.current!,
+      100,
+      () => {
+        setControlsVisible(true);
+      },
+      () => {
+        setControlsVisible(false);
+      },
+    );
+  });
+
+  return (
+    <div ref={container} className="document-display-area">
+      <OverlayScrollbarsComponent
+        ref={scrollbar}
+        className={classnames('custom-scrollbar infinite-scroll')}
+        options={{
+          scrollbars: {},
+          callbacks: {
+            onScroll: handleScroll,
+          },
+        }}
+      >
+        <div className="document-content" onDoubleClick={handleShowControls}>
+          <DocumentCard
+            key="作业指导书"
+            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+          />
+          <DocumentCard
+            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+          />
+          <DocumentCard
+            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+          />
+          <DocumentCard
+            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+          />
+          <DocumentCard
+            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+          />
+          {/*         <DocumentCard
+    doc={{
+      id: '',
+      type: 'excel',
+      url: 'http://upic.asany.cn/uPic/%E6%93%8D%E4%BD%9C%E4%BA%BA%E5%91%98%E7%82%B9%E6%A3%80%E8%A1%A8QR-PRO-07-12.xlsx',
+    }}
+    height={1700}
+  /> */}
+          <DocumentCard
+            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/Production_order.pdf' }}
+          />
+        </div>
+      </OverlayScrollbarsComponent>
+      <div className={classnames('document-display-area__sidebar', { show: controlsVisible })}>
+        <div className="document-controls-container">
+          <div className="document-controls-overlay" />
+          <div className="document-controls-content">
+            <h1>Welcome to Our Website</h1>
+            <div>
+              <Upload.NewImage placeholder="" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function addSwipeListener(
+  element: HTMLDivElement,
+  threshold: number,
+  onSwipeLeft: () => void,
+  onSwipeRight: () => void,
+) {
+  let isTouching = false;
+  let initialX: number = 0;
+  let initialY: number = 0;
+  let currentX: number = 0;
+
+  element.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+
+    const startX = touch.clientX;
+    const screenWidth = window.innerWidth;
+    if (startX < screenWidth - 200) {
+      return;
+    }
+
+    isTouching = true;
+    initialX = touch.clientX;
+    initialY = touch.clientY;
+    currentX = initialX;
+  });
+
+  element.addEventListener('touchmove', (e) => {
+    if (!isTouching) return;
+    const touch = e.touches[0];
+    currentX = touch.clientX;
+    const deltaX = currentX - initialX;
+
+    const deltaY = touch.clientY - initialY;
+
+    if (deltaX > threshold) {
+      if (deltaY > deltaX * 0.75) {
+        resetTouchState();
+        return;
+      }
+      onSwipeRight();
+      resetTouchState();
+    } else if (deltaX < -threshold) {
+      if (Math.abs(deltaY) > Math.abs(deltaX) * 0.75) {
+        resetTouchState();
+        return;
+      }
+      onSwipeLeft();
+      resetTouchState();
+    }
+  });
+
+  element.addEventListener('touchend', () => {
+    resetTouchState();
+  });
+
+  function resetTouchState() {
+    isTouching = false;
+    initialX = 0;
+    currentX = 0;
+  }
 }
 
 export default ScreenDetails;

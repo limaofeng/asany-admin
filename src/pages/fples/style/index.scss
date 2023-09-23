@@ -4,7 +4,7 @@ body {
     font-family: 'KaiTi', 'Microsoft Yahei';
 }
 
-body.swal2-height-auto {
+body.antd-theme-custom.swal2-shown.swal2-height-auto {
     height: 100% !important;
 }
 
@@ -90,6 +90,7 @@ body[scroll]::-webkit-scrollbar-thumb,
     height: calc(100vh);
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
 
     .upload-dropzone {
         .dash-box {
@@ -312,12 +313,53 @@ body[scroll]::-webkit-scrollbar-thumb,
         }
 
         .document-display-area__sidebar {
-            width: 120px;
+            width: 160px;
             height: 100%;
             position: absolute;
             top: 0;
-            right: 0px;
-            background-color: red;
+            right: -160px;
+            border: 2px solid transparent; /* 设置透明的边框 */
+            box-shadow: 0 6px 12px 1px rgb(202 202 202 / 70%); /* 添加发光效果 */
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+
+            &.show {
+                right: 0;
+            }
+
+
+            .document-controls-container {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                // background: url('your-image.jpg') no-repeat center center;
+                background-size: cover;
+            }
+
+            .document-controls-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.5);
+                /* 半透明白色背景，调整 alpha 值以控制透明度 */
+                backdrop-filter: blur(10px);
+                /* 磨砂效果，调整像素值以控制模糊程度 */
+                z-index: 1;
+                /* 确保覆盖在图片上方 */
+            }
+
+            /* 添加内容样式，以使内容可见 */
+            .document-controls-content {
+                position: relative;
+                z-index: 2;
+                /* 确保内容显示在磨砂效果之上 */
+                text-align: center;
+                padding: 20px;
+                color: #333;
+                /* 调整文本颜色 */
+            }
+
         }
 
         .document-content {
@@ -368,7 +410,7 @@ body[scroll]::-webkit-scrollbar-thumb,
             margin: 24px;
             overflow: hidden;
 
-            &.card > .card-body {
+            &.card>.card-body {
                 padding: 0;
             }
 
@@ -379,7 +421,7 @@ body[scroll]::-webkit-scrollbar-thumb,
                 position: relative;
                 overflow: hidden;
 
-                .fples_screen_view{
+                .fples_screen_view {
                     width: 1080px;
                     height: 1632px;
                     transform: scale(0.250);
