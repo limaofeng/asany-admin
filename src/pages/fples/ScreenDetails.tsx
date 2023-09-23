@@ -392,7 +392,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
           </div>
           <div className="network_status">
             <div className={classnames('status_content py-3')} style={{ height: '100%' }}>
-              {mode == 'view' && (
+              {mode == 'view' && user?.type == 'USER' && (
                 <Tooltip inverse title="返回列表">
                   <a className="goback-list" onClick={handleGoBack}>
                     <Icon name="Duotune/arr074" className="svg-icon-2x" />
