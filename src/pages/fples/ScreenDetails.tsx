@@ -24,6 +24,7 @@ import { Menu, Modal, Popover, Spin, Toast, Tooltip } from '@/metronic';
 import type { UploadFileData } from '@/metronic/Upload/utils/upload';
 import { delay, sleep } from '@/utils';
 import { FactoryScreen } from '@/types';
+import { useCurrentuser } from '@/utils/hooks';
 
 const switchMenu = (menu: any, i: number) => {
   if (menu.id === 'Separator') {
@@ -84,6 +85,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
   const deleting = useRef(false);
   const [refreshLoading, setRefreshLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const { data: user } = useCurrentuser();
 
   const screenId = cardData?.id || match.params.id;
   const mode = cardData?.id ? 'card' : 'view';
@@ -246,7 +248,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
       progressBar: true,
     });
     await sleep(2000);
-    history.replace('/login');
+    history.replace('/screens');
   }, [deleteScreen, history, screenId]);
 
   const handleLogout = useCallback(async () => {
@@ -270,7 +272,7 @@ function ScreenDetails(props: ScreenDetailsProps) {
           const spinner = document.createElement('span');
           spinner.classList.add('spinner-border-sm', 'ms-2', 'spinner-border', 'align-middle');
           okButton.appendChild(spinner);
-          await delay(logout(), 350);
+          await delay(logout(), 150);
         } finally {
           deleting.current = false;
         }
@@ -424,16 +426,20 @@ function ScreenDetails(props: ScreenDetailsProps) {
                       <Icon name="Duotune/arr029" className="svg-icon-2" />
                     </a>
                   </Tooltip>
-                  <Tooltip inverse title="退出">
-                    <a onClick={handleLogout}>
-                      <Icon name="Duotune/arr076" className="svg-icon-2" />
-                    </a>
-                  </Tooltip>
-                  <Tooltip inverse title="删除屏幕数据">
-                    <a onClick={handleRemoveScreen}>
-                      <Icon name="Duotune/gen040" className="svg-icon-2" />
-                    </a>
-                  </Tooltip>
+                  {user?.type == 'USER' && (
+                    <Tooltip inverse title="退出">
+                      <a onClick={handleLogout}>
+                        <Icon name="Duotune/arr076" className="svg-icon-2" />
+                      </a>
+                    </Tooltip>
+                  )}
+                  {user?.type == 'ADMIN' && (
+                    <Tooltip inverse title="删除屏幕数据">
+                      <a onClick={handleRemoveScreen}>
+                        <Icon name="Duotune/gen040" className="svg-icon-2" />
+                      </a>
+                    </Tooltip>
+                  )}
                 </div>
               )}
             </div>
