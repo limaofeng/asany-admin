@@ -1,3 +1,17 @@
+# [0.4.0](https://github.com/limaofeng/asany-admin/compare/v0.3.0...v0.4.0) (2023-09-26)
+
+### Bug Fixes
+
+- 只有管理员可以返回列表 ([566b098](https://github.com/limaofeng/asany-admin/commit/566b098e4e090d2dc981bb5868368e8a22edcfd8))
+- 只有管理员可以返回列表页面 ([a2f3569](https://github.com/limaofeng/asany-admin/commit/a2f356957449ac4299e52b86cf904e9fdc830ceb))
+
+### Features
+
+- 上传文档缩略图 ([86f2b84](https://github.com/limaofeng/asany-admin/commit/86f2b841a035ff07d2469239c3901046d1e9b67c))
+- 详情页区分管理员与设备用户的操作 ([0a0a2cf](https://github.com/limaofeng/asany-admin/commit/0a0a2cf8ad335282351bbab3b8ce632b80221ff0))
+- 修改状态颜色 ([fa948ba](https://github.com/limaofeng/asany-admin/commit/fa948ba02d96682037ba40091c0f2df5a5ffd524))
+- excel 预览及文档 ([0a97be4](https://github.com/limaofeng/asany-admin/commit/0a97be466ddae6cad825abe45f18293b0a1a7af0))
+
 # [0.3.0](https://github.com/limaofeng/asany-admin/compare/v0.2.38...v0.3.0) (2023-09-23)
 
 ### Bug Fixes
