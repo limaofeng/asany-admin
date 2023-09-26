@@ -8,7 +8,16 @@ query screens {
     operator3
     status
     statusImage
-    documents
+    document1
+    document2
+    document3
+    document4
+    document5
+    document6
+    document7
+    document8
+    document9
+    document10
     description
   }
 }
@@ -23,7 +32,16 @@ query screen($id: ID!) {
     operator3
     status
     statusImage
-    documents
+    document1
+    document2
+    document3
+    document4
+    document5
+    document6
+    document7
+    document8
+    document9
+    document10
     description
   }
 }
@@ -38,7 +56,16 @@ mutation updateScreen($id: ID!, $input: FactoryScreenUpdateInput!) {
     operator3
     status
     statusImage
-    documents
+    document1
+    document2
+    document3
+    document4
+    document5
+    document6
+    document7
+    document8
+    document9
+    document10
     description
   }
 }
@@ -53,7 +80,16 @@ mutation createScreen($input: FactoryScreenCreateInput!) {
     operator3
     status
     statusImage
-    documents
+    document1
+    document2
+    document3
+    document4
+    document5
+    document6
+    document7
+    document8
+    document9
+    document10
     description
   }
 }
@@ -68,7 +104,16 @@ mutation deleteScreen($id: ID!) {
     operator3
     status
     statusImage
-    documents
+    document1
+    document2
+    document3
+    document4
+    document5
+    document6
+    document7
+    document8
+    document9
+    document10
     description
   }
 }
@@ -95,7 +140,16 @@ query getScreenForIp($ip: String!) {
     operator3
     status
     statusImage
-    documents
+    document1
+    document2
+    document3
+    document4
+    document5
+    document6
+    document7
+    document8
+    document9
+    document10
     description
   }
 }
@@ -110,7 +164,16 @@ subscription onUpdateScreen($id: ID) {
     operator3
     status
     statusImage
-    documents
+    document1
+    document2
+    document3
+    document4
+    document5
+    document6
+    document7
+    document8
+    document9
+    document10
     description
   }
 }

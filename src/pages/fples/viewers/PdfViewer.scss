@@ -1,7 +1,15 @@
 .pdf-viewer {
+    flex: 1;
+
     .pdf-viewer-pages {
         display: flex;
         justify-content: center;
-        height: 300px;
+        // height: 300px;
+
+        flex-direction: column;
+
+        .pdf-page-canvas {
+
+        }
     }
 }

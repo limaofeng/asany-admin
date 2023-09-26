@@ -90,7 +90,7 @@ body[scroll]::-webkit-scrollbar-thumb,
     height: calc(100vh);
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
+    overflow: hidden;
 
     .upload-dropzone {
         .dash-box {
@@ -318,9 +318,11 @@ body[scroll]::-webkit-scrollbar-thumb,
             position: absolute;
             top: 0;
             right: -160px;
-            border: 2px solid transparent; /* 设置透明的边框 */
-            box-shadow: 0 6px 12px 1px rgb(202 202 202 / 70%); /* 添加发光效果 */
-            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+            border: 2px solid transparent;
+            /* 设置透明的边框 */
+            box-shadow: 0 6px 12px 1px rgb(202 202 202 / 70%);
+            /* 添加发光效果 */
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 
             &.show {
                 right: 0;
@@ -355,9 +357,51 @@ body[scroll]::-webkit-scrollbar-thumb,
                 z-index: 2;
                 /* 确保内容显示在磨砂效果之上 */
                 text-align: center;
-                padding: 20px;
                 color: #333;
                 /* 调整文本颜色 */
+                display: flex;
+                height: 100%;
+
+                .document-locator {
+                    width: 116px;
+                    margin: 20px;
+                    font-size: 1.2rem;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    background-color: #fff;
+                    border-radius: 10px;
+                    box-shadow: 0 0 2px #898888;
+                    overflow: hidden;
+                    cursor: pointer;
+                    transition: box-shadow 0.3s ease;
+                    /* 添加过渡效果 */
+
+                    &:hover {
+                        box-shadow: 0 0 6px #4E4E4E;
+                    }
+
+                    .img-container {
+                        width: 100%;
+                        height: 60px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        background-color: #a7a6a6;
+                        border-bottom: 2px solid #a7a6a6;
+
+
+                        img {
+                            width: auto;
+                            height: 100%;
+                        }
+                    }
+
+                    span {
+                        padding: 10px;
+                        font-family: 'KaiTi', 'Microsoft Yahei';
+                    }
+
+                }
             }
 
         }
@@ -372,6 +416,39 @@ body[scroll]::-webkit-scrollbar-thumb,
 
         .document-card {
             margin-top: 16px;
+
+            .doc-nofile-placeholder {
+                position: relative;
+
+                img {
+                    filter: grayscale(100%) blur(3px);
+                }
+
+                .placeholder-tip {
+                    z-index: 10;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) rotate(-20deg);
+                    font-size: 3rem;
+                    font-weight: bold;
+                }
+            }
+
+            .pdf-page-canvas {
+                width: 100%;
+                // height: 100%;
+            }
+
+            &.operating_instructions {
+                width: 100%;
+                height: 100%;
+            }
+
+            &.production_order {
+                width: 100%;
+                height: 100%;
+            }
         }
 
     }
@@ -498,4 +575,31 @@ body[scroll]::-webkit-scrollbar-thumb,
         padding: 30px;
     }
 
+}
+
+.excel-viewer {
+    position: relative;
+
+    .excel-viewer-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+        background-color: #fff;
+        box-shadow: 0 0 4px inset #4E4E4E;
+        border-radius: 8px;
+        pointer-events: none;
+    }
+
+    &:before {
+        content: '';
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
 }
