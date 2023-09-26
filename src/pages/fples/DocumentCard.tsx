@@ -25,12 +25,14 @@ type DocumentCardProps = {
   placeholder?: string;
   value?: FileObject;
   type: 'pdf' | 'excel' | 'image';
+  visible: boolean;
   onChange?: (id?: string, file?: UploadFileData) => void;
   onPreviewRendered?: () => void;
 };
 
 function DocumentCard(props: DocumentCardProps, ref: any) {
-  const { type, height, className, value, onChange, onPreviewRendered, placeholder } = props;
+  const { type, visible, height, className, value, onChange, onPreviewRendered, placeholder } =
+    props;
 
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
@@ -81,23 +83,20 @@ function DocumentCard(props: DocumentCardProps, ref: any) {
     if (!value) {
       return undefined;
     }
-    return process.env.STORAGE_URL + (value as any).url as string;
+    return (process.env.STORAGE_URL + (value as any).url) as string;
   }, [value]);
-
-
+  //{...getRootProps()}
   return (
-    <div className="document-card" ref={ref}>
-      <Card ref={ref} bodyClassName="p-1" {...getRootProps()} className={classnames(className)}>
+    <div className={classnames('document-card', { visible })} ref={ref}>
+      <Card ref={ref} bodyClassName="p-1" className={classnames(className)}>
         <input {...getInputProps()} />
         {value ? (
           <>
-            {type == 'pdf' && (
-              <PdfViewer onPreviewRendered={onPreviewRendered} pdfUrl={url} />
-            )}
+            {type == 'pdf' && <PdfViewer onPreviewRendered={onPreviewRendered} pdfUrl={url} />}
             {type == 'excel' && (
               <ExcelViewer
                 onPreviewRendered={onPreviewRendered}
-                height={height || 800}
+                // height={height || 800}
                 excelUrl={url}
                 title={value?.name || ''}
               />

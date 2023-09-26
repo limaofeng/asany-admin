@@ -282,6 +282,7 @@ body[scroll]::-webkit-scrollbar-thumb,
             }
 
             &.status_no_5 {
+                color: #fff;
                 background-color: #da2e18;
             }
 
@@ -310,6 +311,45 @@ body[scroll]::-webkit-scrollbar-thumb,
 
         &>div {
             flex: 1;
+            overflow: hidden !important;
+            position: relative;
+
+            .document-card {
+                display: none;
+
+
+                &.visible {
+                    display: block;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                    padding: 30px;
+
+                    .card {
+                        height: 100%;
+                        overflow: hidden;
+
+                        .pdf-viewer {
+                            height: 100%;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            flex-direction: column;
+                        }
+                    }
+
+                    .excel-viewer {
+                        height: 100%;
+
+                        &:before {
+                            display: none !important;
+                        }
+                    }
+
+                }
+            }
         }
 
         .document-display-area__sidebar {
@@ -354,7 +394,7 @@ body[scroll]::-webkit-scrollbar-thumb,
             /* 添加内容样式，以使内容可见 */
             .document-controls-content {
                 position: relative;
-                z-index: 2;
+                z-index: 20;
                 /* 确保内容显示在磨砂效果之上 */
                 text-align: center;
                 color: #333;

@@ -5,12 +5,12 @@ import { Base64 } from 'js-base64';
 type ExcelViewerProps = {
   title: string;
   excelUrl?: string;
-  height: number;
+  // height: number;
   onPreviewRendered?: () => void;
 };
 
 function ExcelViewer(props: ExcelViewerProps) {
-  const { excelUrl, title, height, onPreviewRendered } = props;
+  const { excelUrl, title, onPreviewRendered } = props;
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -45,10 +45,13 @@ function ExcelViewer(props: ExcelViewerProps) {
     };
   }, [onPreviewRendered]);
 
-
   return (
-    <div className="excel-viewer" style={{ height }}>
-      <iframe ref={iframeRef} className="excel-viewer-iframe" src={`./xlsx1/index.html?param=${param}`} />
+    <div className="excel-viewer">
+      <iframe
+        ref={iframeRef}
+        className="excel-viewer-iframe"
+        src={`./xlsx1/index.html?param=${param}`}
+      />
     </div>
   );
 }
