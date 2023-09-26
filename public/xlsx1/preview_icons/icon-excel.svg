@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="110px" height="120px" viewBox="0 0 110 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 60.1 (88133) - https://sketch.com -->
+    <title>编组 45</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="18.1840993%" y1="3.77989346%" x2="82.2101235%" y2="96.7756013%" id="linearGradient-1">
+            <stop stop-color="#70EA97" offset="0%"></stop>
+            <stop stop-color="#24B141" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="7.35042289%" y1="3.73344204%" x2="93.598897%" y2="94.9138872%" id="linearGradient-2">
+            <stop stop-color="#FEFEFE" offset="0%"></stop>
+            <stop stop-color="#B2F4C1" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="3.27730557%" y1="0%" x2="67.6022451%" y2="100%" id="linearGradient-3">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#9DF2B3" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="文档转换平台" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="编组-45">
+            <path d="M84.0219071,0 L110,26.882 L110,110 C110,115.522847 105.522847,120 100,120 L20,120 C14.4771525,120 10,115.522847 10,110 L10,10 C10,4.4771525 14.4771525,1.01453063e-15 20,0 L84.0219071,0 Z" id="形状结合" fill="url(#linearGradient-1)"></path>
+            <rect id="矩形" stroke="#FFFFFF" stroke-width="2" fill="url(#linearGradient-2)" x="1" y="24" width="72" height="72" rx="10"></rect>
+            <path d="M84,-5.27577981e-13 L110.08224,26.9814907 L94,26.9814907 C88.4771525,26.9814907 84,22.5043382 84,16.9814907 L84,-5.27577981e-13 L84,-5.27577981e-13 Z" id="三角形" fill="url(#linearGradient-3)"></path>
+            <polygon id="x" fill="#41C860" fill-rule="nonzero" points="29.34 82 37.14 70.54 44.88 82 52.92 82 40.86 65.5 51.54 50.98 43.56 50.98 37.14 60.46 30.66 50.98 22.68 50.98 33.36 65.5 21.3 82"></polygon>
+        </g>
+    </g>
+</svg>

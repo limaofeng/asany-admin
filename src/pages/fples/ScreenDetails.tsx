@@ -5,6 +5,7 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import type { RouteComponentProps } from 'react-router';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'overlayscrollbars/css/OverlayScrollbars.css';
 import { Icon } from '@asany/icons';
 
 import DocumentCard from './DocumentCard';
@@ -17,6 +18,11 @@ import {
 } from './hooks';
 import infoPlaceholder from './assets/info_placeholder.jpg';
 import operatorPlaceholder from './assets/operator_placeholder.jpg';
+import zyzdsPlaceholder from './assets/作业指导书.png';
+import czrydjbPlaceholder from './assets/操作人员点检表.png';
+import mbmobyPlaceholder from './assets/每班模具保养与点检内容..png';
+import scqkjcbPlaceholder from './assets/生产情况检查表.png';
+import scddPlaceholder from './assets/生产订单.png';
 
 import { logout } from '@/hooks';
 import Upload from '@/metronic/Upload';
@@ -153,15 +159,6 @@ function ScreenDetails(props: ScreenDetailsProps) {
 
   const menus = useMemo(
     () => [
-      ...[
-        {
-          id: 'SelectImage',
-          title: '选择图片',
-        },
-        {
-          id: 'Separator',
-        },
-      ],
       ...statusTexts.map((item) => ({
         ...item,
         method: handleChangeStatus(item),
@@ -301,6 +298,41 @@ function ScreenDetails(props: ScreenDetailsProps) {
                 variables: {
                   id: screenId,
                   input: { ['operator' + index]: value },
+                },
+              }),
+              350,
+            ),
+            {
+              pending: '数据更新中...',
+              success: '数据更新成功',
+              error: '数据更新失败',
+            },
+            {
+              duration: 2000,
+              placement: 'top-center',
+            },
+          );
+        } finally {
+          setUpdating(false);
+        }
+        handleRefetch();
+      };
+    },
+    [handleRefetch, screenId, updateScreen],
+  );
+
+  const handleUpdateDocument = useCallback(
+    (index: number) => {
+      return async (value?: string, fileData?: UploadFileData) => {
+        console.log(index, value, fileData);
+        setUpdating(true);
+        try {
+          await Toast.promise(
+            delay(
+              updateScreen({
+                variables: {
+                  id: screenId,
+                  input: { ['document' + index]: value },
                 },
               }),
               350,
@@ -501,14 +533,20 @@ function ScreenDetails(props: ScreenDetailsProps) {
           </div>
         </Popover>
       </div>
-      {mode == 'view' && <DocumentView />}
-
+      {mode == 'view' && <DocumentView data={screen} updateDocument={handleUpdateDocument}/>}
       <ToastContainer />
     </div>
   );
 }
 
-function DocumentView() {
+type DocumentViewProps = {
+  data?: FactoryScreen;
+  updateDocument: (index: number) => (value?: string, fileData?: UploadFileData) => void;
+};
+
+function DocumentView(props: DocumentViewProps) {
+  const { updateDocument } = props;
+
   const container = useRef<HTMLDivElement>(null);
   const scrollbar = useRef<OverlayScrollbarsComponent>(null);
   const [controlsVisible, setControlsVisible] = useState(true);
@@ -534,11 +572,68 @@ function DocumentView() {
     );
   });
 
+  const inited = useRef(false);
+  const timerRef = useRef<any>(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      inited.current = true;
+    }, 8000);
+  }, []);
+
+  const handlePreviewRendered = useCallback(() => {
+    if (inited.current) {
+      return;
+    }
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => {
+      if (!scrollbar.current) {
+        return;
+      }
+      console.log('handlePreviewRendered');
+      const osInstance = scrollbar.current?.osInstance();
+      // 将滚动条移动到左侧和顶部
+      osInstance?.scroll({ x: 0, y: 0 });
+      clearInterval(timerRef.current);
+    }, 1000);
+  }, []);
+
+  const docElements = useRef(new Map<string, HTMLDivElement>());
+
+  const buildRef = useCallback(
+    (key: string) => (ref: HTMLDivElement) => {
+      if (!ref) {
+        return;
+      }
+      docElements.current.set(key, ref);
+    },
+    [],
+  );
+
+  const handleScrollTo = useCallback(
+    (key: string) => () => {
+      const elem = docElements.current.get(key);
+      const _container = container.current;
+      if (!elem || !_container) {
+        return;
+      }
+      const osInstance = scrollbar.current?.osInstance();
+      const { top } = elem.getBoundingClientRect();
+      const { top: parentTop } = _container.getBoundingClientRect();
+
+      const scroll = scrollbar.current?.osInstance()?.scroll();
+      osInstance?.scroll({ y: top - parentTop + scroll!.position.y - 16});
+    },
+    [],
+  );
+
   return (
     <div ref={container} className="document-display-area">
       <OverlayScrollbarsComponent
         ref={scrollbar}
-        className={classnames('custom-scrollbar infinite-scroll')}
+        className={classnames('custom-scrollbar')}
         options={{
           scrollbars: {},
           callbacks: {
@@ -546,44 +641,110 @@ function DocumentView() {
           },
         }}
       >
-        <div className="document-content" onDoubleClick={handleShowControls}>
+        <div
+          className="document-content"
+          style={{ height: 3000 }}
+          onDoubleClick={handleShowControls}
+        >
+          <div className="d-flex" style={{ marginBottom: 16 }}>
+            <div style={{ flex: 1, paddingRight: 16 }} ref={buildRef('zyzds')}>
+              <DocumentCard
+                key="作业指导书"
+                type="pdf"
+                value={props.data?.document1}
+                onPreviewRendered={handlePreviewRendered}
+                onChange={updateDocument(1)}
+                className="operating_instructions"
+                placeholder={zyzdsPlaceholder}
+                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+              />
+            </div>
+            <div style={{ flex: 1 }} ref={buildRef('scdd')}>
+              <DocumentCard
+                onPreviewRendered={handlePreviewRendered}
+                value={props.data?.document2}
+                className="production_order"
+                onChange={updateDocument(2)}
+                placeholder={scddPlaceholder}
+                type="pdf"
+                key="生产订单"
+                doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/scdd.pdf' }}
+              />
+            </div>
+          </div>
           <DocumentCard
-            key="作业指导书"
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+            key="操作人员点检表"
+            height={682}
+            ref={buildRef('czrydjb')}
+            value={props.data?.document3}
+            onChange={updateDocument(3)}
+            onPreviewRendered={handlePreviewRendered}
+            placeholder={czrydjbPlaceholder}
+            type="excel"
+            doc={{ id: '', type: 'excel', url: 'http://upic.asany.cn/uPic/czrydjb.xlsx' }}
           />
           <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
+            key="生产情况检查表"
+            height={660}
+            type="excel"
+            ref={buildRef('scqkjcb')}
+            value={props.data?.document4}
+            onChange={updateDocument(4)}
+            placeholder={scqkjcbPlaceholder}
+            onPreviewRendered={handlePreviewRendered}
+            doc={{ id: '', type: 'excel', url: 'http://upic.asany.cn/uPic/scqkjcb.xlsx' }}
           />
           <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-          />
-          <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-          />
-          <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/B-Z21-010-09.pdf' }}
-          />
-          {/*         <DocumentCard
-    doc={{
-      id: '',
-      type: 'excel',
-      url: 'http://upic.asany.cn/uPic/%E6%93%8D%E4%BD%9C%E4%BA%BA%E5%91%98%E7%82%B9%E6%A3%80%E8%A1%A8QR-PRO-07-12.xlsx',
-    }}
-    height={1700}
-  /> */}
-          <DocumentCard
-            doc={{ id: '', type: 'pdf', url: 'http://upic.asany.cn/uPic/Production_order.pdf' }}
+            key="每班模具保养与点检内容"
+            height={640}
+            value={props.data?.document5}
+            onChange={updateDocument(5)}
+            placeholder={mbmobyPlaceholder}
+            type="excel"
+            ref={buildRef('mbmoby')}
+            onPreviewRendered={handlePreviewRendered}
+            doc={{ id: '', type: 'excel', url: 'http://upic.asany.cn/uPic/mbmjby_djnr.xlsx' }}
           />
         </div>
       </OverlayScrollbarsComponent>
       <div className={classnames('document-display-area__sidebar', { show: controlsVisible })}>
         <div className="document-controls-container">
           <div className="document-controls-overlay" />
+
           <div className="document-controls-content">
-            <h1>Welcome to Our Website</h1>
-            <div>
-              <Upload.NewImage placeholder="" />
-            </div>
+            <OverlayScrollbarsComponent className={classnames('custom-scrollbar')}>
+              <div className="document-locator">
+                <div className="img-container">
+                  <img src={zyzdsPlaceholder} onClick={handleScrollTo('zyzds')} alt="" />
+                </div>
+                <span>作业指导书</span>
+              </div>
+              <div className="document-locator" onClick={handleScrollTo('scdd')}>
+                <div className="img-container">
+                  <img src={scddPlaceholder} alt="" />
+                </div>
+                <span>生产订单</span>
+              </div>
+              <div onClick={handleScrollTo('czrydjb')} className="document-locator">
+                <div className="img-container">
+                  <img src={czrydjbPlaceholder} alt="" />
+                </div>
+                <span>操作人员点检表</span>
+              </div>
+              <div className="document-locator" onClick={handleScrollTo('scqkjcb')}>
+                <div className="img-container">
+                  <img src={scqkjcbPlaceholder} alt="" />
+                </div>
+                <span>生产情况检查表</span>
+              </div>
+              <div className="document-locator" onClick={handleScrollTo('mbmoby')}>
+                <div className="img-container">
+                  <img src={mbmobyPlaceholder} alt="" />
+                </div>
+                <span>每班模具保养与点检内容</span>
+              </div>
+              <div style={{ height: 20 }} />
+            </OverlayScrollbarsComponent>
           </div>
         </div>
       </div>
