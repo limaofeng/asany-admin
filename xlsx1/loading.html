@@ -1,0 +1,37 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>文件解析中</title>
+</head>
+<body>
+<div id="app">
+<link type="text/css" href="css/style.css" rel="stylesheet" />
+	<div class="text-wrapper">
+        <label id="title" ></label>
+		<div class="text part1">
+			<div>
+				<span class="letter"><div class="character">L</div> <span></span></span>
+				<span class="letter"><div class="character">o</div> <span></span></span>
+				<span class="letter"><div class="character">a</div> <span></span></span>
+				<span class="letter"><div class="character">d</div> <span></span></span>
+				<span class="letter"><div class="character">i</div> <span></span></span>
+				<span class="letter"><div class="character">n</div> <span></span></span>
+				<span class="letter"><div class="character">g</div> <span></span></span>
+			</div>
+		</div>
+		<div class="how-to"><h1><span>正在解析中，请您耐心等待...</span><h1></div>
+		
+	</div>
+</div>
+
+<div id="divContent" class="panel-body">
+</div>
+  <script>
+    var url = new URLSearchParams(window.location.search)
+    var fname = url.get('fname')
+    var targeturl=url.get('url')
+    document.title = fname
+    title.textContent=fname
+  </script>
+</body>
+</html>

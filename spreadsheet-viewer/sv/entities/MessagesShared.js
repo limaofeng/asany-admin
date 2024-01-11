@@ -1,0 +1,1 @@
+import{tuple as o,number as e,oneOf as a,exactly as t,Codec as i,string as n,optional as r}from"purify-ts/Codec";export var CellRange=o([e,e,e,e]),ThemeStylesheet=a([t("light"),t("dark")]),ConfigurationProps={themeStylesheet:r(ThemeStylesheet),licenseKey:r(n)},Configuration=i.interface(ConfigurationProps);
