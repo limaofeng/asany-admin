@@ -1,3 +1,10 @@
+## [0.4.2](https://github.com/limaofeng/asany-admin/compare/v0.4.0...v0.4.2) (2024-01-11)
+
+### Features
+
+- delete unused assets and files ([369af9e](https://github.com/limaofeng/asany-admin/commit/369af9e64d15946a78ed12a0e713ad2e7d58aed1))
+- 文档布局调整 ([10311c3](https://github.com/limaofeng/asany-admin/commit/10311c37f9cc94c61031b8388195e1f4df92354a))
+
 # [0.4.0](https://github.com/limaofeng/asany-admin/compare/v0.3.0...v0.4.0) (2023-09-26)
 
 ### Bug Fixes
