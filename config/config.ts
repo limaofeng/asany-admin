@@ -9,7 +9,7 @@ export default defineConfig({
     logging: process.env.NODE_ENV === 'development',
   },
   app: {
-    id: 'dae19885dc94eb73c399',
+    id: '6068485332c5fc853a65',
   },
   define: {
     'process.env.APOLLO_URL': 'https://api.asany.cn/graphql',

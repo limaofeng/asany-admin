@@ -5,17 +5,6 @@
   "description": "An out-of-box UI solution for enterprise applications",
   "main": "main.js",
   "homepage": ".",
-
-   
-
-
-        
-
-   
-
-
-
-  
   "scripts": {
     "estart": "electron .",
     "ebuild": "electron-builder",

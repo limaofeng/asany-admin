@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
   <head>
-    <title>EES 看板 Monitor</title>
+    <title>管理后台</title>
     <meta
       name="description"
       content="The most advanced Bootstrap Admin Theme on Themeforest trusted by 94,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue &amp; Laravel versions. Grab your copy now and get life-time updates for free."
@@ -50,32 +50,9 @@
       href="<%= context.config.publicPath + 'images/favicon.png'%>"
       type="image/x-icon"
     />
-    <script
-      type="text/javascript"
-      src="<%= context.config.publicPath + 'assets/plugins/custom/open-im-sdk/wasm_exec.js'%>"
-    ></script>
-    <!-- 预览相关 -->
-    <link
-      rel="stylesheet"
-      href="<%= context.config.publicPath + 'assets/plugins/luckysheet/plugins/css/pluginsCss.css'%>"
-    />
-    <link
-      rel="stylesheet"
-      href="<%= context.config.publicPath + 'assets/plugins/luckysheet/plugins/plugins.css'%>"
-    />
-    <link rel="stylesheet" href="<%= context.config.publicPath + 'assets/plugins/luckysheet/css/luckysheet.css'%>" />
-    <link rel="stylesheet" href="<%= context.config.publicPath + 'assets/plugins/luckysheet/expendPlugins/chart/chartmix.css'%>" />
-    <link
-      rel="stylesheet"
-      href="<%= context.config.publicPath + 'assets/plugins/luckysheet/assets/iconfont/iconfont.css'%>"
-    />
-    <script src="<%= context.config.publicPath + 'assets/plugins/luckysheet/plugins/js/plugin.js'%>"></script>
-    <script src="<%= context.config.publicPath + 'assets/plugins/luckysheet/luckysheet.umd.js'%>"></script>
-    <!-- <script src="<%= context.config.publicPath + 'assets/plugins/luckysheet/expendPlugins/chart/chartmix.umd.min.js'%>"></script> -->
+    <script type="text/javascript" src="<%= context.config.publicPath + 'assets/plugins/custom/open-im-sdk/wasm_exec.js'%>"></script>
   </head>
-  <body
-    class="antd-theme-custom header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled"
-  >
+  <body class="antd-theme-custom header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled">
     <noscript>
       <div class="noscript-container">
         Hi there! Please
@@ -210,14 +187,14 @@
         }
 
         .ant-spin-lg .ant-spin-dot {
-          width: 16rem;
-          height: 16rem;
-          font-size: 16rem;
+          width: 32px;
+          height: 32px;
+          font-size: 32px;
         }
 
         .ant-spin-lg .ant-spin-dot i {
-          width: 7rem;
-          height: 7rem;
+          width: 14px;
+          height: 14px;
         }
 
         @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
