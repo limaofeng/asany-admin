@@ -1,5 +1,4 @@
 import React from 'react';
-
 import type { NodeTypes } from 'react-flow-renderer';
 
 import EndNoneEvent from './EndNoneEvent';

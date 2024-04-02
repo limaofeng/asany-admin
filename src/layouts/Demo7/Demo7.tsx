@@ -5,23 +5,23 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
-
-import { getMatchMenu, transformRoute } from '@umijs/route-utils';
-import { InspectParams, Inspector } from 'react-dev-inspector';
+import { Inspector, InspectParams } from 'react-dev-inspector';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+
+import { history, useApp, useLocation, useRouteProps } from '@umijs/max';
+import { getMatchMenu, transformRoute } from '@umijs/route-utils';
 import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
-import { history, useApp, useLocation, useRouteProps } from '@umijs/max';
 
-import { LayoutProvider, useLayoutSelector } from '../LayoutContext';
-import { ThemeModeProvider } from '../components/theme-mode/ThemeModeProvider';
+import * as utils from '@/utils';
 
 import Aside from './components/Aside';
 import buildMenuRender from './components/utils';
 import getLayoutRenderConfig from './utils';
 
-import * as utils from '@/utils';
+import { ThemeModeProvider } from '../components/theme-mode/ThemeModeProvider';
+import { LayoutProvider, useLayoutSelector } from '../LayoutContext';
 
 import './style.scss';
 

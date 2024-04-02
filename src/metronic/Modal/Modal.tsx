@@ -1,18 +1,18 @@
 import type { CSSProperties } from 'react';
 import React, { useMemo } from 'react';
+import { Modal as BsModal } from 'react-bootstrap';
 
 import Icon, { store } from '@asany/icons';
 import { useDeepCompareMemo } from '@asany/sunmao';
 import classnames from 'classnames';
-import { Modal as BsModal } from 'react-bootstrap';
 import type { SweetAlertIcon, SweetAlertOptions } from 'sweetalert2';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
+import type { ClickCallback, ModalHeaderProps, ModalProps } from './typings';
+
 import Button from '../Button';
 import type { ButtonProps } from '../Button/typings';
-
-import type { ClickCallback, ModalHeaderProps, ModalProps } from './typings';
 
 import './Modal.scss';
 

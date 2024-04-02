@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useReducer, useRef } from 'react';
-
 import { useDropzone } from 'react-dropzone';
 
 import type { UploadFileData } from './utils/upload';

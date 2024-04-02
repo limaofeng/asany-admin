@@ -1,8 +1,8 @@
+import { MicroApp } from '@/layouts/Demo7';
+
 import { CveList, SearchBar } from '../components';
 import ChatMessenger from '../components/ChatMessenger/ChatMessenger';
 import { useChat } from '../hooks';
-
-import { MicroApp } from '@/layouts/Demo7';
 
 import '../style/chat_app.scss';
 

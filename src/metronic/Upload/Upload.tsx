@@ -5,14 +5,10 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
+import { useDropzone } from 'react-dropzone';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
-import { useDropzone } from 'react-dropzone';
-
-import CirclePlayer from '../MediaPlayer/CirclePlayer';
-import Progress from '../Progress';
-import Tooltip from '../Tooltip';
 
 import ImageUpload from './ImageUpload';
 import QueueUpload from './QueueUpload';
@@ -20,6 +16,10 @@ import UploadAvatar from './UploadAvatar';
 import { useLoadFile } from './utils/load';
 import type { UploadFileData, UploadState } from './utils/upload';
 import { useUpload } from './utils/upload';
+
+import CirclePlayer from '../MediaPlayer/CirclePlayer';
+import Progress from '../Progress';
+import Tooltip from '../Tooltip';
 
 import './style/Upload.scss';
 
@@ -35,7 +35,7 @@ export function PreviewComponent(props: PreviewComponentProps) {
 
   const [title, suffix] = useMemo(() => {
     const index = uploadFile.name.lastIndexOf('.');
-    if (index == -1) {
+    if (index === -1) {
       return [uploadFile.name, undefined];
     }
     return [
@@ -46,13 +46,13 @@ export function PreviewComponent(props: PreviewComponentProps) {
 
   return (
     <>
-      {status == 'completed' && uploadFile.mimeType.startsWith('audio/') && (
+      {status === 'completed' && uploadFile.mimeType.startsWith('audio/') && (
         <CirclePlayer
           size={22}
           src={process.env.STORAGE_URL + `/preview/${uploadFile.id}`}
         />
       )}
-      {status == 'error' && (
+      {status === 'error' && (
         <Tooltip title={<span className="text-danger">上传失败,请重试</span>}>
           <Icon
             className="svg-icon-3 text-danger svg-icon-danger"
@@ -60,7 +60,7 @@ export function PreviewComponent(props: PreviewComponentProps) {
           />
         </Tooltip>
       )}
-      {status != 'completed' && status != 'error' && (
+      {status !== 'completed' && status !== 'error' && (
         <Progress.Circle width={22} strokeWidth={10} percent={progress} />
       )}
       <div className="file-name-container ps-2">
@@ -156,7 +156,7 @@ function Upload(props: UploadProps) {
 
       const status = state.current.status;
 
-      if (status == 'completed' || status == 'error') {
+      if (status === 'completed' || status === 'error') {
         reset();
         onChange && onChange(undefined);
       } else {
@@ -170,7 +170,7 @@ function Upload(props: UploadProps) {
   );
 
   useEffect(() => {
-    if (state.current.status == uploadState) {
+    if (state.current.status === uploadState) {
       return;
     }
     state.current.status = uploadState;
@@ -184,7 +184,7 @@ function Upload(props: UploadProps) {
       }
       return;
     }
-    if (props.value == state.current.value && state.current.uploadFile) {
+    if (props.value === state.current.value && state.current.uploadFile) {
       return;
     }
     loadFile(props.value).then((data: UploadFileData) => {
@@ -196,7 +196,9 @@ function Upload(props: UploadProps) {
   }, [handleClear, loadFile, props.value]);
 
   const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     role,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     tabIndex,
     onClick: browseLocalFiles,
     ...rootProps
@@ -228,7 +230,7 @@ function Upload(props: UploadProps) {
         ))}
       <div
         className="preview-content"
-        placeholder={loading ? '加载文件中...' : placeholder}
+        data-placeholder={loading ? '加载文件中...' : placeholder}
       >
         {uploadFile &&
           React.createElement(preview, {
@@ -238,7 +240,7 @@ function Upload(props: UploadProps) {
             progress,
           })}
       </div>
-      {status != 'waiting' && (
+      {status !== 'waiting' && (
         <a className="input-clear" onClick={handleClear}>
           <Icon className="svg-icon-3" name="Bootstrap/x" />
         </a>

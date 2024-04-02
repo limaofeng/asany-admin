@@ -40,7 +40,7 @@ function renderTable(
         {
           dataIndex: 'pic',
           title: 'ITEM',
-          className: (type) => (type == 'th' ? 'ps-0 w-50px' : undefined),
+          className: (type) => (type === 'th' ? 'ps-0 w-50px' : undefined),
           render(pic) {
             return <img src={pic} className="w-50px ms-n1" alt="" />;
           },
@@ -48,7 +48,7 @@ function renderTable(
         {
           dataIndex: 'info',
           title: '',
-          className: (type) => (type == 'th' ? 'min-w-140px' : 'ps-0'),
+          className: (type) => (type === 'th' ? 'min-w-140px' : 'ps-0'),
           render(_, record) {
             return (
               <>
@@ -69,7 +69,7 @@ function renderTable(
           dataIndex: 'qty',
           title: 'QTY',
           className: (type) =>
-            type == 'th' ? 'text-end min-w-140px' : undefined,
+            type === 'th' ? 'text-end min-w-140px' : undefined,
           render(text) {
             return (
               <span className="text-gray-800 fw-bolder d-block fs-6 ps-0 text-end">
@@ -82,7 +82,7 @@ function renderTable(
           dataIndex: 'price',
           title: 'PRICE',
           className: (type) =>
-            type == 'th' ? 'pe-0 text-end min-w-120px' : 'text-end pe-0',
+            type === 'th' ? 'pe-0 text-end min-w-120px' : 'text-end pe-0',
           render(text) {
             return (
               <span className="text-gray-800 fw-bolder d-block fs-6">
@@ -95,7 +95,7 @@ function renderTable(
           dataIndex: 'total_price',
           title: 'TOTAL PRICE',
           className: (type) =>
-            type == 'th' ? 'pe-0 text-end min-w-120px' : 'text-end pe-0',
+            type === 'th' ? 'pe-0 text-end min-w-120px' : 'text-end pe-0',
           render(text) {
             return (
               <span className="text-gray-800 fw-bolder d-block fs-6">

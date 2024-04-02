@@ -14,15 +14,15 @@ import type {
   SortableItemProps,
 } from '@asany/sortable';
 import Sortable from '@asany/sortable';
+import { useModel } from '@umijs/max';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { useModel } from '@umijs/max';
-
-import CalendarSetsFooter from './CalendarSetsFooter';
 
 import { useUpdateCalendarSetMutation } from '@/pages/calendar/hooks';
 import { getDropPosition } from '@/pages/calendar/utils';
 import type { CalendarSet } from '@/types';
+
+import CalendarSetsFooter from './CalendarSetsFooter';
 
 interface CalendarSetItemProps extends SortableItemProps<any> {
   actived: boolean;
@@ -78,7 +78,7 @@ const CalendarSetItem = React.forwardRef(function (
 
   const handleInputBlur = useCallback(async () => {
     onEdit();
-    if (data.name != value) {
+    if (data.name !== value) {
       await saveCalendarSet(value);
     }
   }, [data.name, onEdit, saveCalendarSet, value]);
@@ -102,12 +102,12 @@ const CalendarSetItem = React.forwardRef(function (
 
   const handleShortcut = useCallback(
     async (action: string) => {
-      if (action == 'EXIT') {
+      if (action === 'EXIT') {
         onEdit();
         setValue(data.name);
-      } else if (action == 'ENTER') {
+      } else if (action === 'ENTER') {
         onEdit();
-        if (data.name != value) {
+        if (data.name !== value) {
           await saveCalendarSet(value);
         }
       }
@@ -188,7 +188,7 @@ function CalendarSets(props: CalendarSetsProps) {
   temp.current.calendarSets = data;
 
   const handleSelect = useCallback((key: string) => {
-    if (key == temp.current.activeKey) {
+    if (key === temp.current.activeKey) {
       return;
     }
     setActiveKey(key);
@@ -223,9 +223,9 @@ function CalendarSets(props: CalendarSetsProps) {
     if (!data.length) {
       return;
     }
-    if (!data.some((item) => item.id == activeKey)) {
+    if (!data.some((item) => item.id === activeKey)) {
       const key =
-        defaultCalendarSetbyModel == 'all'
+        defaultCalendarSetbyModel === 'all'
           ? data[0].id
           : String(defaultCalendarSetbyModel);
       setActiveKey(key);
@@ -242,16 +242,16 @@ function CalendarSets(props: CalendarSetsProps) {
   const handleShortcut = useCallback(
     (action: string) => {
       const { calendarSets, activeKey: key } = temp.current;
-      const index = calendarSets.findIndex((item) => item.id == key);
-      if (action == 'PREVIOUS') {
+      const index = calendarSets.findIndex((item) => item.id === key);
+      if (action === 'PREVIOUS') {
         setActiveKey(calendarSets[Math.max(index - 1, 0)].id);
-      } else if (action == 'NEXT') {
+      } else if (action === 'NEXT') {
         setActiveKey(
           calendarSets[Math.min(index + 1, calendarSets.length - 1)].id,
         );
-      } else if (action == 'ENTER') {
+      } else if (action === 'ENTER') {
         setEditing(activeKey);
-      } else if (action == 'EXIT') {
+      } else if (action === 'EXIT') {
         setEditing(undefined);
       }
     },
@@ -264,8 +264,8 @@ function CalendarSets(props: CalendarSetsProps) {
     return data.map((item) => ({
       ...item,
       key: item.id,
-      actived: activeKey == item.id,
-      editing: editing == item.id,
+      actived: activeKey === item.id,
+      editing: editing === item.id,
     }));
   }, [activeKey, data, editing]);
 
@@ -282,9 +282,9 @@ function CalendarSets(props: CalendarSetsProps) {
       const dropPosition = _dropPosition - Number(dropPos[dropPos.length - 1]);
 
       let toIndex = e.node.index;
-      if (dropPosition == -1) {
+      if (dropPosition === -1) {
         toIndex--;
-      } else if (dropPosition == 1) {
+      } else if (dropPosition === 1) {
         toIndex++;
       }
       await updateCalendarSet({
@@ -301,7 +301,7 @@ function CalendarSets(props: CalendarSetsProps) {
   );
 
   const handleAllowDrag = useCallback((e: ISortableItem) => {
-    return temp.current.editing != e.id;
+    return temp.current.editing !== e.id;
   }, []);
 
   const handleAllowDrop = useCallback((e: AllowDropInfo) => {

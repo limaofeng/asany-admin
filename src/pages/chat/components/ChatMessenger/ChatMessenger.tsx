@@ -5,15 +5,16 @@ import { Resizer } from '@asany/sunmao';
 import classnames from 'classnames';
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 
-import { useGetUserOnlineStatusLazyQuery } from '../../hooks/api';
 import '../../style/chat_app.scss';
+
+import { ContentWrapper } from '@/layouts/components';
+import { Badge, Button, Card, Symbol, Tooltip } from '@/metronic';
 
 import ChatContent from './ChatContent/ChatContent';
 import ChatFooter from './ChatFooter/ChatFooter';
 import WelcomeContent from './WelcomeContent';
 
-import { ContentWrapper } from '@/layouts/components';
-import { Badge, Button, Card, Symbol, Tooltip } from '@/metronic';
+import { useGetUserOnlineStatusLazyQuery } from '../../hooks/api';
 // import { isSingleCve } from '@/utils/open-im/utils/im';
 // import type { messageTypes } from '@/utils/open-im/constants/messageContentType';
 
@@ -54,7 +55,7 @@ const SingleCveInfo = ({
   const details = data?.user.onlineStatus.detailPlatformStatus;
 
   const onlineStatus = useMemo(() => {
-    if (oType == 'online') {
+    if (oType === 'online') {
       let str = '';
       details?.map((detail) => {
         if (detail.status === 'online') {
@@ -71,7 +72,7 @@ const SingleCveInfo = ({
   prevOnlineStatus.current = oType;
 
   useEffect(() => {
-    if (prevOnlineStatus.current == 'online') {
+    if (prevOnlineStatus.current === 'online') {
       return;
     }
     refetch();
@@ -80,7 +81,7 @@ const SingleCveInfo = ({
   return (
     <div className="mb-0 lh-1 d-flex flex-row align-items-center">
       <Badge
-        color={oType == 'online' ? 'primary' : 'secondary'}
+        color={oType === 'online' ? 'primary' : 'secondary'}
         shape="circle"
         className="w-10px h-10px me-1"
       />

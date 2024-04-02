@@ -1,4 +1,3 @@
-import { IMSDK } from '@/models/open-im/auth';
 import type {
   BlackUserItem,
   FriendApplicationItem,
@@ -9,8 +8,9 @@ import type {
   MemberMapType,
   TotalUserStruct,
 } from 'open-im-sdk-wasm/lib/types/entity';
-
 import type { GetGroupMemberParams } from 'open-im-sdk-wasm/lib/types/params';
+
+import { IMSDK } from '@/models/open-im/auth';
 
 import type { ContactActionTypes } from '../types/contacts';
 import {

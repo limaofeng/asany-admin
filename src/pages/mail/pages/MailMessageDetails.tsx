@@ -1,8 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-
-import { Icon } from '@asany/icons';
-import classnames from 'classnames';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import ContentLoader from 'react-content-loader';
 import {
   Link,
@@ -10,6 +6,14 @@ import {
   useOutletContext,
   useParams,
 } from 'react-router-dom';
+
+import { Icon } from '@asany/icons';
+import classnames from 'classnames';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+
+import { Button, Card, Modal, Tooltip } from '@/metronic';
+import type { MailboxMessage } from '@/types';
+import { sleep } from '@/utils';
 
 import MessageDetails from '../components/MessageDetails';
 import MessageEditor from '../components/MessageEditor';
@@ -23,10 +27,6 @@ import {
 } from '../hooks';
 import type { RefreshEvent, RefreshType } from '../typings';
 import { DEFAULT_MAILBOXES } from '../utils';
-
-import { Button, Card, Modal, Tooltip } from '@/metronic';
-import type { MailboxMessage } from '@/types';
-import { sleep } from '@/utils';
 
 export type MailboxRouteParams = {
   folder: string;

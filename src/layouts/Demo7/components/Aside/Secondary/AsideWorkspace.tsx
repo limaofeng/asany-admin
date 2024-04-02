@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import { useLayout } from '../../../../LayoutContext';
-
 import MenuBar from './MenuBar';
+
+import { useLayout } from '../../../../LayoutContext';
 
 type AsideWorkspaceProps = {
   header?: React.ReactNode;

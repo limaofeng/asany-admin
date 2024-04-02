@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Icon from '@asany/icons';
-import { Link, useNavigate } from 'react-router-dom';
+
+import { Card, Dropdown, Input, Menu, Modal, Spin } from '@/metronic';
+import type { InputRef } from '@/metronic/Input';
+import type { IconLibrary } from '@/types';
 
 import {
   useDeleteIconLibraryMutation,
   useUpdateIconLibraryMutation,
 } from '../hooks';
-
-import { Card, Dropdown, Input, Menu, Modal, Spin } from '@/metronic';
-import type { InputRef } from '@/metronic/Input';
-import type { IconLibrary } from '@/types';
 
 type LibraryCardProps = {
   library: IconLibrary;
@@ -71,9 +71,9 @@ function LibraryCard({ library, onStatusChange }: LibraryCardProps) {
 
   const handleMenuClick = useCallback(
     (e) => {
-      if (e.key == 'delete') {
+      if (e.key === 'delete') {
         handleDelete();
-      } else if (e.key == 'rename') {
+      } else if (e.key === 'rename') {
         setTimeout(() => {
           name.current?.focus();
         }, 100);

@@ -7,6 +7,7 @@ export { default as Bullet } from './Bullet';
 export { default as Button } from './Button';
 export { default as Card } from './Card';
 export { default as Checkbox } from './Checkbox';
+export * from './Colors';
 export { default as CountUp } from './CountUp';
 export { default as DatePicker } from './DatePicker';
 export { default as Device } from './Device';

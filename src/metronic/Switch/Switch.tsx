@@ -35,7 +35,8 @@ function Switch(props: SwitchProps) {
     [onChange],
   );
 
-  const value = _checked != undefined ? 'true' : _value || (onChange && 'true');
+  const value =
+    _checked !== undefined ? 'true' : _value || (onChange && 'true');
   const checked = _checked || (onChange && false);
 
   return (

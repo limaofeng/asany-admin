@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
 import type { RouteComponentProps } from 'react-router';
 import { matchPath } from 'react-router';
 
-import { useModuleQuery } from '../hooks/api';
-
 import { MicroApp } from '@/layouts/Demo7';
 import { BlockUI, Menu, Symbol } from '@/metronic';
+
+import { useModuleQuery } from '../hooks/api';
 
 import '../style/index.scss';
 

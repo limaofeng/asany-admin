@@ -1,9 +1,9 @@
 import { Link } from '@umijs/max';
 
-import { useMyAppsQuery } from '../hooks';
-
 import { ContentWrapper } from '@/layouts/components';
 import { Badge, Card, Col, Progress, Row, Symbol, Tooltip } from '@/metronic';
+
+import { useMyAppsQuery } from '../hooks';
 
 function AppList() {
   const { data = { apps: [] }, loading } = useMyAppsQuery();

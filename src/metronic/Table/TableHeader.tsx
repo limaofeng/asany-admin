@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useMeasure } from 'react-use';
 
 import useMergedRef from '@react-hook/merged-ref';
 import classnames from 'classnames';
-import { useMeasure } from 'react-use';
-
-import Checkbox from '../Checkbox';
 
 import type {
   DataSource,
@@ -16,6 +14,8 @@ import type {
   TableHeadToolbar,
 } from './typings';
 import { getRowKey } from './utils';
+
+import Checkbox from '../Checkbox';
 
 type ColgroupProps<T> = {
   columns: NewTableColumn<T>[];
@@ -112,11 +112,11 @@ function TableHeaderColumn(props: TableHeaderColumnProps) {
   }, [col.sortDirections, sortable]);
 
   const handleSort = useCallback(() => {
-    const _index = sortDirections.findIndex((item) => item == sortOrder) + 1;
+    const _index = sortDirections.findIndex((item) => item === sortOrder) + 1;
 
     onSort(
       col.key!,
-      sortDirections[_index == sortDirections.length ? 0 : _index],
+      sortDirections[_index === sortDirections.length ? 0 : _index],
     );
   }, [col.key, onSort, sortDirections, sortOrder]);
 
@@ -124,8 +124,8 @@ function TableHeaderColumn(props: TableHeaderColumnProps) {
     <th
       className={classnames(className, {
         sorting: sortable,
-        sorting_desc: sortable && sortOrder == 'descend',
-        sorting_asc: sortable && sortOrder == 'ascend',
+        sorting_desc: sortable && sortOrder === 'descend',
+        sorting_asc: sortable && sortOrder === 'ascend',
       })}
       onClick={sortable ? handleSort : undefined}
       style={{ width: col.width }}
@@ -212,7 +212,7 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
                     <div className="fw-bolder me-5 text-gray-800">
                       {renderTitle(selectedKeys.size)}
                     </div>
-                    {typeof toolbar == 'function' &&
+                    {typeof toolbar === 'function' &&
                       toolbar(
                         [...selectedKeys],
                         dataSource.items.filter((item) =>
@@ -225,7 +225,7 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
             ) : (
               columns.map((col) => {
                 const key = col.key || col.dataIndex;
-                return key == '__rowSelection' ? (
+                return key === '__rowSelection' ? (
                   <TableHeaderColumnCheckbox
                     key={key}
                     checked={selectedAll}
@@ -236,10 +236,10 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
                     key={`th-${key}`}
                     col={col}
                     sortOrder={
-                      sorter?.field == col.key ? sorter?.order : undefined
+                      sorter?.field === col.key ? sorter?.order : undefined
                     }
                     className={classnames(
-                      typeof col.className == 'function'
+                      typeof col.className === 'function'
                         ? col.className('th')
                         : col.className,
                     )}

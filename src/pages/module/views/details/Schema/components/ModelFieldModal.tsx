@@ -3,8 +3,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 
-import allFieldForms from './field-forms';
-
 import { Dropdown, Form, Menu, Modal, Toast } from '@/metronic';
 import type { SelectEvent } from '@/metronic/Menu/typings';
 import {
@@ -17,6 +15,8 @@ import type {
   ModelFiledType as IModelFiledType,
   Model,
 } from '@/types';
+
+import allFieldForms from './field-forms';
 
 type FieldTypeSelectProps = {
   family: {
@@ -33,7 +33,7 @@ function FieldTypeSelect(props: FieldTypeSelectProps) {
 
   const handleSelect = useCallback(
     (e: SelectEvent) => {
-      const newFiledType = family.filedTypes.find((ft) => ft.id == e.key);
+      const newFiledType = family.filedTypes.find((ft) => ft.id === e.key);
       onChange(newFiledType!);
     },
     [family.filedTypes, onChange],
@@ -42,7 +42,7 @@ function FieldTypeSelect(props: FieldTypeSelectProps) {
   return (
     <div
       className={classnames('model-field-type-select', {
-        only: family.filedTypes.length == 1,
+        only: family.filedTypes.length === 1,
       })}
     >
       <div
@@ -174,7 +174,7 @@ function ModelFieldModal(props: ModelFieldModalProps) {
       values.databaseColumnName = values.databaseColumnName.toUpperCase();
     }
     try {
-      if (mode == 'new') {
+      if (mode === 'new') {
         await createField({
           variables: {
             modelId: model.id,
@@ -263,7 +263,7 @@ function ModelFieldModal(props: ModelFieldModalProps) {
               fieldType={fieldType}
               onChange={setFieldType}
               family={
-                fieldTypeFamilies.find((item) => item.key == fieldType.family)!
+                fieldTypeFamilies.find((item) => item.key === fieldType.family)!
               }
             />
             <h4 className="flex-row-fluid">

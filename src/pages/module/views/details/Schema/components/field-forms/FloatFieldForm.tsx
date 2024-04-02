@@ -2,14 +2,14 @@ import { useCallback, useState } from 'react';
 
 import classnames from 'classnames';
 
+import { Button, Checkbox, Form } from '@/metronic';
+import type { FormInstance } from '@/metronic/typings';
+import type { Model, ModelField } from '@/types';
+
 import FieldAdvanced from '../form-widgets/FieldAdvanced';
 import FieldOptions from '../form-widgets/FieldOptions';
 import General from '../form-widgets/General';
 import useValuesChange from '../hooks/useValuesChange';
-
-import { Button, Checkbox, Form } from '@/metronic';
-import type { FormInstance } from '@/metronic/typings';
-import type { Model, ModelField } from '@/types';
 
 type FloatFieldFormProps = {
   data?: ModelField;
@@ -36,10 +36,10 @@ function FloatFieldForm(props: FloatFieldFormProps) {
     <Form form={form} onValuesChange={handleValuesChange}>
       <div className="mb-5">
         <Button
-          color={activeTabKey != 'settings' && 'gray-700'}
-          variant={activeTabKey == 'settings' ? 'light-primary' : false}
+          color={activeTabKey !== 'settings' && 'gray-700'}
+          variant={activeTabKey === 'settings' ? 'light-primary' : false}
           activeColor={
-            activeTabKey == 'settings' ? 'light-primary' : 'secondary'
+            activeTabKey === 'settings' ? 'light-primary' : 'secondary'
           }
           className="me-4 px-5"
           onClick={handleChangeTabKey('settings')}
@@ -47,10 +47,10 @@ function FloatFieldForm(props: FloatFieldFormProps) {
           设置
         </Button>
         <Button
-          color={activeTabKey != 'validations' && 'gray-700'}
-          variant={activeTabKey == 'validations' ? 'light-primary' : false}
+          color={activeTabKey !== 'validations' && 'gray-700'}
+          variant={activeTabKey === 'validations' ? 'light-primary' : false}
           activeColor={
-            activeTabKey == 'validations' ? 'light-primary' : 'secondary'
+            activeTabKey === 'validations' ? 'light-primary' : 'secondary'
           }
           className="me-4 px-5"
           onClick={handleChangeTabKey('validations')}
@@ -58,10 +58,10 @@ function FloatFieldForm(props: FloatFieldFormProps) {
           验证
         </Button>
         <Button
-          color={activeTabKey != 'advanced' && 'gray-700'}
-          variant={activeTabKey == 'advanced' ? 'light-primary' : false}
+          color={activeTabKey !== 'advanced' && 'gray-700'}
+          variant={activeTabKey === 'advanced' ? 'light-primary' : false}
           activeColor={
-            activeTabKey == 'advanced' ? 'light-primary' : 'secondary'
+            activeTabKey === 'advanced' ? 'light-primary' : 'secondary'
           }
           className="me-4 px-5"
           onClick={handleChangeTabKey('advanced')}
@@ -71,7 +71,7 @@ function FloatFieldForm(props: FloatFieldFormProps) {
       </div>
       <div
         className={classnames('modal-tabpane d-flex flex-column gap-6', {
-          'd-none': activeTabKey != 'settings',
+          'd-none': activeTabKey !== 'settings',
         })}
       >
         <General model={model} mode={mode} data={data} />
@@ -79,7 +79,7 @@ function FloatFieldForm(props: FloatFieldFormProps) {
       </div>
       <div
         className={classnames('modal-tabpane', {
-          'd-none': activeTabKey != 'validations',
+          'd-none': activeTabKey !== 'validations',
         })}
       >
         <div className="field-validations">
@@ -142,7 +142,7 @@ function FloatFieldForm(props: FloatFieldFormProps) {
       </div>
       <div
         className={classnames('modal-tabpane  d-flex flex-column gap-6', {
-          'd-none': activeTabKey != 'advanced',
+          'd-none': activeTabKey !== 'advanced',
         })}
       >
         <FieldAdvanced model={model} mode={mode} data={data} />

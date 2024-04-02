@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useOutletContext, useParams } from 'react-router';
 
 import Icon from '@asany/icons';
 import classnames from 'classnames';
-import { useOutletContext, useParams } from 'react-router';
+
+import { ContentWrapper } from '@/layouts/components';
+import { Badge, Button, Card, Toast, TreeList } from '@/metronic';
+import type { Route } from '@/types';
+import { tree } from '@/utils';
 
 import RouteDrawer from '../../components/RouteDrawer';
 import {
@@ -11,11 +16,6 @@ import {
   useMoveRouteMutation,
   useRouteDelete,
 } from '../../hooks';
-
-import { ContentWrapper } from '@/layouts/components';
-import { Badge, Button, Card, Toast, TreeList } from '@/metronic';
-import type { Route } from '@/types';
-import { tree } from '@/utils';
 import { AppViewLayoutOutletProps } from '../../types';
 
 interface RouteActionsProps {

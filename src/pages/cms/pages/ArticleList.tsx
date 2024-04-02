@@ -1,10 +1,4 @@
 import { useCallback, useMemo, useState } from 'react';
-
-import Icon from '@asany/icons';
-import classnames from 'classnames';
-import jquery from 'jquery';
-import moment from 'moment';
-import qs from 'query-string';
 import {
   Link,
   useLocation,
@@ -13,13 +7,11 @@ import {
   useParams,
 } from 'react-router-dom';
 
-import type { IArticle } from '../article/typings';
-import {
-  useArticlesQuery,
-  useDeleteArticleMutation,
-  useDeleteManyArticlesMutation,
-} from '../hooks';
-import useDelete from '../hooks/useDelete';
+import Icon from '@asany/icons';
+import classnames from 'classnames';
+import jquery from 'jquery';
+import moment from 'moment';
+import qs from 'query-string';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -35,6 +27,13 @@ import {
 } from '@/metronic';
 import type { Article, ArticleWhereInput } from '@/types';
 
+import type { IArticle } from '../article/typings';
+import {
+  useArticlesQuery,
+  useDeleteArticleMutation,
+  useDeleteManyArticlesMutation,
+} from '../hooks';
+import useDelete from '../hooks/useDelete';
 import '../style/article-list.scss';
 import { ArticleOutletContextParams } from '../typings';
 
@@ -209,9 +208,9 @@ function ArticleList() {
   const navigate = useNavigate();
 
   // const breadcrumbCategories = useMemo(() => {
-  //   const category = categories.find((item) => item.id == categoryId);
+  //   const category = categories.find((item) => item.id === categoryId);
   //   return (category?.path?.split('/') || [])
-  //     .map((_categoryId) => categories.find((item) => item.id == _categoryId)!)
+  //     .map((_categoryId) => categories.find((item) => item.id === _categoryId)!)
   //     .filter((item) => item);
   // }, [categories, categoryId]);
 
@@ -298,9 +297,9 @@ function ArticleList() {
       //     {breadcrumbCategories ? (
       //       <>
       //         {breadcrumbCategories
-      //           .filter((item) => item.id != rootCategoryId)
+      //           .filter((item) => item.id !== rootCategoryId)
       //           .map((item) =>
-      //             item.id == categoryId ? (
+      //             item.id === categoryId ? (
       //               <Breadcrumb.Item key={item.id} className="text-dark">
       //                 {item.name}
       //               </Breadcrumb.Item>

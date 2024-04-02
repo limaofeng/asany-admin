@@ -3,6 +3,9 @@ import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import classnames from 'classnames';
 import styled from 'styled-components';
 
+import type { AvatarProps } from './typings';
+import { useSymbolSize } from './utils';
+
 import { loadImage } from '../utils';
 import {
   contrastTextColor,
@@ -11,9 +14,6 @@ import {
   getContrastYIQ,
   lightenColor,
 } from '../utils/color';
-
-import type { AvatarProps } from './typings';
-import { useSymbolSize } from './utils';
 
 type AvatarLableProps = {
   color?: string;
@@ -24,6 +24,52 @@ const AvatarLable = styled.div<AvatarLableProps>`
   --kt-symbol-label-color: ${(props) => props.color};
   --kt-symbol-label-bg: ${(props) => props.backgroundColor};
 `;
+
+function isChinese(word: string) {
+  return /^[\u4e00-\u9fa5]+.*$/.test(word);
+}
+
+type ImageObjectProps = {
+  src: any;
+  data: any;
+  className?: string;
+  onError?: (e: any) => void;
+};
+
+function ImageObject(props: ImageObjectProps) {
+  return (
+    <img
+      src={props.data || props.src}
+      className={props.className}
+      onError={props.onError}
+    />
+  );
+}
+
+
+function renderImg(
+  src: string | React.ReactNode,
+  gap: number | undefined,
+  onError: (e: any) => void,
+  data: any,
+) {
+  if (!src) {
+    onError(new Error('SRC 为空'));
+    return;
+  }
+  if (React.isValidElement(src)) {
+    return src;
+  }
+
+  return (
+    <ImageObject
+      src={src}
+      data={data}
+      className={classnames({ [`p-${gap}`]: !!gap })}
+      onError={onError}
+    />
+  );
+}
 
 function Avatar(props: AvatarProps, ref: any) {
   const {
@@ -47,10 +93,10 @@ function Avatar(props: AvatarProps, ref: any) {
     if (!autoColor) {
       return;
     }
-    if (typeof alt == 'string') {
+    if (typeof alt === 'string') {
       let _backgroundColor = generateBackgroundColor(alt);
       if (light) {
-        while (getContrastYIQ(_backgroundColor) == 'dark') {
+        while (getContrastYIQ(_backgroundColor) === 'dark') {
           _backgroundColor = lightenColor(_backgroundColor, 80);
         }
         // _backgroundColor = lightenColor(_backgroundColor, 40);
@@ -112,15 +158,15 @@ function Avatar(props: AvatarProps, ref: any) {
       className={classnames(
         'symbol',
         {
-          'symbol-circle': shape == 'circle',
-          'symbol-square': shape == 'square',
+          'symbol-circle': shape === 'circle',
+          'symbol-square': shape === 'square',
         },
         className,
         sizeClass,
       )}
       {...otherProps}
     >
-      {state == 'error' || state == 'init' ? (
+      {state === 'error' || state === 'init' ? (
         React.isValidElement(alt) ? (
           alt
         ) : (
@@ -142,58 +188,13 @@ function Avatar(props: AvatarProps, ref: any) {
           </AvatarLable>
         )
       ) : (
-        state == 'succeed' && renderImg(src, gap, handleError, imageData)
+        state === 'succeed' && renderImg(src, gap, handleError, imageData)
       )}
       {badge &&
         React.cloneElement(badge, {
           className: classnames('symbol-badge', badge.props.className),
         })}
     </div>
-  );
-}
-
-function isChinese(word: string) {
-  return /^[\u4e00-\u9fa5]+.*$/.test(word);
-}
-
-type ImageObjectProps = {
-  src: any;
-  data: any;
-  className?: string;
-  onError?: (e: any) => void;
-};
-
-function ImageObject(props: ImageObjectProps) {
-  return (
-    <img
-      src={props.data || props.src}
-      className={props.className}
-      onError={props.onError}
-    />
-  );
-}
-
-function renderImg(
-  src: string | React.ReactNode,
-  gap: number | undefined,
-  onError: (e: any) => void,
-  data: any,
-) {
-  if (!src) {
-    onError(new Error('SRC 为空'));
-    return;
-  }
-  if (React.isValidElement(src)) {
-    return src;
-  }
-
-  return (
-    <ImageObject
-      src={src}
-      data={data}
-      className={classnames({ [`p-${gap}`]: !!gap })}
-      onError={onError}
-    />
   );
 }
 

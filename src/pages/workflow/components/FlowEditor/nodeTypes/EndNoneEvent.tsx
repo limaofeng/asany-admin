@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
-
-import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
+
+import { Icon } from '@asany/icons';
 
 import useDelete from '../tools/useDelete';
 

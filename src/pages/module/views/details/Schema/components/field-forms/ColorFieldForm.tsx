@@ -25,10 +25,10 @@ function ColorFieldForm(props: ColorFieldFormProps) {
     <Form form={form}>
       <div className="mb-5">
         <Button
-          color={activeTabKey != 'settings' && 'gray-700'}
-          variant={activeTabKey == 'settings' ? 'light-primary' : false}
+          color={activeTabKey !== 'settings' && 'gray-700'}
+          variant={activeTabKey === 'settings' ? 'light-primary' : false}
           activeColor={
-            activeTabKey == 'settings' ? 'light-primary' : 'secondary'
+            activeTabKey === 'settings' ? 'light-primary' : 'secondary'
           }
           className="me-4 px-5"
           onClick={handleChangeTabKey('settings')}
@@ -36,10 +36,10 @@ function ColorFieldForm(props: ColorFieldFormProps) {
           设置
         </Button>
         <Button
-          color={activeTabKey != 'validations' && 'gray-700'}
-          variant={activeTabKey == 'validations' ? 'light-primary' : false}
+          color={activeTabKey !== 'validations' && 'gray-700'}
+          variant={activeTabKey === 'validations' ? 'light-primary' : false}
           activeColor={
-            activeTabKey == 'validations' ? 'light-primary' : 'secondary'
+            activeTabKey === 'validations' ? 'light-primary' : 'secondary'
           }
           className="me-4 px-5"
           onClick={handleChangeTabKey('validations')}
@@ -47,10 +47,10 @@ function ColorFieldForm(props: ColorFieldFormProps) {
           验证
         </Button>
         <Button
-          color={activeTabKey != 'advanced' && 'gray-700'}
-          variant={activeTabKey == 'advanced' ? 'light-primary' : false}
+          color={activeTabKey !== 'advanced' && 'gray-700'}
+          variant={activeTabKey === 'advanced' ? 'light-primary' : false}
           activeColor={
-            activeTabKey == 'advanced' ? 'light-primary' : 'secondary'
+            activeTabKey === 'advanced' ? 'light-primary' : 'secondary'
           }
           className="me-4 px-5"
           onClick={handleChangeTabKey('advanced')}
@@ -60,7 +60,7 @@ function ColorFieldForm(props: ColorFieldFormProps) {
       </div>
       <div
         className={classnames('modal-tabpane d-flex flex-column gap-6', {
-          'd-none': activeTabKey != 'settings',
+          'd-none': activeTabKey !== 'settings',
         })}
       >
         <Form.Item
@@ -119,7 +119,7 @@ function ColorFieldForm(props: ColorFieldFormProps) {
       </div>
       <div
         className={classnames('modal-tabpane', {
-          'd-none': activeTabKey != 'validations',
+          'd-none': activeTabKey !== 'validations',
         })}
       >
         <div className="field-validations">
@@ -182,7 +182,7 @@ function ColorFieldForm(props: ColorFieldFormProps) {
       </div>
       <div
         className={classnames('modal-tabpane', {
-          'd-none': activeTabKey != 'advanced',
+          'd-none': activeTabKey !== 'advanced',
         })}
       >
         <div className="field-advanced">

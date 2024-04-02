@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { matchPath } from 'react-router';
 
 import { Icon } from '@asany/icons';
-import { matchPath } from 'react-router';
-import { useNavigate } from 'react-router-dom';
 import { Link } from '@umijs/max';
 
 import { BlockUI, Menu, Symbol, Tooltip } from '@/metronic';
 import type { Application, ArticleCategory } from '@/types';
+import { tree } from '@/utils';
 
 function renderChannel(item: ArticleCategory, sid: string) {
   if (item.children && item.children.length) {
@@ -66,26 +66,25 @@ console.log('renderChannel', renderChannel);
 type AppSidebarProps = {
   app: Application;
   location: Location;
+  categories: ArticleCategory[];
 };
 
 function AppSidebar(props: AppSidebarProps) {
   const { location, app } = props;
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  console.log('history', history);
-
-  // const categories = useMemo(() => {
-  //   return tree<any, ArticleCategory>(
-  //     props.categories.map((item: any) => ({ ...item })),
-  //     {
-  //       idKey: 'id',
-  //       childrenKey: 'children',
-  //       pidKey: 'parent.id',
-  //       sort: (left: any, right: any) => left.index - right.index,
-  //     },
-  //   );
-  // }, [props.categories]);
+  const categories = useMemo(() => {
+    return tree<any, ArticleCategory>(
+      props.categories.map((item: any) => ({ ...item })),
+      {
+        idKey: 'id',
+        childrenKey: 'children',
+        pidKey: 'parent.id',
+        sort: (left: any, right: any) => left.index - right.index,
+      },
+    );
+  }, [props.categories]);
 
   const menuKey = useMemo(() => {
     const channelMatch = matchPath(
@@ -99,7 +98,7 @@ function AppSidebar(props: AppSidebarProps) {
   }, [location.pathname]);
 
   const [selectedKey, setSelectedKey] = useState<string>(menuKey);
-  // const [openKeys, setOpenKeys] = useState<string[]>(categories.map((item) => item.id));
+  const [openKeys, setOpenKeys] = useState<string[]>(categories.map((item) => item.id));
 
   useEffect(() => {
     if (!menuKey) {
@@ -124,14 +123,14 @@ function AppSidebar(props: AppSidebarProps) {
   //   );
   // }, [history, id, selectedKey]);
 
-  // const handleOpenChange = useCallback((keys: string[]) => {
-  //   setOpenKeys(keys);
-  // }, []);
+  const handleOpenChange = useCallback((keys: string[]) => {
+    setOpenKeys(keys);
+  }, []);
 
-  // useEffect(() => {
-  //   setOpenKeys(categories.map((item) => `category_${item.id}`));
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [categories.map((item) => item.id).join(',')]);
+  useEffect(() => {
+    setOpenKeys(categories.map((item) => `category_${item.id}`));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories.map((item) => item.id).join(',')]);
 
   console.log('app 21', app);
 
@@ -163,8 +162,8 @@ function AppSidebar(props: AppSidebarProps) {
         className="menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 px-6 my-5 my-lg-0"
         selectedKeys={selectedKey ? [selectedKey] : []}
         onSelect={handleSelect}
-        // openKeys={openKeys}
-        // onOpenChange={handleOpenChange}
+        openKeys={openKeys}
+        onOpenChange={handleOpenChange}
       >
         <Menu.Section contentClassName="pt-6 pb-0">通用</Menu.Section>
         <Menu.Item

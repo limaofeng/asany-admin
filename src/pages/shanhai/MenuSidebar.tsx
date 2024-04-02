@@ -1,13 +1,12 @@
 import { useCallback, useState } from 'react';
 
-import { useQuery } from '@apollo/client';
 import Icon from '@asany/icons';
-
-import { QUEERY_MODELS } from './gql/model.gql';
 
 import { AsideWorkspace } from '@/layouts/Demo7';
 import { Button, Menu, Modal } from '@/metronic';
 import type { SelectEvent } from '@/metronic/Menu/typings';
+
+import { useModelsQuery } from './hooks';
 
 import './style/MenuSidebar.scss';
 
@@ -27,7 +26,7 @@ import './style/MenuSidebar.scss';
 } */
 
 function ArticleSidebar() {
-  const { data = { models: [] }, loading } = useQuery(QUEERY_MODELS);
+  const { data = { models: [] }, loading } = useModelsQuery();
 
   const models = data;
 
@@ -35,7 +34,6 @@ function ArticleSidebar() {
 
   const handleSelect = useCallback((event: SelectEvent) => {
     if (/^[\d]+$/.test(event.key)) {
-    } else if ('draft' === event.key) {
     } else if ('draft' === event.key) {
     } else if ('authors' === event.key) {
     }

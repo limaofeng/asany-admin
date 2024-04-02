@@ -33,6 +33,7 @@ const InternalForm: React.ForwardRefRenderFunction<FormInstance, FormProps> = (
   ref,
 ) => {
   const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     prefixCls: customizePrefixCls,
     className = '',
     size,

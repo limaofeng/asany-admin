@@ -49,7 +49,7 @@ function Radio(props: RadioProps) {
   );
 
   useEffect(() => {
-    if (checked != props.checked) {
+    if (checked !== props.checked) {
       setChecked(props.checked);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -117,7 +117,7 @@ function RadioGroup(props: RadioGroupProps) {
   );
 
   useEffect(() => {
-    if (value == defaultValue) {
+    if (value === defaultValue) {
       return;
     }
     setValue(defaultValue);
@@ -143,7 +143,7 @@ function RadioGroup(props: RadioGroupProps) {
       if (!React.isValidElement(item)) {
         return item;
       }
-      if (item.type != Radio) {
+      if (item.type !== Radio) {
         return item;
       }
       return React.cloneElement(item, {

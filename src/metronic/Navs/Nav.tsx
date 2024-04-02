@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
-import classnames from 'classnames';
 import { Nav as BsNav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+
+import classnames from 'classnames';
 
 type NavItemProps = {
   key: string;
@@ -29,7 +29,7 @@ function NavItem(props: NavItemProps) {
 
   return (
     <BsNav.Item as={as as any} className={className}>
-      {typeof children == 'string' ? (
+      {typeof children === 'string' ? (
         <BsNav.Link
           eventKey={eventKey}
           className={classnames(
@@ -78,6 +78,7 @@ function Nav(props: NavProps) {
       if (!key) {
         return;
       }
+      // eslint-disable-next-line no-unused-expressions, @typescript-eslint/no-unused-expressions
       onSelect ? onSelect(key, e) : setSelectedKey(key);
     },
     [onSelect],

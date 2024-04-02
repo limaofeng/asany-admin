@@ -17,11 +17,11 @@ export const parsingAngle = (angle: string) => {
   const cc = Math.round((180 * Math.asin(+arr[2])) / Math.PI);
   const dd = Math.round((180 * Math.acos(+arr[3])) / Math.PI);
   let deg = 0;
-  if (aa == bb || -aa == bb) {
+  if (aa === bb || -aa === bb) {
     deg = dd;
-  } else if (-aa + bb == 180) {
+  } else if (-aa + bb === 180) {
     deg = 180 + cc;
-  } else if (aa + bb == 180) {
+  } else if (aa + bb === 180) {
     deg = 360 - cc || 360 - dd;
   }
   return deg >= 360 ? 0 : deg;
@@ -127,7 +127,7 @@ class ResizeDataImpl implements ResizeData {
 
 function getElement(ele: HTMLElement, self: OneSelf) {
   if (typeof self === 'string') {
-    return self == 'self' ? ele : ele.parentElement;
+    return self === 'self' ? ele : ele.parentElement;
   }
   return self(ele);
 }

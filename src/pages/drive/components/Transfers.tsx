@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Icon from '@asany/icons';
+import { useModel } from '@umijs/max';
 import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import { useNavigate } from 'react-router-dom';
-import { useModel } from '@umijs/max';
 
 import { Button, Progress, Tabs } from '@/metronic';
 import { fileSize } from '@/metronic/utils/format';
@@ -72,19 +72,19 @@ function UploadFileItem(props: UploadFileItemProps) {
         <div className="file-title">{file.name}</div>
         <div
           className={classnames('file-transfer-progress progress', {
-            'opacity-0': file.state == 'completed',
+            'opacity-0': file.state === 'completed',
           })}
         >
           <Progress color="success" percent={file.progress} />
         </div>
         <div className="file-status">
           <div className="file-size">{fileSize(file.size)}</div>
-          {file.state == 'error' && (
+          {file.state === 'error' && (
             <div className="upload-error text-danger">上传出现错误!</div>
           )}
           {!['completed', 'error'].includes(file.state) && (
             <div className="file-transfer-rate">
-              {file.progress == 100
+              {file.progress === 100
                 ? '等待完成...'
                 : !!file.uploadSpeed && file.uploadSpeed + '/s'}
             </div>
@@ -92,18 +92,18 @@ function UploadFileItem(props: UploadFileItemProps) {
         </div>
       </div>
       <div className="file-actions">
-        {file.state == 'waiting' && (
+        {file.state === 'waiting' && (
           <Button
             icon={<Icon name="Bootstrap/clock" className="svg-icon-4" />}
           />
         )}
-        {file.state == 'uploading' && (
+        {file.state === 'uploading' && (
           <Button
             onClick={handlePause}
             icon={<Icon name="Bootstrap/pause" className="svg-icon-4" />}
           />
         )}
-        {file.state == 'paused' && (
+        {file.state === 'paused' && (
           <Button
             onClick={handleStart}
             icon={
@@ -122,7 +122,7 @@ function UploadFileItem(props: UploadFileItemProps) {
             }
           />
         )}
-        {file.state == 'completed' && (
+        {file.state === 'completed' && (
           <Button
             onClick={handleOpenFolder}
             icon={<Icon name="Bootstrap/folder2" className="svg-icon-6" />}
@@ -219,19 +219,19 @@ function DownloadFileItem(props: DownloadFileItemProps) {
         <div className="file-title">{file.name}</div>
         <div
           className={classnames('file-transfer-progress progress', {
-            'opacity-0': file.state == 'completed',
+            'opacity-0': file.state === 'completed',
           })}
         >
           <Progress color="primary" percent={file.progress} />
         </div>
         <div className="file-status">
           <div className="file-size">{!!file.size && fileSize(file.size)}</div>
-          {file.state == 'error' && (
+          {file.state === 'error' && (
             <div className="upload-error text-danger">下载出现错误!</div>
           )}
           {!['completed', 'error'].includes(file.state) && (
             <div className="file-transfer-rate">
-              {file.progress == 0 || !file.size
+              {file.progress === 0 || !file.size
                 ? '等待资源...'
                 : !!file.downloadSpeed && file.downloadSpeed + '/s'}
             </div>
@@ -239,18 +239,18 @@ function DownloadFileItem(props: DownloadFileItemProps) {
         </div>
       </div>
       <div className="file-actions">
-        {file.state == 'waiting' && (
+        {file.state === 'waiting' && (
           <Button
             icon={<Icon name="Bootstrap/clock" className="svg-icon-4" />}
           />
         )}
-        {file.state == 'downloading' && (
+        {file.state === 'downloading' && (
           <Button
             onClick={handlePause}
             icon={<Icon name="Bootstrap/pause" className="svg-icon-4" />}
           />
         )}
-        {file.state == 'paused' && (
+        {file.state === 'paused' && (
           <Button
             onClick={handleStart}
             icon={
@@ -269,7 +269,7 @@ function DownloadFileItem(props: DownloadFileItemProps) {
             }
           />
         )}
-        {file.state == 'completed' && (
+        {file.state === 'completed' && (
           <Button
             onClick={handleSaveFile}
             icon={<Icon name="Bootstrap/download" className="svg-icon-6" />}
@@ -333,11 +333,11 @@ function Transfers() {
   }));
 
   const uploadedFiles = useModel('cloud-drive.index', ({ state }) => {
-    return state.uploadFiles.filter((item) => item.state == 'completed');
+    return state.uploadFiles.filter((item) => item.state === 'completed');
   });
 
   const downloadFiles = useModel('cloud-drive.index', ({ state }) => {
-    return state.downloadFiles.filter((item) => item.state == 'completed');
+    return state.downloadFiles.filter((item) => item.state === 'completed');
   });
 
   const handleClearUploadedFiles = useCallback(async () => {
@@ -354,8 +354,8 @@ function Transfers() {
 
   const showToolbar = useMemo(() => {
     return (
-      (!!uploadedFiles.length && activeKey == 'upload') ||
-      (!!downloadFiles.length && activeKey == 'download')
+      (!!uploadedFiles.length && activeKey === 'upload') ||
+      (!!downloadFiles.length && activeKey === 'download')
     );
   }, [activeKey, uploadedFiles.length, downloadFiles.length]);
 
@@ -368,7 +368,7 @@ function Transfers() {
             <a
               className="cursor-pointer"
               onClick={
-                activeKey == 'upload'
+                activeKey === 'upload'
                   ? handleClearUploadedFiles
                   : handleClearDownloadFiles
               }

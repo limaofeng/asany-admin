@@ -1,14 +1,14 @@
 import { useCallback, useMemo } from 'react';
-
-import Icon from '@asany/icons';
 import ContentLoader from 'react-content-loader';
 import type { RouteComponentProps } from 'react-router-dom';
 
-import { useContactQuery } from '../hooks';
-import type { ContactRouteParams } from '../typings';
+import Icon from '@asany/icons';
 
 import { Button, Card, Dropdown, Menu, Symbol, Tabs } from '@/metronic';
 import type { Contact } from '@/types';
+
+import { useContactQuery } from '../hooks';
+import type { ContactRouteParams } from '../typings';
 
 type ViewContactProps = RouteComponentProps<ContactRouteParams> & {
   contact: Contact;

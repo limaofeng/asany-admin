@@ -5,8 +5,12 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
-
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+
+import { ContentWrapper } from '@/layouts/components';
+import { Card, Spin, Tabs } from '@/metronic';
+import type { MailboxMessage } from '@/types';
+import { sleep } from '@/utils';
 
 import MessageEditor from '../components/MessageEditor';
 import {
@@ -14,11 +18,6 @@ import {
   useDeleteMailboxMessageMutation,
   useMailboxMessageLazyQuery,
 } from '../hooks';
-
-import { ContentWrapper } from '@/layouts/components';
-import { Card, Spin, Tabs } from '@/metronic';
-import type { MailboxMessage } from '@/types';
-import { sleep } from '@/utils';
 
 const { TabPane } = Tabs;
 
@@ -39,10 +38,6 @@ const Tools = React.memo(function Tools() {
     </Card>
   );
 });
-
-type ComposeMailRouteParams = {
-  id?: string;
-};
 
 type ComposeMailState = {
   state: 'default' | 'saving' | 'saved';
@@ -89,13 +84,13 @@ function ComposeMail() {
     }
   }, []);
 
-  const handleDoNotStore = useCallback(
-    (onConfirm: () => void) => async () => {
-      await deleteMessage({ variables: { id: state.current.message!.id } });
-      onConfirm();
-    },
-    [deleteMessage],
-  );
+  // const handleDoNotStore = useCallback(
+  //   (onConfirm: () => void) => async () => {
+  //     await deleteMessage({ variables: { id: state.current.message!.id } });
+  //     onConfirm();
+  //   },
+  //   [deleteMessage],
+  // );
 
   useEffect(() => {
     if (!messageId) {

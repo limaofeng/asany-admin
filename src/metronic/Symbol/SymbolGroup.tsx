@@ -52,8 +52,8 @@ export function MoreSymbol(props: MoreSymbolProps) {
       href="#"
       onClick={handleClick}
       className={classnames('symbol', className, sizeClass, {
-        'symbol-circle': shape == 'circle',
-        'symbol-square': shape == 'square',
+        'symbol-circle': shape === 'circle',
+        'symbol-square': shape === 'square',
       })}
       data-bs-toggle="modal"
       data-bs-target="#kt_modal_view_users"
@@ -76,7 +76,7 @@ function SymbolGroup(props: SymbolGroupProps) {
       React.cloneElement(item as any, { size, shape }),
     );
     if (children.length <= maxCount) {
-      if (maxCount == children.length + 1 && more) {
+      if (maxCount === children.length + 1 && more) {
         return [
           ...children,
           React.cloneElement(more as any, { key: 'more-user', size, shape }),

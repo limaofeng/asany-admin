@@ -4,10 +4,10 @@ import { Icon } from '@asany/icons';
 import type { Moment } from 'moment';
 import moment from 'moment';
 
-import PublishDatePicker from '../../PublishDatePicker';
-
 import { Button, Popover, Radio, Separator } from '@/metronic';
 import type { Article } from '@/types';
+
+import PublishDatePicker from '../../PublishDatePicker';
 
 type PublishPopoverContentProps = {
   submitting: boolean;
@@ -34,7 +34,7 @@ function PublishPopoverContent(props: PublishPopoverContentProps) {
   const handlePublishChange = useCallback(
     (e: any) => {
       setAction((_action: string) => {
-        if (_action == e.target.value) {
+        if (_action === e.target.value) {
           return _action;
         }
         if (['schedule', 'reschedule'].includes(e.target.value)) {
@@ -60,11 +60,11 @@ function PublishPopoverContent(props: PublishPopoverContentProps) {
   }, [onPublish, action]);
 
   useEffect(() => {
-    if (status == 'DRAFT') {
+    if (status === 'DRAFT') {
       setAction('publish');
-    } else if (status == 'PUBLISHED') {
+    } else if (status === 'PUBLISHED') {
       setAction('update');
-    } else if (status == 'SCHEDULED') {
+    } else if (status === 'SCHEDULED') {
       setAction('reschedule');
     }
   }, [status]);
@@ -108,7 +108,7 @@ function PublishPopoverContent(props: PublishPopoverContentProps) {
     <>
       <div className="publish-popover-content">
         <Radio.Group value={action} onChange={handlePublishChange}>
-          {status == 'PUBLISHED' && (
+          {status === 'PUBLISHED' && (
             <>
               <Radio
                 className="align-items-start"
@@ -131,7 +131,7 @@ function PublishPopoverContent(props: PublishPopoverContentProps) {
               </Radio>
             </>
           )}
-          {status == 'SCHEDULED' && (
+          {status === 'SCHEDULED' && (
             <>
               <Radio
                 className="align-items-start"
@@ -164,7 +164,7 @@ function PublishPopoverContent(props: PublishPopoverContentProps) {
               </Radio>
             </>
           )}
-          {status == 'DRAFT' && (
+          {status === 'DRAFT' && (
             <>
               <Radio
                 className="align-items-start"
@@ -210,13 +210,14 @@ function PublishPopoverContent(props: PublishPopoverContentProps) {
           取消
         </Button>
         <Button loading={submitting} onClick={handlePublish}>
-          {action == 'publish' && (submitting ? '发布中...' : '发布')}
-          {action == 'schedule' && (submitting ? '定时发布中...' : '定时发布')}
-          {action == 'update' && (submitting ? '更新中...' : '更新')}
-          {action == 'unpublish' && (submitting ? '取消发布中...' : '取消发布')}
-          {action == 'reschedule' &&
+          {action === 'publish' && (submitting ? '发布中...' : '发布')}
+          {action === 'schedule' && (submitting ? '定时发布中...' : '定时发布')}
+          {action === 'update' && (submitting ? '更新中...' : '更新')}
+          {action === 'unpublish' &&
+            (submitting ? '取消发布中...' : '取消发布')}
+          {action === 'reschedule' &&
             (submitting ? '更新中...' : '重设发布时间')}
-          {action == 'revert_to_draft' &&
+          {action === 'revert_to_draft' &&
             (submitting ? '取消中...' : '取消自动发布')}
         </Button>
       </div>

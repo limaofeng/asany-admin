@@ -69,12 +69,13 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [value, setValue] = useState(
-    props.value != null ? props.value : props.defaultValue || '',
+    props.value !== null ? props.value : props.defaultValue || '',
   );
 
   const handleChange = useCallback(
     (e: any) => {
-      onChange ? onChange(e) : setValue(e.target.value);
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
+      !!onChange ? onChange(e) : setValue(e.target.value);
     },
     [onChange],
   );
@@ -91,11 +92,11 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   );
 
   const newValue = useMemo(() => {
-    if (props.value == value) {
-      return value != null ? value : '';
+    if (props.value === value) {
+      return value !== null ? value : '';
     }
     setValue(props.value!);
-    return props.value != null ? props.value : '';
+    return props.value !== null ? props.value : '';
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.value]);
 
@@ -121,7 +122,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
       select: (start?: number, end?: number) => {
         inputRef.current?.focus();
         process.nextTick(() => {
-          if (start != undefined && end != undefined) {
+          if (start !== undefined && end !== undefined) {
             inputRef.current?.setSelectionRange(start, end);
           } else {
             inputRef.current?.select();

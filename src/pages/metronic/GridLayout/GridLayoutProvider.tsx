@@ -147,14 +147,14 @@ function useStore(
       }
       if (action.type === SortableActionType.register) {
         const data = action.payload;
-        const item = _state.items.find((_item) => _item.id == data.id)!;
+        const item = _state.items.find((_item) => _item.id === data.id)!;
         assign(item, data);
         return { ..._state };
       }
       if (action.type === SortableActionType.move) {
         const { id, position } = action.payload;
         const prevLayout = _state.layout.map((l) => ({ ...l }));
-        const itemLayout = prevLayout.find((item) => item.id == id)!;
+        const itemLayout = prevLayout.find((item) => item.id === id)!;
         if (!itemLayout) {
           return _state;
         }
@@ -213,7 +213,7 @@ function useStore(
           maxRows,
           rowHeight,
         } = _state;
-        const l = layout.find((item) => item.id == id)!;
+        const l = layout.find((item) => item.id === id)!;
         const {
           x,
           y,
@@ -278,8 +278,8 @@ function useStore(
       if (action.type === SortableActionType.remove) {
         const { items, layout } = _state;
         const item = action.payload;
-        const itemIndex = items.findIndex((data) => data.id == item.id);
-        if (itemIndex == -1) {
+        const itemIndex = items.findIndex((data) => data.id === item.id);
+        if (itemIndex === -1) {
           return _state;
         }
         return update(_state, {
@@ -288,7 +288,7 @@ function useStore(
           },
           layout: {
             $set: synchronizeLayoutWithChildren(
-              layout.filter((data) => data.id != item.id),
+              layout.filter((data) => data.id !== item.id),
               _state.cols,
               getCompactType(_state.verticalCompact, _state.compactType),
             ),
@@ -298,6 +298,7 @@ function useStore(
       if (action.type === SortableActionType.moveIn) {
         const {
           layout: itemLayout,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           item: { sortable, rect, ...item },
         } = action.payload;
 
@@ -369,7 +370,7 @@ function useStore(
         return update(_state, {
           items: {
             $set: backup.items.map((item) => {
-              const original = items.find((x) => x.id == item.id);
+              const original = items.find((x) => x.id === item.id);
               return original || item;
             }),
           },
@@ -401,7 +402,7 @@ function useStore(
           },
         });
       }
-      if (action.type == SortableActionType.init) {
+      if (action.type === SortableActionType.init) {
         return { ..._state, ...action.payload };
       }
       return _state;
@@ -469,7 +470,7 @@ function useStore(
   const parentPreview = useSortableSelector((_state) => _state.preview);
 
   useEffect(() => {
-    if (parentPreview == undefined) {
+    if (parentPreview === undefined) {
       (dispatch as any)({
         type: SortableActionType.UPDATE_PREVIEW,
         payload: preview,
@@ -489,11 +490,13 @@ function useStore(
   }, [state]);
 
   const outside = _items.map(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ({ _originalSortable, _sortable, _rect, ...item }: any) => item,
   );
   useDeepCompareEffect(() => {
     const _state = store.getState();
     const inside = _state.items.map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ({ _originalSortable, _sortable, _rect, ...item }) => item,
     );
     if (isEqual(inside, outside)) {
@@ -509,10 +512,11 @@ function useStore(
       type: SortableActionType.init,
       payload: {
         items: outside.map((item) => {
-          const data = state.items.find((x) => x.id == item.id);
+          const data = state.items.find((x) => x.id === item.id);
           if (!data) {
             return item;
           }
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { _originalSortable, _sortable, _rect, ...prevData } = data;
           return isEqual(prevData, item)
             ? data

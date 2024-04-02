@@ -1,13 +1,16 @@
 import { useCallback } from 'react';
 
 // import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
-import classnames from 'classnames';
 import { useModel } from '@umijs/max';
+import classnames from 'classnames';
+import { ConversationItem } from 'open-im-sdk-wasm/lib/types/entity';
 
 // import { formatDate } from '../../../../utils/open-im/utils/common';
 
 // import { parseMessageType } from '@/utils/open-im/utils/im';
 // import { OptType } from '@/utils/open-im/sdk/types';
+
+
 import { Badge, Symbol } from '@/metronic';
 
 type CveItemProps = {
@@ -76,7 +79,7 @@ function CveItem(props: CveItemProps) {
   return (
     <div
       className={classnames('cve-item d-flex flex-stack py-4 mb-1', {
-        active: curCve?.conversationID == cve.conversationID,
+        active: curCve?.conversationID === cve.conversationID,
       })}
       onClick={handleClick}
     >

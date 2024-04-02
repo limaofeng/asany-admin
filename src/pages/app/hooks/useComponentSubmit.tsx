@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
 
+import { Form, Toast } from '@/metronic';
+import type { FormInstance } from '@/metronic/Form';
+import type { Component } from '@/types';
+import { delay } from '@/utils';
+
 import {
   LoadComponentsDocument,
   useCreateComponentMutation,
   useUpdateComponentMutation,
 } from '.';
-
-import { Form, Toast } from '@/metronic';
-import type { FormInstance } from '@/metronic/Form';
-import type { Component } from '@/types';
-import { delay } from '@/utils';
 
 function useComponentSubmit(
   data: Component,

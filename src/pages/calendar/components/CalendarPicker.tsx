@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 
-import { useCalendarsQuery } from '../hooks';
-
 import { Select } from '@/metronic';
 import type { OptionData } from '@/metronic/typings';
 import { darkenColor } from '@/metronic/utils/color';
+
+import { useCalendarsQuery } from '../hooks';
 
 type CalendarPickerProps = {
   solid: boolean;

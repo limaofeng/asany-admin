@@ -1,5 +1,4 @@
 import React, { useMemo, useRef } from 'react';
-
 import { useCountUp } from 'react-countup';
 
 type CountUpProps = {
@@ -24,7 +23,7 @@ function CountUp(props: CountUpProps) {
   const ref = useRef<HTMLElement>(null);
 
   const startNumber = useMemo(() => {
-    if (typeof children == 'number') {
+    if (typeof children === 'number') {
       return children;
     }
     let _str = children;
@@ -45,7 +44,7 @@ function CountUp(props: CountUpProps) {
     ...settings,
   });
 
-  if (typeof as == 'string') {
+  if (typeof as === 'string') {
     return React.createElement(as, { ref, className });
   }
 

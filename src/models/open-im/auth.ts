@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useReducer, useState } from 'react';
 
+import { useModel } from '@umijs/max';
 import { getSDK } from 'open-im-sdk-wasm';
 import { CbEvents } from 'open-im-sdk-wasm/lib/constant';
 import type { FullUserItem } from 'open-im-sdk-wasm/lib/types/entity';
-import { useModel } from '@umijs/max';
-
 import { InitAndLoginConfig } from 'open-im-sdk-wasm/lib/types/params';
+
 import { getSelfInfo, getUnReadCount, setUnReadCount } from './actions/user';
 import type { UserActionTypes, UserState } from './types/user';
 import {

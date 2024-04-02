@@ -6,12 +6,18 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useOutletContext, useParams } from 'react-router';
 
 import { Affix } from 'antd';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
-import { useOutletContext, useParams } from 'react-router';
+
+import { ContentWrapper } from '@/layouts/components';
+import { Button, Form, Tabs, Toast } from '@/metronic';
+import type { QueueUploadRef } from '@/metronic/typings';
+import type { Article } from '@/types';
+import { delay, tree } from '@/utils';
 
 import ArticleFormSidebar from '../components/ArticleFormSidebar';
 import {
@@ -22,16 +28,8 @@ import {
 } from '../components/bodys/classic';
 import type { PublishAction } from '../components/bodys/classic/PublishButton';
 import { useArticleQuery, useUpdateArticleMutation } from '../hooks';
-
-import { ContentWrapper } from '@/layouts/components';
-import { Button, Form, Tabs, Toast } from '@/metronic';
-import type { QueueUploadRef } from '@/metronic/typings';
-import type { Article } from '@/types';
-import { delay, tree } from '@/utils';
-
 import '../style/ArticleForm.scss';
 import { ArticleOutletContextParams } from '../typings';
-
 type ArticleEditParams = { cid: string; id: string };
 
 function ArticleEdit() {
@@ -242,7 +240,7 @@ function ArticleEdit() {
       //     {article ? (
       //       <>
       //         {article.categories
-      //           .filter((item) => item.id != rootCategoryId)
+      //           .filter((item) => item.id !== rootCategoryId)
       //           .map((item) => (
       //             <Breadcrumb.Item key={item.id}>
       //               <Link

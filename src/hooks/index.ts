@@ -1,9 +1,9 @@
-import { apolloClient, useAppClientId, tokenHelper } from '@umijs/max';
-
-import { LoginByUsernameDocument, LogoutDocument, ViewerDocument } from './api';
+import { apolloClient, tokenHelper, useAppClientId } from '@umijs/max';
 
 import type { CurrentUser } from '@/types';
 import { delay, sleep } from '@/utils';
+
+import { LoginByUsernameDocument, LogoutDocument, ViewerDocument } from './api';
 
 export function tokenExists() {
   const token = localStorage.getItem('credentials');

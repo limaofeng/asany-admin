@@ -1,8 +1,8 @@
+import type { Menu as MenuData } from '@/types';
+
 import AsideWorkspace from '../Aside/Secondary/AsideWorkspace';
 import Navigation from '../Aside/Secondary/Navigation';
 import CustomAsideSecondaryContent from '../CustomAsideSecondaryContent';
-
-import type { Menu as MenuData } from '@/types';
 
 function buildMenuRender(menu: MenuData) {
   if (menu.component) {

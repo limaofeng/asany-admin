@@ -1,13 +1,5 @@
 import { useCallback, useEffect } from 'react';
-
-import type { RouteComponentProps } from 'react-router';
-
-import {
-  useCreateStoreMutation,
-  useGeocodeLazyQuery,
-  useLandingStoreLazyQuery,
-  useUpdateStoreMutation,
-} from '../../hooks';
+import { useNavigate, useParams } from 'react-router';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -24,10 +16,16 @@ import {
 } from '@/metronic';
 import { useAreas } from '@/metronic/hooks';
 
-type StoreDetailsProps = RouteComponentProps<{ id: string }>;
+import {
+  useCreateStoreMutation,
+  useGeocodeLazyQuery,
+  useLandingStoreLazyQuery,
+  useUpdateStoreMutation,
+} from '../../hooks';
 
-function StoreDetails(props: StoreDetailsProps) {
-  const { match, history } = props;
+function StoreDetails() {
+  const params = useParams();
+  const navigate = useNavigate();
 
   const [, { loadRegion }] = useAreas();
 
@@ -45,7 +43,7 @@ function StoreDetails(props: StoreDetailsProps) {
     {},
   );
 
-  const isNew = match.params.id == 'new';
+  const isNew = params.id === 'new';
 
   const form = Form.useForm();
 
@@ -64,7 +62,7 @@ function StoreDetails(props: StoreDetailsProps) {
     } else {
       await updateStore({
         variables: {
-          id: match.params.id,
+          id: params.id,
           input: {
             ...values,
             address: { ...address, detailedAddress },
@@ -77,25 +75,27 @@ function StoreDetails(props: StoreDetailsProps) {
       `门店 “${values.name}” ${isNew ? '新增' : '修改'}成功`,
       2000,
       {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       },
     );
 
     if (!!history.length) {
-      history.goBack();
+      navigate(-1);
     } else {
-      history.replace('/website/landing/stores');
+      navigate('/website/landing/stores', {
+        replace: true,
+      });
     }
-  }, [createStore, match.params.id, form, history, isNew, updateStore]);
+  }, [createStore, params.id, form, navigate, isNew, updateStore]);
 
   useEffect(() => {
-    if (match.params.id == 'new') {
+    if (params.id === 'new') {
       return;
     }
     const abortController = new AbortController();
     loadStore({
-      variables: { id: match.params.id },
+      variables: { id: params.id },
       context: {
         fetchOptions: {
           signal: abortController.signal,
@@ -111,14 +111,18 @@ function StoreDetails(props: StoreDetailsProps) {
           timerProgressBar: true,
         });
         if (!history.length || isNew) {
-          history.replace('/website/landing/stores');
+          navigate('/website/landing/stores', {
+            replace: true,
+          });
         } else {
-          history.goBack();
+          navigate(-1);
         }
         return;
       }
-      const { __typename: x, ...location } = store.location || {};
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { __typename: x, ...location } = store.location || ({} as any);
       const {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         __typename: y,
         detailedAddress,
         ...address
@@ -134,7 +138,7 @@ function StoreDetails(props: StoreDetailsProps) {
     return () => {
       abortController.abort();
     };
-  }, [form, loadStore, history, match.params.id, isNew]);
+  }, [form, loadStore, history, params.id, isNew]);
 
   const handlePasteAddress = useCallback(
     async (e: React.ClipboardEvent) => {
@@ -160,13 +164,13 @@ function StoreDetails(props: StoreDetailsProps) {
       const _address = await loadRegion(geocode.adcode!);
 
       const index = detailedAddress.indexOf(geocode.district!);
-      if (index != -1) {
+      if (index !== -1) {
         detailedAddress = detailedAddress.substring(
           index + geocode.district!.length,
         );
       }
 
-      if (location == null) {
+      if (!location) {
         const [longitude, latitude] = geocode.location!.split(',');
         form.setFieldsValue({
           address: _address,

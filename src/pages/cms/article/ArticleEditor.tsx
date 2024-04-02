@@ -6,12 +6,22 @@ import {
   useRef,
   useState,
 } from 'react';
-
-import Icon from '@asany/icons';
-import classnames from 'classnames';
 import type { RouteComponentProps } from 'react-router';
 import NavigationPrompt from 'react-router-navigation-prompt';
 import { useHoverDirty } from 'react-use';
+
+import Icon from '@asany/icons';
+import classnames from 'classnames';
+
+import SettingsMenu from '@/components/SettingsMenu';
+import { Button, DatePicker, Form, Input, Select2, Spin } from '@/metronic';
+import { useAutoSave } from '@/metronic/utils';
+import type { Article } from '@/types';
+import { delay } from '@/utils';
+
+import type { EditorStyle } from './components/ArticleContentEditor';
+import ArticleContentEditor from './components/ArticleContentEditor';
+import NavigationPromptModal from './components/NavigationPromptModal';
 
 import {
   useArticleCategoriesQuery,
@@ -19,16 +29,6 @@ import {
   useCreateArticleMutation,
   useUpdateArticleMutation,
 } from '../hooks';
-
-import type { EditorStyle } from './components/ArticleContentEditor';
-import ArticleContentEditor from './components/ArticleContentEditor';
-import NavigationPromptModal from './components/NavigationPromptModal';
-
-import SettingsMenu from '@/components/SettingsMenu';
-import { Button, DatePicker, Form, Input, Select2, Spin } from '@/metronic';
-import { useAutoSave } from '@/metronic/utils';
-import type { Article } from '@/types';
-import { delay } from '@/utils';
 
 import './style/ArticleEditor.scss';
 
@@ -126,7 +126,7 @@ function ArticleStatus({
       text = '新的';
     }
     if (value === 'Draft') {
-      text = '草稿' + (saved != 'NotSaved' ? ' - 已保存' : '');
+      text = '草稿' + (saved !== 'NotSaved' ? ' - 已保存' : '');
     }
   }
   return <span className="text-gray-600 ls-2">{text}</span>;
@@ -198,7 +198,7 @@ function ArticleEditor(props: ArticleEditorProps) {
 
     const values = { ...state.data, content: (state.data.body as any)?.text };
     for (const key in values) {
-      if (values[key] == null) {
+      if (values[key] === null) {
         values[key] = undefined;
       }
     }
@@ -220,7 +220,7 @@ function ArticleEditor(props: ArticleEditorProps) {
       ? { type: 'HTML', text: changedValues.content }
       : undefined;
     try {
-      if (state.status == 'New') {
+      if (state.status === 'New') {
         if (!changedValues.title) {
           state.saved = 'NotSaved';
           forceRender();
@@ -278,7 +278,7 @@ function ArticleEditor(props: ArticleEditorProps) {
   const handleSettingsData = useCallback(
     async (values: any) => {
       const state = stateRef.current;
-      if (state.status == 'New') {
+      if (state.status === 'New') {
         state.saved = 'Saving';
         forceRender();
         state.temp = await delay(
@@ -356,7 +356,7 @@ function ArticleEditor(props: ArticleEditorProps) {
       <div className="tw-flex tw-flex-row modal-fullscreen art-main">
         <NavigationPrompt
           disableNative
-          when={stateRef.current.saved == 'NotSaved'}
+          when={stateRef.current.saved === 'NotSaved'}
         >
           {({ onConfirm, onCancel }) => (
             <NavigationPromptModal onConfirm={onConfirm} onCancel={onCancel} />
@@ -520,7 +520,7 @@ export function ArticleEdit(props: ArticleEditProps) {
 
   const isLoading = useMemo(() => {
     if (loading) {
-      if (loaded.current == 1) {
+      if (loaded.current === 1) {
         return false;
       }
       loaded.current++;

@@ -11,17 +11,17 @@ import EventEmitter from 'events';
 
 import saveAs from 'file-saver';
 
-import type { DownloadFileData, DownloadState } from './download';
-import { useDownload } from './download';
-import database from './TransferDatabase';
-import type { CloudDriveState, DownloadFile, UploadFile } from './typings';
-
 import { useUpload } from '@/metronic/hooks';
 import type {
   UploadFileData,
   UploadState,
 } from '@/metronic/Upload/utils/upload';
 import type { CloudDrive, FileObject } from '@/types';
+
+import type { DownloadFileData, DownloadState } from './download';
+import { useDownload } from './download';
+import database from './TransferDatabase';
+import type { CloudDriveState, DownloadFile, UploadFile } from './typings';
 
 const initialState = {
   visibleTransfers: false,
@@ -124,13 +124,13 @@ export default function useCloudDriveModel() {
       ) {
         newState = 'uploading';
         newFile.error = undefined;
-      } else if (uploadState == 'completed') {
+      } else if (uploadState === 'completed') {
         newState = 'completed';
         newFile.progress = 100;
-      } else if (uploadState == 'error') {
+      } else if (uploadState === 'error') {
         newState = 'error';
         newFile.error = error;
-      } else if (uploadState == 'aborted') {
+      } else if (uploadState === 'aborted') {
         newFile.error = undefined;
       }
 
@@ -141,7 +141,7 @@ export default function useCloudDriveModel() {
       }
 
       state.current.uploadFiles = state.current.uploadFiles.map((item) =>
-        item.id == newFile.id ? newFile : item,
+        item.id === newFile.id ? newFile : item,
       );
       forceRender();
     },
@@ -167,7 +167,7 @@ export default function useCloudDriveModel() {
         error?: Error;
       },
     ) => {
-      const file = state.current.downloadFiles.find((item) => item.id == id)!;
+      const file = state.current.downloadFiles.find((item) => item.id === id)!;
       // console.log(downloadState, result, file, error);
 
       const newFile = { ...file };
@@ -184,17 +184,17 @@ export default function useCloudDriveModel() {
       ) {
         newState = 'downloading';
         newFile.error = undefined;
-      } else if (downloadState == 'completed') {
+      } else if (downloadState === 'completed') {
         newState = 'completed';
         newFile.progress = 100;
-      } else if (downloadState == 'error') {
+      } else if (downloadState === 'error') {
         newState = 'error';
         newFile.error = error;
-      } else if (downloadState == 'aborted') {
+      } else if (downloadState === 'aborted') {
         newFile.error = undefined;
       }
 
-      if (newState != newFile.state) {
+      if (newState !== newFile.state) {
         newFile.state = newState;
         result && (newFile.result = result);
         database.updateDownloadFile(newFile.id!, newFile);
@@ -242,9 +242,9 @@ export default function useCloudDriveModel() {
 
   useEffect(() => {
     const file = state.current.uploadFiles.find(
-      (item) => item.id == internalState.current.uploadFileId,
+      (item) => item.id === internalState.current.uploadFileId,
     );
-    if (file == null) {
+    if (!file) {
       return;
     }
     updateUploadFile(file, {
@@ -284,16 +284,16 @@ export default function useCloudDriveModel() {
         console.log('上传出现异常', e);
 
         await updateUploadFile(
-          state.current.uploadFiles.find((item) => item.id == fileId)!,
+          state.current.uploadFiles.find((item) => item.id === fileId)!,
           {
-            uploadState: _error.name == 'AbortError' ? 'aborted' : 'error',
+            uploadState: _error.name === 'AbortError' ? 'aborted' : 'error',
             error: _error,
           },
         );
       }
 
       file = state.current.uploadFiles
-        .filter((item) => item.id != fileId)
+        .filter((item) => item.id !== fileId)
         .find((item) => ['waiting', 'uploading'].includes(item.state));
     }
 
@@ -328,7 +328,7 @@ export default function useCloudDriveModel() {
           state: 'waiting',
           name: file.name,
           extension:
-            lastIndex == -1 ? undefined : file.name.substring(lastIndex + 1),
+            lastIndex === -1 ? undefined : file.name.substring(lastIndex + 1),
           mimeType: file.type,
           progress: 0,
           uploadSpeed: '',
@@ -352,9 +352,9 @@ export default function useCloudDriveModel() {
 
   useEffect(() => {
     const file = state.current.downloadFiles.find(
-      (item) => item.id == internalState.current.downloadFileId,
+      (item) => item.id === internalState.current.downloadFileId,
     );
-    if (file == null) {
+    if (!file) {
       return;
     }
     updateDownloadFile(file.id!, {
@@ -407,13 +407,13 @@ export default function useCloudDriveModel() {
         console.log('下载出现异常', e);
 
         await updateDownloadFile(fileId!, {
-          downloadState: _error.name == 'AbortError' ? 'aborted' : 'error',
+          downloadState: _error.name === 'AbortError' ? 'aborted' : 'error',
           error: _error,
         });
       }
 
       file = state.current.downloadFiles
-        .filter((item) => item.id != fileId)
+        .filter((item) => item.id !== fileId)
         .find((item) => ['waiting', 'uploading'].includes(item.state));
     }
 
@@ -435,10 +435,10 @@ export default function useCloudDriveModel() {
 
       const _downloadFile: DownloadFile = {
         name: name,
-        size: files.length == 1 ? size : 0,
+        size: files.length === 1 ? size : 0,
         state: 'waiting',
-        extension: files.length == 1 ? files[0].extension! : 'zip',
-        mimeType: files.length == 1 ? files[0].mimeType! : 'application/zip',
+        extension: files.length === 1 ? files[0].extension! : 'zip',
+        mimeType: files.length === 1 ? files[0].mimeType! : 'application/zip',
         progress: 0,
         downloadSpeed: '',
         chunks: files,
@@ -456,73 +456,73 @@ export default function useCloudDriveModel() {
   const uploadApi = useMemo(() => {
     return {
       cancel: (id: string) => {
-        const xfile = state.current.uploadFiles.find((item) => item.id == id);
+        const xfile = state.current.uploadFiles.find((item) => item.id === id);
         if (!xfile) {
           return;
         }
-        if (internalState.current.uploadFileId == xfile.id) {
+        if (internalState.current.uploadFileId === xfile.id) {
           uploadAbort();
         }
         const newFile: UploadFile = { ...xfile, state: 'canceled' };
         database.updateUploadFile(id, newFile);
         state.current.uploadFiles = state.current.uploadFiles.map((item) =>
-          item.id == id ? newFile : item,
+          item.id === id ? newFile : item,
         );
         forceRender();
       },
 
       pause: async (id: string) => {
-        const xfile = state.current.uploadFiles.find((item) => item.id == id);
+        const xfile = state.current.uploadFiles.find((item) => item.id === id);
         if (!xfile) {
           return;
         }
-        if (internalState.current.uploadFileId == xfile.id) {
+        if (internalState.current.uploadFileId === xfile.id) {
           uploadAbort();
         }
         const newFile: UploadFile = { ...xfile, state: 'paused' };
         database.updateUploadFile(id, newFile);
         state.current.uploadFiles = state.current.uploadFiles.map((item) =>
-          item.id == id ? newFile : item,
+          item.id === id ? newFile : item,
         );
         forceRender();
       },
 
       start: async (id: string) => {
-        const xfile = state.current.uploadFiles.find((item) => item.id == id);
+        const xfile = state.current.uploadFiles.find((item) => item.id === id);
         if (!xfile) {
           return;
         }
         const newFile: UploadFile = { ...xfile, state: 'waiting' };
         database.updateUploadFile(id, newFile);
         state.current.uploadFiles = state.current.uploadFiles.map((item) =>
-          item.id == id ? newFile : item,
+          item.id === id ? newFile : item,
         );
         forceRender();
         autoUpload();
       },
 
       restore: async (id: string) => {
-        const xfile = state.current.uploadFiles.find((item) => item.id == id);
+        const xfile = state.current.uploadFiles.find((item) => item.id === id);
         if (!xfile) {
           return;
         }
         const newFile: UploadFile = { ...xfile, state: 'waiting' };
         database.updateUploadFile(id, newFile);
         state.current.uploadFiles = state.current.uploadFiles.map((item) =>
-          item.id == id ? newFile : item,
+          item.id === id ? newFile : item,
         );
         forceRender();
         autoUpload();
       },
 
       delete: async (id: string) => {
-        const xfile = state.current.uploadFiles.find((item) => item.id == id);
+        const xfile = state.current.uploadFiles.find((item) => item.id === id);
         if (!xfile) {
           return;
         }
         database.deleteUploadFile(id);
         state.current.uploadFiles = state.current.uploadFiles.filter(
-          (item) => item.id != id,
+          (item) => item.id !== id,
         );
         forceRender();
       },
@@ -532,79 +532,91 @@ export default function useCloudDriveModel() {
   const downloadApi = useMemo(() => {
     return {
       cancel: (id: string) => {
-        const xfile = state.current.downloadFiles.find((item) => item.id == id);
+        const xfile = state.current.downloadFiles.find(
+          (item) => item.id === id,
+        );
         if (!xfile) {
           return;
         }
-        if (internalState.current.downloadFileId == xfile.id) {
+        if (internalState.current.downloadFileId === xfile.id) {
           downloadAbort();
         }
         const newFile: DownloadFile = { ...xfile, state: 'canceled' };
         database.updateDownloadFile(id, newFile);
         state.current.downloadFiles = state.current.downloadFiles.map((item) =>
-          item.id == id ? newFile : item,
+          item.id === id ? newFile : item,
         );
         forceRender();
       },
 
       pause: async (id: string) => {
-        const xfile = state.current.downloadFiles.find((item) => item.id == id);
+        const xfile = state.current.downloadFiles.find(
+          (item) => item.id === id,
+        );
         if (!xfile) {
           return;
         }
-        if (internalState.current.downloadFileId == xfile.id) {
+        if (internalState.current.downloadFileId === xfile.id) {
           downloadAbort();
         }
         const newFile: DownloadFile = { ...xfile, state: 'paused' };
         database.updateDownloadFile(id, newFile);
         state.current.downloadFiles = state.current.downloadFiles.map((item) =>
-          item.id == id ? newFile : item,
+          item.id === id ? newFile : item,
         );
         forceRender();
       },
 
       start: async (id: string) => {
-        const xfile = state.current.downloadFiles.find((item) => item.id == id);
+        const xfile = state.current.downloadFiles.find(
+          (item) => item.id === id,
+        );
         if (!xfile) {
           return;
         }
         const newFile: DownloadFile = { ...xfile, state: 'waiting' };
         database.updateDownloadFile(id, newFile);
         state.current.downloadFiles = state.current.downloadFiles.map((item) =>
-          item.id == id ? newFile : item,
+          item.id === id ? newFile : item,
         );
         forceRender();
         autoDownload();
       },
 
       restore: async (id: string) => {
-        const xfile = state.current.downloadFiles.find((item) => item.id == id);
+        const xfile = state.current.downloadFiles.find(
+          (item) => item.id === id,
+        );
         if (!xfile) {
           return;
         }
         const newFile: DownloadFile = { ...xfile, state: 'waiting' };
         database.updateDownloadFile(id, newFile);
         state.current.downloadFiles = state.current.downloadFiles.map((item) =>
-          item.id == id ? newFile : item,
+          item.id === id ? newFile : item,
         );
         forceRender();
         autoDownload();
       },
 
       delete: async (id: string) => {
-        const xfile = state.current.downloadFiles.find((item) => item.id == id);
+        const xfile = state.current.downloadFiles.find(
+          (item) => item.id === id,
+        );
         if (!xfile) {
           return;
         }
         database.deleteDownloadFile(id);
         state.current.downloadFiles = state.current.downloadFiles.filter(
-          (item) => item.id != id,
+          (item) => item.id !== id,
         );
         forceRender();
       },
 
       save: async (id: string) => {
-        const xfile = state.current.downloadFiles.find((item) => item.id == id);
+        const xfile = state.current.downloadFiles.find(
+          (item) => item.id === id,
+        );
         if (!xfile) {
           return;
         }

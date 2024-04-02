@@ -1,8 +1,8 @@
 import type { CSSProperties } from 'react';
 import React, { useMemo } from 'react';
+import { Card as BsCard } from 'react-bootstrap';
 
 import classnames from 'classnames';
-import { Card as BsCard } from 'react-bootstrap';
 
 interface CardProps {
   id?: string;
@@ -83,10 +83,10 @@ function CardHeader(props: CardHeaderProps) {
     const childs = React.Children.toArray(props.children);
     const _children = [];
     const titleNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == CardTitle,
+      (item) => React.isValidElement(item) && item.type === CardTitle,
     );
     const toolbarNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == CardToolbar,
+      (item) => React.isValidElement(item) && item.type === CardToolbar,
     );
     const newChildren = childs.filter(
       (item) => ![toolbarNode, titleNode].includes(item),
@@ -118,7 +118,7 @@ function CardHeader(props: CardHeaderProps) {
   return (
     <BsCard.Header
       id={props.id}
-      className={classnames(className, { ['border-0']: border == false })}
+      className={classnames(className, { ['border-0']: border === false })}
     >
       {children}
     </BsCard.Header>
@@ -172,8 +172,7 @@ function Card(
     headerClassName,
     style,
     children,
-    hoverable,
-
+    // hoverable,
     bodyClassName,
     title: _title,
     ...otherProps
@@ -182,19 +181,19 @@ function Card(
   const { extra, header, toolbar, body, footer, title } = useMemo(() => {
     const childs = React.Children.toArray(children);
     const toolbarNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == CardToolbar,
+      (item) => React.isValidElement(item) && item.type === CardToolbar,
     );
     const footerNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == CardFooter,
+      (item) => React.isValidElement(item) && item.type === CardFooter,
     );
     const headerNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == CardHeader,
+      (item) => React.isValidElement(item) && item.type === CardHeader,
     );
     const titleNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == CardTitle,
+      (item) => React.isValidElement(item) && item.type === CardTitle,
     );
     const bodyNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == CardBody,
+      (item) => React.isValidElement(item) && item.type === CardBody,
     );
     const newChildren = childs.filter(
       (item) =>

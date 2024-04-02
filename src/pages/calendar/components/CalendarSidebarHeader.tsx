@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
+import { useModel } from '@umijs/max';
 import classnames from 'classnames';
 import moment from 'moment';
-import { useModel } from '@umijs/max';
 
 import { Input } from '@/metronic';
 
@@ -17,7 +17,7 @@ function CalendarSidebarHeader() {
     'calendar',
     ({ state }) => state.selectedDay || new Date(),
   );
-  const isNew = useModel('calendar', (model) => model.state.state == 'new');
+  const isNew = useModel('calendar', (model) => model.state.state === 'new');
   const changeState = useModel('calendar', (model) => model.changeState);
 
   const handleFocused = useCallback(() => {
@@ -40,13 +40,13 @@ function CalendarSidebarHeader() {
 
   const handleKeyWithEscape = useCallback(
     (e: KeyboardEvent) => {
-      e.key == 'Escape' && handleLeave();
+      e.key === 'Escape' && handleLeave();
     },
     [handleLeave],
   );
 
   const handleChange = useCallback(
-    (e: any) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       setValue(e.target.value);
       if (!e.target.value) {
         changeState('none');

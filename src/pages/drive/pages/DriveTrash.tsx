@@ -2,11 +2,11 @@ import { useEffect, useMemo } from 'react';
 
 import { useModel } from '@umijs/max';
 
-import ListFiles from '../components/ListFiles';
-import { useCloudDriveLazyQuery } from '../hooks';
-
 import { ContentWrapper } from '@/layouts/components';
 import type { FileObject } from '@/types';
+
+import ListFiles from '../components/ListFiles';
+import { useCloudDriveLazyQuery } from '../hooks';
 
 function DriveTrash() {
   const driveId = useModel('cloud-drive.index', ({ state }) => state.driveId);

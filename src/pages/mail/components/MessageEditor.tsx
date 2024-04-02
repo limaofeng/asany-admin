@@ -5,13 +5,6 @@ import TagsInput, { emailValidator, parseEmailTag } from '@asany/tags-input';
 import type { ValidateErrorEntity } from 'rc-field-form/lib/interface';
 
 import {
-  MailboxesDocument,
-  useCreateMailboxMessageMutation,
-  useSendMailboxMessageMutation,
-  useUpdateMailboxMessageMutation,
-} from '../hooks';
-
-import {
   Button,
   Card,
   Form,
@@ -26,6 +19,13 @@ import { useAutoSave } from '@/metronic/utils';
 import { toHtml, toPlainText } from '@/metronic/utils/format';
 import type { MailboxMessage, MailboxMessageCreateInput } from '@/types';
 import { delay } from '@/utils';
+
+import {
+  MailboxesDocument,
+  useCreateMailboxMessageMutation,
+  useSendMailboxMessageMutation,
+  useUpdateMailboxMessageMutation,
+} from '../hooks';
 
 const RULE_VERIFY_MAIL = {
   async validator(_: any, emails: string[]) {
@@ -155,7 +155,7 @@ function MessageEditor(props: MessageEditorProps) {
     (method: 'cc' | 'bcc') => () => {
       if (state.current.recipients.includes(method)) {
         state.current.recipients = state.current.recipients.filter(
-          (item) => item != method,
+          (item) => item !== method,
         );
       } else {
         state.current.recipients = [...state.current.recipients, method];
@@ -166,9 +166,9 @@ function MessageEditor(props: MessageEditorProps) {
   );
 
   const toggleMode = useCallback(() => {
-    const newMode = state.current.mode == 'plain' ? 'html' : 'plain';
+    const newMode = state.current.mode === 'plain' ? 'html' : 'plain';
     const body: string = form.getFieldValue('body');
-    if (newMode == 'plain') {
+    if (newMode === 'plain') {
       form.setFieldsValue({
         body: toPlainText(body, { text: 'format' }),
       });
@@ -183,7 +183,7 @@ function MessageEditor(props: MessageEditorProps) {
   }, [form, autoSave]);
 
   useEffect(() => {
-    if (state.current.mode == 'plain') {
+    if (state.current.mode === 'plain') {
       return;
     }
     const toolbar = document.querySelector('.ql-toolbar');
@@ -300,14 +300,14 @@ function MessageEditor(props: MessageEditorProps) {
     if (saving) {
       return (state.current.autoSaveState = 'saving');
     }
-    if (state.current.autoSaveState != 'default') {
+    if (state.current.autoSaveState !== 'default') {
       return (state.current.autoSaveState = 'saved');
     }
     return state.current.autoSaveState;
   }, [saving]);
 
   useEffect(() => {
-    if (!props.message || props.message.id == state.current.message?.id) {
+    if (!props.message || props.message.id === state.current.message?.id) {
       return;
     }
     state.current = initState(props.message);
@@ -325,8 +325,8 @@ function MessageEditor(props: MessageEditorProps) {
       <Card.Header>
         <Card.Title>{state.current.title || '新信息'}</Card.Title>
         <Card.Toolbar className="text-gray-600">
-          {autoSaveState == 'saving' && '正在存储草稿...'}
-          {autoSaveState == 'saved' && '已存储'}
+          {autoSaveState === 'saving' && '正在存储草稿...'}
+          {autoSaveState === 'saved' && '已存储'}
         </Card.Toolbar>
       </Card.Header>
       <Card.Body className="p-0">

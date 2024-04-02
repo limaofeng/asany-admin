@@ -1,15 +1,9 @@
 import { useCallback, useMemo } from 'react';
+import { NavigateFunction } from 'react-router';
 
 import { Icon } from '@asany/icons';
+import { Link, useLocation, useNavigate } from '@umijs/max';
 import qs from 'query-string';
-import type { RouteComponentProps } from 'react-router';
-import { Link } from '@umijs/max';
-
-import {
-  LandingPostersDocument,
-  useDeletePosterMutation,
-  useLandingPostersQuery,
-} from '../../hooks';
 
 import Controls from '@/components/Controls';
 import { ContentWrapper } from '@/layouts/components';
@@ -29,14 +23,20 @@ import type { Sorter } from '@/metronic/typings';
 import { PreviewComponent } from '@/metronic/Upload/Upload';
 import type { LandingPoster } from '@/types';
 
+import {
+  LandingPostersDocument,
+  useDeletePosterMutation,
+  useLandingPostersQuery,
+} from '../../hooks';
+
 type ActionsProps = {
-  history: any;
+  navigate: NavigateFunction;
   data: LandingPoster;
   baseUrl: string;
   onDelete: (...ids: string[]) => Promise<number>;
 };
 
-function Actions({ data, baseUrl, history, onDelete }: ActionsProps) {
+function Actions({ data, baseUrl, navigate, onDelete }: ActionsProps) {
   const handleDelete = useCallback(
     async (_data: LandingPoster) => {
       const message = `确定删除海报 “${_data.name}” 吗？`;
@@ -57,7 +57,7 @@ function Actions({ data, baseUrl, history, onDelete }: ActionsProps) {
       }
       await onDelete(_data.id);
       Toast.success(`海报 “${_data.name}” 删除成功`, 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     },
@@ -66,9 +66,9 @@ function Actions({ data, baseUrl, history, onDelete }: ActionsProps) {
 
   const handleMenuClick = useCallback(
     (event: any) => {
-      if (event.key == 'view') {
+      if (event.key === 'view') {
         navigate(`${baseUrl}/${data.id}`);
-      } else if (event.key == 'delete') {
+      } else if (event.key === 'delete') {
         handleDelete(data);
       }
     },
@@ -100,20 +100,19 @@ function Actions({ data, baseUrl, history, onDelete }: ActionsProps) {
   );
 }
 
-type PosterListProps = RouteComponentProps<any>;
-
-function PosterList(props: PosterListProps) {
-  const { history, location } = props;
+function PosterList() {
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const baseUrl = location.pathname;
 
   const variables = useMemo(() => {
-    const { q, ...query } = (props.location as any).query;
+    const { q, ...query } = (location as any).query;
     if (q) {
       query.filter = { name_contains: q };
     }
     return query;
-  }, [props.location]);
+  }, [location]);
 
   const sorter = useMemo<Sorter>(() => {
     if (!variables.orderBy) {
@@ -124,7 +123,7 @@ function PosterList(props: PosterListProps) {
     }
     const [field, order] = variables.orderBy.split('_');
     return {
-      order: order == 'desc' ? 'descend' : 'ascend',
+      order: order === 'desc' ? 'descend' : 'ascend',
       field,
     };
   }, [variables.orderBy]);
@@ -160,9 +159,11 @@ function PosterList(props: PosterListProps) {
 
   const handleSearch = useCallback(
     (text: any) => {
-      history.replace(location.pathname + '?' + qs.stringify({ q: text }));
+      navigate(location.pathname + '?' + qs.stringify({ q: text }), {
+        replace: true,
+      });
     },
-    [history, location.pathname],
+    [navigate, location.pathname],
   );
 
   const handleChange = useCallback(
@@ -173,12 +174,14 @@ function PosterList(props: PosterListProps) {
       }
       if (!!_sorter) {
         _query.orderBy =
-          _sorter.field + '_' + (_sorter.order == 'ascend' ? 'asc' : 'desc');
+          _sorter.field + '_' + (_sorter.order === 'ascend' ? 'asc' : 'desc');
       }
       _query.page = _pagination.current;
-      history.replace(location.pathname + '?' + qs.stringify(_query));
+      navigate(location.pathname + '?' + qs.stringify(_query), {
+        replace: true,
+      });
     },
-    [history, location.pathname, variables.filter?.name_contains],
+    [navigate, location.pathname, variables.filter?.name_contains],
   );
 
   const handleDelete = useCallback(
@@ -212,7 +215,7 @@ function PosterList(props: PosterListProps) {
       }
       await handleDelete(...selectedRowKeys);
       Toast.success(`海报批量删除成功`, 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     },
@@ -299,7 +302,7 @@ function PosterList(props: PosterListProps) {
                       title: '名称',
                       sorter: true,
                       sortOrder:
-                        sorter.field == 'name' ? sorter.order : undefined,
+                        sorter.field === 'name' ? sorter.order : undefined,
                       render(name, record) {
                         return (
                           <div className="ps-2">
@@ -359,7 +362,7 @@ function PosterList(props: PosterListProps) {
                     //   title: '创建时间',
                     //   width: 150,
                     //   sorter: true,
-                    //   sortOrder: sorter.field == 'createdAt' ? sorter.order : undefined,
+                    //   sortOrder: sorter.field === 'createdAt' ? sorter.order : undefined,
                     // },
                     {
                       key: 'actions',
@@ -370,7 +373,7 @@ function PosterList(props: PosterListProps) {
                           <Actions
                             baseUrl={baseUrl}
                             onDelete={handleDelete}
-                            history={props.history}
+                            navigate={navigate}
                             data={record}
                           />
                         );

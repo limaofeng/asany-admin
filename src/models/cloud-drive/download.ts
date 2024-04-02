@@ -81,7 +81,7 @@ type DownloadFetchOptions = RequestInit & {
 
 const getFilename = (disposition: string) => {
   const matches = FILENAME_REGEX_DISPOSITION.exec(disposition);
-  if (matches != null && matches[1]) {
+  if (matches !== null && matches[1]) {
     return matches[1].replace(/['"]/g, '');
   }
   return undefined;
@@ -89,7 +89,7 @@ const getFilename = (disposition: string) => {
 
 const getRange = (contentRange: string) => {
   const matches = /^([^ ]+) ([\d]+)-([\d]+)\/([\S]+)$/.exec(contentRange);
-  if (matches != null) {
+  if (matches !== null) {
     return {
       unit: matches[1],
       start: parseInt(matches[2]),
@@ -138,12 +138,12 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
 
   // 虽然使用了分段下载，但如果响应数据依然从 0 开始，表示数据发送变化，需要重新下载
   const range = getRange(contentRange);
-  if (range && receivedLength && receivedLength != range.start) {
+  if (range && receivedLength && receivedLength !== range.start) {
     chunks.length = 0;
     receivedLength = range.start;
   }
 
-  const isAcceptRanges = acceptRanges == 'bytes';
+  const isAcceptRanges = acceptRanges === 'bytes';
 
   const downloadFile = async () => {
     try {
@@ -172,7 +172,7 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
 
         const nextPercent = Math.round((receivedLength * 100) / contentLength);
 
-        if (isAcceptRanges && cache && percent != nextPercent) {
+        if (isAcceptRanges && cache && percent !== nextPercent) {
           percent = nextPercent;
 
           cache.put(url, {
@@ -197,7 +197,7 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
 
       const index = contentType.indexOf(';');
       const mimeType =
-        index == -1 ? contentType : contentType.substring(0, index);
+        index === -1 ? contentType : contentType.substring(0, index);
 
       if (isAcceptRanges && cache) {
         cache.delete(url);
@@ -229,16 +229,16 @@ async function downloadFetch(url: string, options?: DownloadFetchOptions) {
 
   const responseWrapper = new Proxy(response, {
     get(targetObj, property) {
-      if (property == 'file') {
+      if (property === 'file') {
         return downloadFile;
       }
-      if (property == 'chunks') {
+      if (property === 'chunks') {
         return chunks;
       }
-      if (property == 'chunks') {
+      if (property === 'chunks') {
         return chunks;
       }
-      return targetObj[property];
+      return (targetObj as any)[property];
     },
   });
 
@@ -299,8 +299,8 @@ export async function download(url: string, options?: DownloadOptions) {
       (e as any).response = response;
     }
     if (
-      (e as Error).name != 'AbortError' &&
-      (e as Error).message == 'canceled'
+      (e as Error).name !== 'AbortError' &&
+      (e as Error).message === 'canceled'
     ) {
       (e as Error).name = 'AbortError';
     }
@@ -417,10 +417,10 @@ export const useDownload = ({
         state.current.downloadSpeed = networkSpeed(e, stat);
         state.current.size = e.total;
 
-        if (percentage == 100 && state.current.state == 'downloading') {
+        if (percentage === 100 && state.current.state === 'downloading') {
           state.current.state = 'waitingForCompleted';
           forceRender();
-        } else if (percentage != 100) {
+        } else if (percentage !== 100) {
           state.current.state = 'downloading';
           forceRender();
         }
@@ -467,7 +467,7 @@ export const useDownload = ({
         return handleOrdinaryDownload(url, options);
         // } else {
         //   const resources: ResourceURL[] = urls.map((url) => {
-        //     if (typeof url == 'string') {
+        //     if (typeof url === 'string') {
         //       return { url, path: '/' };
         //     }
         //     return url;
@@ -475,7 +475,7 @@ export const useDownload = ({
         //   return handleZipDownload(resources);
         // }
       } catch (e) {
-        if ((e as Error).name == 'AbortError') {
+        if ((e as Error).name === 'AbortError') {
           state.current.state = 'aborted';
           forceRender();
         } else {
@@ -506,8 +506,8 @@ export const useDownload = ({
       error,
       size,
       downloading:
-        downloadState == 'downloading' ||
-        downloadState == 'waitingForCompleted',
+        downloadState === 'downloading' ||
+        downloadState === 'waitingForCompleted',
       state: downloadState,
       abort: downloadController.abort,
     }),

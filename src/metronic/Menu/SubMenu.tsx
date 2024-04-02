@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 import classnames from 'classnames';
-import { useNavigate } from 'react-router-dom';
+
+import { useMenuContext, useSelector } from './MenuContext';
 
 import type { BulletProps } from '../Bullet';
 import Bullet from '../Bullet';
 import Dropdown from '../Dropdown/Dropdown';
 import * as KTUtil from '../utils/KTUtil';
-
-import { useMenuContext, useSelector } from './MenuContext';
 
 const defaultOptions = {
   dropdown: {
@@ -169,7 +169,7 @@ function SubMenu(props: SubMenuProps) {
     >
       {icon ? (
         <span className="menu-icon">
-          {typeof icon == 'string' ? (
+          {typeof icon === 'string' ? (
             <Icon className="svg-icon-4" name={icon} />
           ) : (
             icon

@@ -2,7 +2,7 @@ import * as KTUtil from './KTUtil';
 ////////////////////////////
 // ** Private Variables  ** //
 ////////////////////////////
-const _handlers = {};
+const _handlers: any = {};
 
 ////////////////////////////
 // ** Private Methods  ** //
@@ -21,8 +21,8 @@ const _triggerEvent = function (
       const handler = _handlers[name][handlerId];
 
       if (handler.name === name) {
-        if (handler.one == true) {
-          if (handler.fired == false) {
+        if (handler.one === true) {
+          if (handler.fired === false) {
             _handlers[name][handlerId].fired = true;
 
             return handler.callback.call(this, target, e);

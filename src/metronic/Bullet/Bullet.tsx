@@ -21,8 +21,8 @@ function Bullet(props: BulletProps) {
   return (
     <span
       className={classnames('bullet', className, {
-        'bullet-line': style == 'line',
-        'bullet-dot': style == 'dot',
+        'bullet-line': style === 'line',
+        'bullet-dot': style === 'dot',
         'bullet-vertical': vertical,
         [`bg-${color}`]: !!color,
       })}

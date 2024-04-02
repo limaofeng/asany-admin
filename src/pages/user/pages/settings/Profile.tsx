@@ -2,8 +2,6 @@ import { useCallback, useEffect } from 'react';
 
 import { useModel } from '@umijs/max';
 
-import { useProfileQuery, useUpdateProfileMutation } from '../../hooks';
-
 import { ContentWrapper } from '@/layouts/components';
 import {
   Button,
@@ -15,6 +13,8 @@ import {
   Toast,
   Upload,
 } from '@/metronic';
+
+import { useProfileQuery, useUpdateProfileMutation } from '../../hooks';
 
 function Profile() {
   const form = Form.useForm();

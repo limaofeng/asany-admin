@@ -6,9 +6,9 @@ import Picker from '@emoji-mart/react';
 import { Emoji } from 'emoji-mart';
 // import 'emoji-mart/css/emoji-mart.css';
 
-import { handleBackgroundImage } from '../utils';
-
 import { Button, Checkbox, Input, Modal, Popover, Select } from '@/metronic';
+
+import { handleBackgroundImage } from '../utils';
 
 const i18n = {
   search: '搜索',

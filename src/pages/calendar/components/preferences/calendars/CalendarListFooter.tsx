@@ -4,6 +4,7 @@ import Icon from '@asany/icons';
 import classnames from 'classnames';
 
 import { Dropdown, Menu, Modal } from '@/metronic';
+import { SelectEvent } from '@/metronic/Menu/typings';
 import {
   useCalendarAccountsQuery,
   useCreateCalendarMutation,
@@ -24,7 +25,7 @@ const CalendarActions = React.forwardRef(function (
   const { closeDropdown, onAction, accounts } = props;
 
   const handleSelect = useCallback(
-    (menu) => {
+    (menu: SelectEvent) => {
       closeDropdown!();
       if (menu.keyPath.startsWith('new-calendar')) {
         onAction('new', menu.key);
@@ -88,7 +89,7 @@ function CalendarListFooter(props: CalendarListFooterProps) {
   const handleAction = useCallback(
     async (type: 'new' | 'subscribe', key?: string) => {
       console.log(type, key);
-      if (type == 'new') {
+      if (type === 'new') {
         const { data: result } = await createCalendar({
           variables: {
             input: {
@@ -158,13 +159,8 @@ function CalendarListFooter(props: CalendarListFooterProps) {
       >
         <Icon name="Bootstrap/gear-fill" className="svg-icon-7" />
       </a>
-      <Subscribe />
     </div>
   );
-}
-
-function Subscribe() {
-  return <div />;
 }
 
 export default CalendarListFooter;

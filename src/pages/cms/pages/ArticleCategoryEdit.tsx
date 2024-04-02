@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useMemo } from 'react';
+import { useOutletContext, useParams } from 'react-router';
 
 import { Affix } from 'antd';
 import classnames from 'classnames';
-import { useOutletContext, useParams } from 'react-router';
+
+import { ContentWrapper } from '@/layouts/components';
+import { Button, Form, Tabs, Toast } from '@/metronic';
+import { tree } from '@/utils';
 
 import { Advanced, General, Metadata } from '../components/category';
 import CategoryFormSidebar from '../components/category/CategoryFormSidebar';
@@ -10,10 +14,6 @@ import {
   useArticleCategoryQuery,
   useUpdateArticleCategoryMutation,
 } from '../hooks';
-
-import { ContentWrapper } from '@/layouts/components';
-import { Button, Form, Tabs, Toast } from '@/metronic';
-import { tree } from '@/utils';
 import { ArticleOutletContextParams } from '../typings';
 
 function ArticleChannelSettings() {
@@ -105,7 +105,7 @@ function ArticleChannelSettings() {
       storeTemplate: category.storeTemplate?.id,
       image: category.image?.id,
       parent:
-        category.parent?.id == rootCategoryId ? null : category.parent?.id,
+        category.parent?.id === rootCategoryId ? null : category.parent?.id,
     });
   }, [category, form, rootCategoryId]);
 

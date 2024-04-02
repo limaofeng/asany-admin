@@ -1,13 +1,13 @@
 import { useCallback, useState } from 'react';
-
-import { Icon } from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 
-import ModelModal from './components/ModelModal';
+import { Icon } from '@asany/icons';
 
 import { PageContent } from '@/layouts/components';
 import { Button } from '@/metronic';
 import type { Model, Module } from '@/types';
+
+import ModelModal from './components/ModelModal';
 
 type ModelDescriptionProps = RouteComponentProps<
   { mid?: string },

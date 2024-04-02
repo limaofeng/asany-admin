@@ -1,7 +1,7 @@
-import dynamic from '@/utils/dynamic';
 import { component, library } from '@asany/sunmao';
 
 import LoadingComponent from '@/components/PageLoading';
+import dynamic from '@/utils/dynamic';
 
 @library({
   name: 'shanhai',

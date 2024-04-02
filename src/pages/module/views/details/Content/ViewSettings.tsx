@@ -19,7 +19,7 @@ function ViewSettings(props: ViewSettingsProps) {
     'root',
     (s) => {
       console.log('xxx', s.blocks);
-      const x = s.blocks?.find((b) => b.key == 'list');
+      const x = s.blocks?.find((b) => b.key === 'list');
       console.log('xxx', s, x);
       return x;
     },

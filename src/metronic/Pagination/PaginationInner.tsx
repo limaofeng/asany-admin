@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Pagination as BsPagination } from 'react-bootstrap';
 
 import classnames from 'classnames';
-import { Pagination as BsPagination } from 'react-bootstrap';
 
 import './style/Pagination.scss';
 
@@ -66,6 +66,7 @@ function PaginationInner(props: PaginationInnerProps) {
       e.stopPropagation();
       e.preventDefault();
       if (page > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
         onChange ? onChange(page, pageSize) : setCurrent(page);
       }
     },
@@ -85,10 +86,10 @@ function PaginationInner(props: PaginationInnerProps) {
       Math.min(totalPage, current + 2),
       Math.min(5, totalPage),
     );
-    if (start == 2) {
+    if (start === 2) {
       end--;
       start--;
-    } else if (totalPage - end == 1) {
+    } else if (totalPage - end === 1) {
       end++;
       start++;
     }
@@ -98,13 +99,13 @@ function PaginationInner(props: PaginationInnerProps) {
     if (start > 2) {
       pageNumbers.unshift(-0);
     }
-    if (start != 1) {
+    if (start !== 1) {
       pageNumbers.unshift(1);
     }
     if (end < totalPage - 1) {
       pageNumbers.push(0);
     }
-    if (end != totalPage) {
+    if (end !== totalPage) {
       pageNumbers.push(totalPage);
     }
     const _pageNumbers = new Set(pageNumbers);
@@ -131,7 +132,7 @@ function PaginationInner(props: PaginationInnerProps) {
         <BsPagination.Item
           onClick={handleClick(page)}
           key={page}
-          active={page == current}
+          active={page === current}
         >
           {page}
         </BsPagination.Item>
@@ -142,7 +143,9 @@ function PaginationInner(props: PaginationInnerProps) {
   return (
     <BsPagination className={className} size={size}>
       <li
-        className={classnames('page-item previous', { disabled: current == 1 })}
+        className={classnames('page-item previous', {
+          disabled: current === 1,
+        })}
       >
         <a
           onClick={handleClick(Math.max(current - 1, 1))}
@@ -154,7 +157,7 @@ function PaginationInner(props: PaginationInnerProps) {
       {pages}
       <li
         className={classnames('page-item next', {
-          disabled: current == totalPage,
+          disabled: current === totalPage,
         })}
       >
         <a

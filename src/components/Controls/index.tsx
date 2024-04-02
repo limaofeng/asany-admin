@@ -18,7 +18,7 @@ function Controls(props: ControlsProps) {
             <Button
               variant="light"
               color="muted"
-              active={layout == 'card'}
+              active={layout === 'card'}
               activeColor="primary"
               onClick={onLayout?.bind(null, 'card')}
               icon={<Icon name="Duotune/gen024" className="svg-icon-1" />}
@@ -28,7 +28,7 @@ function Controls(props: ControlsProps) {
             <Button
               variant="light"
               color="muted"
-              active={layout == 'table'}
+              active={layout === 'table'}
               onClick={onLayout?.bind(null, 'table')}
               activeColor="primary"
               className="me-3"

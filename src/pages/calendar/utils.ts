@@ -2,7 +2,7 @@ import $ from 'jquery';
 
 export function isDoubleClick(ele: HTMLElement) {
   const clickNumber = parseInt($(ele).data('click-number') || 0) + 1;
-  if (clickNumber == 2) {
+  if (clickNumber === 2) {
     clearTimeout($(ele).data('timer-reset'));
     $(ele).data('click-number', 0);
     return true;

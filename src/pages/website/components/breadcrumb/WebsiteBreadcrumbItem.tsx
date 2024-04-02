@@ -1,7 +1,7 @@
-import { useWebsiteQuery } from '../../hooks';
-
 import BreadcrumbItem from '@/metronic/Breadcrumb/BreadcrumbItem';
 import type { Route } from '@/types';
+
+import { useWebsiteQuery } from '../../hooks';
 
 type WebsiteBreadcrumbItemProps = {
   className: string;

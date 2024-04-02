@@ -1,14 +1,14 @@
 import { useEffect, useMemo } from 'react';
-
 import { useLocation, useParams } from 'react-router-dom';
-import { useModel } from '@umijs/max';
 
-import ListFiles from '../components/ListFiles';
-import { useCloudDriveLazyQuery } from '../hooks';
+import { useModel } from '@umijs/max';
 
 import { ContentWrapper } from '@/layouts/components';
 import type { Sorter } from '@/metronic/Table/typings';
 import type { CloudDrive, FileObject } from '@/types';
+
+import ListFiles from '../components/ListFiles';
+import { useCloudDriveLazyQuery } from '../hooks';
 
 type DriveStarredRouteLocationState = {
   orderBy?: Sorter;

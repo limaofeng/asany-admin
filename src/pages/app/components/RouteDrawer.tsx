@@ -4,14 +4,6 @@ import type { ComponentTreeNode } from '@asany/sunmao';
 import { ComponentPicker } from '@asany/sunmao';
 
 import {
-  useLoadComponentsQuery,
-  useLoadRoutesQuery,
-  useRouteDelete,
-  useRouteSubmit,
-} from '../hooks';
-import { initTag } from '../utils';
-
-import {
   Button,
   Col,
   Drawer,
@@ -25,6 +17,14 @@ import {
 import type { FormInstance } from '@/metronic/Form';
 import type { Route } from '@/types';
 import { flat, tree } from '@/utils';
+
+import {
+  useLoadComponentsQuery,
+  useLoadRoutesQuery,
+  useRouteDelete,
+  useRouteSubmit,
+} from '../hooks';
+import { initTag } from '../utils';
 
 type RouteFormProps = {
   appId: string;
@@ -82,6 +82,7 @@ function RouteForm(props: RouteFormProps) {
   }, [library]);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { children, _rect, pos, parent, ...values } = props.data;
     if (!props.data.id) {
       form.resetFields();

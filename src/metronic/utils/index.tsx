@@ -9,10 +9,10 @@ import React, {
 import type { Dictionary } from 'lodash';
 import { clone, isEqual, uniq, zipObject } from 'lodash';
 
+import { sleep } from '@/utils';
+
 import { fileSize } from './format';
 import * as KTUtil from './KTUtil';
-
-import { sleep } from '@/utils';
 
 export function useScroll(
   scroll: React.RefObject<HTMLElement>,
@@ -97,10 +97,12 @@ export function diff<T>(lvalue: T, rvalue: T): Dictionary<T> {
   if (isEqual(lvalue, rvalue)) {
     return {};
   }
-  const keys = uniq(
-    Object.keys(lvalue as any).concat(Object.keys(rvalue as any)),
-  ).filter((key) => !isEqual(lvalue[key], rvalue[key]));
-  const values = keys.map((key) => rvalue[key]);
+  const asLvalue = lvalue as any;
+  const asRvalue = rvalue as any;
+  const keys = uniq(Object.keys(asLvalue).concat(Object.keys(asRvalue))).filter(
+    (key) => !isEqual(asLvalue[key], asRvalue[key]),
+  );
+  const values = keys.map((key) => asRvalue[key]);
   return zipObject(keys, values);
 }
 
@@ -210,8 +212,8 @@ export function loadImage(url: string): Promise<string | null> {
         request.setRequestHeader('authorization', `bearer ${token}`);
       }
       request.onreadystatechange = () => {
-        if (request.readyState == XMLHttpRequest.DONE) {
-          if (request.status == 200) {
+        if (request.readyState === XMLHttpRequest.DONE) {
+          if (request.status === 200) {
             const reader = new FileReader();
             reader.onload = function (el: any) {
               resolve(el.target.result);

@@ -1,8 +1,8 @@
 import { EditorLibrary } from '@asany/sunmao';
+import { sunmao } from '@umijs/max';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
-import { sunmao } from '@umijs/max';
 
 import { loadCurrentuser, tokenExists } from './hooks';
 import type { CurrentUser } from './types';
@@ -18,7 +18,6 @@ moment.locale('zh-cn', {
     }
   },
 });
-
 
 export async function getInitialState(): Promise<{
   settings?: Partial<any>;

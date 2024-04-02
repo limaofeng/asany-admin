@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useMeasure } from 'react-use';
 
 import EventEmitter from 'events';
 
@@ -11,11 +12,10 @@ import type {
   TreeNode,
 } from '@asany/tree/dist/typings';
 import classnames from 'classnames';
-import { useMeasure } from 'react-use';
-
-import type { RowSelection, TableColumn } from '../Table/typings';
 
 import { getFieldValue } from '@/utils';
+
+import type { RowSelection, TableColumn } from '../Table/typings';
 
 import './style/TreeList.scss';
 
@@ -41,7 +41,11 @@ function hasWidth<T>(col: TableColumn<T>) {
   if (!col.className) {
     return false;
   }
-  if (col.className.startsWith('w-') || col.className.startsWith('min-w-')) {
+
+  const className =
+    typeof col.className === 'function' ? col.className('th')! : col.className;
+
+  if (className.startsWith('w-') || className.startsWith('min-w-')) {
     return true;
   }
   return false;
@@ -70,7 +74,7 @@ function TreeListRowCol<T>(props: TreeListRowColProps<T>) {
 
   const handleChangeWidth = useCallback(
     (_width: number) => {
-      if (col.width != 'auto') {
+      if (col.width !== 'auto') {
         setWidth(_width);
       }
     },
@@ -87,12 +91,12 @@ function TreeListRowCol<T>(props: TreeListRowColProps<T>) {
   return (
     <div
       key={col.key}
-      style={{ width: col.width != 'auto' ? width : undefined }}
+      style={{ width: col.width !== 'auto' ? width : undefined }}
       className={classnames(
         'tree-list-col fs-7 text-muted d-flex align-items-center',
         col.className,
         {
-          'flex-row-fluid': col.width == 'auto',
+          'flex-row-fluid': col.width === 'auto',
         },
       )}
     >
@@ -179,7 +183,7 @@ function TreeList<T>(props: TreeListProps<T>) {
     })(),
   );
   const getRowKey = useCallback((record: any) => {
-    if (typeof rowKey == 'function') {
+    if (typeof rowKey === 'function') {
       return rowKey(record);
     }
     return getFieldValue(record, rowKey);
@@ -188,10 +192,10 @@ function TreeList<T>(props: TreeListProps<T>) {
 
   const handleIconRender = useCallback(
     (node: any, _state: any) => {
-      if (iconRender == false) {
+      if (iconRender === false) {
         return <></>;
       }
-      if (typeof iconRender == 'function') {
+      if (typeof iconRender === 'function') {
         return (iconRender as any)(node, state);
       }
       const { isDirectory } = _state;
@@ -252,8 +256,8 @@ function TreeList<T>(props: TreeListProps<T>) {
               'tree-list-header-col fs-7 text-muted',
               col.className,
               {
-                'flex-row-title': index == 0,
-                'flex-row-fluid': index != 0 && !hasWidth(col),
+                'flex-row-title': index === 0,
+                'flex-row-fluid': index !== 0 && !hasWidth(col),
               },
             )}
           />

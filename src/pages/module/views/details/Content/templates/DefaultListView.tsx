@@ -15,13 +15,13 @@ import Sortable, { dragPreview } from '@asany/sortable';
 import { useBlock } from '@asany/sunmao';
 import classnames from 'classnames';
 
-import useConnection from '../hooks/useConnection';
-
 import { AdvancedSearch, Controls, Filter } from '@/components';
 import { Button, Card, Checkbox, Input, Popover, Table } from '@/metronic';
 import type { TableColumn } from '@/metronic/Table/typings';
 import { useModelWithEndpointsLazyQuery } from '@/pages/module/hooks';
 import type { ModelField } from '@/types';
+
+import useConnection from '../hooks/useConnection';
 
 import '../style/DefaultListView.scss';
 
@@ -94,7 +94,7 @@ function ConfigureColumns(props: ConfigureColumnsProps) {
     (value: ISortableItem[]) => {
       onChange(
         value.map(
-          (item) => state.current.columns.find((c) => c.key == item.id)!,
+          (item) => state.current.columns.find((c) => c.key === item.id)!,
         ),
       );
     },
@@ -105,7 +105,7 @@ function ConfigureColumns(props: ConfigureColumnsProps) {
     (id: string, checked: boolean) => {
       onChange(
         state.current.columns.map((c) => {
-          if (c.key == id) {
+          if (c.key === id) {
             return { ...c, checked };
           }
           return c;
@@ -203,14 +203,17 @@ function DefaultListView() {
     }
     return modelData.model.fields
       .map((f) => {
-        const colIndex = blockProps.fields.findIndex((c: any) => c.key == f.id);
+        const colIndex = blockProps.fields.findIndex(
+          (c: any) => c.key === f.id,
+        );
         return {
           key: f.id,
           title: f.name,
           dataIndex: f.code,
           source: f as ModelField,
-          index: colIndex != -1 ? colIndex : f.index,
-          checked: colIndex != -1 ? blockProps.fields[colIndex].checked : false,
+          index: colIndex !== -1 ? colIndex : f.index,
+          checked:
+            colIndex !== -1 ? blockProps.fields[colIndex].checked : false,
         };
       })
       .sort((l, r) => l.index - r.index);

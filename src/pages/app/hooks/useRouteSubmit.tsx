@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
 
+import { Form, Toast } from '@/metronic';
+import type { FormInstance } from '@/metronic/Form';
+import type { Route } from '@/types';
+import { delay } from '@/utils';
+
 import {
   LoadRoutesDocument,
   useCreateRouteMutation,
   useUpdateRouteMutation,
 } from '../hooks';
-
-import { Form, Toast } from '@/metronic';
-import type { FormInstance } from '@/metronic/Form';
-import type { Route } from '@/types';
-import { delay } from '@/utils';
 
 function useRouteSubmit(
   data: Route,

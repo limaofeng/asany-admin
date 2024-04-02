@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-
 import { useReactFlow } from 'react-flow-renderer';
 
 function useDelete() {
@@ -8,7 +7,7 @@ function useDelete() {
   const removeNode = useCallback(
     (id: string) => {
       const nodes = getNodes();
-      setNodes(nodes.filter((n) => n.id != id));
+      setNodes(nodes.filter((n) => n.id !== id));
     },
     [getNodes, setNodes],
   );

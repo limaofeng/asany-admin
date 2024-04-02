@@ -1,15 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
-
-import type { RouteComponentProps } from 'react-router';
-// import Frame from 'react-frame-component';
-
-import {
-  useCreatePageMutation,
-  useLandingPageLazyQuery,
-  useLandingPostersQuery,
-  useLandingStoresQuery,
-  useUpdatePageMutation,
-} from '../../hooks';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -27,10 +17,18 @@ import {
   Upload,
 } from '@/metronic';
 
-type PageDetailsProps = RouteComponentProps<{ id: string }>;
+import {
+  useCreatePageMutation,
+  useLandingPageLazyQuery,
+  useLandingPostersQuery,
+  useLandingStoresQuery,
+  useUpdatePageMutation,
+} from '../../hooks';
 
-function PageDetails(props: PageDetailsProps) {
-  const { match, history } = props;
+function PageDetails() {
+  const params = useParams();
+
+  const navigate = useNavigate();
 
   const { data: storeData } = useLandingStoresQuery({
     fetchPolicy: 'cache-and-network',
@@ -52,7 +50,7 @@ function PageDetails(props: PageDetailsProps) {
   const [createPage, { loading: createSubmiting }] = useCreatePageMutation({});
   const [updatePage, { loading: updateSubmiting }] = useUpdatePageMutation({});
 
-  const isNew = match.params.id == 'new';
+  const isNew = params.id === 'new';
 
   const form = Form.useForm();
 
@@ -67,7 +65,7 @@ function PageDetails(props: PageDetailsProps) {
     } else {
       await updatePage({
         variables: {
-          id: match.params.id,
+          id: params.id,
           input: values,
         },
       });
@@ -77,25 +75,25 @@ function PageDetails(props: PageDetailsProps) {
       `活动 “${values.name}” ${isNew ? '新增' : '修改'}成功`,
       2000,
       {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       },
     );
 
     if (!history.length || isNew) {
-      history.replace('/website/landing/pages');
+      navigate('/website/landing/pages', { replace: true });
     } else {
-      history.go(-2);
+      navigate(-2);
     }
-  }, [createPage, match.params.id, form, history, isNew, updatePage]);
+  }, [createPage, params.id, form, history, isNew, updatePage]);
 
   useEffect(() => {
-    if (match.params.id == 'new') {
+    if (params.id === 'new') {
       return;
     }
     const abortController = new AbortController();
     loadPage({
-      variables: { id: match.params.id },
+      variables: { id: params.id },
       context: {
         fetchOptions: {
           signal: abortController.signal,
@@ -110,9 +108,11 @@ function PageDetails(props: PageDetailsProps) {
           timerProgressBar: true,
         });
         if (!!history.length) {
-          history.goBack();
+          navigate(-1);
         } else {
-          history.replace('/website/landing/pages');
+          navigate('/website/landing/pages', {
+            replace: true,
+          });
         }
         return;
       }
@@ -126,7 +126,7 @@ function PageDetails(props: PageDetailsProps) {
     return () => {
       abortController.abort();
     };
-  }, [form, loadPage, history, match.params.id]);
+  }, [form, loadPage, history, params.id]);
 
   const stores = useMemo(() => {
     return storeData?.landingStores.edges.map(({ node }) => ({

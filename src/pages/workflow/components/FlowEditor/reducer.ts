@@ -22,7 +22,7 @@ export default function reducer(
   if (action.type === IPluginActionType.PluginStateInit) {
     return {};
   }
-  if (action.type == FlowEditorType.SET_ELEMENTS) {
+  if (action.type === FlowEditorType.SET_ELEMENTS) {
     return { ...state, ...action.payload };
   }
   // if (action.type === SketchActionType.BLOCK_MOUSE_ENTER) {

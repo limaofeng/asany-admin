@@ -28,10 +28,10 @@ function FieldOptions(props: FieldOptionsProps) {
         <Form.Item
           valuePropName="checked"
           name="allowMultipleValues"
-          className={classnames({ 'form-item__disabled': mode == 'edit' })}
+          className={classnames({ 'form-item__disabled': mode === 'edit' })}
           help={<div style={{ marginLeft: 26 }}>存储值列表而不是单个值</div>}
         >
-          <Checkbox disabled={mode == 'edit'} solid label="允许多个值" />
+          <Checkbox disabled={mode === 'edit'} solid label="允许多个值" />
         </Form.Item>
       </div>
     </div>

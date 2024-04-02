@@ -1,15 +1,9 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Button, Nav } from 'react-bootstrap';
 
 import Icon from '@asany/icons';
 import { useReactComponent } from '@asany/sunmao';
 import classnames from 'classnames';
-import { Button, Nav } from 'react-bootstrap';
-
-import { useLayout, useLayoutSelector } from '../../../LayoutContext';
-
-import AsideSecondary from './AsideSecondary';
-import Logo from './Logo';
-import AsideWorkspace from './Secondary/AsideWorkspace';
 
 import { useCurrentuser } from '@/hooks';
 import { Symbol, Tooltip } from '@/metronic';
@@ -17,6 +11,12 @@ import Popover from '@/metronic/Popover';
 import { useScroll } from '@/metronic/utils';
 import type { Menu as MenuData } from '@/types';
 import { getFileThumbnailUrlById } from '@/utils';
+
+import AsideSecondary from './AsideSecondary';
+import Logo from './Logo';
+import AsideWorkspace from './Secondary/AsideWorkspace';
+
+import { useLayout, useLayoutSelector } from '../../../LayoutContext';
 
 export interface AsideProps {
   activeKey?: string;
@@ -98,7 +98,7 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
               className={classnames(
                 'btn btn-icon btn-active-color-primary btn-color-gray-400 btn-active-light',
                 {
-                  active: activeKey == item.id,
+                  active: activeKey === item.id,
                 },
               )}
               title={item.name}
@@ -224,8 +224,8 @@ function Aside(props: AsideProps) {
         .filter((item) => !item.hideInMenu)
         .sort(
           (l, r) =>
-            DEFAULT_APP_PATHS.findIndex((p) => p == l.path!) -
-            DEFAULT_APP_PATHS.findIndex((p) => p == r.path!),
+            DEFAULT_APP_PATHS.findIndex((p) => p === l.path!) -
+            DEFAULT_APP_PATHS.findIndex((p) => p === r.path!),
         ),
     [menus],
   );
@@ -246,7 +246,7 @@ function Aside(props: AsideProps) {
   //   return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, asideWidth));
   // }, [minimize, asideWidth]);
 
-  const hideAside = menuRender == false;
+  const hideAside = menuRender === false;
 
   return (
     <div

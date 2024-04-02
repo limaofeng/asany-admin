@@ -8,6 +8,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useParams } from 'react-router-dom';
+import type { OnDrag } from 'react-selecto';
+import Selecto from 'react-selecto';
 
 import { LoadingOutlined } from '@ant-design/icons';
 import Icon from '@asany/icons';
@@ -15,15 +18,12 @@ import type { IconDefinition, IconLibraryDefinition } from '@asany/icons/types';
 import type { SortableItemProps } from '@asany/sortable';
 import Sortable from '@asany/sortable';
 import classnames from 'classnames';
-import { useParams } from 'react-router-dom';
-import type { OnDrag } from 'react-selecto';
-import Selecto from 'react-selecto';
-
-import LibraryControlPanel from '../components/LibraryControlPanel';
-import { useIconLibraryQuery } from '../hooks';
 
 import { ContentWrapper } from '@/layouts/components';
 import { Dropdown, Input, Menu, Spin } from '@/metronic';
+
+import LibraryControlPanel from '../components/LibraryControlPanel';
+import { useIconLibraryQuery } from '../hooks';
 
 import '../style/index.scss';
 
@@ -82,6 +82,7 @@ const IconMosaic = memo(
       if (!onDragstart || !onDragend) {
         return;
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
       props.dragging ? onDragstart() : onDragend();
     }, [onDragend, onDragstart, props.dragging]);
     return (

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 // import { Media, Player } from 'react-media-player';
 
 import CircleProgress from './CircleProgress';
+import Media, { Player } from './Media';
 
 import './style/CircleMediaPlayer.scss';
 
@@ -29,6 +30,7 @@ function CircleMediaPlayer(props: CircleMediaPlayerProps) {
     <Media>
       {({ isPlaying, playPause }: any) => (
         <button
+          type="button"
           className="circle-media-player"
           onClick={(e) => {
             e.stopPropagation();

@@ -36,13 +36,13 @@ export function getResponsiveClassNames(prefix: string, config: Breakpoint) {
       .filter(
         (name) =>
           ['default', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'].includes(name) &&
-          config[name] != undefined,
+          (config as any)[name] !== undefined,
       )
       .map((name) => {
-        const value = config[name];
-        const _name = name == 'default' ? '' : `-${name}`;
-        if (typeof value == 'number') {
-          return [`${prefix}${_name}-${config[name]}`];
+        const value = (config as any)[name];
+        const _name = name === 'default' ? '' : `-${name}`;
+        if (typeof value === 'number') {
+          return [`${prefix}${_name}-${(config as any)[name]}`];
         }
         return {
           [`${prefix}x${_name}-${value[0]}`]: value.length > 0,

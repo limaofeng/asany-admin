@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
+import type { Edge, Node } from 'react-flow-renderer';
 
 import type { ICustomizer } from '@asany/sunmao';
 import { useEditor, useEditorSelector } from '@asany/sunmao';
-import type { Edge, Node } from 'react-flow-renderer';
 
-import type { ProcessDefinition } from '../../type';
-import { flowableToReactflow } from '../../utils/Convert';
+import type { ProcessModel } from '@/types';
 
 import { useFlowState, useFlowTools } from './FlowContext';
 import OverviewFlow from './OverviewFlow';
 
-import type { ProcessModel } from '@/types';
+import type { ProcessDefinition } from '../../type';
+import { flowableToReactflow } from '../../utils/Convert';
 
 const nodeProperties: ICustomizer = {
   title: '节点设置',

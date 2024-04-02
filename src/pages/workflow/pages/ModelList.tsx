@@ -1,15 +1,9 @@
 import { useCallback, useMemo } from 'react';
+import { NavigateFunction } from 'react-router-dom';
 
 import { Icon } from '@asany/icons';
+import { Link, useLocation, useNavigate } from '@umijs/max';
 import qs from 'query-string';
-import type { RouteComponentProps } from 'react-router';
-import { Link } from '@umijs/max';
-
-import {
-  ProcessModelsDocument,
-  useDeleteProcessModelMutation,
-  useProcessModelsQuery,
-} from '../hooks';
 
 import Controls from '@/components/Controls';
 import { ContentWrapper } from '@/layouts/components';
@@ -27,15 +21,27 @@ import {
 import type { Sorter } from '@/metronic/typings';
 import type { ProcessModel } from '@/types';
 
+import {
+  ProcessModelsDocument,
+  useDeleteProcessModelMutation,
+  useProcessModelsQuery,
+} from '../hooks';
+
 type ActionsProps = {
-  history: any;
+  navigate: NavigateFunction;
   baseUrl: string;
   data: ProcessModel;
   onDesign: (id: string) => void;
   onDelete: (id: string) => Promise<boolean>;
 };
 
-function Actions({ data, history, onDelete, onDesign, baseUrl }: ActionsProps) {
+function Actions({
+  data,
+  navigate,
+  onDelete,
+  onDesign,
+  baseUrl,
+}: ActionsProps) {
   const handleDelete = useCallback(
     async (_data: ProcessModel) => {
       const message = `确定删除活动 “${_data.name}” 吗？`;
@@ -56,7 +62,7 @@ function Actions({ data, history, onDelete, onDesign, baseUrl }: ActionsProps) {
       }
       await onDelete(_data.id);
       Toast.success(`活动 “${_data.name}” 删除成功`, 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     },
@@ -65,11 +71,11 @@ function Actions({ data, history, onDelete, onDesign, baseUrl }: ActionsProps) {
 
   const handleMenuClick = useCallback(
     (event: any) => {
-      if (event.key == 'view') {
+      if (event.key === 'view') {
         navigate(`${baseUrl}/${data.id}`);
-      } else if (event.key == 'delete') {
+      } else if (event.key === 'delete') {
         handleDelete(data);
-      } else if (event.key == 'design') {
+      } else if (event.key === 'design') {
         onDesign(data.id);
       }
     },
@@ -106,10 +112,9 @@ function Actions({ data, history, onDelete, onDesign, baseUrl }: ActionsProps) {
   );
 }
 
-type PageListProps = RouteComponentProps<any>;
-
-function ModelList(props: PageListProps) {
-  const { history, location } = props;
+function ModelList() {
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const baseUrl = location.pathname;
 
@@ -121,12 +126,12 @@ function ModelList(props: PageListProps) {
   );
 
   const variables = useMemo(() => {
-    const { q, ...query } = (props.location as any).query;
+    const { q, ...query } = (location as any).query;
     if (q) {
       query.filter = { user: 'self', name_contains: q };
     }
     return query;
-  }, [props.location]);
+  }, [location]);
 
   const sorter = useMemo<Sorter>(() => {
     if (!variables.orderBy) {
@@ -137,7 +142,7 @@ function ModelList(props: PageListProps) {
     }
     const [field, order] = variables.orderBy.split('_');
     return {
-      order: order == 'desc' ? 'descend' : 'ascend',
+      order: order === 'desc' ? 'descend' : 'ascend',
       field,
     };
   }, [variables.orderBy]);
@@ -180,9 +185,11 @@ function ModelList(props: PageListProps) {
 
   const handleSearch = useCallback(
     (text: string) => {
-      history.replace(location.pathname + '?' + qs.stringify({ q: text }));
+      navigate(location.pathname + '?' + qs.stringify({ q: text }), {
+        replace: true,
+      });
     },
-    [history, location.pathname],
+    [navigate, location.pathname],
   );
 
   const handleChange = useCallback(
@@ -193,10 +200,12 @@ function ModelList(props: PageListProps) {
       }
       if (!!_sorter) {
         _query.orderBy =
-          _sorter.field + '_' + (_sorter.order == 'ascend' ? 'asc' : 'desc');
+          _sorter.field + '_' + (_sorter.order === 'ascend' ? 'asc' : 'desc');
       }
       _query.page = _pagination.current;
-      history.replace(location.pathname + '?' + qs.stringify(_query));
+      navigate(location.pathname + '?' + qs.stringify(_query), {
+        replace: true,
+      });
     },
     [history, location.pathname, variables.filter?.name_contains],
   );
@@ -232,7 +241,7 @@ function ModelList(props: PageListProps) {
       }
       await handleDelete(...selectedRowKeys);
       Toast.success(`活动批量删除成功`, 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     },
@@ -320,7 +329,7 @@ function ModelList(props: PageListProps) {
                     title: '名称',
                     sorter: true,
                     sortOrder:
-                      sorter.field == 'name' ? sorter.order : undefined,
+                      sorter.field === 'name' ? sorter.order : undefined,
                     render(name, record) {
                       return (
                         <div className="ps-2">
@@ -344,7 +353,7 @@ function ModelList(props: PageListProps) {
                           baseUrl={baseUrl}
                           onDelete={handleDelete}
                           onDesign={handleDesign}
-                          history={props.history}
+                          navigate={navigate}
                           data={record as any}
                         />
                       );

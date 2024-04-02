@@ -2,9 +2,9 @@ import React from 'react';
 
 import classnames from 'classnames';
 
-import type { TableColumn } from './typings';
-
 import { getFieldValue } from '@/utils';
+
+import type { TableColumn } from './typings';
 
 type TableCellProps<T> = {
   data: T;
@@ -27,11 +27,11 @@ function TableCell<T>(props: TableCellProps<T>) {
       key={`${col.key}-${value}`}
       className={classnames(
         {
-          'text-start': align == 'left',
-          'text-center': align == 'center',
-          'text-end': align == 'right',
+          'text-start': align === 'left',
+          'text-center': align === 'center',
+          'text-end': align === 'right',
         },
-        typeof col.className == 'function'
+        typeof col.className === 'function'
           ? col.className('td')
           : col.className,
       )}

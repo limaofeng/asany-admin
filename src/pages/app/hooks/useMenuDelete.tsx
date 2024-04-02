@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 
-import { LoadMenusDocument, useDeleteMenuMutation } from './api';
-
 import { Modal, Toast } from '@/metronic';
 import type { Menu } from '@/types';
+
+import { LoadMenusDocument, useDeleteMenuMutation } from './api';
 
 function useMenuDelete(menu: Menu, onSuccess: (menu: Menu) => void) {
   const [deleteMenu] = useDeleteMenuMutation({

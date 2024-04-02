@@ -1,5 +1,9 @@
 import { useMemo } from 'react';
 
+import { Controls, Toolbar } from '@/components';
+import { ContentWrapper } from '@/layouts/components';
+import { Col, Pagination, Row, Select } from '@/metronic';
+
 import ProjectCard from '../components/ProjectCard';
 import ProjectToolbar from '../components/ProjectToolbar';
 import {
@@ -8,10 +12,6 @@ import {
   ProjectFinance,
 } from '../components/widgets';
 import { useProjectsQuery } from '../hooks/api';
-
-import { Controls, Toolbar } from '@/components';
-import { ContentWrapper } from '@/layouts/components';
-import { Col, Pagination, Row, Select } from '@/metronic';
 
 function ProjectList() {
   const { data, previousData, loading } = useProjectsQuery({

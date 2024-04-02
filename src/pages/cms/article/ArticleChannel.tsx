@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react';
-
-import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import { useArticleCategoryQuery } from '../hooks';
+import Icon from '@asany/icons';
 
 import { ContentWrapper, Navbar } from '@/layouts/components';
 import { Button, CountUp, Dropdown, Menu, Nav, Stat, User } from '@/metronic';
 import type { ArticleCategory } from '@/types';
+
+import { useArticleCategoryQuery } from '../hooks';
 
 type ArticleChannelProps = RouteComponentProps<{ id: string }>;
 

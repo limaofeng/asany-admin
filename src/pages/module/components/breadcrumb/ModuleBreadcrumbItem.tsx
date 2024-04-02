@@ -2,10 +2,10 @@ import { useEffect, useMemo } from 'react';
 
 import { useLocation } from '@umijs/max';
 
-import { useModuleLazyQuery } from '../../hooks';
-
 import BreadcrumbItem from '@/metronic/Breadcrumb/BreadcrumbItem';
 import type { Module, Route } from '@/types';
+
+import { useModuleLazyQuery } from '../../hooks';
 
 type ModuleBreadcrumbItemProps = {
   className: string;
@@ -25,7 +25,7 @@ function ModuleBreadcrumbItem(props: ModuleBreadcrumbItemProps) {
   });
 
   const module = useMemo(() => {
-    if (location.state?.module?.id == params.id) {
+    if (location.state?.module?.id === params.id) {
       return location.state?.module;
     }
     return data?.module;

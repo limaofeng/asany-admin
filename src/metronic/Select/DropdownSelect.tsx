@@ -8,12 +8,12 @@ import React, {
 
 import classnames from 'classnames';
 
+import type { OptionData, OptionItemRender } from './typings';
+
 import Dropdown from '../Dropdown';
 import type { Placement } from '../Dropdown/Dropdown';
 import Menu from '../Menu';
 import { uuid } from '../utils';
-
-import type { OptionData, OptionItemRender } from './typings';
 
 type SelectMenuBodyProps = {
   value?: string;
@@ -26,7 +26,7 @@ type SelectMenuBodyProps = {
 
 function renderMenus(options: OptionData[], itemRender?: OptionItemRender) {
   return options.map((option) => {
-    if (option.type == 'separator') {
+    if (option.type === 'separator') {
       return (
         <Menu.Separator
           key={option.type + '-' + uuid()}
@@ -115,7 +115,7 @@ function DropdownSelect(
 
   const handleSelect = useCallback(
     (key: string) => {
-      onChange && onChange(key, options.find((item) => item.value == key)!);
+      onChange && onChange(key, options.find((item) => item.value === key)!);
     },
     [onChange, options],
   );
@@ -130,7 +130,7 @@ function DropdownSelect(
       if (key) {
         setValue(key);
         onChange &&
-          onChange(key, (_options || []).find((item) => item.value == key)!);
+          onChange(key, (_options || []).find((item) => item.value === key)!);
       }
     },
     [setValue, onChange],
@@ -141,11 +141,11 @@ function DropdownSelect(
       resetDefaults(options);
       return;
     }
-    if (props.value && !options.some((it) => it.value == props.value)) {
+    if (props.value && !options.some((it) => it.value === props.value)) {
       resetDefaults(options);
       return;
     }
-    if (value == props.value) {
+    if (value === props.value) {
       return;
     }
     setValue(props.value);
@@ -156,7 +156,7 @@ function DropdownSelect(
     if (!value) {
       return null;
     }
-    const opt = options.find((item) => item.value == value);
+    const opt = options.find((item) => item.value === value);
     if (!opt) {
       return placeholder;
     }

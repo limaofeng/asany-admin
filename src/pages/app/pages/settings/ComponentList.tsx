@@ -1,12 +1,8 @@
 import { useCallback, useState } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { Icon } from '@asany/icons';
 import moment from 'moment';
-import { useNavigate, useOutletContext } from 'react-router-dom';
-
-import ComponentModal from '../../components/ComponentModal';
-import { useLoadComponentsQuery } from '../../hooks';
-import useComponentDelete from '../../hooks/useComponentDelete';
 
 import Controls from '@/components/Controls';
 import { ContentWrapper } from '@/layouts/components';
@@ -23,6 +19,10 @@ import {
   Table,
 } from '@/metronic';
 import type { Component } from '@/types';
+
+import ComponentModal from '../../components/ComponentModal';
+import { useLoadComponentsQuery } from '../../hooks';
+import useComponentDelete from '../../hooks/useComponentDelete';
 import { AppViewLayoutOutletProps } from '../../types';
 
 type ComponentItemProps = {

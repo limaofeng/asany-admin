@@ -26,14 +26,14 @@ function ChangeUsernameModal(props: ChangeUsernameModalProps) {
   return (
     <Modal
       dialogClassName={classnames('change-username-modal w-450px', {
-        'waiting-to-continue': step == 1,
+        'waiting-to-continue': step === 1,
       })}
       visible={visible}
       onCancel={handleCancel}
-      title={step == 1 ? '确定修改您的用户名吗？' : '输入新的用户名'}
+      title={step === 1 ? '确定修改您的用户名吗？' : '输入新的用户名'}
       footer={false}
     >
-      {step == 1 ? (
+      {step === 1 ? (
         <>
           <Alert
             type="danger"

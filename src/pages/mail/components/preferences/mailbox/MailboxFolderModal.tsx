@@ -38,7 +38,7 @@ function MailboxFolderModal(props: CreateMailboxModalProps) {
 
   const handleOk = useCallback(async () => {
     const values = await form.validateFields();
-    if (mode == 'create') {
+    if (mode === 'create') {
       await createMailbox({
         variables: {
           name: values.name,
@@ -75,10 +75,10 @@ function MailboxFolderModal(props: CreateMailboxModalProps) {
         </div>
         <div className="modal-dialog-instructions">
           <div className="modal-dialog-title">
-            {mode == 'create' ? '新建文件夹' : '修改文件夹'}
+            {mode === 'create' ? '新建文件夹' : '修改文件夹'}
           </div>
           <div className="modal-dialog-description">
-            {mode == 'create' ? (
+            {mode === 'create' ? (
               <>为账号 &quot; {user} &quot; 创建顶层文件夹</>
             ) : (
               <>

@@ -97,11 +97,12 @@ function TextArea(
     if (!autoSize) {
       return undefined;
     }
-    return typeof autoSize == 'boolean' ? 1 : autoSize?.minRows || 1;
+    return typeof autoSize === 'boolean' ? 1 : autoSize?.minRows || 1;
   }, [autoSize]);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      // eslint-disable-next-line no-unused-expressions, @typescript-eslint/no-unused-expressions
       onChange ? onChange(e) : setValue(e.target.value);
     },
     [onChange],
@@ -109,7 +110,7 @@ function TextArea(
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key == 'Enter') {
+      if (e.key === 'Enter') {
         onPressEnter && onPressEnter(e);
       }
     },

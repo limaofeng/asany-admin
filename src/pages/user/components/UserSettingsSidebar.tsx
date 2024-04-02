@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
+import { useLocation } from 'react-router';
 
 import { getMatchMenu, type MenuDataItem } from '@umijs/route-utils';
-import { useLocation } from 'react-router';
 
 import { useCurrentuser } from '@/hooks';
 import { AsideWorkspace } from '@/layouts/Demo7';

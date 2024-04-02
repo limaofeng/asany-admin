@@ -1,6 +1,7 @@
-import { Icon } from '@asany/icons';
 import type { NodeProps } from 'react-flow-renderer';
 import { Handle, Position } from 'react-flow-renderer';
+
+import { Icon } from '@asany/icons';
 
 function ExclusiveGateway({ data }: NodeProps) {
   // const onChange = useCallback((evt: any) => {

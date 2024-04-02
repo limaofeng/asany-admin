@@ -84,7 +84,7 @@ function DrawerContainer(props: DrawerContainerProps) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (props.visible == visible) {
+    if (props.visible === visible) {
       return;
     }
     const timer = setTimeout(() => {
@@ -113,8 +113,8 @@ function DrawerContainer(props: DrawerContainerProps) {
         style={{ width }}
         className={classnames('bg-white drawer', props.className, {
           'drawer-on': visible,
-          'drawer-start': placement == 'left',
-          'drawer-end': placement == 'right',
+          'drawer-start': placement === 'left',
+          'drawer-end': placement === 'right',
         })}
       >
         <Card className="rounded-0 w-100">
@@ -148,6 +148,7 @@ function DrawerContainer(props: DrawerContainerProps) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function Drawer({ getContainer, destroyOnClose, ...props }: DrawerProps) {
   const mountPoint = useMemo(() => {
     return runGetContainer(getContainer);

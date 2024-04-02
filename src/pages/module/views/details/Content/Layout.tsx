@@ -1,27 +1,27 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { matchPath, useLocation, useNavigate } from 'react-router';
 
 import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import type { RouteComponentProps } from 'react-router';
-import { matchPath } from 'react-router';
 
 import SecondarySidebar from '@/components/SecondarySidebar';
 import { Menu } from '@/metronic';
 import { useContentQuery } from '@/pages/module/hooks';
-import type { ModelView, Module } from '@/types';
+import type { ModelView } from '@/types';
 
 import './style/Layout.scss';
 
-type ContentLayoutProps = RouteComponentProps<
-  { mid?: string },
-  any,
-  { module: Module; baseUrl: string }
-> & {
-  children: React.ReactNode;
-};
+// type ContentLayoutProps = RouteComponentProps<
+//   { mid?: string },
+//   any,
+//   { module: Module; baseUrl: string }
+// > & {
+//   children: React.ReactNode;
+// };
 
-function ContentLayout(props: ContentLayoutProps) {
-  const { location, history, children } = props;
+function ContentLayout() {
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const { module, baseUrl = '' } = location.state;
 
@@ -50,11 +50,10 @@ function ContentLayout(props: ContentLayoutProps) {
   }, [models]);
 
   const menuKey = useMemo(() => {
-    const match = matchPath<{ mid: string; vid: string }>(location.pathname, {
-      path: `${baseUrl}/content/:mid/views/:vid`,
-      exact: true,
-      strict: true,
-    });
+    const match = matchPath(
+      `${baseUrl}/content/:mid/views/:vid`,
+      location.pathname,
+    );
     if (match) {
       return `view_${match.params.vid}`;
     }
@@ -66,8 +65,10 @@ function ContentLayout(props: ContentLayoutProps) {
       return;
     }
     const v = defaultViews[0];
-    history.replace(`${baseUrl}/content/${v.model.id}/views/${v.id}`);
-  }, [baseUrl, defaultViews, history]);
+    navigate(`${baseUrl}/content/${v.model.id}/views/${v.id}`, {
+      replace: true,
+    });
+  }, [baseUrl, defaultViews, navigate]);
 
   return (
     <>
@@ -114,7 +115,7 @@ function ContentLayout(props: ContentLayoutProps) {
                   <Link
                     to={`${baseUrl}/content`}
                     className={classnames('menu-section__link cursor-pointer text-muted', {
-                      checked: menuKey == 'model_overview',
+                      checked: menuKey === 'model_overview',
                     })}
                   >
                     实体

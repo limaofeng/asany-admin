@@ -5,14 +5,13 @@ import type {
   ReactElement,
   ReactNode,
 } from 'react';
-
-import type { EventEmitter } from 'events';
-
 import type {
   DragElementWrapper,
   DragSourceOptions,
   DropTargetMonitor,
 } from 'react-dnd';
+
+import type { EventEmitter } from 'events';
 
 export type SortableLayoutDirection = 'horizontal' | 'vertical';
 

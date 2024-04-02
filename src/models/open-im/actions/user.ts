@@ -1,9 +1,9 @@
-import type { Dispatch } from 'redux';
-
 import type {
   FullUserItem,
   PartialUserInfo,
 } from 'open-im-sdk-wasm/lib/types/entity';
+import type { Dispatch } from 'redux';
+
 import { IMSDK } from '../auth';
 import type { UserActionTypes } from '../types/user';
 import {

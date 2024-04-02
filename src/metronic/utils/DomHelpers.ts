@@ -1,7 +1,7 @@
-import { ElementAnimateUtil } from './ElementAnimateUtil';
 import { DataUtil } from './_DataUtil';
 import { ElementStyleUtil } from './_ElementStyleUtil';
 import { getObjectPropertyValueByKey, toJSON } from './_TypesHelpers';
+import { ElementAnimateUtil } from './ElementAnimateUtil';
 import type { OffsetModel } from './models/OffsetModel';
 import type { ViewPortModel } from './models/ViewPortModel';
 
@@ -248,7 +248,7 @@ function getElementChildren(
   const result: HTMLElement[] = [];
   for (let i = 0; i < element.childNodes.length; i++) {
     const child = element.childNodes[i];
-    // child.nodeType == 1 => Element, Text, Comment, ProcessingInstruction, CDATASection, EntityReference
+    // child.nodeType === 1 => Element, Text, Comment, ProcessingInstruction, CDATASection, EntityReference
     if (
       child.nodeType === 1 &&
       getElementMatches(child as HTMLElement, selector)
@@ -268,12 +268,21 @@ function getElementChild(
   return children ? children[0] : null;
 }
 
+function getBreakpoint(breakpoint: string) {
+  let value: number | string = getCSSVariableValue('--kt-' + breakpoint);
+  if (value) {
+    value = parseInt(value.trim());
+  }
+
+  return value;
+}
+
 function isMobileDevice(): boolean {
   let test = getViewPort().width < +getBreakpoint('lg') ? true : false;
 
   if (test === false) {
     // For use within normal web clients
-    test = navigator.userAgent.match(/iPad/i) != null;
+    test = navigator.userAgent.match(/iPad/i) !== null;
   }
 
   return test;
@@ -428,14 +437,7 @@ function slideDown(el: HTMLElement, speed: number, callback: any) {
   slide(el, 'down', speed, callback);
 }
 
-function getBreakpoint(breakpoint: string) {
-  let value: number | string = getCSSVariableValue('--kt-' + breakpoint);
-  if (value) {
-    value = parseInt(value.trim());
-  }
 
-  return value;
-}
 
 function getAttributeValueByBreakpoint(incomingAttr: string): string | JSON {
   const value = toJSON(incomingAttr);
@@ -448,7 +450,7 @@ function getAttributeValueByBreakpoint(incomingAttr: string): string | JSON {
   let resultBreakpoint = -1;
   let breakpoint;
 
-  for (const key in value) {
+  for (const key of Object.keys(value)) {
     if (key === 'default') {
       breakpoint = 0;
     } else {

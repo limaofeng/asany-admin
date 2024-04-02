@@ -152,13 +152,6 @@ export function useLayout(): LayoutApi {
   return api.current;
 }
 
-export function useLayoutSelector<Selected>(
-  selector: Selector<Selected>,
-  equalityFn: EqualityFn<Selected> = defaultEqualityFn,
-): Selected {
-  return useSelector(selector, equalityFn);
-}
-
 function useSelector<Selected>(
   selector: Selector<Selected>,
   equalityFn: EqualityFn<Selected> = defaultEqualityFn,
@@ -178,6 +171,13 @@ function useSelector<Selected>(
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => store.subscribe(checkForUpdates), []);
   return selectedState;
+}
+
+export function useLayoutSelector<Selected>(
+  selector: Selector<Selected>,
+  equalityFn: EqualityFn<Selected> = defaultEqualityFn,
+): Selected {
+  return useSelector(selector, equalityFn);
 }
 
 export function useDispatch() {

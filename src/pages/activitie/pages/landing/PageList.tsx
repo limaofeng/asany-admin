@@ -1,16 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
+import { NavigateFunction } from 'react-router-dom';
 
 import { Icon } from '@asany/icons';
+import { Link, useLocation, useNavigate } from '@umijs/max';
 import { QRCodeCanvas } from 'qrcode.react';
 import qs from 'query-string';
-import type { RouteComponentProps } from 'react-router';
-import { Link } from '@umijs/max';
-
-import {
-  LandingPagesDocument,
-  useDeletePageMutation,
-  useLandingPagesQuery,
-} from '../../hooks';
 
 import Controls from '@/components/Controls';
 import { ContentWrapper } from '@/layouts/components';
@@ -29,8 +23,14 @@ import {
 import type { Sorter } from '@/metronic/typings';
 import type { LandingPage, LandingStore } from '@/types';
 
+import {
+  LandingPagesDocument,
+  useDeletePageMutation,
+  useLandingPagesQuery,
+} from '../../hooks';
+
 type ActionsProps = {
-  history: any;
+  navigate: NavigateFunction;
   baseUrl: string;
   data: LandingPage;
   onShowQRCode: (url: string) => void;
@@ -39,7 +39,7 @@ type ActionsProps = {
 
 function Actions({
   data,
-  history,
+  navigate,
   onDelete,
   onShowQRCode,
   baseUrl,
@@ -64,7 +64,7 @@ function Actions({
       }
       await onDelete(_data.id);
       Toast.success(`活动 “${_data.name}” 删除成功`, 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     },
@@ -73,11 +73,11 @@ function Actions({
 
   const handleMenuClick = useCallback(
     (event: any) => {
-      if (event.key == 'view') {
+      if (event.key === 'view') {
         navigate(`${baseUrl}/${data.id}`);
-      } else if (event.key == 'delete') {
+      } else if (event.key === 'delete') {
         handleDelete(data);
-      } else if (event.key == 'preview') {
+      } else if (event.key === 'preview') {
         onShowQRCode(
           location.protocol + process.env.MOBILE_URL + '/lps/' + data.id,
         );
@@ -97,12 +97,12 @@ function Actions({
             编辑
           </Menu.Item>
           <Menu.Separator className="my-1" />
-          {/* {data.status == 'DRAFT' && (
+          {/* {data.status === 'DRAFT' && (
             <Menu.Item key="publish" className="px-3">
               发布
             </Menu.Item>
           )}
-          {data.status == 'PUBLISHED' && (
+          {data.status === 'PUBLISHED' && (
             <Menu.Item key="cancel" className="px-3">
               取消活动
             </Menu.Item>
@@ -133,10 +133,9 @@ function Actions({
 //   { label: '结束', value: 'COMPLETED', color: 'light' },
 // ];
 
-type PageListProps = RouteComponentProps<any>;
-
-function PageList(props: PageListProps) {
-  const { history, location } = props;
+function PageList() {
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const baseUrl = location.pathname;
 
@@ -151,12 +150,12 @@ function PageList(props: PageListProps) {
   }, []);
 
   const variables = useMemo(() => {
-    const { q, ...query } = (props.location as any).query;
+    const { q, ...query } = qs.parse(location.search) as any;
     if (q) {
       query.filter = { name_contains: q };
     }
     return query;
-  }, [props.location]);
+  }, [location]);
 
   const sorter = useMemo<Sorter>(() => {
     if (!variables.orderBy) {
@@ -167,7 +166,7 @@ function PageList(props: PageListProps) {
     }
     const [field, order] = variables.orderBy.split('_');
     return {
-      order: order == 'desc' ? 'descend' : 'ascend',
+      order: order === 'desc' ? 'descend' : 'ascend',
       field,
     };
   }, [variables.orderBy]);
@@ -201,9 +200,11 @@ function PageList(props: PageListProps) {
 
   const handleSearch = useCallback(
     (text: string) => {
-      history.replace(location.pathname + '?' + qs.stringify({ q: text }));
+      navigate(location.pathname + '?' + qs.stringify({ q: text }), {
+        replace: true,
+      });
     },
-    [history, location.pathname],
+    [navigate, location.pathname],
   );
 
   const handleChange = useCallback(
@@ -214,12 +215,14 @@ function PageList(props: PageListProps) {
       }
       if (!!_sorter) {
         _query.orderBy =
-          _sorter.field + '_' + (_sorter.order == 'ascend' ? 'asc' : 'desc');
+          _sorter.field + '_' + (_sorter.order === 'ascend' ? 'asc' : 'desc');
       }
       _query.page = _pagination.current;
-      history.replace(location.pathname + '?' + qs.stringify(_query));
+      navigate(location.pathname + '?' + qs.stringify(_query), {
+        replace: true,
+      });
     },
-    [history, location.pathname, variables.filter?.name_contains],
+    [navigate, location.pathname, variables.filter?.name_contains],
   );
 
   const handleDelete = useCallback(
@@ -253,7 +256,7 @@ function PageList(props: PageListProps) {
       }
       await handleDelete(...selectedRowKeys);
       Toast.success(`活动批量删除成功`, 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     },
@@ -347,7 +350,7 @@ function PageList(props: PageListProps) {
                       title: '名称',
                       sorter: true,
                       sortOrder:
-                        sorter.field == 'name' ? sorter.order : undefined,
+                        sorter.field === 'name' ? sorter.order : undefined,
                       render(name, record) {
                         return (
                           <div className="ps-2">
@@ -403,7 +406,7 @@ function PageList(props: PageListProps) {
                     //   title: '状态',
                     //   className: 'w-100px',
                     //   render(value) {
-                    //     const status = allStatus.find((it) => it.value == value);
+                    //     const status = allStatus.find((it) => it.value === value);
                     //     return <Badge color={status?.color as any}>{status?.label}</Badge>;
                     //   },
                     // },
@@ -412,7 +415,7 @@ function PageList(props: PageListProps) {
                     //   title: '创建时间',
                     //   width: 150,
                     //   sorter: true,
-                    //   sortOrder: sorter.field == 'createdAt' ? sorter.order : undefined,
+                    //   sortOrder: sorter.field === 'createdAt' ? sorter.order : undefined,
                     // },
                     {
                       key: 'actions',
@@ -424,7 +427,7 @@ function PageList(props: PageListProps) {
                             baseUrl={baseUrl}
                             onDelete={handleDelete}
                             onShowQRCode={handleOpenQRCode}
-                            history={props.history}
+                            navigate={navigate}
                             data={record as any}
                           />
                         );

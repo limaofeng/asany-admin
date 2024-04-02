@@ -1,8 +1,8 @@
 import classnames from 'classnames';
 
-import type { MainColor } from '../typings';
-
 import Circle from './Circle';
+
+import type { MainColor } from '../typings';
 
 type ProgressProps = {
   className?: string;

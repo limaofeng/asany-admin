@@ -4,13 +4,47 @@ import { useCallback, useEffect } from 'react';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 
-import AsideSecondary from '../Aside/AsideSecondary';
-import AsideWorkspace from '../Aside/Secondary/AsideWorkspace';
+import { useLayout } from '@/layouts/LayoutContext';
+import { Button } from '@/metronic';
 
 import { MicroAppActionKind, useMicroApp } from './MicroAppContext';
 
-import { useLayout } from '@/layouts/LayoutContext';
-import { Button } from '@/metronic';
+import AsideSecondary from '../Aside/AsideSecondary';
+import AsideWorkspace from '../Aside/Secondary/AsideWorkspace';
+
+type ToggleProps = {
+  style?: CSSProperties;
+  className: string;
+};
+
+function Toggle(props: ToggleProps) {
+  const {
+    dispatch,
+    state: {
+      aside: { minimize },
+    },
+  } = useMicroApp();
+
+  const handleAsideToggle = useCallback(() => {
+    dispatch({ type: MicroAppActionKind.AsideToggle });
+  }, [dispatch]);
+
+  return (
+    <Button
+      style={{ marginBottom: '1.35rem', zIndex: 105, ...props.style }}
+      onClick={handleAsideToggle}
+      activeColor="primary"
+      className={classnames(
+        'micro-app-aside-toggle',
+        'btn-icon bg-body btn-color-gray-700 rounded-2 position-absolute translate-middle bottom-0 shadow-sm d-none d-lg-flex',
+        props.className,
+        { active: minimize },
+      )}
+    >
+      <Icon name="Duotune/arr063" className="svg-icon-2 rotate-180" />
+    </Button>
+  );
+}
 
 type AppSidebarProps = {
   children: React.ReactNode;
@@ -47,40 +81,6 @@ function AppSidebar(props: AppSidebarProps) {
       </AsideSecondary>
       {collapsible && <Toggle className="start-100 end-0" />}
     </div>
-  );
-}
-
-type ToggleProps = {
-  style?: CSSProperties;
-  className: string;
-};
-
-function Toggle(props: ToggleProps) {
-  const {
-    dispatch,
-    state: {
-      aside: { minimize },
-    },
-  } = useMicroApp();
-
-  const handleAsideToggle = useCallback(() => {
-    dispatch({ type: MicroAppActionKind.AsideToggle });
-  }, [dispatch]);
-
-  return (
-    <Button
-      style={{ marginBottom: '1.35rem', zIndex: 105, ...props.style }}
-      onClick={handleAsideToggle}
-      activeColor="primary"
-      className={classnames(
-        'micro-app-aside-toggle',
-        'btn-icon bg-body btn-color-gray-700 rounded-2 position-absolute translate-middle bottom-0 shadow-sm d-none d-lg-flex',
-        props.className,
-        { active: minimize },
-      )}
-    >
-      <Icon name="Duotune/arr063" className="svg-icon-2 rotate-180" />
-    </Button>
   );
 }
 

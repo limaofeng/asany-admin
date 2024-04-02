@@ -37,7 +37,7 @@ function useValuesChange(form: FormInstance<any>, mode: 'new' | 'edit') {
   );
 
   useEffect(() => {
-    if (mode == 'edit') {
+    if (mode === 'edit') {
       setCodeLinkageable(false);
       setDbColumnNameLinkageable(false);
     } else {

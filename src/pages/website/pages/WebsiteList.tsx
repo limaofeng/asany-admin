@@ -1,17 +1,14 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
-import { Link } from '@umijs/max';
-
-import CreateWebsite from '../components/CreateWebsite';
-import { useWebsitesQuery } from '../hooks';
-
-import { useLocation } from '@umijs/max';
+import { Link, useLocation, useNavigate } from '@umijs/max';
+import qs from 'query-string';
 
 import { ContentWrapper } from '@/layouts/components';
 import { Card, Col, Row, Symbol } from '@/metronic';
 
-import qs from 'query-string';
+import CreateWebsite from '../components/CreateWebsite';
+import { useWebsitesQuery } from '../hooks';
 
 import './WebsiteList.scss';
 
@@ -52,11 +49,11 @@ import './WebsiteList.scss';
 
 //   const handleMenuClick = useCallback(
 //     (event: any) => {
-//       if (event.key == 'view') {
+//       if (event.key === 'view') {
 //         navigate(`/website/landing/pages/${data.id}`);
-//       } else if (event.key == 'delete') {
+//       } else if (event.key === 'delete') {
 //         handleDelete(data);
-//       } else if (event.key == 'preview') {
+//       } else if (event.key === 'preview') {
 //         onShowQRCode(location.protocol + process.env.MOBILE_URL + '/lps/' + data.id);
 //       }
 //     },
@@ -74,12 +71,12 @@ import './WebsiteList.scss';
 //             编辑
 //           </Menu.Item>
 //           <Menu.Separator />
-//           {/* {data.status == 'DRAFT' && (
+//           {/* {data.status === 'DRAFT' && (
 //             <Menu.Item key="publish" className="px-3">
 //               发布
 //             </Menu.Item>
 //           )}
-//           {data.status == 'PUBLISHED' && (
+//           {data.status === 'PUBLISHED' && (
 //             <Menu.Item key="cancel" className="px-3">
 //               取消活动
 //             </Menu.Item>
@@ -112,6 +109,7 @@ import './WebsiteList.scss';
 
 function WebsiteList() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [visibleNewWebsite, setVisibleNewWebsite] = useState(false);
 
@@ -132,7 +130,7 @@ function WebsiteList() {
   //   }
   //   const [field, order] = variables.orderBy.split('_');
   //   return {
-  //     order: order == 'desc' ? 'descend' : 'ascend',
+  //     order: order === 'desc' ? 'descend' : 'ascend',
   //     field,
   //   };
   // }, [variables.orderBy]);
@@ -168,7 +166,7 @@ function WebsiteList() {
         _query.q = variables.filter?.name_contains;
       }
       if (!!_sorter) {
-        _query.orderBy = _sorter.field + '_' + (_sorter.order == 'ascend' ? 'asc' : 'desc');
+        _query.orderBy = _sorter.field + '_' + (_sorter.order === 'ascend' ? 'asc' : 'desc');
       }
       _query.page = _pagination.current;
       history.replace(location.pathname + '?' + qs.stringify(_query));

@@ -1,12 +1,10 @@
 import type { CSSProperties, RefObject } from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-
-import classnames from 'classnames';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { Table as BsTable } from 'react-bootstrap';
 import ContentLoader from 'react-content-loader';
 
-import { uuid } from '../utils';
+import classnames from 'classnames';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { Colgroup } from './TableHeader';
 import TableRow from './TableRow';
@@ -20,251 +18,7 @@ import type {
   TableColumn,
 } from './typings';
 
-type VirtualListProps<T> = {
-  tableBodyRef: RefObject<HTMLTableSectionElement>;
-  responsive?: boolean;
-  hover?: boolean;
-  height?: number;
-  striped?: boolean;
-  useCheck: (record: T) => boolean;
-  rowHeight: number | RowHeightFunc;
-  overscanRowCount: number;
-  columns: TableColumn<T>[];
-  rowSelection?: RowSelection<T>;
-  dataSource: DataSource<T>;
-  rowKey: string | ((record: T) => string);
-  recoverer: DataRecoverer<T>;
-  onColgroup?: (numbers: Map<string, number>) => void;
-  onSelect: (record: T, selected: boolean, e: any) => void;
-};
-
-function VirtualList<T>(props: VirtualListProps<T>) {
-  const {
-    columns,
-    onColgroup,
-    rowHeight,
-    rowKey,
-    dataSource,
-    recoverer,
-    rowSelection,
-    tableBodyRef,
-  } = props;
-
-  const scrollbar = useRef<OverlayScrollbarsComponent>(null);
-
-  const state = useRef<{
-    height?: number;
-    rowHeight: number | RowHeightFunc;
-    rowCount: number;
-    overscanRowCount: number;
-    items: Map<number, RowData>;
-    colgroups: Map<string, number>;
-  }>({
-    rowCount: dataSource.rowCount,
-    rowHeight: props.rowHeight,
-    items: new Map(),
-    colgroups: new Map(),
-    overscanRowCount: props.overscanRowCount || 5,
-  });
-  const [, forceRender] = useReducer((s) => s + 1, 0);
-
-  const temp = useRef<{
-    timer?: NodeJS.Timeout;
-    items: RowRendererParams[];
-    startIndex: number;
-    endIndex: number;
-    innerHeight: number;
-  }>({ items: [], startIndex: 0, endIndex: 0, innerHeight: 0 });
-
-  state.current.rowCount = dataSource.rowCount;
-
-  const innerHeight = useMemo(() => {
-    if (!dataSource.rowCount) {
-      temp.current.startIndex = 0;
-      temp.current.endIndex = 0;
-      temp.current.items.length = 0;
-      state.current.items.clear();
-    } else if (state.current.items.size) {
-      while (state.current.items.size > dataSource.rowCount) {
-        state.current.items.delete(state.current.items.size - 1);
-      }
-    }
-    const items = state.current.items;
-    if (typeof rowHeight == 'number') {
-      for (let i = 0; i < dataSource.rowCount; i++) {
-        const key = items.has(i) ? items.get(i)!.key : 'row_' + i;
-        items.set(i, {
-          key,
-          index: i,
-          height: rowHeight,
-          top: rowHeight * i,
-          bottom: rowHeight * (i + 1),
-        });
-      }
-      return rowHeight * dataSource.rowCount;
-    }
-    let _innerHeight = 0;
-    for (let i = 0; i < dataSource.rowCount; i++) {
-      const _height = rowHeight({ index: i });
-      items.set(i, {
-        key: uuid(),
-        index: i,
-        top: _innerHeight,
-        height: _height,
-        bottom: _innerHeight + _height,
-      });
-      _innerHeight += _height;
-    }
-    return _innerHeight;
-  }, [rowHeight, dataSource.rowCount]);
-
-  temp.current.innerHeight = innerHeight;
-
-  const setupItems = useCallback(() => {
-    const scroll = scrollbar.current?.osInstance()?.scroll();
-
-    if (!scroll) {
-      return;
-    }
-
-    if (!state.current.rowCount) {
-      return;
-    }
-
-    const start = Math.min(
-      scroll.position.y,
-      temp.current.innerHeight - state.current.height!,
-    );
-    const end = Math.min(
-      scroll.position.y + state.current.height!,
-      temp.current.innerHeight,
-    );
-
-    const overscanRowCount = state.current.overscanRowCount;
-
-    const items = Array.from(state.current.items.values());
-
-    const startIndex = items.findIndex(
-      (item) => item.top >= start || item.bottom >= start,
-    );
-    let endIndex = items
-      .slice(startIndex)
-      .findIndex((item) => item.bottom >= end || item.top >= end);
-    endIndex = endIndex == -1 ? items.length : startIndex + endIndex + 1;
-
-    temp.current.startIndex = Math.max(0, startIndex - overscanRowCount);
-    temp.current.endIndex = Math.min(items.length, endIndex + overscanRowCount);
-    temp.current.timer && clearTimeout(temp.current.timer);
-    temp.current.timer = setTimeout(() => {
-      temp.current.items = items
-        .slice(temp.current.startIndex, temp.current.endIndex)
-        .map((item) => ({
-          ...item,
-          isScrolling: false,
-          isVisible: item.index >= startIndex && item.index < endIndex,
-          style: { height: item.bottom - item.top },
-        }));
-      forceRender();
-    }, 30);
-  }, []);
-
-  const handleResize = useCallback(() => {
-    if (!scrollbar.current) {
-      console.warn('_target is null', scrollbar.current);
-      return;
-    }
-    const _target = scrollbar.current.osTarget();
-    state.current.height = _target!.clientHeight;
-    temp.current.timer && clearTimeout(temp.current.timer);
-    temp.current.timer = setTimeout(() => {
-      state.current.height = _target!.clientHeight;
-      setupItems();
-    }, 300);
-  }, [setupItems]);
-
-  useEffect(() => {
-    window.addEventListener('resize', handleResize);
-    process.nextTick(handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [handleResize]);
-
-  useEffect(() => {
-    setupItems();
-  }, [setupItems, props.height, innerHeight, dataSource.rowCount]);
-
-  const handleScroll = useCallback(() => {
-    setupItems();
-  }, [setupItems]);
-
-  const { items, startIndex, endIndex } = temp.current;
-
-  const beforeTr = useMemo(() => {
-    let _height = 0;
-    if (typeof rowHeight == 'number') {
-      _height = startIndex * rowHeight;
-    } else {
-      for (let i = 0; i < startIndex; i++) {
-        _height += state.current.items.get(i)!.height;
-      }
-    }
-    return _height;
-  }, [rowHeight, startIndex]);
-
-  const afterTr = useMemo(() => {
-    let _height = 0;
-    if (typeof rowHeight == 'number') {
-      _height = (dataSource.rowCount - endIndex) * rowHeight;
-    } else {
-      for (let i = endIndex; i < dataSource.rowCount; i++) {
-        _height += state.current.items.get(i)!.height;
-      }
-    }
-    return _height;
-  }, [endIndex, dataSource.rowCount, rowHeight]);
-
-  // console.log('VirtualList', startIndex, endIndex, beforeTr, afterTr);
-
-  return (
-    <OverlayScrollbarsComponent
-      ref={scrollbar}
-      style={{ height: props.height }}
-      className={classnames('custom-scrollbar table-virtualized-scroll')}
-      options={{
-        scrollbars: { autoHide: 'scroll' },
-        callbacks: {
-          onScroll: handleScroll,
-        },
-      }}
-    >
-      <BsTable
-        hover={props.hover}
-        striped={props.striped}
-        responsive={props.responsive}
-        className="dataTable table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
-      >
-        <Colgroup<T> onColgroup={onColgroup} columns={columns} />
-        <tbody ref={tableBodyRef} className="fw-bold text-gray-600">
-          {!!beforeTr && <tr style={{ height: beforeTr }} />}
-          {items.map((item) => (
-            <VirtualListItem<T>
-              rowKey={rowKey}
-              recoverer={recoverer}
-              rowSelection={rowSelection}
-              key={item.key}
-              useCheck={props.useCheck}
-              style={item.style}
-              columns={columns}
-              onSelect={props.onSelect}
-              dataSource={dataSource}
-              index={item.index}
-            />
-          ))}
-          {!!afterTr && <tr style={{ height: afterTr }} />}
-        </tbody>
-      </BsTable>
-    </OverlayScrollbarsComponent>
-  );
-}
+import { uuid } from '../utils';
 
 type VirtualListItemProps<T> = {
   index: number;
@@ -356,6 +110,252 @@ function VirtualListItem<T>(props: VirtualListItemProps<T>) {
       columns={columns}
       useCheck={useCheck}
     />
+  );
+}
+
+type VirtualListProps<T> = {
+  tableBodyRef: RefObject<HTMLTableSectionElement>;
+  responsive?: boolean;
+  hover?: boolean;
+  height?: number;
+  striped?: boolean;
+  useCheck: (record: T) => boolean;
+  rowHeight: number | RowHeightFunc;
+  overscanRowCount: number;
+  columns: TableColumn<T>[];
+  rowSelection?: RowSelection<T>;
+  dataSource: DataSource<T>;
+  rowKey: string | ((record: T) => string);
+  recoverer: DataRecoverer<T>;
+  onColgroup?: (numbers: Map<string, number>) => void;
+  onSelect: (record: T, selected: boolean, e: any) => void;
+};
+
+function VirtualList<T>(props: VirtualListProps<T>) {
+  const {
+    columns,
+    onColgroup,
+    rowHeight,
+    rowKey,
+    dataSource,
+    recoverer,
+    rowSelection,
+    tableBodyRef,
+  } = props;
+
+  const scrollbar = useRef<OverlayScrollbarsComponent>(null);
+
+  const state = useRef<{
+    height?: number;
+    rowHeight: number | RowHeightFunc;
+    rowCount: number;
+    overscanRowCount: number;
+    items: Map<number, RowData>;
+    colgroups: Map<string, number>;
+  }>({
+    rowCount: dataSource.rowCount,
+    rowHeight: props.rowHeight,
+    items: new Map(),
+    colgroups: new Map(),
+    overscanRowCount: props.overscanRowCount || 5,
+  });
+  const [, forceRender] = useReducer((s) => s + 1, 0);
+
+  const temp = useRef<{
+    timer?: NodeJS.Timeout;
+    items: RowRendererParams[];
+    startIndex: number;
+    endIndex: number;
+    innerHeight: number;
+  }>({ items: [], startIndex: 0, endIndex: 0, innerHeight: 0 });
+
+  state.current.rowCount = dataSource.rowCount;
+
+  const innerHeight = useMemo(() => {
+    if (!dataSource.rowCount) {
+      temp.current.startIndex = 0;
+      temp.current.endIndex = 0;
+      temp.current.items.length = 0;
+      state.current.items.clear();
+    } else if (state.current.items.size) {
+      while (state.current.items.size > dataSource.rowCount) {
+        state.current.items.delete(state.current.items.size - 1);
+      }
+    }
+    const items = state.current.items;
+    if (typeof rowHeight === 'number') {
+      for (let i = 0; i < dataSource.rowCount; i++) {
+        const key = items.has(i) ? items.get(i)!.key : 'row_' + i;
+        items.set(i, {
+          key,
+          index: i,
+          height: rowHeight,
+          top: rowHeight * i,
+          bottom: rowHeight * (i + 1),
+        });
+      }
+      return rowHeight * dataSource.rowCount;
+    }
+    let _innerHeight = 0;
+    for (let i = 0; i < dataSource.rowCount; i++) {
+      const _height = rowHeight({ index: i });
+      items.set(i, {
+        key: uuid(),
+        index: i,
+        top: _innerHeight,
+        height: _height,
+        bottom: _innerHeight + _height,
+      });
+      _innerHeight += _height;
+    }
+    return _innerHeight;
+  }, [rowHeight, dataSource.rowCount]);
+
+  temp.current.innerHeight = innerHeight;
+
+  const setupItems = useCallback(() => {
+    const scroll = scrollbar.current?.osInstance()?.scroll();
+
+    if (!scroll) {
+      return;
+    }
+
+    if (!state.current.rowCount) {
+      return;
+    }
+
+    const start = Math.min(
+      scroll.position.y,
+      temp.current.innerHeight - state.current.height!,
+    );
+    const end = Math.min(
+      scroll.position.y + state.current.height!,
+      temp.current.innerHeight,
+    );
+
+    const overscanRowCount = state.current.overscanRowCount;
+
+    const items = Array.from(state.current.items.values());
+
+    const startIndex = items.findIndex(
+      (item) => item.top >= start || item.bottom >= start,
+    );
+    let endIndex = items
+      .slice(startIndex)
+      .findIndex((item) => item.bottom >= end || item.top >= end);
+    endIndex = endIndex === -1 ? items.length : startIndex + endIndex + 1;
+
+    temp.current.startIndex = Math.max(0, startIndex - overscanRowCount);
+    temp.current.endIndex = Math.min(items.length, endIndex + overscanRowCount);
+    temp.current.timer && clearTimeout(temp.current.timer);
+    temp.current.timer = setTimeout(() => {
+      temp.current.items = items
+        .slice(temp.current.startIndex, temp.current.endIndex)
+        .map((item) => ({
+          ...item,
+          isScrolling: false,
+          isVisible: item.index >= startIndex && item.index < endIndex,
+          style: { height: item.bottom - item.top },
+        }));
+      forceRender();
+    }, 30);
+  }, []);
+
+  const handleResize = useCallback(() => {
+    if (!scrollbar.current) {
+      console.warn('_target is null', scrollbar.current);
+      return;
+    }
+    const _target = scrollbar.current.osTarget();
+    state.current.height = _target!.clientHeight;
+    temp.current.timer && clearTimeout(temp.current.timer);
+    temp.current.timer = setTimeout(() => {
+      state.current.height = _target!.clientHeight;
+      setupItems();
+    }, 300);
+  }, [setupItems]);
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    process.nextTick(handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [handleResize]);
+
+  useEffect(() => {
+    setupItems();
+  }, [setupItems, props.height, innerHeight, dataSource.rowCount]);
+
+  const handleScroll = useCallback(() => {
+    setupItems();
+  }, [setupItems]);
+
+  const { items, startIndex, endIndex } = temp.current;
+
+  const beforeTr = useMemo(() => {
+    let _height = 0;
+    if (typeof rowHeight === 'number') {
+      _height = startIndex * rowHeight;
+    } else {
+      for (let i = 0; i < startIndex; i++) {
+        _height += state.current.items.get(i)!.height;
+      }
+    }
+    return _height;
+  }, [rowHeight, startIndex]);
+
+  const afterTr = useMemo(() => {
+    let _height = 0;
+    if (typeof rowHeight === 'number') {
+      _height = (dataSource.rowCount - endIndex) * rowHeight;
+    } else {
+      for (let i = endIndex; i < dataSource.rowCount; i++) {
+        _height += state.current.items.get(i)!.height;
+      }
+    }
+    return _height;
+  }, [endIndex, dataSource.rowCount, rowHeight]);
+
+  // console.log('VirtualList', startIndex, endIndex, beforeTr, afterTr);
+
+  return (
+    <OverlayScrollbarsComponent
+      ref={scrollbar}
+      style={{ height: props.height }}
+      className={classnames('custom-scrollbar table-virtualized-scroll')}
+      options={{
+        scrollbars: { autoHide: 'scroll' },
+        callbacks: {
+          onScroll: handleScroll,
+        },
+      }}
+    >
+      <BsTable
+        hover={props.hover}
+        striped={props.striped}
+        responsive={props.responsive}
+        className="dataTable table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body"
+      >
+        <Colgroup<T> onColgroup={onColgroup} columns={columns} />
+        <tbody ref={tableBodyRef} className="fw-bold text-gray-600">
+          {!!beforeTr && <tr style={{ height: beforeTr }} />}
+          {items.map((item) => (
+            <VirtualListItem<T>
+              rowKey={rowKey}
+              recoverer={recoverer}
+              rowSelection={rowSelection}
+              key={item.key}
+              useCheck={props.useCheck}
+              style={item.style}
+              columns={columns}
+              onSelect={props.onSelect}
+              dataSource={dataSource}
+              index={item.index}
+            />
+          ))}
+          {!!afterTr && <tr style={{ height: afterTr }} />}
+        </tbody>
+      </BsTable>
+    </OverlayScrollbarsComponent>
   );
 }
 

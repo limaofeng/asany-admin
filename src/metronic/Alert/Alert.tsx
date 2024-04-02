@@ -50,21 +50,21 @@ function Alert(props: AlertProps) {
     <div
       style={style}
       className={classnames('alert d-flex align-items-center', className, {
-        [`bg-${type}`]: theme == 'Solid',
-        [`alert-${type}`]: theme == 'Default',
-        [`bg-light-${type}`]: theme == 'Light',
+        [`bg-${type}`]: theme === 'Solid',
+        [`alert-${type}`]: theme === 'Default',
+        [`bg-light-${type}`]: theme === 'Light',
       })}
     >
       {React.cloneElement(icon, {
         className: classnames(icon.props.className, 'me-4', {
-          [`svg-icon-light`]: theme == 'Solid',
-          [`svg-icon-${type}`]: theme == 'Default',
-          [`svg-icon-${type}`]: theme == 'Light',
+          [`svg-icon-light`]: theme === 'Solid',
+          [`svg-icon-${type}`]: theme === 'Default',
+          [`svg-icon-${type}`]: theme === 'Light',
         }),
       })}
       <div
         className={classnames('d-flex flex-column', {
-          'text-light': theme == 'Solid',
+          'text-light': theme === 'Solid',
           'flex-row-fluid': !!action,
         })}
       >
@@ -72,8 +72,8 @@ function Alert(props: AlertProps) {
           <h4
             className={classnames(
               {
-                'text-light': theme == 'Solid',
-                [`text-${type}`]: theme == 'Default',
+                'text-light': theme === 'Solid',
+                [`text-${type}`]: theme === 'Default',
               },
               'mb-1',
             )}
@@ -92,8 +92,8 @@ function Alert(props: AlertProps) {
           <Icon
             name="Duotune/arr061"
             className={classnames('svg-icon-1', {
-              'svg-icon-light': theme == 'Solid',
-              [`svg-icon-${type}`]: theme == 'Light',
+              'svg-icon-light': theme === 'Solid',
+              [`svg-icon-${type}`]: theme === 'Light',
             })}
           />
         </button>

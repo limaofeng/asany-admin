@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react';
 
 import { useLocation, useModel, useNavigate } from '@umijs/max';
+import qs from 'query-string';
 
 import { loginWithUsername } from '@/hooks';
 import { Button, Form, Input, Modal } from '@/metronic';
-import qs from 'query-string';
 import { sleep } from '@/utils';
 
 function Aside() {

@@ -1,3 +1,5 @@
+import { Chart } from 'react-chartjs-2';
+
 import {
   ArcElement,
   Chart as ChartJS,
@@ -7,7 +9,6 @@ import {
   PointElement,
   Title,
 } from 'chart.js';
-import { Chart } from 'react-chartjs-2';
 
 import { Card } from '@/metronic';
 

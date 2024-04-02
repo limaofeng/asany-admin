@@ -1,14 +1,14 @@
 import type { CSSProperties } from 'react';
 import { useCallback } from 'react';
+import ContentLoader from 'react-content-loader';
 
 import Icon from '@asany/icons';
 import classnames from 'classnames';
-import ContentLoader from 'react-content-loader';
-
-import type { PaginationType, UseContact } from '../hooks/useContacts';
 
 import type { RowRendererParams, ScrollRowDataEvent } from '@/metronic';
 import { Card, InfiniteScroll, Input, Symbol } from '@/metronic';
+
+import type { PaginationType, UseContact } from '../hooks/useContacts';
 
 type ContactItemProps = {
   index: number;

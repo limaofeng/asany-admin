@@ -2,20 +2,12 @@ import React from 'react';
 
 import classnames from 'classnames';
 
+import { Color } from '../Colors';
 import './style/index.scss';
 
 export type BadgeProps = {
   tag?: 'span' | 'div';
-  color?:
-    | 'white'
-    | 'primary'
-    | 'light'
-    | 'secondary'
-    | 'success'
-    | 'info'
-    | 'warning'
-    | 'danger'
-    | 'dark';
+  color?: Color;
   lightStyle?: 'primary' | 'success' | 'info' | 'warning' | 'danger' | 'dark';
   shape?: 'square' | 'circle';
   dot?: boolean;
@@ -38,7 +30,7 @@ function Badge(props: BadgeProps) {
   } = props;
   const color = !props.color && !lightStyle ? 'light' : props.color;
 
-  if (count == 0) {
+  if (count === 0) {
     return <></>;
   }
 
@@ -46,8 +38,8 @@ function Badge(props: BadgeProps) {
     tag,
     {
       className: classnames('badge', className, {
-        'badge-square': shape == 'square',
-        'badge-circle': shape == 'circle',
+        'badge-square': shape === 'square',
+        'badge-circle': shape === 'circle',
         [`badge-${size}`]: !!size,
         [`badge-${color}`]: !!color,
         [`badge-light-${lightStyle}`]: !!lightStyle,

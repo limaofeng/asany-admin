@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useRef } from 'react';
-
-import { Icon } from '@asany/icons';
 import type { EdgeProps } from 'react-flow-renderer';
 import {
   getEdgeCenter,
@@ -8,9 +6,11 @@ import {
   useStore,
 } from 'react-flow-renderer';
 
-import { useQuickControls } from '../../FlowContext';
+import { Icon } from '@asany/icons';
 
 import { getEdgeParams } from './utils';
+
+import { useQuickControls } from '../../FlowContext';
 
 const foreignObjectSize = 40;
 
@@ -49,7 +49,7 @@ function SimpleFloatingEdge({
   );
 
   useEffect(() => {
-    if (edgeId != id) {
+    if (edgeId !== id) {
       return;
     }
     const {
@@ -117,7 +117,7 @@ function SimpleFloatingEdge({
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
         <div className="edge-container" onClick={handleClick}>
-          <button ref={edge} className="edgebutton">
+          <button ref={edge} type="button" className="edgebutton">
             <Icon name="Bootstrap/plus" />
           </button>
         </div>

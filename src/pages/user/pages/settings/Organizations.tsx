@@ -1,11 +1,11 @@
 import { Link } from '@umijs/max';
 
-import { useOrganizationsQuery } from '../../hooks';
-
 import { ContentWrapper } from '@/layouts/components';
 import { Button, Card, Empty, Symbol } from '@/metronic';
 import type { Organization } from '@/types';
 import { getFileThumbnailUrlById } from '@/utils';
+
+import { useOrganizationsQuery } from '../../hooks';
 
 type OrganizationItemProps = {
   data: Organization;
@@ -14,7 +14,7 @@ type OrganizationItemProps = {
 function OrganizationItem(props: OrganizationItemProps) {
   const { data } = props;
 
-  const isOwner = data.role?.code == 'OWNER';
+  const isOwner = data.role?.code === 'OWNER';
 
   return (
     <div className="organization-item d-flex align-items-center p-5 border-bottom border-secondary">

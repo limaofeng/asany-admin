@@ -134,22 +134,22 @@ function Navbar(props: NavbarProps) {
     const childs = React.Children.toArray(props.children);
 
     let coverNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == NavbarCover,
+      (item) => React.isValidElement(item) && item.type === NavbarCover,
     );
     let title = childs.find(
-      (item) => React.isValidElement(item) && item.type == NavbarTitle,
+      (item) => React.isValidElement(item) && item.type === NavbarTitle,
     );
     let description = childs.find(
-      (item) => React.isValidElement(item) && item.type == NavbarDescription,
+      (item) => React.isValidElement(item) && item.type === NavbarDescription,
     );
     const toolbar = childs.find(
-      (item) => React.isValidElement(item) && item.type == NavbarToolbar,
+      (item) => React.isValidElement(item) && item.type === NavbarToolbar,
     );
     let bodyNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == NavbarBody,
+      (item) => React.isValidElement(item) && item.type === NavbarBody,
     );
     const footerNode = childs.find(
-      (item) => React.isValidElement(item) && item.type == NavbarFooter,
+      (item) => React.isValidElement(item) && item.type === NavbarFooter,
     );
 
     const newChildren = childs.filter(
@@ -162,7 +162,7 @@ function Navbar(props: NavbarProps) {
 
     if (!title && !!props.title) {
       title =
-        typeof props.title == 'string' ? (
+        typeof props.title === 'string' ? (
           <NavbarTitle>
             <span className="text-gray-800 text-hover-primary fs-2 fw-bolder me-3">
               {props.title}

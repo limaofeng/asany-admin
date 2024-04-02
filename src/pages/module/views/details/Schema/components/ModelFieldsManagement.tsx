@@ -5,17 +5,6 @@ import Sortable, { dragPreview } from '@asany/sortable';
 import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import {
-  ModelDocument,
-  useModelFiledTypesQuery,
-  useRemoveModelFieldMutation,
-} from '../../../../hooks';
-
-import ModelField from './ModelField';
-import CreateOrUpdateModelField from './ModelFieldModal';
-import ModelFieldType, { ModelFieldTypeGroup } from './ModelFieldType';
-import NoFields from './NoFields';
-
 import { Modal, Switch, Toast } from '@/metronic';
 import type {
   ModelField as IModelField,
@@ -23,6 +12,17 @@ import type {
   Model,
 } from '@/types';
 import { delay } from '@/utils';
+
+import ModelField from './ModelField';
+import CreateOrUpdateModelField from './ModelFieldModal';
+import ModelFieldType, { ModelFieldTypeGroup } from './ModelFieldType';
+import NoFields from './NoFields';
+
+import {
+  ModelDocument,
+  useModelFiledTypesQuery,
+  useRemoveModelFieldMutation,
+} from '../../../../hooks';
 
 type ModelFieldsManagementProps = {
   model: Model;
@@ -111,7 +111,7 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
       filedTypes: [] as IModelFiledType[],
     }));
     for (const type of data.filedTypes) {
-      const g = groups.find((item) => item.key == type.family);
+      const g = groups.find((item) => item.key === type.family);
       if (!g) {
         console.warn('未支持的类型', type);
         continue;

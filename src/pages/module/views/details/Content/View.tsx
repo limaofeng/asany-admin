@@ -1,7 +1,7 @@
 import React from 'react';
+import type { RouteComponentProps } from 'react-router';
 
 import { SketchProvider, useReactComponent } from '@asany/sunmao';
-import type { RouteComponentProps } from 'react-router';
 
 import { PageContent } from '@/layouts/components';
 import { useModelViewQuery } from '@/pages/module/hooks';

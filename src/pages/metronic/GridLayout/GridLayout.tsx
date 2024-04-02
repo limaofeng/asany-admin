@@ -6,11 +6,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Flipped, Flipper } from 'react-flip-toolkit';
+import { isForwardRef } from 'react-is';
 
 import classnames from 'classnames';
 import { isEqual } from 'lodash';
-import { Flipped, Flipper } from 'react-flip-toolkit';
-import { isForwardRef } from 'react-is';
 
 import type { SortItemProps } from './GridItem';
 import GridItem from './GridItem';
@@ -136,6 +136,7 @@ const GridLayoutCore = React.forwardRef(function (
     onLayoutChange && !isEqual(prevLayout, layout) && onLayoutChange(layout);
     onChange &&
       onChange(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         items.map(({ _originalSortable, _sortable, _rect, ...item }) => item),
         layout,
         event,
@@ -146,7 +147,7 @@ const GridLayoutCore = React.forwardRef(function (
   const handleMoveOut = useCallback((event: SortableMoveOutEvent) => {
     const { id } = temp.current;
     const { item } = event;
-    if (item._sortable != id) {
+    if (item._sortable !== id) {
       return;
     }
     item._sortable = item._originalSortable;
@@ -157,9 +158,9 @@ const GridLayoutCore = React.forwardRef(function (
   const handleMoveIn = useCallback((event: SortableMoveInEvent) => {
     const { id } = temp.current;
     const { source, target } = event;
-    if (source == id) {
+    if (source === id) {
       dispatch({ type: SortableActionType.remove, payload: event.item });
-    } else if (target == id) {
+    } else if (target === id) {
       event.item._sortable = id;
       // console.log('isOverCurrent handleMoveIn', id, event);
       dispatch({
@@ -201,11 +202,11 @@ const GridLayoutCore = React.forwardRef(function (
   const handleDrop = useCallback((event: SortableDropEvent) => {
     const { id } = temp.current;
     const { source, target } = event;
-    if (source == target && source == id) {
+    if (source === target && source === id) {
       handleChange({ ...event, type: SortableChangeEventType.SORT });
-    } else if (source == id) {
+    } else if (source === id) {
       handleChange({ ...event, type: SortableChangeEventType.DRAG });
-    } else if (target == id) {
+    } else if (target === id) {
       handleChange({ ...event, type: SortableChangeEventType.DROP });
     }
     dispatch({ type: SortableActionType.drop });
@@ -229,11 +230,11 @@ const GridLayoutCore = React.forwardRef(function (
   const handleRemove = useCallback((event: SortableRemoveEvent) => {
     const { id } = temp.current;
     const { item } = event;
-    if (item._originalSortable == id) {
+    if (item._originalSortable === id) {
       dispatch({ type: SortableActionType.remove, payload: item });
       handleChange({ ...event, type: SortableChangeEventType.REMOVE });
     }
-    if (item._sortable == id && item._originalSortable !== item._sortable) {
+    if (item._sortable === id && item._originalSortable !== item._sortable) {
       handleReset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -273,7 +274,7 @@ const GridLayoutCore = React.forwardRef(function (
     if (!preview) {
       return undefined;
     }
-    if (typeof preview == 'function') {
+    if (typeof preview === 'function') {
       return { render: preview };
     }
     return preview;

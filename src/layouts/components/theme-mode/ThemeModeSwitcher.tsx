@@ -3,11 +3,11 @@ import { useCallback } from 'react';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 
-import type { ThemeModeType } from './ThemeModeProvider';
-import { useThemeMode } from './ThemeModeProvider';
-
 import { Dropdown, Menu } from '@/metronic';
 import type { Placement } from '@/metronic/typings';
+
+import type { ThemeModeType } from './ThemeModeProvider';
+import { useThemeMode } from './ThemeModeProvider';
 
 type Props = {
   toggleBtnClass?: string;

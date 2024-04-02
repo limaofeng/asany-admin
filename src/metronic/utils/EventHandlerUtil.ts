@@ -146,7 +146,7 @@ export class EventHandlerUtil {
   public static on = function (
     element: HTMLElement,
     name: string,
-    callBack: Function,
+    callBack: () => void,
   ): void {
     EventHandlerUtil.addEvent(element, name, callBack, false);
   };
@@ -155,7 +155,7 @@ export class EventHandlerUtil {
   public static one(
     element: HTMLElement,
     name: string,
-    callBack: Function,
+    callBack: () => void,
   ): void {
     EventHandlerUtil.addEvent(element, name, callBack, true);
   }

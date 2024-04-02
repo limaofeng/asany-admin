@@ -1,15 +1,17 @@
 import type { CSSProperties } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
+import type { DragElementWrapper, DragSourceOptions } from 'react-dnd';
+import { useDrag } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
+import type { OnResize } from 'react-moveable';
 
 import {
   ActionType,
   useEditorDispatch,
   useEditorSelector,
 } from '@asany/sunmao';
-import type { DragElementWrapper, DragSourceOptions } from 'react-dnd';
-import { useDrag } from 'react-dnd';
-import { getEmptyImage } from 'react-dnd-html5-backend';
-import type { OnResize } from 'react-moveable';
+
+import useGridItemPositionStyle from './useGridItemPositionStyle';
 
 import useSelector, {
   useEventManager,
@@ -22,8 +24,6 @@ import type {
 } from '../typings';
 import { GridItemResizeType, SortableActionType } from '../typings';
 import { assign, dispatchWindowResize, sleep } from '../utils';
-
-import useGridItemPositionStyle from './useGridItemPositionStyle';
 
 type SortItemState<RT extends HTMLElement> = [
   {
@@ -205,6 +205,7 @@ function useGridItem<T extends IGridItem, RT extends HTMLElement>(
   }, [isDragging]);
 
   const handleUpdate = useCallback((_data: IGridItem) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { _rect, _sortable, _originalSortable, ...item } =
       _data as IGridItemInternalData;
     assign(dataRef.current, item);

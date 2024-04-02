@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useWindowSize } from 'react-use';
 
 import { useApolloClient } from '@apollo/client';
 import { Shortcuts } from '@asany/shortcuts';
@@ -7,10 +8,12 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import { useModel } from '@umijs/max';
 import { Lunar } from 'lunar-javascript';
 import moment from 'moment';
-import { useWindowSize } from 'react-use';
-import { useModel } from '@umijs/max';
+
+import { ContentWrapper } from '@/layouts/components';
+import { Card } from '@/metronic';
 
 import type {
   CalendarEventsQuery,
@@ -19,9 +22,6 @@ import type {
 import { CalendarEventsDocument } from '../hooks';
 import yearGridPlugin from '../plugins/yearGridPlugin';
 import { isDoubleClick } from '../utils';
-
-import { ContentWrapper } from '@/layouts/components';
-import { Card } from '@/metronic';
 
 type SuccessCallback = (events: any[]) => void;
 
@@ -57,7 +57,7 @@ function MainCalendar() {
     events: new Map(),
   });
 
-  const isNew = useModel('calendar', (model) => model.state.state == 'new');
+  const isNew = useModel('calendar', (model) => model.state.state === 'new');
   const selectedDay = useModel('calendar', (model) => model.state.selectedDay);
   const calendarSet = useModel('calendar', (model) => model.state.calendarSet);
   const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
@@ -103,7 +103,7 @@ function MainCalendar() {
     ) => {
       loadCalendarEvents({
         variables: {
-          calendarSet: calendarSet == 'all' ? undefined : calendarSet,
+          calendarSet: calendarSet === 'all' ? undefined : calendarSet,
           starts: arg.startStr,
           ends: arg.endStr,
         },
@@ -161,7 +161,7 @@ function MainCalendar() {
       const _isNew = state.current.isNew;
       const $mainCalendar = document.getElementById('kt_wrapper');
       const domElement = document.activeElement as any;
-      if (_isNew || $mainCalendar == domElement) {
+      if (_isNew || $mainCalendar === domElement) {
         return;
       }
       const isInputLikeElement =
@@ -174,7 +174,7 @@ function MainCalendar() {
       if (isInputLikeElement) {
         return;
       }
-      if (document.activeElement == document.body) {
+      if (document.activeElement === document.body) {
         $mainCalendar?.focus();
       }
     }, 1000);
@@ -255,13 +255,13 @@ function MainCalendar() {
                   );
                   if (prevdays <= 0 && prevdays >= -6) {
                     _classnames.push('fc-day-prevmonth');
-                    if (prevdays == 0 && item.dow != 6) {
+                    if (prevdays === 0 && item.dow !== 6) {
                       _classnames.push('fc-day-month-divider');
                     }
                   }
                   if (nextdays >= 0 && nextdays <= 6) {
                     _classnames.push('fc-day-nextmonth');
-                    if (nextdays == 0 && item.dow != 0) {
+                    if (nextdays === 0 && item.dow !== 0) {
                       _classnames.push('fc-day-month-divider');
                     }
                   }

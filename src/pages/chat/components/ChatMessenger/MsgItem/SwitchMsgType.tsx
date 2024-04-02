@@ -1,21 +1,20 @@
 import type { CSSProperties, FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
+import { Map, Marker } from 'react-amap';
 
+import { useModel } from '@umijs/max';
 import { Image } from 'antd';
 import moment from 'moment';
-import type {
-  ConversationItem,
-  MergeElem,
-  MessageItem,
-} from 'open-im-sdk/types';
-import { Map, Marker } from 'react-amap';
-import { useModel } from '@umijs/max';
+import { ConversationItem, MergeElem, MessageItem } from 'open-im-sdk-wasm/lib/types/entity';
+
+import { Symbol, Tooltip } from '@/metronic';
+import { isSingleCve } from '@/models/open-im/utils';
+import events from '@/models/open-im/utils/events';
 
 import my_voice from '../../../assets/images/voice_my.png';
 import other_voice from '../../../assets/images/voice_other.png';
 import VideoPlayer from '../../../components/VideoPlayer';
 
-import { Symbol, Tooltip } from '@/metronic';
 // import { isSingleCve } from '@/utils/open-im/utils/im';
 // import { messageTypes } from '@/utils/open-im/constants/messageContentType';
 // import { faceMap } from '@/utils/open-im/constants/faceType';

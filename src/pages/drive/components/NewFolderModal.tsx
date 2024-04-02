@@ -2,12 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 
-import { useCreateFolderMutation } from '../hooks';
-
 import type { InputRef } from '@/metronic';
 import { Input, Modal, Toast } from '@/metronic';
 import type { FileObject } from '@/types';
 import { sleep } from '@/utils';
+
+import { useCreateFolderMutation } from '../hooks';
 
 type NewFolderModalProps = {
   parentFolder: string;

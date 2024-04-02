@@ -88,6 +88,7 @@ function GlobalPanel(props: GlobalPanelProps) {
         </p>
         <div className="text-center pt-2">
           <button
+            type='button'
             onClick={handleChooseFile}
             className="trans mx-auto rounded-lg shadow px-8 py-2 text-sm font-lf-regular cursor-pointer text-grey-darker border-grey-dark border-2"
           >

@@ -1,15 +1,14 @@
 import { useEffect, useMemo } from 'react';
-
 import { matchPath } from 'react-router';
-import { useModel } from '@umijs/max';
+import { useLocation } from 'react-router-dom';
+
+import { useModel, useParams } from '@umijs/max';
+
+import { ContentWrapper } from '@/layouts/components';
 
 import ListFiles from '../components/ListFiles';
 import { useCloudDriveLazyQuery } from '../hooks';
 import { extensions } from '../utils';
-
-import { ContentWrapper } from '@/layouts/components';
-import { useParams } from '@umijs/max';
-import { useLocation } from 'react-router-dom';
 
 function FileList() {
   const { id: _folder } = useParams<{ id: string }>();

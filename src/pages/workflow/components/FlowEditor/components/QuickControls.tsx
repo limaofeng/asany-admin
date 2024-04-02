@@ -1,11 +1,11 @@
 import type { CSSProperties } from 'react';
 import React, { useMemo, useRef } from 'react';
 import ReactDOM from 'react-dom';
+import { useReactFlow, useStore } from 'react-flow-renderer';
+import { useClickAway } from 'react-use';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
-import { useReactFlow, useStore } from 'react-flow-renderer';
-import { useClickAway } from 'react-use';
 
 import { useQuickControls } from '../FlowContext';
 import { nodeTypeGroups } from '../nodeTypes';
@@ -45,7 +45,7 @@ function QuickControls(props: QuickControlsProps) {
       height: rectHeight,
     } = rect;
 
-    if (zoom != 1) {
+    if (zoom !== 1) {
       const scale =
         zoom < 1 ? ((100 / zoom) * (1 - zoom)) / 100 + 1 : 100 / zoom / 100;
       const position = project({

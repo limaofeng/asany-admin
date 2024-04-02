@@ -78,6 +78,7 @@ function Tabs(props: TabsProps) {
     (key: string) => (e: React.MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
       onChange ? onChange(key) : setActiveKey(key);
     },
     [onChange],
@@ -105,12 +106,12 @@ function Tabs(props: TabsProps) {
     <ul
       key="nav-tabs"
       className={classnames('nav ', className, {
-        'nav-tabs': type == 'tabs',
-        'nav-line-tabs': type == 'line-tabs',
-        'nav-pills': type == 'pills',
-        'nav-pills nav-pills-custom': type == 'pills-custom',
+        'nav-tabs': type === 'tabs',
+        'nav-line-tabs': type === 'line-tabs',
+        'nav-pills': type === 'pills',
+        'nav-pills nav-pills-custom': type === 'pills-custom',
         'nav-pills flex-row flex-md-column  border-bottom-0':
-          tabPosition == 'left',
+          tabPosition === 'left',
       })}
     >
       {panes.map((item) =>
@@ -119,7 +120,7 @@ function Tabs(props: TabsProps) {
           key: item.id,
           style: props.tabBarStyle,
           className: classnames(props.tabBarClassName),
-          active: activeKey == item.id,
+          active: activeKey === item.id,
           onClick: handleSelect(item.id),
           children: item.name,
         }),
@@ -132,7 +133,7 @@ function Tabs(props: TabsProps) {
       {panes.map((item) =>
         React.cloneElement(item.content, {
           key: item.id,
-          active: activeKey == item.id,
+          active: activeKey === item.id,
         }),
       )}
     </div>
@@ -151,7 +152,7 @@ function Tabs(props: TabsProps) {
     return (
       <div
         className={classnames('tabs-container', {
-          'd-flex flex-column flex-md-row': tabPosition == 'left',
+          'd-flex flex-column flex-md-row': tabPosition === 'left',
         })}
       >
         {navTabs}

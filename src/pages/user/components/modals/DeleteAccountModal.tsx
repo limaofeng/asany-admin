@@ -21,7 +21,7 @@ function DeleteAccountModal(props: DeleteAccountModalProps) {
     (_: any, values: any) => {
       setDisabled(
         !(
-          values.account == user?.account &&
+          values.account === user?.account &&
           values.verify === '删除我的账户' &&
           values.password
         ),

@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 

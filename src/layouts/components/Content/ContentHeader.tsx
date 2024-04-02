@@ -2,18 +2,18 @@ import { useCallback, useMemo, useState } from 'react';
 
 import Icon from '@asany/icons';
 import { useReactComponent } from '@asany/sunmao';
+import { useLocation, useModel } from '@umijs/max';
 import type { MenuDataItem } from '@umijs/route-utils';
 import { getMatchMenu } from '@umijs/route-utils';
 import classnames from 'classnames';
 import { findLast } from 'lodash';
-import { useLocation, useModel } from '@umijs/max';
-
-import { ThemeModeSwitcher } from '../theme-mode/ThemeModeSwitcher';
 
 import { useLayoutSelector } from '@/layouts/LayoutContext';
 import { Bullet, Button } from '@/metronic';
 import Breadcrumb from '@/metronic/Breadcrumb';
 import { useSticky } from '@/metronic/hooks';
+
+import { ThemeModeSwitcher } from '../theme-mode/ThemeModeSwitcher';
 
 type ToolbarProps = {
   children?: React.ReactNode;
@@ -102,14 +102,14 @@ function ContentHeader(props: ContentHeaderProps) {
     let last: MenuDataItem | undefined;
 
     const startIndex = _matchRoutes.findIndex(
-      (item) => item.path == last?.path,
+      (item) => item.path === last?.path,
     );
 
     let breadcrumbData: MenuDataItem[] = [];
 
     breadcrumbData.push(..._matchRoutes);
 
-    if (startIndex != -1) {
+    if (startIndex !== -1) {
       breadcrumbData.push(..._matchRoutes.slice(startIndex + 1));
     }
 
@@ -119,7 +119,7 @@ function ContentHeader(props: ContentHeaderProps) {
 
     if (!!props.title && !!last) {
       breadcrumbData = breadcrumbData.map((item) =>
-        item.key == last!.key ? { ...last, name: props.title } : item,
+        item.key === last!.key ? { ...last, name: props.title } : item,
       );
     }
     const _routes = [

@@ -1,12 +1,14 @@
 import type { FC } from 'react';
 import { useCallback, useMemo, useState } from 'react';
+import { useCopyToClipboard } from 'react-use';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
-import { useCopyToClipboard } from 'react-use';
-
+import { MessageItem } from 'open-im-sdk-wasm/lib/types/entity';
 import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 
+import { Menu, Modal, Popover, Toast } from '@/metronic';
+import { IMSDK } from '@/models/open-im/auth';
 import {
   DELETEMESSAGE,
   FORWARDANDMERMSG,
@@ -16,12 +18,8 @@ import {
 } from '@/models/open-im/utils/constant';
 import events from '@/models/open-im/utils/events';
 
-import { IMSDK } from '@/models/open-im/auth';
-
 // import { downloadFileUtil } from '@/utils/open-im/utils/common';
 // import { messageTypes } from '@/models/open-im';
-import { Menu, Modal, Popover, Toast } from '@/metronic';
-import { MessageItem } from 'open-im-sdk-wasm/lib/types/entity';
 
 const canCpTypes = [MessageType.TextMessage, MessageType.AtTextMessage];
 const canDownloadTypes = [

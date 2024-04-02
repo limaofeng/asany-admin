@@ -5,8 +5,6 @@ import classnames from 'classnames';
 import { cloneDeep } from 'lodash';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import MailboxFooter from './MailboxFooter';
-
 import { Checkbox, TreeList } from '@/metronic';
 import {
   useMailboxesQuery,
@@ -14,6 +12,8 @@ import {
 } from '@/pages/mail/hooks';
 import { DEFAULT_MAILBOXES_ALL } from '@/pages/mail/utils';
 import type { Mailbox } from '@/types';
+
+import MailboxFooter from './MailboxFooter';
 
 const NAMESPACES: any[] = [
   {
@@ -126,9 +126,9 @@ function MailboxFolder(props: MailboxFolderProps) {
     const namespaces = cloneDeep(NAMESPACES);
     for (const mailbox of data.mailboxes) {
       const namespace = namespaces.find(
-        (item) => item.key == mailbox.namespace,
+        (item) => item.key === mailbox.namespace,
       );
-      if (mailbox.name == 'Outbox' || mailbox.name == 'INBOX') {
+      if (mailbox.name === 'Outbox' || mailbox.name === 'INBOX') {
         continue;
       }
       if (!namespace?.children) {
@@ -230,7 +230,7 @@ function MailboxFolder(props: MailboxFolderProps) {
                   title: '操作',
                   className: 'min-w-100px',
                   render(_, record: any) {
-                    if (record.type == 'directory') {
+                    if (record.type === 'directory') {
                       return <div />;
                     }
                     return (

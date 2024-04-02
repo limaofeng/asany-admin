@@ -5,19 +5,19 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
+import { useDropzone } from 'react-dropzone';
 
 import classnames from 'classnames';
 import { isEqual } from 'lodash';
-import { useDropzone } from 'react-dropzone';
 import SparkMD5 from 'spark-md5';
-
-import { uuid } from '../utils';
-import { fileSize } from '../utils/format';
-
-import { useUpload } from './utils/upload';
 
 import type { FileObject } from '@/types';
 import { sleep } from '@/utils';
+
+import { useUpload } from './utils/upload';
+
+import { uuid } from '../utils';
+import { fileSize } from '../utils/format';
 
 import './style/QueueUpload.scss';
 
@@ -109,7 +109,7 @@ function QueueUpload(
         return [
           ..._attachments,
           ...newFiles.filter(
-            (item) => !_attachments.some((f) => f.etag == item.etag),
+            (item) => !_attachments.some((f) => f.etag === item.etag),
           ),
         ];
       });
@@ -138,7 +138,7 @@ function QueueUpload(
 
   const handleChange = useCallback(() => {
     const { attachments } = state.current;
-    const newValue = attachments.filter((item) => item.status == 'success');
+    const newValue = attachments.filter((item) => item.status === 'success');
     if (isEqual(newValue, state.current.value)) {
       forceRender();
       return;
@@ -149,7 +149,7 @@ function QueueUpload(
   const buildHandleDelete = useCallback(
     (id: string) => () => {
       state.current.attachments = state.current.attachments.filter(
-        (item) => item.id != id,
+        (item) => item.id !== id,
       );
       handleChange();
     },
@@ -160,7 +160,7 @@ function QueueUpload(
     (id: string) => async () => {
       console.log('buildHandleUpload', id);
       const { attachments: files } = state.current;
-      const index = files.findIndex((item) => item.id == id);
+      const index = files.findIndex((item) => item.id === id);
       const file = files[index];
       const result = await handleUpload(file);
       files[index] = {
@@ -180,10 +180,10 @@ function QueueUpload(
     let updated = false;
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      while (file.status == 'uploading') {
+      while (file.status === 'uploading') {
         await sleep(60);
       }
-      if (file.status == 'success') {
+      if (file.status === 'success') {
         continue;
       }
       file.status = 'uploading';
@@ -243,7 +243,7 @@ function QueueUpload(
           <div
             key={item.id}
             className={classnames('dropzone-item', {
-              'mt-0': i == 0,
+              'mt-0': i === 0,
             })}
           >
             <div className="dropzone-file">
@@ -261,15 +261,15 @@ function QueueUpload(
                 <div
                   className="progress-bar bg-primary"
                   style={{
-                    opacity: uploading?.id == item.id ? 1 : 0,
+                    opacity: uploading?.id === item.id ? 1 : 0,
                     width:
-                      uploading?.id == item.id ? `${progress}%` : undefined,
+                      uploading?.id === item.id ? `${progress}%` : undefined,
                   }}
                 />
               </div>
             </div>
             <div className="dropzone-toolbar">
-              {item.status == 'waiting' && (
+              {item.status === 'waiting' && (
                 <span
                   onClick={buildHandleUpload(item.id)}
                   className="dropzone-start"

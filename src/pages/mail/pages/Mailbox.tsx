@@ -1,23 +1,13 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import { useMatch, useNavigate } from 'react-router-dom';
 
 import EventEmitter from 'events';
 
 import Icon from '@asany/icons';
 import { Resizer } from '@asany/sunmao';
+import { Outlet, useOutlet, useParams } from '@umijs/max';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { useMatch, useNavigate } from 'react-router-dom';
-
-import MessageItem from '../components/MessageItem';
-import {
-  MailboxesDocument,
-  useClearTrashMailboxMutation,
-  useMailboxMessagesLazyQuery,
-} from '../hooks';
-import type { RefreshEvent, UseMessage } from '../typings';
-import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL } from '../utils';
-
-import type { MailboxProps } from './MailMessageDetails';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -31,11 +21,19 @@ import {
 import type { InfiniteScrollRef, RowRendererParams } from '@/metronic/typings';
 import type { MailboxMessage, MailboxMessageConnection } from '@/types';
 import { delay, sleep } from '@/utils';
-import { Outlet, useOutlet, useParams } from '@umijs/max';
+
+import MessageItem from '../components/MessageItem';
+import {
+  MailboxesDocument,
+  useClearTrashMailboxMutation,
+  useMailboxMessagesLazyQuery,
+} from '../hooks';
+import type { RefreshEvent, UseMessage } from '../typings';
+import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL } from '../utils';
 
 interface MailboxState {
   width: number;
-  folder: string;
+  folder?: string;
   activeIndex: number;
   activeId?: string;
   loading: boolean;
@@ -253,7 +251,7 @@ function useMailboxMessagesMagicQuery(
         }
         if (!!latestSelectedState.current.message) {
           latestSelectedState.current.timer &&
-            clearTimeout(latestSelectedState.current.timer);
+            clearTimeout(latestSelectedState.current.timer as unknown as number);
           return;
         }
         loadMailboxMessages(
@@ -264,14 +262,14 @@ function useMailboxMessagesMagicQuery(
 
       _timer = setTimeout(checkResult, 300);
       return () => {
-        _timer && clearTimeout(_timer);
+        _timer && clearTimeout(_timer as unknown as number);
       };
     }, [index]);
 
     const checkForUpdates = useCallback(() => {
       const newSelectedState =
         state.current.messages[latestSelectedState.current.index];
-      if (newSelectedState == latestSelectedState.current.message) {
+      if (newSelectedState === latestSelectedState.current.message) {
         return;
       }
       latestSelectedState.current.message = newSelectedState;
@@ -300,7 +298,7 @@ function useMailboxMessagesMagicQuery(
   ];
 }
 
-function Mailbox(props: MailboxProps) {
+function Mailbox() {
   const match = useMatch({
     path: '/mail/:folder/:id',
     end: false,
@@ -308,7 +306,9 @@ function Mailbox(props: MailboxProps) {
 
   const activeId = match?.params.id;
 
-  const { folder } = useParams();
+  const { folder } = useParams<{
+    folder: string;
+  }>();
 
   const navigate = useNavigate();
 
@@ -334,7 +334,7 @@ function Mailbox(props: MailboxProps) {
     loading,
     useMessage,
     { loadMessage, refetch, refetchWithRemove },
-  ] = useMailboxMessagesMagicQuery(folder);
+  ] = useMailboxMessagesMagicQuery(folder!);
 
   state.current.loading = loading;
   state.current.pagination = pagination;
@@ -512,7 +512,7 @@ function Mailbox(props: MailboxProps) {
               navigate(`/mail/${state.current.folder}/${message.id}`);
             }
           }}
-          mailbox={_folder}
+          mailbox={_folder!}
           active={!!isActive}
         />
       );

@@ -22,7 +22,7 @@ export function toPlainText(html: string, options?: PlainOptions) {
   summary = !style ? html : summary.replaceAll(new RegExp(styleRegex, 'g'), '');
   // 过滤html标签
   summary = summary.replaceAll(new RegExp(htmlRegex, 'g'), (str) => {
-    if (text == 'pure') {
+    if (text === 'pure') {
       return '';
     }
     if (str === '</p>') {
@@ -32,11 +32,11 @@ export function toPlainText(html: string, options?: PlainOptions) {
   });
   // 过滤空格等
   summary =
-    text == 'format'
+    text === 'format'
       ? summary
       : summary.replaceAll(new RegExp(spaceRegex, 'g'), '');
 
-  return text == 'format' ? summary : summary.trim(); // 返回文本字符串
+  return text === 'format' ? summary : summary.trim(); // 返回文本字符串
 }
 
 export function toHtml(text: string) {
@@ -51,7 +51,7 @@ const FILE_UNITS = ['bytes', 'KB', 'MB', 'GB', 'TB'];
 type FILE_UNIT_OF_TYPE = 'bytes' | 'KB' | 'MB' | 'GB' | 'TB';
 
 export function fileSizeToBytes(size: number, unit: FILE_UNIT_OF_TYPE) {
-  const index = FILE_UNITS.findIndex((item) => item == unit);
+  const index = FILE_UNITS.findIndex((item) => item === unit);
   return size * Math.pow(1024, index);
 }
 
@@ -70,7 +70,7 @@ export function fileSize(length: number) {
   }
   if (i < 2) {
     return Math.ceil(size) + ' ' + FILE_UNITS[i];
-  } else if (i == 2) {
+  } else if (i === 2) {
     return Math.ceil(size * 10) / 10 + ' ' + FILE_UNITS[i];
   } else {
     return Math.ceil(size * 100) / 100 + ' ' + FILE_UNITS[i];

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import classnames from 'classnames';
-import type { RouteComponentProps } from 'react-router';
 
 import { PageContent } from '@/layouts/components';
 import {
@@ -38,7 +38,7 @@ function DeleteModuleConfirmModal(props: DeleteModuleConfirmModalProps) {
 
   const handleValuesChange = useCallback(
     (_: any, values: any) => {
-      setDisabled(!(values.verify == data?.name));
+      setDisabled(!(values.verify === data?.name));
     },
     [data?.name],
   );
@@ -50,7 +50,7 @@ function DeleteModuleConfirmModal(props: DeleteModuleConfirmModalProps) {
       },
     });
     Toast.success(`模块 “${data.name}” 删除成功`, 2000, {
-      placement: 'bottom-end',
+      placement: 'bottom-right',
       progressBar: true,
     });
   }, [data.id, data.name, deleteModule]);
@@ -96,19 +96,21 @@ function DeleteModuleConfirmModal(props: DeleteModuleConfirmModalProps) {
   );
 }
 
-type InformationProps = RouteComponentProps<
-  { id: string },
-  any,
-  {
-    module: Module;
-    baseUrl: string;
-  }
->;
+// type InformationProps = RouteComponentProps<
+//   { id: string },
+//   any,
+//   {
+//     module: Module;
+//     baseUrl: string;
+//   }
+// >;
 
-function Information(props: InformationProps) {
+function Information() {
   const form = Form.useForm();
 
-  const { module } = props.location.state;
+  const location = useLocation();
+
+  const { module } = location.state;
 
   const [deleteModuleConfirmModalVisible, setDeleteModuleConfirmModalVisible] =
     useState(false);
@@ -129,7 +131,7 @@ function Information(props: InformationProps) {
       },
     });
     Toast.success(`模块 “${values.name}” 更新成功`, 2000, {
-      placement: 'bottom-end',
+      placement: 'bottom-right',
       progressBar: true,
     });
   }, [form, module.id, updateModule]);
@@ -190,7 +192,7 @@ function Information(props: InformationProps) {
                         if (abortController.current) {
                           abortController.current.abort();
                         }
-                        if (_code == module.code) {
+                        if (_code === module.code) {
                           return;
                         }
                         abortController.current = new AbortController();

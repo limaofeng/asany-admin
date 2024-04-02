@@ -2,9 +2,9 @@ import { useCallback, useState } from 'react';
 
 import Icon from '@asany/icons';
 
-import Calendars from './calendars';
-
 import { Modal, Nav } from '@/metronic';
+
+import Calendars from './calendars';
 
 type PreferencesProps = {
   visible: boolean;

@@ -3,8 +3,6 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import classnames from 'classnames';
 
-import Checkbox from '../Checkbox';
-
 import TableCell from './TableCell';
 import type {
   DataRecoverer,
@@ -13,6 +11,8 @@ import type {
   TableColumn,
 } from './typings';
 import { getRowKey } from './utils';
+
+import Checkbox from '../Checkbox';
 
 type TableRowProps<T> = {
   index: number;
@@ -29,7 +29,7 @@ type TableRowProps<T> = {
 };
 
 function isNoSelectoDrag(dom?: HTMLElement, container?: HTMLElement): boolean {
-  if (dom == container || !dom || !container) {
+  if (dom === container || !dom || !container) {
     return false;
   }
   const isOff = Array.from(dom.classList).includes('no-selecto-drag');
@@ -74,17 +74,17 @@ function TableRow<T>(props: TableRowProps<T>) {
 
   const handleSelect = useCallback(
     (e: any) => {
-      if (ref.current?.dataset.ignore_click == 'on') {
+      if (ref.current?.dataset.ignore_click === 'on') {
         return;
       }
       if (isNoSelectoDrag(e.target, ref.current!)) {
         return;
       }
-      if (e.target.type == 'checkbox' && e.type == 'click') {
+      if (e.target.type === 'checkbox' && e.type === 'click') {
         e.stopPropagation();
         return;
       }
-      if (e.target.tagName == 'INPUT' && e.type == 'click') {
+      if (e.target.tagName === 'INPUT' && e.type === 'click') {
         return;
       }
       e.stopPropagation();
@@ -108,7 +108,7 @@ function TableRow<T>(props: TableRowProps<T>) {
       onClick={selectable ? handleSelect : undefined}
     >
       {columns.map((col) =>
-        col.key == '__rowSelection' ? (
+        col.key === '__rowSelection' ? (
           <td
             style={{
               height:

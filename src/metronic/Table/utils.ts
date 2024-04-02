@@ -5,7 +5,7 @@ export const getRowKey = (
   if (!record) {
     return undefined;
   }
-  if (typeof rowKey == 'function') {
+  if (typeof rowKey === 'function') {
     return rowKey(record);
   }
   return record[rowKey];

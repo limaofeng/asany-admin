@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import classnames from 'classnames';
-import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
+import {
+  ConversationItem,
+  MessageItem,
+} from 'open-im-sdk-wasm/lib/types/entity';
+
+import { useCurrentuser } from '@/hooks';
+import events from '@/models/open-im/utils/events';
 
 import ScrollView from '../../ScrollView';
 import { MsgItem } from '../MsgItem';
 
-import { useCurrentuser } from '@/hooks';
 // import { tipsTypes } from '@/utils/open-im/constants/messageContentType';
 // import events from '@/utils/open-im/events';
 // import { MUTILMSG } from '@/utils/open-im/constants/events';
@@ -28,6 +33,9 @@ function ChatContent(props: ChatContentProps) {
   const [mutilSelect, setMutilSelect] = useState(false);
   const selfID = useCurrentuser().data?.uid;
 
+  // TODO: OpenIM tipsTypes
+  const tipsTypes = {};
+
   const tipList = Object.values(tipsTypes) as number[];
 
   const mutilHandler = (flag: boolean) => {
@@ -46,14 +54,14 @@ function ChatContent(props: ChatContentProps) {
   const parseTip = useCallback(
     (msg: MessageItem): string | JSX.Element => {
       if (
-        (msg.contentType as number) == tipsTypes.REVOKEMESSAGE ||
-        (msg.contentType as number) == tipsTypes.ADVANCEREVOKEMESSAGE
+        (msg.contentType as number) === tipsTypes.REVOKEMESSAGE ||
+        (msg.contentType as number) === tipsTypes.ADVANCEREVOKEMESSAGE
       ) {
         let revokerID = msg.sendID;
         let nickname = isSingleCve(curCve!)
           ? curCve?.showName
           : msg.senderNickname;
-        if ((msg.contentType as number) == tipsTypes.ADVANCEREVOKEMESSAGE) {
+        if ((msg.contentType as number) === tipsTypes.ADVANCEREVOKEMESSAGE) {
           const content = JSON.parse(msg.content);
           nickname = content.revokerNickname;
           revokerID = content.revokerID;
@@ -215,7 +223,7 @@ function ChatContent(props: ChatContentProps) {
             return (
               <div
                 key={msg.clientMsgID}
-                className={classnames('chat_bg_tips', { 'mb-6': index == 0 })}
+                className={classnames('chat_bg_tips', { 'mb-6': index === 0 })}
               >
                 {parseTip(msg)}
               </div>

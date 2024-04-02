@@ -3,12 +3,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 
-import { useRenameFileMutation } from '../hooks';
-
 import { Button, Input, Symbol, Toast } from '@/metronic';
 import type { InputRef } from '@/metronic/typings';
 import type { FileObject } from '@/types';
 import { delay, sleep } from '@/utils';
+
+import { useRenameFileMutation } from '../hooks';
 
 type FileNameProps = {
   onClick: (file: FileObject) => void;

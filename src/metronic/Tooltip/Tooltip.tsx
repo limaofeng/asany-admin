@@ -1,12 +1,12 @@
 import React from 'react';
-
-import useMergedRef from '@react-hook/merged-ref';
-import type { Placement } from '@restart/ui/usePopper';
-import classnames from 'classnames';
 import {
   OverlayTrigger as BsOverlayTrigger,
   Tooltip as BsTooltip,
 } from 'react-bootstrap';
+
+import useMergedRef from '@react-hook/merged-ref';
+import type { Placement } from '@restart/ui/usePopper';
+import classnames from 'classnames';
 import type { OverlayTriggerType } from 'react-bootstrap/esm/OverlayTrigger';
 
 export type TooltipProps = {

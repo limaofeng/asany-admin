@@ -1,17 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-
-import type { RouteComponentProps } from 'react-router';
-
-import logo_holder from '../../assets/blank.png';
-import {
-  DeleteOrganizationModal,
-  RenameOrganizationModal,
-} from '../../components/modals';
-import {
-  OrganizationDocument,
-  useOrganizationQuery,
-  useUpdateOrganizationProfileMutation,
-} from '../../hooks/api';
+import { useParams } from 'react-router';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -25,6 +13,17 @@ import {
   Upload,
 } from '@/metronic';
 import type { Organization } from '@/types';
+
+import logo_holder from '../../assets/blank.png';
+import {
+  DeleteOrganizationModal,
+  RenameOrganizationModal,
+} from '../../components/modals';
+import {
+  OrganizationDocument,
+  useOrganizationQuery,
+  useUpdateOrganizationProfileMutation,
+} from '../../hooks/api';
 
 type DangerZoneProps = {
   data: Organization;
@@ -107,16 +106,14 @@ function DangerZone(props: DangerZoneProps) {
   );
 }
 
-type ProfileProps = RouteComponentProps<{ id: string }>;
-
-function Profile(props: ProfileProps) {
-  const { match } = props;
+function Profile() {
+  const params = useParams();
 
   const form = Form.useForm();
 
   const { data, loading } = useOrganizationQuery({
     variables: {
-      id: match.params.id,
+      id: params.id,
     },
   });
   const [updateProfile, { loading: submiting }] =
@@ -125,7 +122,7 @@ function Profile(props: ProfileProps) {
         {
           query: OrganizationDocument,
           variables: {
-            id: match.params.id,
+            id: params.id,
           },
         },
       ],
@@ -149,7 +146,7 @@ function Profile(props: ProfileProps) {
       },
     });
     Toast.success('资料更新成功', 3000, {
-      placement: 'bottom-start',
+      placement: 'bottom-left',
       progressBar: true,
     });
   }, [form, organization, updateProfile]);
@@ -210,7 +207,7 @@ function Profile(props: ProfileProps) {
                         const level = area.path
                           .split('/')
                           .filter((item) => !!item).length;
-                        return area.type == 'city' || level == 2;
+                        return area.type === 'city' || level === 2;
                       }}
                       resultType="object"
                       solid
@@ -232,7 +229,7 @@ function Profile(props: ProfileProps) {
                       height={125}
                       space="7VE4SSrk"
                       crop={{ height: 300, zoomable: false, aspectRatio: 1 }}
-                      backgroundImage={logo_holder}
+                      background={logo_holder}
                     />
                   </Form.Item>
                 </div>

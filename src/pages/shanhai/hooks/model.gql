@@ -1,4 +1,4 @@
-query QUERY_MODELS {
+query models {
   models(module: 1, where: { type: OBJECT }, offset: 100) {
     id
     name

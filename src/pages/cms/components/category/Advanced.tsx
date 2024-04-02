@@ -102,7 +102,7 @@ function Advanced(props: AdvancedProps) {
                   ]);
                   const disabled =
                     !componentTemplate ||
-                    prevComponentTemplate != componentTemplate;
+                    prevComponentTemplate !== componentTemplate;
                   return (
                     <>
                       <Button onClick={handleDesignPage} disabled={disabled}>

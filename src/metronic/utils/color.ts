@@ -140,7 +140,7 @@ function colorRgb(str: string) {
 function transformColor(_col: string, amt: number) {
   let usePound = false;
   let col = _col;
-  if (col[0] == '#') {
+  if (col[0] === '#') {
     col = col.slice(1);
     usePound = true;
   }

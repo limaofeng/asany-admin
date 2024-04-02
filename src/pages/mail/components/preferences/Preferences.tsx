@@ -2,10 +2,10 @@ import { useCallback, useMemo, useState } from 'react';
 
 import Icon from '@asany/icons';
 
-import MailboxFolder from './mailbox';
-
 import { Modal, Nav } from '@/metronic';
 import type { MailSettings, MailUser } from '@/types';
+
+import MailboxFolder from './mailbox';
 
 type PreferencesProps = {
   mailUser: MailUser;

@@ -1,7 +1,6 @@
 import type { CSSProperties, FC } from 'react';
-import ReactDOM from 'react-dom';
-
 import { useDragLayer } from 'react-dnd';
+import ReactDOM from 'react-dom';
 
 import useSelector from './GridLayoutProvider';
 import type { DragPreviewRenderer } from './typings';
@@ -40,7 +39,7 @@ const GridItemDragLayer: FC<CustomDragLayerProps> = (props) => {
           monitor.isDragging() &&
           _item?._originalSortable &&
           _item?._sortable &&
-          sortableId == _item?._sortable,
+          sortableId === _item?._sortable,
       };
     });
 

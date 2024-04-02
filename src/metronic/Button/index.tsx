@@ -2,10 +2,10 @@ import React from 'react';
 
 import classnames from 'classnames';
 
+import type { ButtonProps } from './typings';
+
 import Spin from '../Spin';
 import { unpack } from '../utils';
-
-import type { ButtonProps } from './typings';
 
 import './style.scss';
 
@@ -35,11 +35,11 @@ function Button(
   }: ButtonProps<any>,
   ref: any,
 ) {
-  if (loading != null) {
-    props['data-kt-indicator'] = loading ? 'on' : 'off';
+  if (loading !== null) {
+    (props as any)['data-kt-indicator'] = loading ? 'on' : 'off';
   }
 
-  const isEmpty = unpack(children).length == 0;
+  const isEmpty = unpack(children).length === 0;
 
   return React.createElement(
     htmlType ? 'button' : (as as any),
@@ -48,15 +48,15 @@ function Button(
       onClick,
       ref,
       type: htmlType,
-      disabled: as == 'button' ? disabled || loading : undefined,
+      disabled: as === 'button' ? disabled || loading : undefined,
       className: classnames(
         'btn',
         {
           active,
           disabled: disabled || loading,
-          'btn-link': type == 'link',
-          'btn-circle': type == 'circle',
-          [`btn-text-${variant}`]: type == 'link',
+          'btn-link': type === 'link',
+          'btn-circle': type === 'circle',
+          [`btn-text-${variant}`]: type === 'link',
           [`btn-${variant}`]: !!variant,
           [`btn-color-${color}`]: !!color,
           [`btn-color-text-${textColor}`]: !!textColor,
@@ -64,7 +64,7 @@ function Button(
           [`btn-active-text-${activeTextColor}`]: !!activeTextColor,
           [`btn-active-icon-${activeIconColor}`]: !!activeIconColor,
           [`btn-bg-${variant}`]: !!background,
-          [`btn-outline-dashed`]: type == 'dashed',
+          [`btn-outline-dashed`]: type === 'dashed',
           [`btn-outline btn-outline-${variant} btn-active-light-${variant}`]: [
             'solid',
             'dashed',

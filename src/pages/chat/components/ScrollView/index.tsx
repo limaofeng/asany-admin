@@ -70,7 +70,7 @@ const ScrollView = (
               });
               return;
             }
-            if (scrollbar.scroll().max.y == 0) {
+            if (scrollbar.scroll().max.y === 0) {
               scrollbar.scroll({ y: '100%' });
             } else if (!!tmp.current.contentHeight) {
               const diffValue = args.height - tmp.current.contentHeight;

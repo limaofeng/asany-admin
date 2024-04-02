@@ -2,9 +2,9 @@ import { useCallback, useState } from 'react';
 
 import Icon from '@asany/icons';
 
-import MailboxFolderModal from './MailboxFolderModal';
-
 import type { Mailbox } from '@/types';
+
+import MailboxFolderModal from './MailboxFolderModal';
 
 type FooterProps = {
   user: string;
@@ -21,9 +21,9 @@ function Footer(props: FooterProps) {
     setState(undefined);
   }, []);
   // const handleAction = useCallback((e) => {
-  //   if (e.key == 'smart') {
+  //   if (e.key === 'smart') {
   //     setState('new-smart');
-  //   } else if (e.key == 'custom') {
+  //   } else if (e.key === 'custom') {
   //     setState('new-folder');
   //   }
   // }, []);

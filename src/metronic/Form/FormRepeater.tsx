@@ -2,10 +2,10 @@ import { useCallback, useReducer } from 'react';
 
 import { Icon } from '@asany/icons';
 
+import Form from './Form';
+
 import Button from '../Button';
 import { uuid } from '../utils';
-
-import Form from './Form';
 
 type RepeaterItemData = {
   key: string;
@@ -53,11 +53,11 @@ type FormRepeaterState = {
 
 function reducer(_state: FormRepeaterState, action: FormRepeaterAction) {
   console.log('action', action);
-  if (action.type == FormRepeaterKind.NEW) {
+  if (action.type === FormRepeaterKind.NEW) {
     console.log('..... NEW', _state);
     return { ..._state, items: [..._state.items, { key: uuid() }] };
   }
-  if (action.type == FormRepeaterKind.REMOVE) {
+  if (action.type === FormRepeaterKind.REMOVE) {
     return {
       ..._state,
       items: _state.items.filter((item) => item.key !== action.payload),

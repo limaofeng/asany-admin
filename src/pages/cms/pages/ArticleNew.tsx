@@ -1,11 +1,16 @@
 import { useCallback, useMemo, useReducer, useRef, useState } from 'react';
 
+import { useLocation, useNavigate, useParams } from '@umijs/max';
 import { Affix } from 'antd';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
-import type { RouteComponentProps } from 'react-router';
-import { history } from '@umijs/max';
+
+import { ContentWrapper } from '@/layouts/components';
+import { Button, Form, Tabs, Toast } from '@/metronic';
+import type { QueueUploadRef } from '@/metronic/typings';
+import type { Article } from '@/types';
+import { delay, tree } from '@/utils';
 
 import ArticleFormSidebar from '../components/ArticleFormSidebar';
 import {
@@ -17,29 +22,31 @@ import {
 import type { PublishAction } from '../components/bodys/classic/PublishButton';
 import { useCreateArticleMutation } from '../hooks';
 
-import { ContentWrapper } from '@/layouts/components';
-import { Button, Form, Tabs, Toast } from '@/metronic';
-import type { QueueUploadRef } from '@/metronic/typings';
-import type { Article, ArticleCategory } from '@/types';
-import { delay, tree } from '@/utils';
-
 import '../style/ArticleForm.scss';
 
-type ArticleCategoryNewProps = RouteComponentProps<
-  { cid: string; id: string },
-  any,
-  { rootCategoryId: string; categories: ArticleCategory[]; baseUrl: string }
->;
+// type ArticleCategoryNewProps = RouteComponentProps<
+//   { cid: string; id: string },
+//   any,
+//   { rootCategoryId: string; categories: ArticleCategory[]; baseUrl: string }
+// >;
 
-function ArticleCategoryNew(props: ArticleCategoryNewProps) {
-  const {
-    match: {
-      params: { cid: categoryId },
-    },
-    location: {
-      state: { categories, baseUrl },
-    },
-  } = props;
+function ArticleCategoryNew() {
+  // const {
+  //   match: {
+  //     params: { cid: categoryId },
+  //   },
+  //   location: {
+  //     state: { categories, baseUrl },
+  //   },
+  // } = props;
+
+  const params = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const { categories, baseUrl } = location.state;
+
+  const { cid: categoryId } = params;
 
   const temp = useRef<{
     publishedAt: Moment;
@@ -80,16 +87,16 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
 
   const handleChangeCategory = useCallback(
     (cid: string) => {
-      const category = categories.find((item) => item.id == cid);
+      const category = categories.find((item) => (item.id = cid));
       setStoreTemplate(category?.storeTemplate?.id);
     },
     [categories],
   );
 
   // const breadcrumbCategories = useMemo(() => {
-  //   const category = categories.find((item) => item.id == categoryId);
+  //   const category = categories.find((item) => item.id === categoryId);
   //   return (category?.path?.split('/') || [])
-  //     .map((_categoryId) => categories.find((item) => item.id == _categoryId)!)
+  //     .map((_categoryId) => categories.find((item) => item.id === _categoryId)!)
   //     .filter((item) => item);
   // }, [categories, categoryId]);
 
@@ -131,9 +138,9 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
         body: { type: 'HTML', text: body.text },
       };
 
-      if (action == 'publish') {
+      if (action === 'publish') {
         input.status = 'PUBLISHED';
-      } else if (action == 'schedule') {
+      } else if (action === 'schedule') {
         input.status = 'SCHEDULED';
         input.publishedAt = _publishedAt;
       } else {
@@ -157,8 +164,11 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
           placement: 'top-center',
         },
       );
-      history.replace(
+      navigate(
         `${baseUrl}/cms/categories/${category.id}/articles/${_data.data.article.id}`,
+        {
+          replace: true,
+        },
       );
       console.log('submit result set', _data);
     },
@@ -206,9 +216,9 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
       //     {breadcrumbCategories ? (
       //       <>
       //         {breadcrumbCategories
-      //           .filter((item) => item.id != rootCategoryId)
+      //           .filter((item) => item.id !== rootCategoryId)
       //           .map((item) =>
-      //             item.id == categoryId ? (
+      //             item.id === categoryId ? (
       //               <Breadcrumb.Item key={item.id} className="text-dark">
       //                 {item.name}
       //               </Breadcrumb.Item>
@@ -263,7 +273,7 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
             >
               <Button
                 variant="light"
-                loading={temp.current.action == 'draft' && submitting}
+                loading={temp.current.action === 'draft' && submitting}
                 onClick={handleSaveDraft}
                 className="me-5"
               >
@@ -272,7 +282,7 @@ function ArticleCategoryNew(props: ArticleCategoryNewProps) {
               <PublishButton
                 onPublish={handlePublish}
                 publishedAt={publishedAt}
-                submitting={temp.current.action != 'draft' && submitting}
+                submitting={temp.current.action !== 'draft' && submitting}
                 setPublishedAt={handlePublishedAtChange}
                 onCancel={handlePublishCancel}
               />

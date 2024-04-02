@@ -40,10 +40,10 @@ const CKEditorWrapper = React.forwardRef(function CKEditorWrapper(
   temp.current = value;
 
   const editorType = useMemo(() => {
-    if (editorStyle == 'BalloonBlockEditor') {
+    if (editorStyle === 'BalloonBlockEditor') {
       return BalloonBlockEditor;
     }
-    if (editorStyle == 'ClassicEditor') {
+    if (editorStyle === 'ClassicEditor') {
       return ClassicEditor;
     }
   }, [editorStyle]);
@@ -59,7 +59,7 @@ const CKEditorWrapper = React.forwardRef(function CKEditorWrapper(
     editor.ui.view.element = container.current;
     body.remove();
     editor.ui.view.element.appendChild(body);
-    if (typeof editorRef == 'function') {
+    if (typeof editorRef === 'function') {
       editorRef(editor);
     } else if (editorRef.hasOwnProperty('current')) {
       editorRef.current = editor;
@@ -69,7 +69,7 @@ const CKEditorWrapper = React.forwardRef(function CKEditorWrapper(
 
   const handleChange = useCallback((event: any, editor: any) => {
     const data = editor.getData();
-    if (data == temp.current) {
+    if (data === temp.current) {
       return;
     }
     if (!temp.current && !data) {
@@ -115,7 +115,7 @@ function ArticleContentEditor(
     return <div>switching...</div>;
   }
 
-  if (editorStyle == 'BalloonBlockEditor' || editorStyle == 'ClassicEditor') {
+  if (editorStyle === 'BalloonBlockEditor' || editorStyle === 'ClassicEditor') {
     return <CKEditorWrapper {...props} ref={editorRef} />;
   }
 

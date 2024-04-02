@@ -1,9 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
-// import type { History } from 'history';
-import { Link } from '@umijs/max';
-// import { Icon } from '@asany/icons';
 import type * as Apollo from '@apollo/client';
+// import { Icon } from '@asany/icons';
 import type { ApolloCache } from '@apollo/client/cache';
 import type {
   DefaultContext,
@@ -13,8 +11,9 @@ import type {
   MutationTuple,
   QueryResult,
 } from '@apollo/client/react/types/types';
+import { Link, useLocation, useNavigate } from '@umijs/max';
 import qs from 'query-string';
-import type { RouteComponentProps } from 'react-router';
+
 // import { LandingStoresDocument, useDeleteStoreMutation, useLandingStoresQuery } from '../../hooks';
 
 import { Controls } from '@/components';
@@ -69,9 +68,9 @@ import type { OnChange, TableColumn } from '@/metronic/Table/typings';
 
   const handleMenuClick = useCallback(
     (event) => {
-      if (event.key == 'view') {
+      if (event.key === 'view') {
         navigate(`/website/landing/stores/${data.id}`);
-      } else if (event.key == 'delete') {
+      } else if (event.key === 'delete') {
         handleDelete(data);
       }
     },
@@ -103,9 +102,7 @@ import type { OnChange, TableColumn } from '@/metronic/Table/typings';
   );
 } */
 
-type UseQuery<R, V> = (
-  baseOptions: Apollo.QueryHookOptions<R, V | undefined>,
-) => QueryResult<R, V>;
+type UseQuery<R> = (baseOptions: Apollo.QueryHookOptions<R>) => QueryResult<R>;
 type UseMutation<
   TData = any,
   TVariables = OperationVariables,
@@ -133,25 +130,29 @@ type ListResult = {
 };
 
 type GeneralListHooks = {
-  query: UseQuery<any, any>;
+  query: UseQuery<any>;
   delete?: UseMutation;
 };
 
 type GeneralListProps<T> = {
   hooks: GeneralListHooks;
   columns: TableColumn<T>[];
-} & RouteComponentProps<any>;
+};
 
 function GeneralList<T>(props: GeneralListProps<T>) {
-  const { history, location, hooks, columns } = props;
+  const { hooks, columns } = props;
+
+  const location = useLocation();
+
+  const navigate = useNavigate();
 
   const variables = useMemo(() => {
-    const { q, ...query } = (props.location as any).query;
+    const { q, ...query } = (location as any).query;
     if (q) {
       query.filter = { name_contains: q };
     }
     return query;
-  }, [props.location]);
+  }, [location]);
 
   /* const sorter = useMemo<Sorter>(() => {
     if (!variables.orderBy) {
@@ -162,7 +163,7 @@ function GeneralList<T>(props: GeneralListProps<T>) {
     }
     const [field, order] = variables.orderBy.split('_');
     return {
-      order: order == 'desc' ? 'descend' : 'ascend',
+      order: order === 'desc' ? 'descend' : 'ascend',
       field,
     };
   }, [variables.orderBy]); */
@@ -205,9 +206,11 @@ function GeneralList<T>(props: GeneralListProps<T>) {
 
   const handleSearch = useCallback(
     (text: string) => {
-      history.replace(location.pathname + '?' + qs.stringify({ q: text }));
+      navigate(location.pathname + '?' + qs.stringify({ q: text }), {
+        replace: true,
+      });
     },
-    [history, location.pathname],
+    [navigate, location.pathname],
   );
 
   const handleChange: OnChange = useCallback(
@@ -218,12 +221,14 @@ function GeneralList<T>(props: GeneralListProps<T>) {
       }
       if (!!_sorter) {
         _query.orderBy =
-          _sorter.field + '_' + (_sorter.order == 'ascend' ? 'asc' : 'desc');
+          _sorter.field + '_' + (_sorter.order === 'ascend' ? 'asc' : 'desc');
       }
       _query.page = _pagination?.current;
-      history.replace(location.pathname + '?' + qs.stringify(_query));
+      navigate(location.pathname + '?' + qs.stringify(_query), {
+        replace: true,
+      });
     },
-    [history, location.pathname, variables.filter?.name_contains],
+    [navigate, location.pathname, variables.filter?.name_contains],
   );
 
   // const handleDelete = useCallback(
@@ -259,7 +264,7 @@ function GeneralList<T>(props: GeneralListProps<T>) {
       }
       // await handleDelete(...selectedRowKeys);
       Toast.success(`门店批量删除成功`, 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     },

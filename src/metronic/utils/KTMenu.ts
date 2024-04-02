@@ -9,40 +9,22 @@ import * as KTUtil from './KTUtil';
 
 export type OffsetValue = [number, number];
 
-// Init dropdown popper(new)
-export function initDropdownPopper(
-  item: any,
-  sub: any,
-  placement: string,
-  offset?: OffsetValue,
-) {
-  // Setup popper instance
-  let reference;
-  const attach = getItemOption(item, 'attach');
+export function getItemOption(item: any, name: string) {
+  let attr;
+  let value = null;
 
-  if (attach) {
-    if (attach === 'parent') {
-      reference = item.parentNode;
-    } else {
-      reference = document.querySelector(attach);
+  if (item && item.hasAttribute('data-kt-menu-' + name)) {
+    attr = item.getAttribute('data-kt-menu-' + name);
+    value = KTUtil.getResponsiveValue(attr);
+
+    if (value !== null && String(value) === 'true') {
+      value = true;
+    } else if (value !== null && String(value) === 'false') {
+      value = false;
     }
-  } else {
-    reference = item;
   }
 
-  const popper = createPopper(
-    reference,
-    sub,
-    _getDropdownPopperConfig(item, placement as any, offset),
-  );
-  KTUtil.data(item).set('popper', popper);
-}
-
-export function destroyDropdownPopper(item: any) {
-  if (KTUtil.data(item).has('popper') === true) {
-    KTUtil.data(item).get('popper').destroy();
-    KTUtil.data(item).remove('popper');
-  }
+  return value;
 }
 
 export function _getDropdownPopperConfig(
@@ -90,20 +72,38 @@ export function _getDropdownPopperConfig(
   return popperConfig;
 }
 
-export function getItemOption(item: any, name: string) {
-  let attr;
-  let value = null;
+export function destroyDropdownPopper(item: any) {
+  if (KTUtil.data(item).has('popper') === true) {
+    KTUtil.data(item).get('popper').destroy();
+    KTUtil.data(item).remove('popper');
+  }
+}
 
-  if (item && item.hasAttribute('data-kt-menu-' + name)) {
-    attr = item.getAttribute('data-kt-menu-' + name);
-    value = KTUtil.getResponsiveValue(attr);
+// Init dropdown popper(new)
+export function initDropdownPopper(
+  item: any,
+  sub: any,
+  placement: string,
+  offset?: OffsetValue,
+) {
+  // Setup popper instance
+  let reference;
+  const attach = getItemOption(item, 'attach');
 
-    if (value !== null && String(value) === 'true') {
-      value = true;
-    } else if (value !== null && String(value) === 'false') {
-      value = false;
+  if (attach) {
+    if (attach === 'parent') {
+      reference = item.parentNode;
+    } else {
+      reference = document.querySelector(attach);
     }
+  } else {
+    reference = item;
   }
 
-  return value;
+  const popper = createPopper(
+    reference,
+    sub,
+    _getDropdownPopperConfig(item, placement as any, offset),
+  );
+  KTUtil.data(item).set('popper', popper);
 }

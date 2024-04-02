@@ -25,10 +25,10 @@ function General(props: GeneralProps) {
               if (!value) {
                 return;
               }
-              if (value == data?.name && mode == 'edit') {
+              if (value === data?.name && mode === 'edit') {
                 return;
               }
-              if (model.fields.some((f) => f.name == value)) {
+              if (model.fields.some((f) => f.name === value)) {
                 throw new Error(rule.message as string);
               }
             },
@@ -55,10 +55,10 @@ function General(props: GeneralProps) {
               if (!value) {
                 return;
               }
-              if (value == data?.code && mode == 'edit') {
+              if (value === data?.code && mode === 'edit') {
                 return;
               }
-              if (model.fields.some((f) => f.code == value)) {
+              if (model.fields.some((f) => f.code === value)) {
                 throw new Error(rule.message as string);
               }
             },

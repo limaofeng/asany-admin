@@ -1,9 +1,10 @@
-import { Icon } from '@asany/icons';
 import type { EdgeProps } from 'react-flow-renderer';
 import {
   /*getBezierPath,*/ getEdgeCenter,
   getSmoothStepPath,
 } from 'react-flow-renderer';
+
+import { Icon } from '@asany/icons';
 
 import '../style/ButtonEdge.scss';
 
@@ -53,7 +54,7 @@ export default function CustomEdge({
         requiredExtensions="http://www.w3.org/1999/xhtml"
       >
         <div className="edge-container">
-          <button className="edgebutton">
+          <button type="button" className="edgebutton">
             <Icon name="Bootstrap/plus" />
           </button>
         </div>

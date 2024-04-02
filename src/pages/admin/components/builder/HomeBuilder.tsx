@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
+import type { RouteComponentProps } from 'react-router';
 
 import { SunmaoEditor } from '@asany/sunmao';
-import type { RouteComponentProps } from 'react-router';
 import { history } from '@umijs/max';
 
 import { Toast } from '@/metronic';

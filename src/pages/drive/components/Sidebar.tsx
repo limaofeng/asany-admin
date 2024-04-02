@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useMemo } from 'react';
+import { useMatch } from 'react-router-dom';
 
 import Icon from '@asany/icons';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import { useMatch } from 'react-router-dom';
 import { useModel } from '@umijs/max';
-
-import { useCloudDrivesQuery } from '../hooks';
-
-import Transfers from './Transfers';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { AsideWorkspace } from '@/layouts/Demo7';
 import { CircleProgress, Menu, Popover, Pulse, Select } from '@/metronic';
 import type { OptionData } from '@/metronic/typings';
 import type { CloudDrive } from '@/types';
+
+import Transfers from './Transfers';
+
+import { useCloudDrivesQuery } from '../hooks';
 
 type SidebarFooterProps = {
   drives: CloudDrive[];
@@ -97,7 +97,7 @@ function Sidebar() {
       return;
     }
     const cloudDrives = data?.cloudDrives;
-    if (!cloudDrives.some((item) => item.id == driveId)) {
+    if (!cloudDrives.some((item) => item.id === driveId)) {
       setCloudDrive(cloudDrives[0] as any as CloudDrive);
     }
   }, [data?.cloudDrives, setCloudDrive, driveId]);
@@ -106,7 +106,7 @@ function Sidebar() {
     if (!data?.cloudDrives || !currentDriveId) {
       return;
     }
-    return data.cloudDrives.find((item) => item.id == currentDriveId);
+    return data.cloudDrives.find((item) => item.id === currentDriveId);
   }, [data?.cloudDrives, currentDriveId]);
 
   const type = useMemo(() => match?.params.type || match?.params.type, [match]);

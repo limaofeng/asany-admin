@@ -42,7 +42,7 @@ function EmailListItem(props: EmailListItemProps) {
         </a>
       </div>
       <ul className="mt-2 ms-4">
-        {state == '1' ? (
+        {state === '1' ? (
           <>
             <li className="text-gray-700">
               <div className="d-flex align-items-center">

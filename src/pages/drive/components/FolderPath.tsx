@@ -27,8 +27,8 @@ function FolderPath(props: FolderPathProps) {
     <div className="folder-path badge badge-lg badge-white">
       <div className="d-flex align-items-center flex-wrap">
         {paths.map((item, i) => {
-          const isFirst = i == 0;
-          const isLast = i == paths.length - 1;
+          const isFirst = i === 0;
+          const isLast = i === paths.length - 1;
           return (
             <React.Fragment key={item.id}>
               {!isFirst && (
@@ -45,7 +45,7 @@ function FolderPath(props: FolderPathProps) {
               ) : (
                 <a
                   href={
-                    i == 0 ? `/drive/my-drive` : `/drive/folders/${item.id}`
+                    i === 0 ? `/drive/my-drive` : `/drive/folders/${item.id}`
                   }
                   onClick={handleClick(item)}
                 >

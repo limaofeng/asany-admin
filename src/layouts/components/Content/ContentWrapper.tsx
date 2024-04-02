@@ -3,14 +3,14 @@ import React, { useEffect } from 'react';
 
 import classnames from 'classnames';
 
+import type { Breadcrumb } from '@/metronic';
+import { BlockUI } from '@/metronic';
+
 import Content from './Content';
 import type { ContentFooterProps } from './ContentFooter';
 import ContentFooter from './ContentFooter';
 import type { ContentHeaderProps } from './ContentHeader';
 import ContentHeader from './ContentHeader';
-
-import type { Breadcrumb } from '@/metronic';
-import { BlockUI } from '@/metronic';
 
 export type ContentWrapperProps = {
   className?: string;

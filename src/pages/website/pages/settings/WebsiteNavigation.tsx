@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
-import { useParams, type RouteComponentProps } from 'react-router';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -9,20 +8,20 @@ import {
   Breadcrumb,
   Button,
   Card,
+  Color,
   Dropdown,
   Menu,
   Modal,
   TreeList,
 } from '@/metronic';
 import { useDeleteMenuMutation, useLoadMenusQuery } from '@/pages/app/hooks';
+import { Menu as MenuData } from '@/types';
 import { tree } from '@/utils';
 
-type WebsiteNavigationProps = RouteComponentProps<{ id: string }>;
-
 interface MenuActionsProps {
-  data: Menu;
+  data: MenuData;
   refetch: () => void;
-  onEdit: (data: Menu) => void;
+  onEdit: (data: MenuData) => void;
 }
 
 function MenuActions(props: MenuActionsProps) {
@@ -100,7 +99,7 @@ function MenuActions(props: MenuActionsProps) {
 }
 
 function WebsiteNavigation() {
-  const { sid: id } = useParams<{ sid: string }>();
+  // const { sid: id } = useParams<{ sid: string }>();
 
   const { data, refetch } = useLoadMenusQuery({ variables: { id: 352 } });
 
@@ -175,7 +174,9 @@ function WebsiteNavigation() {
                 key: 'title',
                 title: '名称',
                 render: (_, record) => {
-                  const menuTypes = {
+                  const menuTypes: {
+                    [key: string]: { color: Color };
+                  } = {
                     SECTION: { color: 'info' },
                     URL: { color: 'primary' },
                     MENU: { color: 'success' },

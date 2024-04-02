@@ -2,17 +2,17 @@ import type { CSSProperties } from 'react';
 import React, { useEffect, useRef } from 'react';
 
 import * as am5 from '@amcharts/amcharts5';
-import am5geodata_worldLow from '@amcharts/amcharts5-geodata/worldLow';
 import * as am5map from '@amcharts/amcharts5/map';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import am5geodata_worldLow from '@amcharts/amcharts5-geodata/worldLow';
 import { Icon } from '@asany/icons';
 import { useBlock } from '@asany/sunmao';
 import useMergedRef from '@react-hook/merged-ref';
 
-import type { GridItemActions, IGridItem } from '../../GridLayout/typings';
-
 import { Button, Card, Dropdown, Input, Menu, Switch } from '@/metronic';
 import * as KTUtil from '@/metronic/utils/KTUtil';
+
+import type { GridItemActions, IGridItem } from '../../GridLayout/typings';
 
 type MapsWidget1Props = {
   id?: string;
@@ -25,6 +25,7 @@ type MapsWidget1Props = {
 };
 
 function MapsWidget1(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   { data, actions, onRefReady, animated, ...otherProps }: MapsWidget1Props,
   ref: any,
 ) {

@@ -4,16 +4,6 @@ import type { ComponentTreeNode } from '@asany/sunmao';
 import { ComponentPicker } from '@asany/sunmao';
 
 import {
-  LoadMenusDocument,
-  useCreateMenuMutation,
-  useLoadComponentsQuery,
-  useLoadMenusQuery,
-  useUpdateMenuMutation,
-} from '../hooks';
-import useMenuDelete from '../hooks/useMenuDelete';
-import { initTag } from '../utils';
-
-import {
   Button,
   Col,
   Drawer,
@@ -28,6 +18,16 @@ import {
 import type { FormInstance } from '@/metronic/Form';
 import type { Menu } from '@/types';
 import { delay, flat, tree } from '@/utils';
+
+import {
+  LoadMenusDocument,
+  useCreateMenuMutation,
+  useLoadComponentsQuery,
+  useLoadMenusQuery,
+  useUpdateMenuMutation,
+} from '../hooks';
+import useMenuDelete from '../hooks/useMenuDelete';
+import { initTag } from '../utils';
 
 type MenuFormProps = {
   appId: string;
@@ -84,6 +84,7 @@ function MenuForm(props: MenuFormProps) {
   }, [library]);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { children, _rect, pos, parent, ...values } = props.data;
     // console.log('info', values, props.data);
     if (!props.data.id) {
@@ -226,7 +227,7 @@ function MenuForm(props: MenuFormProps) {
       <Form.Item dependencies={['type', 'parentMenu']} noStyle={true}>
         {() => {
           if (
-            form.getFieldValue('type') == 'SECTION' ||
+            form.getFieldValue('type') === 'SECTION' ||
             !!form.getFieldValue('parentMenu')
           ) {
             return <></>;

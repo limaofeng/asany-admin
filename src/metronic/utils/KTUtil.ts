@@ -66,7 +66,7 @@ export function removeClass(el: HTMLElement, className: string) {
   }
 }
 
-export function data(el: HTMLElement) {
+export function data(el: HTMLElement & any) {
   return {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     set(name: string, data: any) {
@@ -135,7 +135,9 @@ export function animate(
    * TinyAnimate.easings
    *  Adapted from jQuery Easing
    */
-  const easings = {
+  const easings: {
+    [key: string]: (t: number, b: number, c: number, d: number) => number;
+  } = {
     linear(t: number, b: number, c: number, d: number) {
       return (c * t) / d + b;
     },
@@ -248,7 +250,7 @@ export function css(
       el.style.setProperty(styleProp, value, 'important');
     } else {
       // eslint-disable-next-line no-param-reassign
-      el.style[styleProp] = value;
+      el.style[styleProp as any] = value;
     }
   } else {
     const { defaultView } = el.ownerDocument || document;
@@ -481,7 +483,7 @@ export function getResponsiveValue(value: any) {
     let resultBreakpoint: any = -1;
     let breakpoint;
 
-    for (const key in value) {
+    for (const key of Object.keys(value)) {
       if (key === 'default') {
         breakpoint = 0;
       } else {
@@ -570,7 +572,9 @@ export function animateClass(
   callback?: () => void,
 ) {
   let animation;
-  const animations = {
+  const animations: {
+    [key: string]: string;
+  } = {
     animation: 'animationend',
     OAnimation: 'oAnimationEnd',
     MozAnimation: 'mozAnimationEnd',
@@ -578,20 +582,20 @@ export function animateClass(
     msAnimation: 'msAnimationEnd',
   };
 
-  for (const t in animations) {
-    if (el.style[t] !== undefined) {
+  for (const t of Object.keys(animations)) {
+    if (el.style[t as any] !== undefined) {
       animation = animations[t];
     }
   }
 
   addClass(el, animationName);
 
-  onetime(el, animation, function () {
+  onetime(el, animation!, function () {
     removeClass(el, animationName);
   });
 
   if (callback) {
-    onetime(el, animation, callback);
+    onetime(el, animation!, callback);
   }
 }
 

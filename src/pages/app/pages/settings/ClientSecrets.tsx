@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useOutletContext } from 'react-router';
+import { useCopyToClipboard } from 'react-use';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 import moment from 'moment';
-import { useOutletContext } from 'react-router';
-import { useCopyToClipboard } from 'react-use';
-
-import { useAppWithClientSecretQuery } from '../../hooks/api';
 
 import { ContentWrapper } from '@/layouts/components';
 import { Card, Toast, Tooltip } from '@/metronic';
 import type { ClientSecret } from '@/types';
+
+import { useAppWithClientSecretQuery } from '../../hooks/api';
 import { AppViewLayoutOutletProps } from '../../types';
 
 type ClientSecretItemProps = {

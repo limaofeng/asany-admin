@@ -1,10 +1,10 @@
 import { Icon } from '@asany/icons';
 import { Link } from '@umijs/max';
 
-import worldMap from '../../assets/world_map.svg';
-
 import { ContentWrapper } from '@/layouts/components';
 import { Button, Card } from '@/metronic';
+
+import worldMap from '../../assets/world_map.svg';
 
 function SessionDetails() {
   return (

@@ -1,6 +1,34 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 import { useModel } from '@umijs/max';
+import { useReactive, useRequest } from 'ahooks';
+import { CbEvents } from 'open-im-sdk-wasm/lib/constant';
+import {
+  ConversationItem,
+  FriendUserItem,
+  GroupItem,
+  GroupMemberItem,
+  MergeElem,
+  MessageItem,
+  WsResponse,
+} from 'open-im-sdk-wasm/lib/types/entity';
+import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
+import { MergerMsgParams } from 'open-im-sdk-wasm/lib/types/params';
+
+import { Toast } from '@/metronic';
+import { IMSDK } from '@/models/open-im/auth';
+import {
+  DELETEMESSAGE,
+  MERMSGMODAL,
+  RESETCVE,
+  REVOKEMSG,
+  SENDFORWARDMSG,
+  TOASSIGNCVE,
+} from '@/models/open-im/utils/constant';
+import events from '@/models/open-im/utils/events';
+
+
+
 // import type {
 //   ConversationItem,
 //   FriendItem,
@@ -11,17 +39,6 @@ import { useModel } from '@umijs/max';
 //   MessageItem,
 //   WsResponse,
 // } from 'open-im-sdk/types';
-import { IMSDK } from '@/models/open-im/auth';
-import { useReactive, useRequest } from 'ahooks';
-import { CbEvents } from 'open-im-sdk-wasm/lib/constant';
-import {
-  FriendUserItem,
-  GroupItem,
-  GroupMemberItem,
-  WsResponse,
-} from 'open-im-sdk-wasm/lib/types/entity';
-import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
-
 // import { createNotification, isSingleCve } from '@/utils/open-im/utils/im';
 // import events from '@/utils/open-im/events';
 // import {
@@ -40,17 +57,6 @@ import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 //   SessionType,
 //   tipsTypes,
 // } from '@/utils/open-im/constants/messageContentType';
-import { Toast } from '@/metronic';
-import {
-  DELETEMESSAGE,
-  MERMSGMODAL,
-  RESETCVE,
-  REVOKEMSG,
-  SENDFORWARDMSG,
-  TOASSIGNCVE,
-} from '@/models/open-im/utils/constant';
-import events from '@/models/open-im/utils/events';
-import { MergerMsgParams } from 'open-im-sdk-wasm/lib/types/params';
 
 export type ChechType = {
   check: boolean;
@@ -91,7 +97,7 @@ const getOneCve = (
 ): Promise<ConversationItem> => {
   return new Promise((resolve, reject) => {
     IMSDK.getOneConversation({ sourceID, sessionType })
-      .then((res) => resolve(JSON.parse(res.data)))
+      .then((res) => resolve(res.data))
       .catch((err) => reject(err));
   });
 };
@@ -132,15 +138,7 @@ function useChat() {
     searchCve: [],
   });
   const timer = useRef<NodeJS.Timeout | null>(null);
-  const {
-    loading,
-    run: getMsg,
-    cancel: msgCancel,
-  } = useRequest(IMSDK.getAdvancedHistoryMessageList, {
-    manual: true,
-    onSuccess: handleMsg,
-    onError: (err: any) => console.log('GetChatRecordFailed', err),
-  });
+
 
   const scrollbar = useRef<OverlayScrollbars>();
 
@@ -172,6 +170,16 @@ function useChat() {
 
     rs.hasMore = !(JSON.parse(res.data).length < 20);
   }
+
+  const {
+    loading,
+    run: getMsg,
+    cancel: msgCancel,
+  } = useRequest(IMSDK.getAdvancedHistoryMessageList as any, {
+    manual: true,
+    onSuccess: handleMsg,
+    onError: (err: any) => console.log('GetChatRecordFailed', err),
+  });
 
   const getHistoryMsg = useCallback(
     (uid?: string, gid?: string, sMsg?: MessageItem) => {

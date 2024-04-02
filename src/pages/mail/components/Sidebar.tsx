@@ -1,8 +1,13 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
+import { Link, useMatch } from '@umijs/max';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import { Link } from '@umijs/max';
+
+import { AsideWorkspace } from '@/layouts/Demo7';
+import { Badge, Button, Menu } from '@/metronic';
+
+import Preferences from './preferences';
 
 import {
   useCountUnreadQuery,
@@ -10,12 +15,6 @@ import {
   useMailUserQuery,
 } from '../hooks';
 import { DEFAULT_MAILBOXES, DEFAULT_MAILBOXES_ALL } from '../utils';
-
-import Preferences from './preferences';
-
-import { AsideWorkspace } from '@/layouts/Demo7';
-import { Badge, Button, Menu } from '@/metronic';
-import { useMatch } from '@umijs/max';
 
 type SidebarFooterProps = {
   onAction: () => void;
@@ -112,16 +111,16 @@ function Sidebar() {
       .sort((l, r) => l.index - r.index);
 
     const defaultMailboxes = allMailboxes.filter(
-      (item) => item.namespace == '#private',
+      (item) => item.namespace === '#private',
     );
     return {
-      inbox: defaultMailboxes.find((item) => item.name == 'INBOX')!,
-      outbox: defaultMailboxes.find((item) => item.name == 'Outbox')!,
+      inbox: defaultMailboxes.find((item) => item.name === 'INBOX')!,
+      outbox: defaultMailboxes.find((item) => item.name === 'Outbox')!,
       private: defaultMailboxes.filter(
         (item) => !['Outbox', 'INBOX'].includes(item.name!),
       ),
-      smart: allMailboxes.filter((item) => item.namespace == '#smart'),
-      custom: allMailboxes.filter((item) => item.namespace == '#custom'),
+      smart: allMailboxes.filter((item) => item.namespace === '#smart'),
+      custom: allMailboxes.filter((item) => item.namespace === '#custom'),
     };
   }, [data?.mailUser, mailboxesData?.mailboxes]);
 

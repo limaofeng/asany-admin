@@ -1,13 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
+import type { RouteComponentProps } from 'react-router';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
-import type { RouteComponentProps } from 'react-router';
-
-import { useDeleteModelMutation, useModelQuery } from '../../../hooks';
-
-import ModelFieldsManagement from './components/ModelFieldsManagement';
-import ModelModal from './components/ModelModal';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -22,6 +17,11 @@ import {
 } from '@/metronic';
 import type { Model, Module } from '@/types';
 import { delay } from '@/utils';
+
+import ModelFieldsManagement from './components/ModelFieldsManagement';
+import ModelModal from './components/ModelModal';
+
+import { useDeleteModelMutation, useModelQuery } from '../../../hooks';
 
 import './style/ModelView.scss';
 

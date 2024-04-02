@@ -40,7 +40,7 @@ function useConnection(
     if (!model?.endpoints) {
       return null;
     }
-    return model.endpoints.find((e) => e.type == 'CONNECTION');
+    return model.endpoints.find((e) => e.type === 'CONNECTION');
   }, [model?.endpoints]);
 
   useEffect(() => {
@@ -49,10 +49,10 @@ function useConnection(
     }
     setState((s) => ({ ...s, loading: true }));
     const whereTypeName = endpoint.arguments.find(
-      (a) => a.name == 'where',
+      (a) => a.name === 'where',
     )!.type;
     const orderByTypeName = endpoint.arguments.find(
-      (a) => a.name == 'orderBy',
+      (a) => a.name === 'orderBy',
     )!.type;
     const SearchDocument = `query search(
       $where: ${whereTypeName}

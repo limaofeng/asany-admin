@@ -1,10 +1,12 @@
+import { useOutletContext } from 'react-router';
+
 import { ContentWrapper } from '@/layouts/components';
 import { Card, Form, Input, Switch, Upload } from '@/metronic';
-import { useOutletContext } from 'react-router';
+
 import { AppViewLayoutOutletProps } from '../../types';
 
 function Profile() {
-  const { app, baseUrl } = useOutletContext<AppViewLayoutOutletProps>();
+  const {} = useOutletContext<AppViewLayoutOutletProps>();
 
   const form = Form.useForm();
 

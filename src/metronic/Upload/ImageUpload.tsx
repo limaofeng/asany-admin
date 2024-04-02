@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-
-import classnames from 'classnames';
-import mime from 'mime-types';
 import type { Accept } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
 
-import Button from '../Button';
-import Tooltip from '../Tooltip';
-import { loadImage } from '../utils';
+import classnames from 'classnames';
+import mime from 'mime-types';
 
 import { ImageCropperModal } from './ImageCropper';
 import type { CropOptions } from './typings';
 import type { UploadFileData } from './utils/upload';
 import { useUpload } from './utils/upload';
+
+import Button from '../Button';
+import Tooltip from '../Tooltip';
+import { loadImage } from '../utils';
 
 import './style/ImageUpload.scss';
 
@@ -133,14 +133,17 @@ function ImageUpload(props: ImageUploadProps) {
     maxFiles: 1,
   });
   const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     role,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     tabIndex,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onClick: browseLocalFiles,
     ...rootProps
   } = getRootProps();
 
   useEffect(() => {
-    if (props.value == state.current.value) {
+    if (props.value === state.current.value) {
       return;
     }
     state.current.value = props.value;
@@ -157,7 +160,7 @@ function ImageUpload(props: ImageUploadProps) {
       const [, ext] = data.type.split('/');
       const lastIndex = state.current.image?.name.lastIndexOf('.');
       const name =
-        lastIndex == -1
+        lastIndex === -1
           ? state.current.image?.name
           : state.current.image?.name.substring(0, lastIndex);
       const newFile = new File([data], `${name}.${ext}`, {
@@ -187,7 +190,7 @@ function ImageUpload(props: ImageUploadProps) {
       data-kt-image-input="true"
       // style={{ backgroundImage: "url('/assets/media/svg/avatars/blank.svg')" }}
     >
-      {typeof preview == 'string' ? (
+      {typeof preview === 'string' ? (
         <div
           {...rootProps}
           className={'image-input-wrapper'}

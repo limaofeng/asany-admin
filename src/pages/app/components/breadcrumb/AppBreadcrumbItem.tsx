@@ -1,7 +1,7 @@
-import { useAppQuery } from '../../hooks';
-
 import BreadcrumbItem from '@/metronic/Breadcrumb/BreadcrumbItem';
 import type { Route } from '@/types';
+
+import { useAppQuery } from '../../hooks';
 
 type AppBreadcrumbItemProps = {
   className: string;

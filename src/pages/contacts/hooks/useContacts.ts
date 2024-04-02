@@ -2,10 +2,10 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import EventEmitter from 'events';
 
-import { useContactsLazyQuery } from '../hooks';
-
 import type { Contact, ContactConnection } from '@/types';
 import { sleep } from '@/utils';
+
+import { useContactsLazyQuery } from '../hooks';
 
 const DEFAULT_PAGINATION = {
   totalCount: 0,
@@ -66,14 +66,13 @@ export function useContacts(token?: string): UseContactsQuery {
 
   const handleRefetch = useCallback(
     async (page: number) => {
-      if (state.current.loading && state.current.page == page) {
+      if (state.current.loading && state.current.page === page) {
         return;
       }
       while (state.current.loading) {
         await sleep(120);
       }
       state.current.page = page;
-      debugger;
       refetch({
         filter: {
           token: state.current.token,
@@ -89,7 +88,7 @@ export function useContacts(token?: string): UseContactsQuery {
       const pageSize = state.current.pagination.pageSize;
       if (
         state.current.pagination.totalCount %
-          state.current.pagination.pageSize ==
+          state.current.pagination.pageSize ===
         1
       ) {
         state.current.pagination.totalPage--;
@@ -108,7 +107,7 @@ export function useContacts(token?: string): UseContactsQuery {
         await sleep(120);
       }
       if (
-        state.current.page == page ||
+        state.current.page === page ||
         page > state.current.pagination.totalPage
       ) {
         return;
@@ -158,7 +157,7 @@ export function useContacts(token?: string): UseContactsQuery {
   }, []);
 
   useEffect(() => {
-    if (state.current.token != token) {
+    if (state.current.token !== token) {
       state.current.token = token;
       state.current.pagination = { ...DEFAULT_PAGINATION };
       state.current.contacts.length = 0;
@@ -199,7 +198,7 @@ export function useContacts(token?: string): UseContactsQuery {
     latestSelectedState.current.contact = state.current.contacts[index];
 
     useEffect(() => {
-      if (index == -1) {
+      if (index === -1) {
         return;
       }
       const _index = index + 1;
@@ -227,7 +226,7 @@ export function useContacts(token?: string): UseContactsQuery {
     const checkForUpdates = useCallback(() => {
       const newSelectedState =
         state.current.contacts[latestSelectedState.current.index];
-      if (newSelectedState == latestSelectedState.current.contact) {
+      if (newSelectedState === latestSelectedState.current.contact) {
         return;
       }
       latestSelectedState.current.contact = newSelectedState;

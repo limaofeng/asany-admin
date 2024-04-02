@@ -1,15 +1,15 @@
 import React, { useCallback, useMemo, useReducer, useRef } from 'react';
+import type { RouteComponentProps } from 'react-router-dom';
 
 import { useModel, useParams } from '@umijs/max';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import type { RouteComponentProps } from 'react-router-dom';
+
+import { ContentWrapper } from '@/layouts/components';
 
 import NoContacts from '../components/NoContacts';
 import UserList from '../components/UserList';
 import { useContacts } from '../hooks';
 import type { ContactListState, ContactRouteParams } from '../typings';
-
-import { ContentWrapper } from '@/layouts/components';
 
 type MainContactsProps = RouteComponentProps<ContactRouteParams> & {
   children: React.ReactNode;
@@ -35,12 +35,12 @@ function MainContacts(props: MainContactsProps) {
 
   const handleScrollToIndex = useCallback(
     async (e: any) => {
-      if (state.current.activeIndex == e.index) {
+      if (state.current.activeIndex === e.index) {
         return;
       }
       const _contact = await loadContact(e.index);
       state.current.activeIndex = e.index;
-      if (token == _contact.id) {
+      if (token === _contact.id) {
         forceRender();
         return;
       }

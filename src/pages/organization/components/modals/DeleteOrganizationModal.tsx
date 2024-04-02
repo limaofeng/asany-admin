@@ -18,7 +18,7 @@ function DeleteOrganizationModal(props: DeleteOrganizationModalProps) {
 
   const handleValuesChange = useCallback(
     (_: any, values: any) => {
-      setDisabled(!(values.code == data?.code));
+      setDisabled(!(values.code === data?.code));
     },
     [data],
   );

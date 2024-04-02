@@ -6,14 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Table as BsTable } from 'react-bootstrap';
+import type { OnSelect, OnSelectEnd } from 'react-selecto';
+import Selecto from 'react-selecto';
 
 import EventEmitter from 'events';
 
 import classnames from 'classnames';
 import { isEqual } from 'lodash';
-import { Table as BsTable } from 'react-bootstrap';
-import type { OnSelect, OnSelectEnd } from 'react-selecto';
-import Selecto from 'react-selecto';
 
 import type { PaginationProps } from './Pagination';
 import Pagination from './Pagination';
@@ -196,7 +196,7 @@ function Table<T>(props: TableProps<T>) {
       const key = getRowKey(data, rowKey);
 
       let _checked = checked;
-      if (e.type == 'click') {
+      if (e.type === 'click') {
         if (!checked && selectedKeys.size > 1) {
           _checked = true;
         }
@@ -215,7 +215,7 @@ function Table<T>(props: TableProps<T>) {
         selectedKeys.has(getRowKey(item, temp.current.rowKey)),
       );
 
-      state.current.selectedAll = selectedKeys.size == totalCount;
+      state.current.selectedAll = selectedKeys.size === totalCount;
       forceRender();
 
       temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
@@ -277,24 +277,23 @@ function Table<T>(props: TableProps<T>) {
 
   useEffect(() => {
     if (
-      dataSource.loadedCount != state.current.selectedKeys.size &&
+      dataSource.loadedCount !== state.current.selectedKeys.size &&
       state.current.selectedAll
     ) {
       repairOfSelectedAll();
     }
-    if (dataSource.type == 'array') {
+    if (dataSource.type === 'array') {
       const prevKey = Array.from(state.current.selectedKeys.keys()).join(',');
       state.current.selectedKeys = new Set(
         Array.from(state.current.selectedKeys).filter((item) =>
           temp.current.dataSource.items.some(
-            (data) => getRowKey(data, temp.current.rowKey) == item,
+            (data) => getRowKey(data, temp.current.rowKey) === item,
           ),
         ),
       );
       const nextKey = Array.from(state.current.selectedKeys.keys()).join(',');
       if (!isEqual(prevKey, nextKey)) {
         temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
-        debugger;
         forceRender();
       }
     }
@@ -406,7 +405,7 @@ function Table<T>(props: TableProps<T>) {
     const documents = Array.from(e.inputEvent.path).slice(0, -3);
     const lastIndex = documents.lastIndexOf(tableBodyContainer.current);
     const isOff = (
-      lastIndex == -1 ? documents : documents.slice(0, lastIndex)
+      lastIndex === -1 ? documents : documents.slice(0, lastIndex)
     ).some((item: any) =>
       Array.from(item.classList).includes('no-selecto-drag'),
     );
@@ -426,9 +425,9 @@ function Table<T>(props: TableProps<T>) {
   const handleSelectoSelectEnd = useCallback((e: OnSelectEnd) => {
     // console.log('row select', e.isClick, e.isDragStart, e.inputEvent, e);
     if (
-      e.added.length == 1 &&
-      e.afterAdded.length == 1 &&
-      e.selected.length == 1
+      e.added.length === 1 &&
+      e.afterAdded.length === 1 &&
+      e.selected.length === 1
     ) {
       const dom = e.selected[0];
       dom.dataset.ignore_click = 'on';
@@ -447,7 +446,7 @@ function Table<T>(props: TableProps<T>) {
     e.removed
       .map((item) => item.dataset.key!)
       .forEach(_selectedKeys.delete.bind(_selectedKeys));
-    state.current.selectedAll = _selectedKeys.size == totalCount;
+    state.current.selectedAll = _selectedKeys.size === totalCount;
     temp.current.emitter.emit('CHANGE_SELECTEDKEYS');
     forceRender();
   }, []);
@@ -463,8 +462,8 @@ function Table<T>(props: TableProps<T>) {
     ).length;
 
     if (
-      selectedKeyLength == _size &&
-      selectedKeyLength == selectedRowKeys.length
+      selectedKeyLength === _size &&
+      selectedKeyLength === selectedRowKeys.length
     ) {
       return;
     }
@@ -479,11 +478,11 @@ function Table<T>(props: TableProps<T>) {
   return (
     <div
       className={classnames({
-        'dataTables_wrapper dt-bootstrap4 no-footer': type == 'data_tables',
-        'table-responsive': type == 'native',
+        'dataTables_wrapper dt-bootstrap4 no-footer': type === 'data_tables',
+        'table-responsive': type === 'native',
       })}
     >
-      {type == 'data_tables' && (
+      {type === 'data_tables' && (
         <TableHeader
           rowKey={rowKey}
           toolbar={toolbar}
@@ -497,10 +496,10 @@ function Table<T>(props: TableProps<T>) {
         />
       )}
       {React.createElement(
-        type == 'data_tables' ? DataTableBody : React.Fragment,
+        type === 'data_tables' ? DataTableBody : React.Fragment,
         {},
         <>
-          {dataSource.type == 'lazy' ? (
+          {dataSource.type === 'lazy' ? (
             <VirtualList<T>
               tableBodyRef={tableBodyContainer}
               rowKey={rowKey}
@@ -524,18 +523,18 @@ function Table<T>(props: TableProps<T>) {
               responsive={props.responsive}
               className={classnames(props.className, {
                 'dataTable table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body':
-                  type == 'data_tables',
-                'table table-row-dashed': type == 'native',
+                  type === 'data_tables',
+                'table table-row-dashed': type === 'native',
               })}
             >
-              {type == 'native' && (
+              {type === 'native' && (
                 <thead>
                   <tr className="fs-7 fw-bolder text-gray-500 border-bottom-0">
                     {headerColumns.map((col) => (
                       <th
                         key={col.key}
                         className={
-                          typeof col.className == 'function'
+                          typeof col.className === 'function'
                             ? col.className('th')
                             : col.className
                         }
@@ -546,7 +545,7 @@ function Table<T>(props: TableProps<T>) {
                   </tr>
                 </thead>
               )}
-              {type == 'data_tables' && (
+              {type === 'data_tables' && (
                 <Colgroup<T> onColgroup={handleColgroup} columns={newColumns} />
               )}
               <tbody ref={tableBodyContainer} className="fw-bold text-gray-600">

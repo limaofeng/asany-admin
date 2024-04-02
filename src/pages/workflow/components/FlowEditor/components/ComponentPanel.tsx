@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDrag } from 'react-dnd';
 
 import { CaretRightOutlined } from '@ant-design/icons';
 import type { CreateDragObjectFunc, IComponentDefinition } from '@asany/sunmao';
 import { generateUUID, useEditorSelector, useSymbols } from '@asany/sunmao';
 import { Collapse } from 'antd';
-import { useDrag } from 'react-dnd';
 
 const { Panel } = Collapse;
 

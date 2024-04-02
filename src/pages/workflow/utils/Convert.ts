@@ -8,7 +8,7 @@ import type {
 
 function getSourceId(id: string, nodes: ProcessDefinitionShape[]) {
   return nodes.find((item) =>
-    item.outgoing.some((outLine) => outLine.resourceId == id),
+    item.outgoing.some((outLine) => outLine.resourceId === id),
   )?.resourceId;
 }
 
@@ -23,9 +23,9 @@ export function flowableToReactflow(source: ProcessDefinition) {
   };
 
   const shapes = source.childShapes;
-  const nodes = shapes.filter((item) => item.stencil.id != 'SequenceFlow');
+  const nodes = shapes.filter((item) => item.stencil.id !== 'SequenceFlow');
   for (const shape of shapes) {
-    if (shape.stencil.id == 'SequenceFlow') {
+    if (shape.stencil.id === 'SequenceFlow') {
       flowdata.edges.push({
         id: shape.resourceId,
         type: 'simple_floating', // 'buttonedge',

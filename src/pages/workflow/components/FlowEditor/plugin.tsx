@@ -1,7 +1,6 @@
 import type { EditorPlugin } from '@asany/sunmao';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
 
-import Workspace from './Workspace';
 import ComponentPanel from './components/ComponentPanel';
 import Navigation from './components/Navigation';
 import Sidebar from './components/Sidebar';
@@ -12,6 +11,7 @@ import {
   Redo,
   Undo,
 } from './tools';
+import Workspace from './Workspace';
 
 import './style/index.scss';
 

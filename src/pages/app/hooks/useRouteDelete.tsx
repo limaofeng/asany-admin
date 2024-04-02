@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 
-import { LoadRoutesDocument, useDeleteRouteMutation } from './api';
-
 import { Modal, Toast } from '@/metronic';
 import type { Route } from '@/types';
+
+import { LoadRoutesDocument, useDeleteRouteMutation } from './api';
 
 function useRouteDelete(route: Route, onSuccess: (route: Route) => void) {
   const [deleteRoute] = useDeleteRouteMutation({

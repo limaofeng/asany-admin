@@ -194,10 +194,15 @@ function Notifications() {
           </div>
         </Card.Body>
         <Card.Footer className="d-flex justify-content-end py-6 px-9">
-          <button className="btn btn-light btn-active-light-primary me-2">
+          <button
+            type="button"
+            className="btn btn-light btn-active-light-primary me-2"
+          >
             Discard
           </button>
-          <button className="btn btn-primary px-6">Save Changes</button>
+          <button type="button" className="btn btn-primary px-6">
+            Save Changes
+          </button>
         </Card.Footer>
       </Card>
     </ContentWrapper>

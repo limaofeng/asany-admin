@@ -1,19 +1,19 @@
 import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 import { Icon } from '@asany/icons';
 import { TreeSelect } from 'antd';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
-import { history } from '@umijs/max';
-
-import { useDeleteArticleMutation } from '../hooks';
-import useDelete from '../hooks/useDelete';
-
-import PublishDatePicker from './PublishDatePicker';
 
 import { Button, Card, Form, Input, Upload } from '@/metronic';
 import type { Article } from '@/types';
+
+import PublishDatePicker from './PublishDatePicker';
+
+import { useDeleteArticleMutation } from '../hooks';
+import useDelete from '../hooks/useDelete';
 
 type ArticleFormSidebarProps = {
   baseUrl: string;
@@ -22,10 +22,21 @@ type ArticleFormSidebarProps = {
   categoryTreeData: { value: string; title: string }[];
 };
 
+function renderStateText(status: 'PUBLISHED' | 'SCHEDULED' | 'INACTIVE') {
+  if (status === 'PUBLISHED') {
+    return '已发布';
+  }
+  if (status === 'SCHEDULED') {
+    return '计划中';
+  }
+  return '已失效';
+}
+
 function ArticleFormSidebar(props: ArticleFormSidebarProps) {
   const { article, categoryTreeData, onChangeCategory, baseUrl } = props;
 
   const [publishedAt, setPublishedAt] = useState<Moment | undefined>();
+  const navigate = useNavigate();
 
   const handlePublishedAtChange = useCallback((datetime: any) => {
     setPublishedAt(datetime);
@@ -85,9 +96,9 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
 
   const handleDelete = useCallback(async () => {
     if (await onDelete()) {
-      history.replace(
-        `${baseUrl}/cms/categories/${article!.category!.id}/articles`,
-      );
+      navigate(`${baseUrl}/cms/categories/${article!.category!.id}/articles`, {
+        replace: true,
+      });
     }
   }, [onDelete, baseUrl, article]);
 
@@ -98,9 +109,9 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
           {!!article?.status && article?.status !== 'DRAFT' && (
             <div
               className={classnames('ribbon-label', {
-                'bg-primary': article?.status == 'PUBLISHED',
-                'bg-success': article?.status == 'SCHEDULED',
-                'bg-danger': article?.status == 'INACTIVE',
+                'bg-primary': article?.status === 'PUBLISHED',
+                'bg-success': article?.status === 'SCHEDULED',
+                'bg-danger': article?.status === 'INACTIVE',
               })}
             >
               {renderStateText(article.status)}
@@ -145,7 +156,7 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
           <Form.Item name="publishedAt" label="发布时间" className="mb-6">
             <PublishDatePicker
               onChange={handlePublishedAtChange}
-              disabled={article?.status == 'SCHEDULED'}
+              disabled={article?.status === 'SCHEDULED'}
               disabledDate={disabledDate}
               disabledTime={disabledTime}
             />
@@ -176,16 +187,6 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
       )}
     </div>
   );
-}
-
-function renderStateText(status: 'PUBLISHED' | 'SCHEDULED' | 'INACTIVE') {
-  if (status == 'PUBLISHED') {
-    return '已发布';
-  }
-  if (status == 'SCHEDULED') {
-    return '计划中';
-  }
-  return '已失效';
 }
 
 export default ArticleFormSidebar;

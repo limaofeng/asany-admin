@@ -2,16 +2,15 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import { CbEvents } from 'open-im-sdk-wasm/lib/constant';
 import { GroupItem, WsResponse } from 'open-im-sdk-wasm/lib/types/entity';
-import { IMSDK } from './auth';
-
 import type { GetGroupMemberParams } from 'open-im-sdk-wasm/lib/types/params';
+
 import {
   getGroupInfo,
   getGroupMemberList,
   setFriendList,
 } from './actions/contacts';
+import { IMSDK } from './auth';
 import type { ContactActionTypes, ContactState } from './types/contacts';
-
 import {
   SET_BLACK_LIST,
   SET_FRIEND_LIST,

@@ -5,14 +5,14 @@ import FieldContext from 'rc-field-form/lib/FieldContext';
 import type { Meta, NamePath } from 'rc-field-form/lib/interface';
 import { supportRef } from 'rc-util/lib/ref';
 
+import ItemHolder from './ItemHolder';
+
 import { FormContext, NoStyleItemContext } from '../context';
 import useFrameState from '../hooks/useFrameState';
 import useItemRef from '../hooks/useItemRef';
 import type { FormItemProps, RenderChildren } from '../typings';
 import { cloneElement, getFieldId, isValidElement, toArray } from '../util';
 import devWarning from '../utils/devWarning';
-
-import ItemHolder from './ItemHolder';
 
 const NAME_SPLIT = '__SPLIT__';
 
@@ -33,7 +33,7 @@ const MemoInput = React.memo(
 );
 
 function hasValidName(name?: NamePath): boolean {
-  if (name === null) {
+  if (!name) {
     devWarning(false, 'Form.Item', '`null` is passed as `name` property');
   }
   return !(name === undefined || name === null);

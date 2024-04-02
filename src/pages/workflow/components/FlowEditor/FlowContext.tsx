@@ -7,7 +7,6 @@ import {
   useRef,
   useState,
 } from 'react';
-
 import type {
   Edge,
   EdgeChange,
@@ -19,6 +18,7 @@ import {
   useEdgesState as useOriginalEdgesState,
   useNodesState as useOriginalNodesState,
 } from 'react-flow-renderer';
+
 import useUndoable from 'use-undoable';
 
 import type { ReactFlowData } from '../../type';

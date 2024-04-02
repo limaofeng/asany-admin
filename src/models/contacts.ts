@@ -9,7 +9,7 @@ export default function useContactsModel() {
   const [, forceRender] = useReducer((s) => s + 1, 0);
 
   const handleSetBook = useCallback((bookId) => {
-    if (state.current.book == bookId) {
+    if (state.current.book === bookId) {
       return;
     }
     state.current.book = bookId;

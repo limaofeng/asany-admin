@@ -1,8 +1,8 @@
 import { TreeSelect } from 'antd';
 
-import { useArticleStoreTemplatesQuery } from '../../hooks';
-
 import { Card, Form, Select2, Upload } from '@/metronic';
+
+import { useArticleStoreTemplatesQuery } from '../../hooks';
 
 type CategoryFormSidebarProps = {
   categoryTreeData: { value: string; title: string }[];

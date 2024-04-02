@@ -6,26 +6,12 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useNavigate } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 import { useModel } from '@umijs/max';
 import classnames from 'classnames';
-import { useDropzone } from 'react-dropzone';
-import { useNavigate } from 'react-router-dom';
-
-import FolderPath from '../components/FolderPath';
-import {
-  useAddStarForFilesMutation,
-  useClearFilesInTrashMutation,
-  useFolderQuery,
-  useListFiles,
-  useMoveFilesToTrashMutation,
-  useRestoreFilesMutation,
-} from '../hooks';
-
-import FileDetails from './FileDetails';
-import FileName from './FileName';
-import NewFolderModal from './NewFolderModal';
 
 import {
   Alert,
@@ -42,6 +28,20 @@ import type { OnChange } from '@/metronic/Table/typings';
 import type { DataSource, Sorter } from '@/metronic/typings';
 import { fileSize } from '@/metronic/utils/format';
 import type { FileFilter, FileObject } from '@/types';
+
+import FileDetails from './FileDetails';
+import FileName from './FileName';
+import NewFolderModal from './NewFolderModal';
+
+import FolderPath from '../components/FolderPath';
+import {
+  useAddStarForFilesMutation,
+  useClearFilesInTrashMutation,
+  useFolderQuery,
+  useListFiles,
+  useMoveFilesToTrashMutation,
+  useRestoreFilesMutation,
+} from '../hooks';
 
 import '../style/ListFiles.scss';
 
@@ -133,7 +133,7 @@ function ListFiles(props: ListFilesProps) {
       'isDirectory_desc,' +
       sorter.field +
       '_' +
-      (sorter.order == 'ascend' ? 'asc' : 'desc')
+      (sorter.order === 'ascend' ? 'asc' : 'desc')
     );
   }, [sorter]);
 
@@ -167,7 +167,7 @@ function ListFiles(props: ListFilesProps) {
     if (
       props.currentFolder &&
       loadFolderResult?.currentFolder &&
-      props.currentFolder.id != loadFolderResult.currentFolder.id &&
+      props.currentFolder.id !== loadFolderResult.currentFolder.id &&
       props.currentFolder.path.startsWith(loadFolderResult.currentFolder.path)
     ) {
       return (temp.current.currentFolder = props.currentFolder);
@@ -188,16 +188,16 @@ function ListFiles(props: ListFilesProps) {
 
   const handleSuccess = useCallback(
     async (file: FileObject) => {
-      await refetchForObjects([file], (l, r) => l.id == r.id);
+      await refetchForObjects([file], (l, r) => l.id === r.id);
     },
     [refetchForObjects],
   );
 
   const selectedFile = useMemo(() => {
-    if (selectedKeys.length != 1) {
+    if (selectedKeys.length !== 1) {
       return undefined;
     }
-    return allItems().find((item) => item && item.id == selectedKeys[0]);
+    return allItems().find((item) => item && item.id === selectedKeys[0]);
   }, [allItems, selectedKeys]);
 
   const handleCancelRename = useCallback(() => {
@@ -211,7 +211,7 @@ function ListFiles(props: ListFilesProps) {
 
   const handleClick = useCallback(
     async (item: FileObject) => {
-      if (toolbar == 'trash') {
+      if (toolbar === 'trash') {
         await Modal.confirm({
           title: <>此文件{item.isDirectory && '夹'}位于您的回收站中</>,
           content: (
@@ -237,10 +237,10 @@ function ListFiles(props: ListFilesProps) {
 
           _currentFolder.parents = _paths.slice(1, _paths.length - 1);
           const _index = _currentFolder.parents.findIndex(
-            (_item) => _item.path == item.path,
+            (_item) => _item.path === item.path,
           );
 
-          if (_index != -1) {
+          if (_index !== -1) {
             _currentFolder.parents = _currentFolder.parents.slice(0, _index);
           }
         }
@@ -285,12 +285,12 @@ function ListFiles(props: ListFilesProps) {
   }, []);
 
   const renderStats = useCallback(() => {
-    if (pagination.totalCount == loadedCount && loadedCount == 0) {
+    if (pagination.totalCount === loadedCount && loadedCount === 0) {
       return loading ? <>加载中....</> : <></>;
     }
     return (
       <>
-        {pagination.totalCount == loadedCount ? (
+        {pagination.totalCount === loadedCount ? (
           <>已全部加载</>
         ) : (
           <>已加载 {loadedCount} 个</>
@@ -314,7 +314,7 @@ function ListFiles(props: ListFilesProps) {
 
   const selectedFiles = useMemo(() => {
     return dataSource.items.filter((item) =>
-      selectedKeys.some((key) => key == item.id),
+      selectedKeys.some((key) => key === item.id),
     );
   }, [dataSource, selectedKeys]);
 
@@ -322,7 +322,7 @@ function ListFiles(props: ListFilesProps) {
     async (_folder: FileObject) => {
       await refetch(1);
       const items = allItems();
-      if (items.some((item) => item && item.id == _folder.id)) {
+      if (items.some((item) => item && item.id === _folder.id)) {
         setSelectedKeys([_folder.id]);
       }
     },
@@ -350,7 +350,9 @@ function ListFiles(props: ListFilesProps) {
   console.log('isDragActive', isDragActive);
 
   const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     role,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     tabIndex,
     onClick: browseLocalFiles,
     ...rootProps
@@ -378,7 +380,7 @@ function ListFiles(props: ListFilesProps) {
     const files = items.filter((item) => selectedKeys.includes(item.id));
 
     const filename =
-      files.length == 1
+      files.length === 1
         ? files[0].name
         : `【批量下载】${files[0].name} 等 (${files.length}).zip`;
 
@@ -410,9 +412,9 @@ function ListFiles(props: ListFilesProps) {
       variables: { ids: selectedKeys },
     });
     setSelectedKeys([]);
-    refetchWithRemoveForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+    refetchWithRemoveForObjects(rdata?.files as any, (l, r) => l.id === r.id);
     Toast.success(message + ' 已移至回收站', 2000, {
-      placement: 'bottom-start',
+      placement: 'bottom-left',
       progressBar: true,
     });
   }, [moveToTrash, refetchWithRemoveForObjects, selectedFile, selectedKeys]);
@@ -430,7 +432,7 @@ function ListFiles(props: ListFilesProps) {
     });
     refetch(1);
     Toast.success('回收站已被清空', 2000, {
-      placement: 'bottom-start',
+      placement: 'bottom-left',
       progressBar: true,
     });
   }, [clearTrash, folder, refetch]);
@@ -452,9 +454,9 @@ function ListFiles(props: ListFilesProps) {
       variables: { ids: selectedKeys },
     });
     setSelectedKeys([]);
-    refetchWithRemoveForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+    refetchWithRemoveForObjects(rdata?.files as any, (l, r) => l.id === r.id);
     Toast.success(message + ' 还原成功', 2000, {
-      placement: 'bottom-start',
+      placement: 'bottom-left',
       progressBar: true,
     });
   }, [refetchWithRemoveForObjects, restoreFiles, selectedFile, selectedKeys]);
@@ -473,9 +475,9 @@ function ListFiles(props: ListFilesProps) {
           mode: 'REMOVE',
         },
       });
-      refetchForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+      refetchForObjects(rdata?.files as any, (l, r) => l.id === r.id);
       Toast.success(message + '已从收藏中移除', 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     } else {
@@ -485,17 +487,17 @@ function ListFiles(props: ListFilesProps) {
           mode: 'ADD',
         },
       });
-      if (toolbar == 'starred') {
+      if (toolbar === 'starred') {
         setSelectedKeys([]);
         refetchWithRemoveForObjects(
           rdata?.files as any,
-          (l, r) => l.id == r.id,
+          (l, r) => l.id === r.id,
         );
       } else {
-        refetchForObjects(rdata?.files as any, (l, r) => l.id == r.id);
+        refetchForObjects(rdata?.files as any, (l, r) => l.id === r.id);
       }
       Toast.success(message + ' 已添加到收藏', 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     }
@@ -519,14 +521,14 @@ function ListFiles(props: ListFilesProps) {
     if (!selectedKeys.length) {
       return 'no_rows';
     }
-    if (selectedKeys.length == 1) {
+    if (selectedKeys.length === 1) {
       return 'row';
     }
     return 'multi-row';
   }, [selectedKeys.length]);
 
   const tableToolbar = useMemo(() => {
-    if (toolbar == 'starred') {
+    if (toolbar === 'starred') {
       return () => {
         return (
           <div>
@@ -548,7 +550,7 @@ function ListFiles(props: ListFilesProps) {
         );
       };
     }
-    if (toolbar == 'trash') {
+    if (toolbar === 'trash') {
       return () => {
         return (
           <div>
@@ -575,7 +577,7 @@ function ListFiles(props: ListFilesProps) {
 
   return (
     <Card className="list-files" flush>
-      {toolbar == 'default' && (
+      {toolbar === 'default' && (
         <Card.Header className="pt-8 flex-row-reverse">
           <Card.Title>
             <Input.Search
@@ -593,9 +595,9 @@ function ListFiles(props: ListFilesProps) {
                 ),
               })}
             >
-              {row_selection_state == 'no_rows' && (
+              {row_selection_state === 'no_rows' && (
                 <>
-                  {toolbar == 'default' && (
+                  {toolbar === 'default' && (
                     <Button
                       variant="primary"
                       className="rounded-2 me-3"
@@ -607,7 +609,7 @@ function ListFiles(props: ListFilesProps) {
                       上传文件
                     </Button>
                   )}
-                  {toolbar == 'default' && rootFolder?.isRootFolder && (
+                  {toolbar === 'default' && rootFolder?.isRootFolder && (
                     <Button
                       variant="light-primary"
                       className="rounded-2"
@@ -656,7 +658,7 @@ function ListFiles(props: ListFilesProps) {
                   删除
                 </Button>
               )}
-              {row_selection_state == 'row' && (
+              {row_selection_state === 'row' && (
                 <Button
                   as="button"
                   variant="light-primary"
@@ -698,7 +700,7 @@ function ListFiles(props: ListFilesProps) {
               {renderStats()}
             </Badge>
           </div>
-          {toolbar == 'trash' && !!dataSource.rowCount && (
+          {toolbar === 'trash' && !!dataSource.rowCount && (
             <Alert
               theme="Light"
               type="primary"
@@ -741,7 +743,7 @@ function ListFiles(props: ListFilesProps) {
                     className: 'min-w-250px',
                     sorter: true,
                     sortOrder:
-                      sorter?.field == 'name' ? sorter.order : undefined,
+                      sorter?.field === 'name' ? sorter.order : undefined,
                     render: (_, record) => {
                       return (
                         <FileName
@@ -749,7 +751,7 @@ function ListFiles(props: ListFilesProps) {
                           onSuccess={handleSuccess}
                           onCancelRename={handleCancelRename}
                           data={record}
-                          editable={record.id == temp.current.renameFile?.id}
+                          editable={record.id === temp.current.renameFile?.id}
                         />
                       );
                     },
@@ -760,7 +762,7 @@ function ListFiles(props: ListFilesProps) {
                     sorter: true,
                     className: 'min-w-125px',
                     sortOrder:
-                      sorter?.field == 'lastModified'
+                      sorter?.field === 'lastModified'
                         ? sorter.order
                         : undefined,
                   },
@@ -770,7 +772,7 @@ function ListFiles(props: ListFilesProps) {
                     sorter: true,
                     className: 'min-w-100px',
                     sortOrder:
-                      sorter?.field == 'size' ? sorter.order : undefined,
+                      sorter?.field === 'size' ? sorter.order : undefined,
                     render(value, record) {
                       return record.isDirectory ? '-' : fileSize(value);
                     },

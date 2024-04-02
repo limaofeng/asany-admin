@@ -1,18 +1,17 @@
 import React, { useCallback, useRef, useState } from 'react';
-
 import { useDrop } from 'react-dnd';
 import type { Connection, Edge, Node } from 'react-flow-renderer';
 import ReactFlow, {
+  addEdge,
   Background,
   Controls,
   MiniMap,
-  addEdge,
 } from 'react-flow-renderer';
 
-import { useEdgesState, useFlowTools, useNodesState } from './FlowContext';
 import QuickControls from './components/QuickControls';
 import edgeTypes from './edgeTypes';
 import { FloatingConnectionLine } from './edgeTypes/FloatingEdge';
+import { useEdgesState, useFlowTools, useNodesState } from './FlowContext';
 import nodeTypes from './nodeTypes';
 
 let id = 0;
@@ -36,7 +35,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
 
   const onConnect = useCallback(
     (params: Connection) => {
-      if (params.source == params.target) {
+      if (params.source === params.target) {
         return;
       }
       setEdges((eds) =>
@@ -108,7 +107,7 @@ const OverviewFlow = (props: OverviewFlowProps) => {
       console.log(node, _nodes);
       setNodes((prevNodes) =>
         prevNodes.map((e) => {
-          const _index = _nodes.findIndex((n) => n.id == e.id);
+          const _index = _nodes.findIndex((n) => n.id === e.id);
           if (_index > -1) {
             return {
               ...e,

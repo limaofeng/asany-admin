@@ -3,13 +3,13 @@ import { useCallback, useState } from 'react';
 import Icon from '@asany/icons';
 import { Link } from '@umijs/max';
 
+import { ContentWrapper } from '@/layouts/components';
+import { Button, Card } from '@/metronic';
+
 import {
   ChangeUsernameModal,
   DeleteAccountModal,
 } from '../../components/modals';
-
-import { ContentWrapper } from '@/layouts/components';
-import { Button, Card } from '@/metronic';
 
 function Account() {
   const organizations = [];

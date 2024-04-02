@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Icon } from '@asany/icons';
+import { useModel } from '@umijs/max';
 import { useLatest } from 'ahooks';
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
-import { useModel } from '@umijs/max';
+
+import { Button, Tooltip } from '@/metronic';
 
 import type { ContentEditableEvent } from '../../ContentEditable/ContentEditable';
 import ContentEditable from '../../ContentEditable/ContentEditable';
 
-import { Button, Tooltip } from '@/metronic';
 // import { messageTypes } from '@/utils/open-im/constants/messageContentType';
 // import { base64toFile, contenteditableDivRange, move2end } from '@/utils/open-im/utils/common';
 // import { isSingleCve } from '@/utils/open-im/utils/im';
@@ -190,7 +191,7 @@ function ChatFooter(props: ChatFooterProps) {
       const _latestContent = temp.current.latestContent;
       const _atList = temp.current.atList;
 
-      if (cve.draftText == _latestContent.current) {
+      if (cve.draftText === _latestContent.current) {
         return;
       }
 

@@ -1,15 +1,9 @@
 import { useCallback, useMemo } from 'react';
+import { NavigateFunction, useLocation, useNavigate } from 'react-router';
 
 import { Icon } from '@asany/icons';
-import qs from 'query-string';
-import type { RouteComponentProps } from 'react-router';
 import { Link } from '@umijs/max';
-
-import {
-  LandingStoresDocument,
-  useDeleteStoreMutation,
-  useLandingStoresQuery,
-} from '../../hooks';
+import qs from 'query-string';
 
 import { Controls } from '@/components';
 import { ContentWrapper } from '@/layouts/components';
@@ -28,14 +22,20 @@ import {
 import type { Sorter } from '@/metronic/typings';
 import type { LandingStore } from '@/types';
 
+import {
+  LandingStoresDocument,
+  useDeleteStoreMutation,
+  useLandingStoresQuery,
+} from '../../hooks';
+
 type ActionsProps = {
-  history: any;
+  navigate: NavigateFunction;
   data: LandingStore;
   baseUrl: string;
   onDelete: (...ids: string[]) => Promise<number>;
 };
 
-function Actions({ data, history, baseUrl, onDelete }: ActionsProps) {
+function Actions({ data, navigate, baseUrl, onDelete }: ActionsProps) {
   const handleDelete = useCallback(
     async (_data: LandingStore) => {
       const message = `确定删除门店 “${_data.name}” 吗？`;
@@ -56,7 +56,7 @@ function Actions({ data, history, baseUrl, onDelete }: ActionsProps) {
       }
       await onDelete(_data.id);
       Toast.success(`门店 “${_data.name}” 删除成功`, 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     },
@@ -65,13 +65,13 @@ function Actions({ data, history, baseUrl, onDelete }: ActionsProps) {
 
   const handleMenuClick = useCallback(
     (event: any) => {
-      if (event.key == 'view') {
+      if (event.key === 'view') {
         navigate(`${baseUrl}/${data.id}`);
-      } else if (event.key == 'delete') {
+      } else if (event.key === 'delete') {
         handleDelete(data);
       }
     },
-    [baseUrl, data, handleDelete, history],
+    [baseUrl, data, handleDelete, navigate],
   );
 
   return (
@@ -99,20 +99,19 @@ function Actions({ data, history, baseUrl, onDelete }: ActionsProps) {
   );
 }
 
-type StoreListProps = RouteComponentProps<any>;
-
-function StoreList(props: StoreListProps) {
-  const { history, location } = props;
+function StoreList() {
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const baseUrl = location.pathname;
 
   const variables = useMemo(() => {
-    const { q, ...query } = (props.location as any).query;
+    const { q, ...query } = qs.parse(location.search) as any;
     if (q) {
       query.filter = { name_contains: q };
     }
     return query;
-  }, [props.location]);
+  }, [location]);
 
   const sorter = useMemo<Sorter>(() => {
     if (!variables.orderBy) {
@@ -123,7 +122,7 @@ function StoreList(props: StoreListProps) {
     }
     const [field, order] = variables.orderBy.split('_');
     return {
-      order: order == 'desc' ? 'descend' : 'ascend',
+      order: order === 'desc' ? 'descend' : 'ascend',
       field,
     };
   }, [variables.orderBy]);
@@ -159,9 +158,11 @@ function StoreList(props: StoreListProps) {
 
   const handleSearch = useCallback(
     (text: string) => {
-      history.replace(location.pathname + '?' + qs.stringify({ q: text }));
+      navigate(location.pathname + '?' + qs.stringify({ q: text }), {
+        replace: true,
+      });
     },
-    [history, location.pathname],
+    [navigate, location.pathname],
   );
 
   const handleChange = useCallback(
@@ -172,10 +173,12 @@ function StoreList(props: StoreListProps) {
       }
       if (!!_sorter) {
         _query.orderBy =
-          _sorter.field + '_' + (_sorter.order == 'ascend' ? 'asc' : 'desc');
+          _sorter.field + '_' + (_sorter.order === 'ascend' ? 'asc' : 'desc');
       }
       _query.page = _pagination.current;
-      history.replace(location.pathname + '?' + qs.stringify(_query));
+      navigate(location.pathname + '?' + qs.stringify(_query), {
+        replace: true,
+      });
     },
     [history, location.pathname, variables.filter?.name_contains],
   );
@@ -211,7 +214,7 @@ function StoreList(props: StoreListProps) {
       }
       await handleDelete(...selectedRowKeys);
       Toast.success(`门店批量删除成功`, 2000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
     },
@@ -298,7 +301,7 @@ function StoreList(props: StoreListProps) {
                       title: '店号',
                       sorter: true,
                       sortOrder:
-                        sorter.field == 'code' ? sorter.order : undefined,
+                        sorter.field === 'code' ? sorter.order : undefined,
                       width: 80,
                     },
                     {
@@ -306,7 +309,7 @@ function StoreList(props: StoreListProps) {
                       title: '名称',
                       sorter: true,
                       sortOrder:
-                        sorter.field == 'name' ? sorter.order : undefined,
+                        sorter.field === 'name' ? sorter.order : undefined,
                       render(name, record) {
                         return (
                           <div>
@@ -346,14 +349,14 @@ function StoreList(props: StoreListProps) {
                     //   title: '门店地址',
                     //   width: 120,
                     //   sorter: true,
-                    //   sortOrder: sorter.field == 'location.street' ? sorter.order : undefined,
+                    //   sortOrder: sorter.field === 'location.street' ? sorter.order : undefined,
                     // },
                     // {
                     //   key: 'createdAt',
                     //   title: '创建时间',
                     //   width: 150,
                     //   sorter: true,
-                    //   sortOrder: sorter.field == 'createdAt' ? sorter.order : undefined,
+                    //   sortOrder: sorter.field === 'createdAt' ? sorter.order : undefined,
                     // },
                     {
                       key: 'actions',
@@ -364,7 +367,7 @@ function StoreList(props: StoreListProps) {
                           <Actions
                             baseUrl={baseUrl}
                             onDelete={handleDelete}
-                            history={props.history}
+                            navigate={navigate}
                             data={record}
                           />
                         );

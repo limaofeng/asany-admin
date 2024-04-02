@@ -3,14 +3,14 @@ import { useCallback, useEffect } from 'react';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 
+import { Button, Card, Drawer } from '@/metronic';
+
 import { useChat } from '../../hooks';
-import '../../style/chat_drawer.scss';
 import ChatMessenger from '../ChatMessenger';
 import CveList from '../CveList';
 import SearchBar from '../SearchBar';
 
-import { Button, Card, Drawer } from '@/metronic';
-
+import '../../style/chat_drawer.scss';
 type ChatDrawerProps = {
   visible: boolean;
   onClose: () => void;

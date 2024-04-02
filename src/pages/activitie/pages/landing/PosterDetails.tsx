@@ -1,12 +1,5 @@
 import { useCallback, useEffect } from 'react';
-
-import type { RouteComponentProps } from 'react-router';
-
-import {
-  useCreatePosterMutation,
-  useLandingPosterLazyQuery,
-  useUpdatePosterMutation,
-} from '../../hooks';
+import { useNavigate, useParams } from 'react-router';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -20,10 +13,16 @@ import {
   Upload,
 } from '@/metronic';
 
-type PosterDetailsProps = RouteComponentProps<{ id: string }>;
+import {
+  useCreatePosterMutation,
+  useLandingPosterLazyQuery,
+  useUpdatePosterMutation,
+} from '../../hooks';
 
-function PosterDetails(props: PosterDetailsProps) {
-  const { match, history } = props;
+function PosterDetails() {
+  const params = useParams();
+
+  const navigate = useNavigate();
 
   const [loadPoster, { data: viewData, loading: getLoading }] =
     useLandingPosterLazyQuery({
@@ -36,7 +35,7 @@ function PosterDetails(props: PosterDetailsProps) {
     {},
   );
 
-  const isNew = match.params.id == 'new';
+  const isNew = params.id === 'new';
 
   const form = Form.useForm();
 
@@ -53,7 +52,7 @@ function PosterDetails(props: PosterDetailsProps) {
     } else {
       await updatePoster({
         variables: {
-          id: match.params.id,
+          id: params.id,
           input: {
             ...values,
           },
@@ -65,25 +64,27 @@ function PosterDetails(props: PosterDetailsProps) {
       `海报 “${values.name}” ${isNew ? '新增' : '修改'}成功`,
       2000,
       {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       },
     );
 
     if (!history.length || isNew) {
-      history.replace('/website/landing/posters');
+      navigate('/website/landing/posters', {
+        replace: true,
+      });
     } else {
-      history.goBack();
+      navigate(-1);
     }
-  }, [createPoster, match.params.id, form, history, isNew, updatePoster]);
+  }, [createPoster, params.id, form, navigate, isNew, updatePoster]);
 
   useEffect(() => {
-    if (match.params.id == 'new') {
+    if (params.id === 'new') {
       return;
     }
     const abortController = new AbortController();
     loadPoster({
-      variables: { id: match.params.id },
+      variables: { id: params.id },
       context: {
         fetchOptions: {
           signal: abortController.signal,
@@ -98,9 +99,11 @@ function PosterDetails(props: PosterDetailsProps) {
           timerProgressBar: true,
         });
         if (!!history.length) {
-          history.goBack();
+          navigate(-1);
         } else {
-          history.replace('/website/landing/posters');
+          navigate('/website/landing/posters', {
+            replace: true,
+          });
         }
         return;
       }
@@ -113,7 +116,7 @@ function PosterDetails(props: PosterDetailsProps) {
     return () => {
       abortController.abort();
     };
-  }, [form, loadPoster, history, match.params.id]);
+  }, [form, loadPoster, history, params.id]);
 
   return (
     <ContentWrapper

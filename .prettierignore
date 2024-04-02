@@ -1,9 +1,11 @@
 node_modules
 .umi
 .umi-production
+package-lock.json
 public
+dist
 graphql/index.schema.json
-src/types.ts
+src/types/index.ts
 src/hooks/api.ts
 src/pages/**/*/hooks.ts
 src/pages/*/hooks.ts

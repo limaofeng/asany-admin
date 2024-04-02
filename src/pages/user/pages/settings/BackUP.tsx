@@ -92,7 +92,10 @@ function BackUP() {
               {/*--end::Edit--*/}
               {/*--begin::Action--*/}
               <div id="kt_signin_email_button" className="ms-auto">
-                <button className="btn btn-light btn-active-light-primary">
+                <button
+                  type="button"
+                  className="btn btn-light btn-active-light-primary"
+                >
                   Change Email
                 </button>
               </div>
@@ -196,7 +199,10 @@ function BackUP() {
               {/*--end::Edit--*/}
               {/*--begin::Action--*/}
               <div id="kt_signin_password_button" className="ms-auto">
-                <button className="btn btn-light btn-active-light-primary">
+                <button
+                  type="button"
+                  className="btn btn-light btn-active-light-primary"
+                >
                   Reset Password
                 </button>
               </div>
@@ -442,10 +448,15 @@ function BackUP() {
           {/*--end::Card body--*/}
           {/*--begin::Card footer--*/}
           <div className="card-footer d-flex justify-content-end py-6 px-9">
-            <button className="btn btn-light btn-active-light-primary me-2">
+            <button
+              type="button"
+              className="btn btn-light btn-active-light-primary me-2"
+            >
               Discard
             </button>
-            <button className="btn btn-primary">Save Changes</button>
+            <button type="button" className="btn btn-primary">
+              Save Changes
+            </button>
           </div>
           {/*--end::Card footer--*/}
         </div>
@@ -653,10 +664,15 @@ function BackUP() {
             {/*--end::Card body--*/}
             {/*--begin::Card footer--*/}
             <div className="card-footer d-flex justify-content-end py-6 px-9">
-              <button className="btn btn-light btn-active-light-primary me-2">
+              <button
+                type="button"
+                className="btn btn-light btn-active-light-primary me-2"
+              >
                 Discard
               </button>
-              <button className="btn btn-primary px-6">Save Changes</button>
+              <button type="button" className="btn btn-primary px-6">
+                Save Changes
+              </button>
             </div>
             {/*--end::Card footer--*/}
           </form>

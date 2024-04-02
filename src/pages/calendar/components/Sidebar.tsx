@@ -9,25 +9,25 @@ import React, {
 import type { DayValue } from '@amir04lm26/react-modern-calendar-date-picker';
 import { Calendar } from '@amir04lm26/react-modern-calendar-date-picker';
 import '@amir04lm26/react-modern-calendar-date-picker/lib/DatePicker.css';
+import { useModel } from '@umijs/max';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
-import { useModel } from '@umijs/max';
 
-import {
-  useCalendarEventsWithDaysLazyQuery,
-  useCalendarSetsQuery,
-} from '../hooks';
+import { AsideWorkspace } from '@/layouts/Demo7';
+import { Popover } from '@/metronic';
+import type { CalendarEvent, CalendarSet } from '@/types';
+import { sleep } from '@/utils';
 
 import CalendarSidebarFooter from './CalendarSidebarFooter';
 import CalendarSidebarHeader from './CalendarSidebarHeader';
 import NewCalendarEvent from './NewCalendarEvent';
 import Preferences from './preferences';
 
-import { AsideWorkspace } from '@/layouts/Demo7';
-import { Popover } from '@/metronic';
-import type { CalendarEvent, CalendarSet } from '@/types';
-import { sleep } from '@/utils';
+import {
+  useCalendarEventsWithDaysLazyQuery,
+  useCalendarSetsQuery,
+} from '../hooks';
 
 type EventWithDay = {
   key: string;
@@ -155,7 +155,7 @@ function selectedDayEventWithDay(selectedDay: Moment, events: EventWithDay[]) {
 
   const prevEvent = events.find((item) => item.isSelected);
   if (prevEvent) {
-    if (prevEvent.key == key) {
+    if (prevEvent.key === key) {
       return events;
     }
     if (prevEvent.isTemporary) {
@@ -167,7 +167,7 @@ function selectedDayEventWithDay(selectedDay: Moment, events: EventWithDay[]) {
       events.find((item) => item.isSelected)!.isSelected = false;
     }
   }
-  if (!events.some((item) => item.key == key)) {
+  if (!events.some((item) => item.key === key)) {
     events.push({
       key,
       date: selectedDay,
@@ -181,7 +181,7 @@ function selectedDayEventWithDay(selectedDay: Moment, events: EventWithDay[]) {
       (l, r) => l.date.toDate().getTime() - r.date.toDate().getTime(),
     );
   } else {
-    events.find((item) => item.key == key)!.isSelected = true;
+    events.find((item) => item.key === key)!.isSelected = true;
   }
   return events;
 }
@@ -221,7 +221,7 @@ function Sidebar() {
   const { data: calendarSetData } = useCalendarSetsQuery();
 
   const calendarSet = useModel('calendar', ({ state }) => state.calendarSet);
-  const isNew = useModel('calendar', (model) => model.state.state == 'new');
+  const isNew = useModel('calendar', (model) => model.state.state === 'new');
   const selectedDay = useModel(
     'calendar',
     ({ state }) => state.selectedDay || new Date(),
@@ -323,7 +323,7 @@ function Sidebar() {
       variables: {
         date: selectedDay,
         days: 60,
-        calendarSet: calendarSet == 'all' ? undefined : calendarSet,
+        calendarSet: calendarSet === 'all' ? undefined : calendarSet,
       },
     }).then(({ data }) => {
       state.current.eventsWithDays = parseEventsWithDays(
@@ -332,7 +332,7 @@ function Sidebar() {
       );
       state.current.toDayOrNextEvent = state.current.eventsWithDays.find(
         (item) =>
-          item.key == moment(state.current.selectedDay).format('YYYY-MM-DD'),
+          item.key === moment(state.current.selectedDay).format('YYYY-MM-DD'),
       );
       state.current.skipNextScroll = true;
       forceRender();
@@ -349,7 +349,7 @@ function Sidebar() {
         state.current.eventsWithDays,
       );
       state.current.toDayOrNextEvent = state.current.eventsWithDays.find(
-        (item) => item.key == moment(_selectedDay).format('YYYY-MM-DD'),
+        (item) => item.key === moment(_selectedDay).format('YYYY-MM-DD'),
       );
       state.current.skipNextScroll = true;
 
@@ -360,14 +360,14 @@ function Sidebar() {
 
       await sleep(60);
 
-      if (state.current.selectedDay != _selectedDay) {
+      if (state.current.selectedDay !== _selectedDay) {
         return;
       }
       const { data: xdata } = await refetchCalendarEventsWithDays({
         date: _selectedDay,
         days: 60,
         calendarSet:
-          state.current.calendarSet == 'all'
+          state.current.calendarSet === 'all'
             ? undefined
             : state.current.calendarSet,
       });
@@ -380,7 +380,7 @@ function Sidebar() {
       forceRender();
       await sleep(60);
 
-      if (state.current.selectedDay == _selectedDay) {
+      if (state.current.selectedDay === _selectedDay) {
         gotoDate(_selectedDay);
       }
     },
@@ -418,7 +418,7 @@ function Sidebar() {
     );
     const scrollRect = scrollViewRef.current.getBoundingClientRect();
     const node = nodes.find((item) => {
-      if (item.dataset.temp == 'true') {
+      if (item.dataset.temp === 'true') {
         return false;
       }
       const nodeRect = item.getBoundingClientRect();
@@ -432,7 +432,7 @@ function Sidebar() {
       return;
     }
     const eventWithDay = state.current.eventsWithDays.find(
-      (item) => item.key == node.dataset.date,
+      (item) => item.key === node.dataset.date,
     );
     if (!eventWithDay) {
       return;
@@ -455,7 +455,7 @@ function Sidebar() {
         date: eventWithDay.date.toDate(),
         days: 60,
         calendarSet:
-          state.current.calendarSet == 'all'
+          state.current.calendarSet === 'all'
             ? undefined
             : state.current.calendarSet,
       });
@@ -488,7 +488,7 @@ function Sidebar() {
 
   const { toDayOrNextEvent, eventsWithDays } = state.current;
   const onDay = eventsWithDays.find(
-    (item) => item.key == toDayOrNextEvent?.key,
+    (item) => item.key === toDayOrNextEvent?.key,
   );
 
   return (

@@ -14,7 +14,7 @@ const getLayoutRenderConfig = (currentPathConfig: {
     layoutRender.footerRender = false;
   }
 
-  if (currentPathConfig?.layout == false) {
+  if (currentPathConfig?.layout === false) {
     layoutRender.pure = true;
     return layoutRender;
   }

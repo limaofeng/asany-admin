@@ -1,14 +1,11 @@
 import { useCallback, useMemo } from 'react';
+import { useLocation, useOutletContext } from 'react-router';
 
 import { Icon } from '@asany/icons';
 import TagsInput from '@asany/tags-input';
 import { Affix, TreeSelect } from 'antd';
 import classnames from 'classnames';
-
-import {
-  useArticleStoreTemplatesQuery,
-  useCreateArticleCategoryMutation,
-} from '../hooks';
+import qs from 'query-string';
 
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -25,8 +22,11 @@ import {
 } from '@/metronic';
 import { ArticleCategory } from '@/types';
 import { tree } from '@/utils';
-import qs from 'query-string';
-import { useLocation, useOutletContext } from 'react-router';
+
+import {
+  useArticleStoreTemplatesQuery,
+  useCreateArticleCategoryMutation,
+} from '../hooks';
 
 function ArticleChannelNew() {
   const { categories } = useOutletContext<{ categories: ArticleCategory[] }>();

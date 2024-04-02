@@ -1,19 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
+import {
+  OverlayTrigger as BsOverlayTrigger,
+  Popover as BsPopover,
+} from 'react-bootstrap';
+import { useClickAway } from 'react-use';
 
 import useMergedRef from '@react-hook/merged-ref';
 import type { OverlayArrowProps } from '@restart/ui/Overlay';
 import type { Offset } from '@restart/ui/usePopper';
 import classnames from 'classnames';
-import {
-  OverlayTrigger as BsOverlayTrigger,
-  Popover as BsPopover,
-} from 'react-bootstrap';
 import type {
   OverlayDelay,
   OverlayTriggerType,
 } from 'react-bootstrap/esm/OverlayTrigger';
 import type { Placement } from 'react-bootstrap/esm/types';
-import { useClickAway } from 'react-use';
 
 import './style.scss';
 
@@ -33,13 +33,40 @@ type PopoverProps = {
   arrowProps?: Partial<OverlayArrowProps>;
 };
 
+
+function getOffsetLeft(o: HTMLElement, parent: HTMLElement = document.body) {
+  let left = 0;
+  let offsetParent = o;
+  while (offsetParent !== null && offsetParent !== parent) {
+    if (getComputedStyle(offsetParent).position === 'absolute') {
+      left += offsetParent.offsetLeft;
+    }
+    offsetParent = offsetParent.offsetParent as HTMLElement;
+  }
+
+  return left;
+}
+
+function getOffsetTop(o: HTMLElement, parent: HTMLElement = document.body) {
+  let top = 0;
+  let offsetParent = o;
+  while (offsetParent !== null && offsetParent !== parent) {
+    if (getComputedStyle(offsetParent).position === 'absolute') {
+      top += offsetParent.offsetTop;
+    }
+    offsetParent = offsetParent.offsetParent as HTMLElement;
+  }
+
+  return top;
+}
+
 function Popover(props: PopoverProps) {
   const {
     children,
     title,
     content,
     trigger = 'click',
-    placement = trigger == 'contextMenu' ? 'right-start' : 'right',
+    placement = trigger === 'contextMenu' ? 'right-start' : 'right',
     arrowProps,
     delay,
     overlayClassName,
@@ -69,6 +96,7 @@ function Popover(props: PopoverProps) {
       return;
     }
     const handler = (e: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
       onVisibleChange
         ? onVisibleChange(!temp.current)
         : setVisible((_v) => !_v);
@@ -85,17 +113,18 @@ function Popover(props: PopoverProps) {
     const _tar = document.querySelector('.modal');
     if (
       nodeRef.current?.contains(e.target as any) ||
-      target == _tar ||
+      target === _tar ||
       _tar?.contains(target as any)
     ) {
       // ignore click
       return;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
     onVisibleChange ? onVisibleChange(false) : setVisible(false);
   });
 
   useEffect(() => {
-    if (trigger != 'contextMenu') {
+    if (trigger !== 'contextMenu') {
       return;
     }
     nodeRef.current?.addEventListener('click', (e: any) => {
@@ -114,6 +143,7 @@ function Popover(props: PopoverProps) {
         nodeRef.current!.offsetTop,
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
       onVisibleChange ? onVisibleChange(true) : setVisible(true);
       e.stopPropagation();
       e.preventDefault();
@@ -122,7 +152,7 @@ function Popover(props: PopoverProps) {
 
   return (
     <BsOverlayTrigger
-      trigger={trigger == 'contextMenu' ? undefined : trigger}
+      trigger={trigger === 'contextMenu' ? undefined : trigger}
       show={visible}
       delay={delay}
       offset={offset}
@@ -146,32 +176,6 @@ function Popover(props: PopoverProps) {
       {React.cloneElement(children, { ref: multiRef })}
     </BsOverlayTrigger>
   );
-}
-
-function getOffsetLeft(o: HTMLElement, parent: HTMLElement = document.body) {
-  let left = 0;
-  let offsetParent = o;
-  while (offsetParent != null && offsetParent != parent) {
-    if (getComputedStyle(offsetParent).position == 'absolute') {
-      left += offsetParent.offsetLeft;
-    }
-    offsetParent = offsetParent.offsetParent as HTMLElement;
-  }
-
-  return left;
-}
-
-function getOffsetTop(o: HTMLElement, parent: HTMLElement = document.body) {
-  let top = 0;
-  let offsetParent = o;
-  while (offsetParent != null && offsetParent != parent) {
-    if (getComputedStyle(offsetParent).position == 'absolute') {
-      top += offsetParent.offsetTop;
-    }
-    offsetParent = offsetParent.offsetParent as HTMLElement;
-  }
-
-  return top;
 }
 
 export default Popover;

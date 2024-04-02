@@ -3,12 +3,12 @@ import { useCallback, useMemo } from 'react';
 import Icon from '@asany/icons';
 import { Link } from '@umijs/max';
 
-import { useChangePasswordMutation, useSessionsQuery } from '../../hooks';
-
 import { ContentWrapper } from '@/layouts/components';
 import { Button, Card, Form, Input, Toast } from '@/metronic';
 import type { Session } from '@/types';
 import { parseError } from '@/utils';
+
+import { useChangePasswordMutation, useSessionsQuery } from '../../hooks';
 
 // function TwoFactorAuthentication() {
 //   return (
@@ -29,13 +29,13 @@ function SessionItem(props: SessionItemProps) {
   const { data } = props;
 
   const deviceType = useMemo(() => {
-    if (data.device?.type == 'COMPUTER') {
+    if (data.device?.type === 'COMPUTER') {
       return 'laptop';
     }
-    if (data.device?.type == 'MOBILE') {
+    if (data.device?.type === 'MOBILE') {
       return 'phone';
     }
-    if (data.device?.type == 'TABLET') {
+    if (data.device?.type === 'TABLET') {
       return 'tablet';
     }
     return 'laptop';
@@ -104,13 +104,14 @@ function ChangePassword() {
 
   const [changePassword, { loading }] = useChangePasswordMutation();
   const handleUpdatePassword = useCallback(async () => {
-    const { password_confirmation, ...values } = await form.validateFields();
+    const values = await form.validateFields();
+    delete values.password_confirmation;
     try {
       await changePassword({
         variables: values,
       });
       Toast.success('密码修改成功', 3000, {
-        placement: 'bottom-start',
+        placement: 'bottom-left',
         progressBar: true,
       });
       form.resetFields();

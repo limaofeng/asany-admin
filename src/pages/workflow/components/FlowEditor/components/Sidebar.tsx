@@ -5,9 +5,9 @@ import { Resizer } from '@asany/sunmao';
 import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import { nodeTypeGroups } from '../nodeTypes';
-
 import FlowNode from './FlowNode';
+
+import { nodeTypeGroups } from '../nodeTypes';
 
 // 折叠面板最小化
 const SUBPANEL_MIN_HEIGHT = 36;

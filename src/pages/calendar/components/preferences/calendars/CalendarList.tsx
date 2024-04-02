@@ -5,17 +5,15 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import type { ColorResult } from 'react-color';
+import { SketchPicker } from 'react-color';
+import { useClickAway } from 'react-use';
 
 import { Shortcuts } from '@asany/shortcuts';
 import type { SortableItemProps } from '@asany/sortable';
 import Sortable from '@asany/sortable';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import type { ColorResult } from 'react-color';
-import { SketchPicker } from 'react-color';
-import { useClickAway } from 'react-use';
-
-import CalendarListFooter from './CalendarListFooter';
 
 import { Checkbox, Form, Input, Modal, Popover, Select } from '@/metronic';
 import type { InputRef, OptionData } from '@/metronic/typings';
@@ -28,6 +26,8 @@ import {
 } from '@/pages/calendar/hooks';
 import { getDropPosition } from '@/pages/calendar/utils';
 import type { Calendar, CalendarSet } from '@/types';
+
+import CalendarListFooter from './CalendarListFooter';
 
 interface CalendarListItemProps extends SortableItemProps<any> {
   data: Calendar;
@@ -87,7 +87,7 @@ const CalendarListItem = React.forwardRef(function (
 
   const handleInputBlur = useCallback(async () => {
     onEdit();
-    if (data.name != value) {
+    if (data.name !== value) {
       saveCalendar(value);
     }
   }, [data.name, onEdit, saveCalendar, value]);
@@ -131,12 +131,12 @@ const CalendarListItem = React.forwardRef(function (
 
   const handleShortcut = useCallback(
     async (action: string) => {
-      if (action == 'EXIT') {
+      if (action === 'EXIT') {
         onEdit();
         setValue(data.name);
-      } else if (action == 'ENTER') {
+      } else if (action === 'ENTER') {
         onEdit();
-        if (data.name != value) {
+        if (data.name !== value) {
           saveCalendar(value);
         }
       } else {
@@ -186,7 +186,7 @@ const CalendarListItem = React.forwardRef(function (
           onBlur={handleInputBlur}
           value={value}
         />
-        {(data as any)._type == 'SUBSCRIPTION' && (
+        {(data as any)._type === 'SUBSCRIPTION' && (
           <span className="calendar-type">订阅</span>
         )}
       </div>
@@ -198,6 +198,241 @@ type CalendarListProps = {
   refresh: () => void;
   calendarSet?: CalendarSet;
 };
+
+type UpdateCalendarModalProps = {
+  visible: boolean;
+  data?: Calendar;
+  onClose: () => void;
+};
+
+function UpdateCalendarModal(props: UpdateCalendarModalProps) {
+  const { onClose, visible, data } = props;
+
+  const [updateCalendar] = useUpdateCalendarMutation();
+
+  const form = Form.useForm();
+
+  const [color, setColor] = useState(data?.color);
+  const [visibleColorPicker, setVisibleColorPicker] = useState<boolean>(false);
+
+  const inputRef = useRef<InputRef>(null);
+  const sketchPickerRef = useRef<any>(null);
+
+  const colors = useMemo(
+    () =>
+      [
+        { value: '#ff3d33', label: '红色' },
+        { value: '#fc8328', label: '橙色' },
+        { value: '#ffcc00', label: '黄色' },
+        { value: '#63da38', label: '绿色' },
+        { value: '#1badf8', label: '蓝色' },
+        { value: '#cc73e1', label: '紫色' },
+        { value: '#a67a63', label: '棕色' },
+        { type: 'separator' },
+        { value: 'other', label: '其他' },
+      ] as OptionData[],
+    [],
+  );
+
+  const colorValue = useMemo(() => {
+    if (!color) {
+      return 'other';
+    }
+    if (colors.some((item) => item.value === color)) {
+      return color;
+    }
+    return 'other';
+  }, [colors, color]);
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+    setColor(data?.color);
+    form.setFieldsValue(data);
+    inputRef.current?.focus();
+    process.nextTick(() => {
+      inputRef.current?.select();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
+
+  useClickAway(sketchPickerRef as any, () => {
+    setVisibleColorPicker(false);
+  });
+
+  const handleColorChange = useCallback(
+    (_color: string) => {
+      if (_color === 'other') {
+        setVisibleColorPicker(true);
+      } else {
+        setColor(_color);
+      }
+    },
+    [setColor],
+  );
+
+  const handleOk = useCallback(async () => {
+    const values = form.getFieldsValue();
+    await updateCalendar({
+      variables: {
+        id: data!.id,
+        input: {
+          color,
+          ...values,
+        },
+      },
+    });
+    onClose();
+  }, [color, data, form, onClose, updateCalendar]);
+
+  const handleClose = useCallback(() => {
+    onClose();
+    setVisibleColorPicker(false);
+  }, [onClose]);
+
+  const handleChange = useCallback((colorResult: ColorResult) => {
+    const { hex } = colorResult;
+    setColor(hex);
+  }, []);
+
+  return (
+    <Modal
+      centered
+      visible={visible}
+      dialogClassName="modal-dialog-concise-style modal-dialog-small w-400px"
+      onCancel={handleClose}
+      onOk={handleOk}
+      header={false}
+      closable={false}
+      okButtonProps={{
+        className: 'btn-xs',
+      }}
+      cancelButtonProps={{
+        className: 'btn-xs',
+      }}
+    >
+      <Form
+        form={form}
+        layout="horizontal"
+        initialValues={{ ...data }}
+        size="xs"
+      >
+        <div className="d-flex flex-row flex-center">
+          <div className="d-flex flex-column-fluid">
+            <Form.Item name="name" label="名称">
+              <Input ref={inputRef} className="calendar-name" />
+            </Form.Item>
+          </div>
+          <div className="d-flex flex-column-auto flex-center">
+            <div className="asany-form-item">
+              <Select
+                value={colorValue}
+                size="xs"
+                onChange={handleColorChange}
+                placement="bottomCenter"
+                itemRender={(option: OptionData, display?: boolean) => {
+                  const _color =
+                    option.value === 'other'
+                      ? color || data?.color
+                      : option.value;
+                  if (!_color) {
+                    return <></>;
+                  }
+                  const colorBlock = (
+                    <div
+                      style={{
+                        backgroundColor: _color,
+                        width: 20,
+                        height: 14,
+                        marginRight: 8,
+                        border: `1px solid ${darkenColor(_color)}`,
+                        display: 'inline-block',
+                      }}
+                    />
+                  );
+                  if (display) {
+                    return React.cloneElement(colorBlock, {
+                      style: { ...colorBlock.props.style, marginRight: 5 },
+                    });
+                  }
+                  return (
+                    <>
+                      {colorBlock}
+                      {option.label}
+                    </>
+                  );
+                }}
+                options={colors}
+              />
+              <Popover
+                visible={visibleColorPicker}
+                overlayClassName="popover-content-body"
+                content={
+                  <div ref={sketchPickerRef}>
+                    <SketchPicker
+                      presetColors={colors
+                        .filter(
+                          (item) =>
+                            item.value !== 'other' && item.type !== 'separator',
+                        )
+                        .map((item) => ({
+                          color: item.value!,
+                          title: item.label!,
+                        }))}
+                      color={color!}
+                      onChangeComplete={handleChange}
+                      onChange={handleChange}
+                      width={'220px'}
+                    />
+                  </div>
+                }
+              >
+                <div />
+              </Popover>
+            </div>
+          </div>
+        </div>
+        {data?.type === 'SUBSCRIPTION' && (
+          <>
+            <div className="d-flex flex-row flex-center">
+              <Form.Item name="url" label="地址">
+                <Input />
+              </Form.Item>
+            </div>
+            <div className="d-flex flex-row flex-center">
+              <Form.Item name="refresh" label="刷新">
+                <Select
+                  className="w-100px"
+                  placement="bottomCenter"
+                  options={[
+                    { value: 'NEVER', label: '从不' },
+                    { value: 'EVERY_5_MINUTES', label: '每5分钟' },
+                    { value: 'EVERY_15_MINUTES', label: '每15分钟' },
+                    { value: 'EVERY_HOVER', label: '每小时' },
+                    { value: 'EVERY_DAY', label: '每天' },
+                    { value: 'EVERY_WEEK', label: '每周' },
+                  ]}
+                />
+              </Form.Item>
+            </div>
+          </>
+        )}
+        <div className="d-flex flex-row flex-center">
+          <div
+            className="d-flex flex-column-auto flex-center"
+            style={{ width: 56 }}
+          />
+          <div className="d-flex flex-column-fluid">
+            <Form.Item name="ignoreAlerts" valuePropName="checked">
+              <Checkbox label="忽略提醒" />
+            </Form.Item>
+          </div>
+        </div>
+      </Form>
+    </Modal>
+  );
+}
 
 function CalendarList(props: CalendarListProps) {
   const { refresh, calendarSet } = props;
@@ -248,7 +483,7 @@ function CalendarList(props: CalendarListProps) {
 
   const handleSelect = useCallback(
     (key: string) => {
-      if (key == temp.current.activeKey) {
+      if (key === temp.current.activeKey) {
         return;
       }
       regainFocus(key);
@@ -276,17 +511,17 @@ function CalendarList(props: CalendarListProps) {
       const cloneCalendar = {
         ...calendar,
         key: calendar.id,
-        actived: activeKey == calendar.id,
-        editing: editing?.key == calendar.id && editing?.type == 'inline',
-        checked: checkedKeys.some((key) => key == calendar.id),
+        actived: activeKey === calendar.id,
+        editing: editing?.key === calendar.id && editing?.type === 'inline',
+        checked: checkedKeys.some((key) => key === calendar.id),
         _type: calendar.type,
       };
       delete cloneCalendar.type;
-      const account = accounts.find((item) => item.id == calendar.account.id);
-      if (account == null) {
+      const account = accounts.find((item) => item.id === calendar.account.id);
+      if (!account) {
         accounts.push({ ...calendar.account, calendars: [cloneCalendar] });
       } else {
-        account.calendars.push(cloneCalendar);
+        account?.calendars.push(cloneCalendar);
       }
     }
     return accounts.sort((l, r) => l.index! - r.index!);
@@ -318,9 +553,9 @@ function CalendarList(props: CalendarListProps) {
       const dropPosition = _dropPosition - Number(dropPos[dropPos.length - 1]);
 
       let toIndex = e.node.index;
-      if (dropPosition == -1) {
+      if (dropPosition === -1) {
         toIndex--;
-      } else if (dropPosition == 1) {
+      } else if (dropPosition === 1) {
         toIndex++;
       }
       await updateCalendar({
@@ -337,7 +572,7 @@ function CalendarList(props: CalendarListProps) {
   );
 
   const handleAllowDrag = useCallback((e: any) => {
-    return temp.current.editing?.key != e.id;
+    return temp.current.editing?.key !== e.id;
   }, []);
 
   const handleAllowDrop = useCallback((e: any) => {
@@ -350,14 +585,14 @@ function CalendarList(props: CalendarListProps) {
   const handleShortcut = useCallback(
     (action: string) => {
       const { calendars, activeKey: key } = temp.current;
-      const index = calendars.findIndex((item) => item.id == key);
-      if (action == 'PREVIOUS') {
+      const index = calendars.findIndex((item) => item.id === key);
+      if (action === 'PREVIOUS') {
         regainFocus(calendars[Math.max(index - 1, 0)].id);
-      } else if (action == 'NEXT') {
+      } else if (action === 'NEXT') {
         setActiveKey(calendars[Math.min(index + 1, calendars.length - 1)].id);
-      } else if (action == 'ENTER') {
+      } else if (action === 'ENTER') {
         setEditing({ key, type: 'inline' });
-      } else if (action == 'EXIT') {
+      } else if (action === 'EXIT') {
         regainFocus();
       }
     },
@@ -382,7 +617,7 @@ function CalendarList(props: CalendarListProps) {
           },
         });
       } else {
-        setCheckedKeys(_checkedKeys.filter((key) => key != id));
+        setCheckedKeys(_checkedKeys.filter((key) => key !== id));
         await removeCalendarFromSet({
           variables: {
             id,
@@ -459,252 +694,17 @@ function CalendarList(props: CalendarListProps) {
         <CalendarListFooter
           onSuccess={handleSuccess}
           selectedItem={temp.current.calendars.find(
-            (item) => item.id == activeKey,
+            (item) => item.id === activeKey,
           )}
           onEdit={handleEdit}
         />
       </div>
       <UpdateCalendarModal
-        data={temp.current.calendars.find((item) => item.id == activeKey)}
-        visible={editing?.type == 'modal'}
+        data={temp.current.calendars.find((item) => item.id === activeKey)}
+        visible={editing?.type === 'modal'}
         onClose={handleModalCancel}
       />
     </Shortcuts>
-  );
-}
-
-type UpdateCalendarModalProps = {
-  visible: boolean;
-  data?: Calendar;
-  onClose: () => void;
-};
-
-function UpdateCalendarModal(props: UpdateCalendarModalProps) {
-  const { onClose, visible, data } = props;
-
-  const [updateCalendar] = useUpdateCalendarMutation();
-
-  const form = Form.useForm();
-
-  const [color, setColor] = useState(data?.color);
-  const [visibleColorPicker, setVisibleColorPicker] = useState<boolean>(false);
-
-  const inputRef = useRef<InputRef>(null);
-  const sketchPickerRef = useRef<any>(null);
-
-  const colors = useMemo(
-    () =>
-      [
-        { value: '#ff3d33', label: '红色' },
-        { value: '#fc8328', label: '橙色' },
-        { value: '#ffcc00', label: '黄色' },
-        { value: '#63da38', label: '绿色' },
-        { value: '#1badf8', label: '蓝色' },
-        { value: '#cc73e1', label: '紫色' },
-        { value: '#a67a63', label: '棕色' },
-        { type: 'separator' },
-        { value: 'other', label: '其他' },
-      ] as OptionData[],
-    [],
-  );
-
-  const colorValue = useMemo(() => {
-    if (!color) {
-      return 'other';
-    }
-    if (colors.some((item) => item.value == color)) {
-      return color;
-    }
-    return 'other';
-  }, [colors, color]);
-
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-    setColor(data?.color);
-    form.setFieldsValue(data);
-    inputRef.current?.focus();
-    process.nextTick(() => {
-      inputRef.current?.select();
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
-
-  useClickAway(sketchPickerRef as any, () => {
-    setVisibleColorPicker(false);
-  });
-
-  const handleColorChange = useCallback(
-    (_color: string) => {
-      if (_color == 'other') {
-        setVisibleColorPicker(true);
-      } else {
-        setColor(_color);
-      }
-    },
-    [setColor],
-  );
-
-  const handleOk = useCallback(async () => {
-    const values = form.getFieldsValue();
-    await updateCalendar({
-      variables: {
-        id: data!.id,
-        input: {
-          color,
-          ...values,
-        },
-      },
-    });
-    onClose();
-  }, [color, data, form, onClose, updateCalendar]);
-
-  const handleClose = useCallback(() => {
-    onClose();
-    setVisibleColorPicker(false);
-  }, [onClose]);
-
-  const handleChange = useCallback((colorResult: ColorResult) => {
-    const { hex } = colorResult;
-    setColor(hex);
-  }, []);
-
-  return (
-    <Modal
-      centered
-      visible={visible}
-      dialogClassName="modal-dialog-concise-style modal-dialog-small w-400px"
-      onCancel={handleClose}
-      onOk={handleOk}
-      header={false}
-      closable={false}
-      okButtonProps={{
-        className: 'btn-xs',
-      }}
-      cancelButtonProps={{
-        className: 'btn-xs',
-      }}
-    >
-      <Form
-        form={form}
-        layout="horizontal"
-        initialValues={{ ...data }}
-        size="xs"
-      >
-        <div className="d-flex flex-row flex-center">
-          <div className="d-flex flex-column-fluid">
-            <Form.Item name="name" label="名称">
-              <Input ref={inputRef} className="calendar-name" />
-            </Form.Item>
-          </div>
-          <div className="d-flex flex-column-auto flex-center">
-            <div className="asany-form-item">
-              <Select
-                value={colorValue}
-                size="xs"
-                onChange={handleColorChange}
-                placement="bottomCenter"
-                itemRender={(option: OptionData, display?: boolean) => {
-                  const _color =
-                    option.value == 'other'
-                      ? color || data?.color
-                      : option.value;
-                  if (!_color) {
-                    return <></>;
-                  }
-                  const colorBlock = (
-                    <div
-                      style={{
-                        backgroundColor: _color,
-                        width: 20,
-                        height: 14,
-                        marginRight: 8,
-                        border: `1px solid ${darkenColor(_color)}`,
-                        display: 'inline-block',
-                      }}
-                    />
-                  );
-                  if (display) {
-                    return React.cloneElement(colorBlock, {
-                      style: { ...colorBlock.props.style, marginRight: 5 },
-                    });
-                  }
-                  return (
-                    <>
-                      {colorBlock}
-                      {option.label}
-                    </>
-                  );
-                }}
-                options={colors}
-              />
-              <Popover
-                visible={visibleColorPicker}
-                overlayClassName="popover-content-body"
-                content={
-                  <div ref={sketchPickerRef}>
-                    <SketchPicker
-                      presetColors={colors
-                        .filter(
-                          (item) =>
-                            item.value != 'other' && item.type != 'separator',
-                        )
-                        .map((item) => ({
-                          color: item.value!,
-                          title: item.label!,
-                        }))}
-                      color={color!}
-                      onChangeComplete={handleChange}
-                      onChange={handleChange}
-                      width={'220px'}
-                    />
-                  </div>
-                }
-              >
-                <div />
-              </Popover>
-            </div>
-          </div>
-        </div>
-        {data?.type == 'SUBSCRIPTION' && (
-          <>
-            <div className="d-flex flex-row flex-center">
-              <Form.Item name="url" label="地址">
-                <Input />
-              </Form.Item>
-            </div>
-            <div className="d-flex flex-row flex-center">
-              <Form.Item name="refresh" label="刷新">
-                <Select
-                  className="w-100px"
-                  placement="bottomCenter"
-                  options={[
-                    { value: 'NEVER', label: '从不' },
-                    { value: 'EVERY_5_MINUTES', label: '每5分钟' },
-                    { value: 'EVERY_15_MINUTES', label: '每15分钟' },
-                    { value: 'EVERY_HOVER', label: '每小时' },
-                    { value: 'EVERY_DAY', label: '每天' },
-                    { value: 'EVERY_WEEK', label: '每周' },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </>
-        )}
-        <div className="d-flex flex-row flex-center">
-          <div
-            className="d-flex flex-column-auto flex-center"
-            style={{ width: 56 }}
-          />
-          <div className="d-flex flex-column-fluid">
-            <Form.Item name="ignoreAlerts" valuePropName="checked">
-              <Checkbox label="忽略提醒" />
-            </Form.Item>
-          </div>
-        </div>
-      </Form>
-    </Modal>
   );
 }
 

@@ -5,14 +5,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-
-import 'cropperjs/dist/cropper.css';
 import Cropper from 'react-cropper';
+
+import type { CropOptions } from './typings';
 
 import Button from '../Button';
 import Modal from '../Modal';
 
-import type { CropOptions } from './typings';
+import 'cropperjs/dist/cropper.css';
 
 type ImageCropperProps = {
   image?: string | File;

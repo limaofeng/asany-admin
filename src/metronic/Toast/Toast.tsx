@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
-
 import { Toast as BsToast } from 'react-bootstrap';
 import type {
   ToastPosition,
@@ -101,16 +100,16 @@ function Toast(props: ToastProps) {
   );
 }
 
-type Placement =
-  | 'top-start'
-  | 'top-center'
-  | 'top-end'
-  | 'middle-start'
-  | 'middle-center'
-  | 'middle-end'
-  | 'bottom-start'
-  | 'bottom-center'
-  | 'bottom-end';
+// type Placement =
+//   | 'top-start'
+//   | 'top-center'
+//   | 'top-end'
+//   | 'middle-start'
+//   | 'middle-center'
+//   | 'middle-end'
+//   | 'bottom-start'
+//   | 'bottom-center'
+//   | 'bottom-end';
 
 // const placements = {
 //   'top-start': toast.POSITION.TOP_LEFT,
@@ -130,6 +129,26 @@ type ToastOptions = {
   placement?: ToastPosition;
   progressBar?: boolean;
 };
+
+function toToastifyOptions(options?: ToastOptions): ToastifyOptions {
+  const _options: ToastifyOptions = {
+    hideProgressBar: true,
+  };
+
+  if (!options) {
+    return _options;
+  }
+
+  if (options.placement) {
+    _options.position = options.placement;
+  }
+
+  if (options.progressBar) {
+    _options.hideProgressBar = false;
+  }
+
+  return _options;
+}
 
 Toast.info = (content: string, duration?: number, overrides?: ToastOptions) => {
   toast.info(content, {
@@ -177,25 +196,5 @@ Toast.success = (
     ...toToastifyOptions(overrides),
   });
 };
-
-function toToastifyOptions(options?: ToastOptions): ToastifyOptions {
-  const _options: ToastifyOptions = {
-    hideProgressBar: true,
-  };
-
-  if (!options) {
-    return _options;
-  }
-
-  if (options.placement) {
-    _options.position = options.placement;
-  }
-
-  if (options.progressBar) {
-    _options.hideProgressBar = false;
-  }
-
-  return _options;
-}
 
 export default Toast;

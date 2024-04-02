@@ -1,9 +1,9 @@
 import { useCallback, useRef } from 'react';
 
-import { useCreateModuleMutation, useModulesLazyQuery } from '../hooks';
-
 import { Form, Input, Modal, Toast } from '@/metronic';
 import type { Module } from '@/types';
+
+import { useCreateModuleMutation, useModulesLazyQuery } from '../hooks';
 
 type NewModuleProps = {
   visible: boolean;

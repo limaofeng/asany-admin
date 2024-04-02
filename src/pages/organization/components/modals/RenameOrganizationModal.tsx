@@ -2,11 +2,11 @@ import { useCallback, useState } from 'react';
 
 import classnames from 'classnames';
 
-import { useRenameOrganizationCodeMutation } from '../../hooks/api';
-
 import { Alert, Button, Form, Input, Modal, Toast } from '@/metronic';
 import type { Organization } from '@/types';
 import { sleep } from '@/utils';
+
+import { useRenameOrganizationCodeMutation } from '../../hooks/api';
 
 type RenameOrganizationModalProps = {
   data?: Organization;
@@ -54,14 +54,14 @@ function RenameOrganizationModal(props: RenameOrganizationModalProps) {
   return (
     <Modal
       dialogClassName={classnames('rename-organization-modal w-450px', {
-        'waiting-to-continue': step == 1,
+        'waiting-to-continue': step === 1,
       })}
       visible={visible}
       onCancel={handleCancel}
-      title={step == 1 ? '确定修改组织代码吗？' : '输入新的组织代码'}
+      title={step === 1 ? '确定修改组织代码吗？' : '输入新的组织代码'}
       footer={false}
     >
-      {step == 1 ? (
+      {step === 1 ? (
         <>
           <Alert
             type="danger"

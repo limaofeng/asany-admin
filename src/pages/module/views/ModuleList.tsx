@@ -3,12 +3,12 @@ import { useCallback, useMemo, useState } from 'react';
 import { Icon } from '@asany/icons';
 import { Link } from '@umijs/max';
 
-import NewModule from '../components/NewModule';
-import { useModulesQuery } from '../hooks';
-
 import { PageContent } from '@/layouts/components';
 import { Card, Col, Row, Symbol } from '@/metronic';
 import type { Module } from '@/types';
+
+import NewModule from '../components/NewModule';
+import { useModulesQuery } from '../hooks';
 
 import '../style/ModuleList.scss';
 

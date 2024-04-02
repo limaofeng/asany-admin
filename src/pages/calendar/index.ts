@@ -1,8 +1,10 @@
-import dynamic from '@/utils/dynamic';
+
+
 import { component, library } from '@asany/sunmao';
 import '@fullcalendar/react/dist/vdom';
 
 import LoadingComponent from '@/components/PageLoading';
+import dynamic from '@/utils/dynamic';
 
 import './style/index.scss';
 

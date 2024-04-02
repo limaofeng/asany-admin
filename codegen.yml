@@ -1,6 +1,6 @@
 schema: ${GRAPHQL_SCHEMA_URL:https://api.asany.cn/graphql}
 generates:
-  src/types.ts:
+  src/types/index.ts:
     plugins:
       - "typescript"
     config:
@@ -11,6 +11,17 @@ generates:
         - eslint --fix
   src/hooks/api.ts:
     documents: ["src/hooks/*.gql"]
+    plugins:
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+    hooks:
+      afterAllFileWrite:
+        - prettier --write
+        - eslint --fix
+  src/pages/shanhai/hooks/api.ts:
+    documents: ["src/pages/shanhai/hooks/*.gql"]
     plugins:
       - "typescript-operations"
       - "typescript-react-apollo"

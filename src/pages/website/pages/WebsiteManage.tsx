@@ -1,14 +1,14 @@
 import { useEffect, useMemo } from 'react';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
+
+import { MicroApp } from '@/layouts/Demo7';
+import type { ArticleCategory } from '@/types';
 
 import WebsiteSidebar from '../components/WebsiteSidebar';
 import {
   useWebsiteArticleCategoriesLazyQuery,
   useWebsiteQuery,
 } from '../hooks';
-
-import { MicroApp } from '@/layouts/Demo7';
-import type { ArticleCategory } from '@/types';
-import { Outlet, useLocation, useParams } from 'react-router-dom';
 
 function WebsiteManage() {
   const { sid: id } = useParams<{ sid: string }>();

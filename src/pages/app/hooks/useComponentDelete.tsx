@@ -1,10 +1,10 @@
 import { useCallback, useRef } from 'react';
 
-import { LoadComponentsDocument, useDeleteComponentMutation } from './api';
-
 import { Modal, Toast } from '@/metronic';
 import type { Component } from '@/types';
 import { delay } from '@/utils';
+
+import { LoadComponentsDocument, useDeleteComponentMutation } from './api';
 
 function useComponentDelete(
   libraryId: string,

@@ -139,7 +139,7 @@ function InfiniteScroll(
       }
     }
     const items = state.current.items;
-    if (typeof rowHeight == 'number') {
+    if (typeof rowHeight === 'number') {
       for (let i = 0; i < rowCount; i++) {
         const key = items.has(i) ? items.get(i)!.key : uuid();
         items.set(i, {
@@ -191,7 +191,7 @@ function InfiniteScroll(
     let endIndex = items
       .slice(startIndex)
       .findIndex((item) => item.bottom >= end || item.top >= end);
-    endIndex = endIndex == -1 ? items.length : startIndex + endIndex + 1;
+    endIndex = endIndex === -1 ? items.length : startIndex + endIndex + 1;
 
     temp.current.startIndex = startIndex;
     temp.current.endIndex = endIndex;
@@ -236,7 +236,7 @@ function InfiniteScroll(
   const scrollToIndex = useCallback(async (index: number) => {
     const { startIndex, endIndex } = temp.current;
 
-    if (index == state.current.index || index > state.current.rowCount) {
+    if (index === state.current.index || index > state.current.rowCount) {
       return;
     }
 
@@ -253,15 +253,15 @@ function InfiniteScroll(
 
     if (data.top > scrollY && data.bottom < scrollY + height) {
       newScrollY = scrollY;
-    } else if (state.current.index == -1) {
+    } else if (state.current.index === -1) {
       newScrollY = data.top;
-    } else if (direction == 'DOWN' && scrollY < data.bottom - height) {
+    } else if (direction === 'DOWN' && scrollY < data.bottom - height) {
       newScrollY = data.bottom - height;
-    } else if (direction == 'UP' && scrollY > data.top) {
+    } else if (direction === 'UP' && scrollY > data.top) {
       newScrollY = data.top;
     }
 
-    scrollY != newScrollY && scrollbarInstance.scroll(newScrollY);
+    scrollY !== newScrollY && scrollbarInstance.scroll(newScrollY);
 
     state.current.index = index;
     forceRender();
@@ -271,13 +271,13 @@ function InfiniteScroll(
     (action: string, event?: React.KeyboardEvent) => {
       event && event.preventDefault();
       const { index, rowCount: _rowCount } = state.current;
-      if (!_rowCount || index == -1) {
+      if (!_rowCount || index === -1) {
         return;
       }
       let newIndex = index;
-      if (action == 'NEXT') {
+      if (action === 'NEXT') {
         newIndex = Math.min(_rowCount - 1, index + 1);
-      } else if (action == 'PREVIOUS') {
+      } else if (action === 'PREVIOUS') {
         newIndex = Math.max(0, index - 1);
       }
 
@@ -285,14 +285,14 @@ function InfiniteScroll(
 
       // 如果原选中元素不在可见范围
       if (!(index >= startIndex - 1 && index <= endIndex)) {
-        if (action == 'NEXT') {
+        if (action === 'NEXT') {
           newIndex = startIndex;
-        } else if (action == 'PREVIOUS') {
+        } else if (action === 'PREVIOUS') {
           newIndex = endIndex - 1;
         }
       }
 
-      if (newIndex == state.current.index) {
+      if (newIndex === state.current.index) {
         return;
       }
 
@@ -305,9 +305,9 @@ function InfiniteScroll(
 
   useEffect(() => {
     if (
-      props.scrollToIndex == -1 ||
-      props.scrollToIndex == undefined ||
-      state.current.index == props.scrollToIndex
+      props.scrollToIndex === -1 ||
+      props.scrollToIndex === undefined ||
+      state.current.index === props.scrollToIndex
     ) {
       return;
     }
@@ -369,7 +369,7 @@ function InfiniteScroll(
           : items.map((item) =>
               rowRenderer({
                 ...item,
-                isActive: item.index == state.current.index,
+                isActive: item.index === state.current.index,
               }),
             )}
       </Shortcuts>

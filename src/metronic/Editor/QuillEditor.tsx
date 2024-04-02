@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
+import ReactQuill, { Quill } from 'react-quill';
 
 import classnames from 'classnames';
-import ReactQuill, { Quill } from 'react-quill';
 
 import Input from '../Input';
 
@@ -80,7 +80,7 @@ function QuillEditor(props: QuillEditorProps) {
     [onChange],
   );
 
-  if (mode == 'html') {
+  if (mode === 'html') {
     return (
       <ReactQuill
         id="kt_inbox_form_editor"

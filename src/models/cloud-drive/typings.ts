@@ -1,7 +1,7 @@
-import type { DownloadFileData } from './download';
-
 import type { UploadFileData } from '@/metronic/Upload/utils/upload';
 import type { CloudDrive, FileObject } from '@/types';
+
+import type { DownloadFileData } from './download';
 
 export type DownloadFile = {
   id?: string;

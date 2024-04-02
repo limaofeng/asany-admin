@@ -1,10 +1,10 @@
-import dynamic from '@/utils/dynamic';
 import type { IComponentDefinition } from '@asany/sunmao';
 import { component, library } from '@asany/sunmao';
 
-import { generateUUID } from './GridLayout/utils';
-
 import LoadingComponent from '@/components/PageLoading';
+import dynamic from '@/utils/dynamic';
+
+import { generateUUID } from './GridLayout/utils';
 
 @library({
   name: 'metronic',

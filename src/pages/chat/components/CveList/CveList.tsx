@@ -1,9 +1,9 @@
 import type { ConversationItem } from 'open-im-sdk/types';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
-import CveItem from './CveItem';
-
 import { Card } from '@/metronic';
+
+import CveItem from './CveItem';
 
 type CveListProps = {
   loading: boolean;

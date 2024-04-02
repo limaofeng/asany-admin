@@ -5,20 +5,21 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // import { Spin } from 'antd';
 import { useInViewport, useLongPress } from 'ahooks';
 import classnames from 'classnames';
-
-import MsgMenu from './MsgMenu';
-import SwitchMsgType from './SwitchMsgType';
-
-import { IMSDK } from '@/models/open-im/auth';
-// import { isSingleCve } from '@/utils/open-im/utils/im';
-// import { ATSTATEUPDATE, MUTILMSGCHANGE } from '@/utils/open-im/constants/events';
-// import events from '@/utils/open-im/events';
-import { Symbol } from '@/metronic';
 import {
   ConversationItem,
   MessageItem,
 } from 'open-im-sdk-wasm/lib/types/entity';
 import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
+
+import { Symbol } from '@/metronic';
+import { IMSDK } from '@/models/open-im/auth';
+
+import MsgMenu from './MsgMenu';
+import SwitchMsgType from './SwitchMsgType';
+
+// import { isSingleCve } from '@/utils/open-im/utils/im';
+// import { ATSTATEUPDATE, MUTILMSGCHANGE } from '@/utils/open-im/constants/events';
+// import events from '@/utils/open-im/events';
 
 type MsgItemProps = {
   msg: MessageItem;
@@ -48,7 +49,7 @@ const MsgItem: FC<MsgItemProps> = (props) => {
   const msgItemRef = useRef<HTMLDivElement>(null);
   const [inViewport] = useInViewport(msgItemRef);
 
-  const isSelf = useMemo(() => selfID == msg.sendID, [selfID, msg.sendID]);
+  const isSelf = useMemo(() => selfID === msg.sendID, [selfID, msg.sendID]);
   const isGroupCve = useMemo(() => !curCve || !isSingleCve(curCve), [curCve]);
 
   useEffect(() => {

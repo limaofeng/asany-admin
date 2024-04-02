@@ -1,11 +1,12 @@
-import Icon from '@asany/icons';
 import type { RouteComponentProps } from 'react-router';
 
-import { useArticleQuery } from '../hooks';
+import Icon from '@asany/icons';
 
 import { ContentWrapper } from '@/layouts/components';
 import { Card } from '@/metronic';
 import type { Article } from '@/types';
+
+import { useArticleQuery } from '../hooks';
 
 function ArticleShare() {
   return (
@@ -149,7 +150,7 @@ function ArticleView(props: RouteComponentProps<any>) {
               {/* --begin::Wrapper--*/}
               <div className="mb-8">
                 <div className="d-flex flex-wrap mb-6">
-                  {article.status == 'PUBLISHED' && (
+                  {article.status === 'PUBLISHED' && (
                     <div className="me-9 my-1">
                       <Icon
                         className="svg-icon-primary svg-icon-2 me-1"

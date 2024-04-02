@@ -98,7 +98,7 @@ export function useLongListLazyQuery<T, P>(
 
   const handleRefetch = useCallback(
     async (page: number) => {
-      if (state.current.loading && state.current.page == page) {
+      if (state.current.loading && state.current.page === page) {
         return;
       }
       while (state.current.loading) {
@@ -156,7 +156,7 @@ export function useLongListLazyQuery<T, P>(
       const pageSize = state.current.pagination.pageSize;
       if (
         state.current.pagination.totalCount %
-          state.current.pagination.pageSize ==
+          state.current.pagination.pageSize ===
         1
       ) {
         state.current.pagination.totalPage--;
@@ -175,7 +175,7 @@ export function useLongListLazyQuery<T, P>(
         await sleep(120);
       }
       if (
-        state.current.page == page ||
+        state.current.page === page ||
         page > state.current.pagination.totalPage
       ) {
         return;
@@ -233,7 +233,7 @@ export function useLongListLazyQuery<T, P>(
     if (loading) {
       return;
     }
-    if (state.current.pagination.totalCount != _pagination.totalCount) {
+    if (state.current.pagination.totalCount !== _pagination.totalCount) {
       state.current.files.length = 0;
     }
     state.current.pagination = _pagination;
@@ -260,7 +260,7 @@ export function useLongListLazyQuery<T, P>(
 
         // eslint-disable-next-line react-hooks/rules-of-hooks
         useEffect(() => {
-          if (index == -1) {
+          if (index === -1) {
             return;
           }
           const _index = index + 1;
@@ -276,7 +276,9 @@ export function useLongListLazyQuery<T, P>(
             }
             if (!!latestSelectedState.current.file) {
               latestSelectedState.current.timer &&
-                clearTimeout(latestSelectedState.current.timer);
+                clearTimeout(
+                  latestSelectedState.current.timer as unknown as number,
+                );
               return;
             }
             if (latestSelectedState.current.abort) {
@@ -291,7 +293,7 @@ export function useLongListLazyQuery<T, P>(
           return () => {
             // eslint-disable-next-line react-hooks/exhaustive-deps
             latestSelectedState.current.abort = true;
-            _timer && clearTimeout(_timer);
+            _timer && clearTimeout(_timer as unknown as number);
           };
         }, [index]);
 
@@ -299,7 +301,7 @@ export function useLongListLazyQuery<T, P>(
         const checkForUpdates = useCallback(() => {
           const newSelectedState =
             state.current.files[latestSelectedState.current.index];
-          if (newSelectedState == latestSelectedState.current.file) {
+          if (newSelectedState === latestSelectedState.current.file) {
             return;
           }
           latestSelectedState.current.file = newSelectedState;

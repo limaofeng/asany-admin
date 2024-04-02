@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { Form } from '@/metronic';
+
+import CalendarList from './CalendarList';
+import CalendarSets from './CalendarSets';
+
 import {
   useCalendarSetsQuery,
   useUpdateCalendarSetMutation,
 } from '../../../hooks';
 import CalendarPicker from '../../CalendarPicker';
-
-import CalendarList from './CalendarList';
-import CalendarSets from './CalendarSets';
-
-import { Form } from '@/metronic';
 
 function Calendars() {
   const [updateCalendarSet] = useUpdateCalendarSetMutation();
@@ -26,7 +26,7 @@ function Calendars() {
   }, []);
 
   const calendarSet = (calendarSets || []).find(
-    (item) => item.id == selectedKey,
+    (item) => item.id === selectedKey,
   ) as any;
 
   useEffect(() => {

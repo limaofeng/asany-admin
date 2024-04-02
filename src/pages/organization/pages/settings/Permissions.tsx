@@ -25,14 +25,14 @@ function Permissions(props: PermissionsProps) {
             title: '编码',
             sorter: true,
             width: '20%',
-            // sortOrder: sorter.field == 'code' ? sorter.order : undefined,
+            // sortOrder: sorter.field === 'code' ? sorter.order : undefined,
           },
           {
             key: 'name',
             title: '名称',
             sorter: true,
             width: '30%',
-            // sortOrder: sorter.field == 'name' ? sorter.order : undefined,
+            // sortOrder: sorter.field === 'name' ? sorter.order : undefined,
             // render(name, record) {
             //   return (
             //     <div>
@@ -53,14 +53,14 @@ function Permissions(props: PermissionsProps) {
           //   title: '门店地址',
           //   width: 120,
           //   sorter: true,
-          //   sortOrder: sorter.field == 'location.street' ? sorter.order : undefined,
+          //   sortOrder: sorter.field === 'location.street' ? sorter.order : undefined,
           // },
           // {
           //   key: 'createdAt',
           //   title: '创建时间',
           //   width: 150,
           //   sorter: true,
-          //   sortOrder: sorter.field == 'createdAt' ? sorter.order : undefined,
+          //   sortOrder: sorter.field === 'createdAt' ? sorter.order : undefined,
           // },
           // {
           //   key: 'actions',

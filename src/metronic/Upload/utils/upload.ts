@@ -1,4 +1,3 @@
-/* eslint-disable graphql/template-strings */
 import { useCallback, useMemo, useReducer, useRef } from 'react';
 
 import { gql, useMutation } from '@apollo/client';
@@ -6,9 +5,9 @@ import CryptoJs from 'crypto-js';
 import encHex from 'crypto-js/enc-hex';
 import { debounce } from 'lodash';
 
-import { networkSpeed } from '../../utils';
-
 import { sleep } from '@/utils';
+
+import { networkSpeed } from '../../utils';
 
 type UploadProgressEvent = {
   loaded: number;
@@ -23,7 +22,7 @@ const addZeroLeft = function (text: string, length: number) {
     let i = result.length;
     while (i++ < length) {
       result = '0' + result;
-      if (result.length == length) break;
+      if (result.length === length) break;
     }
   }
   return result;
@@ -262,8 +261,8 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         return data.upload;
       } catch (e) {
         if (
-          (e as Error).name != 'AbortError' &&
-          (e as Error).message == 'canceled'
+          (e as Error).name !== 'AbortError' &&
+          (e as Error).message === 'canceled'
         ) {
           (e as Error).name = 'AbortError';
         }
@@ -325,7 +324,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
 
       for (let i = 0; i < chunks.length; i++) {
         const chunk = chunks[i];
-        if (multipartUpload.chunks.some((item) => item.index == i + 1)) {
+        if (multipartUpload.chunks.some((item) => item.index === i + 1)) {
           // console.log(file.name, '部分已经上传', i + 1);
           stat.loaded += chunk.size;
           continue;
@@ -368,10 +367,10 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
             state.current.progress = Math.max(percent, 1);
             state.current.uploadSpeed = networkSpeed(_progress, stat);
 
-            if (percent == 100 && state.current.state == 'uploading') {
+            if (percent === 100 && state.current.state === 'uploading') {
               state.current.state = 'waitingForCompleted';
               forceRender();
-            } else if (percent != 100) {
+            } else if (percent !== 100) {
               state.current.state = 'uploading';
               forceRender();
             }
@@ -421,10 +420,10 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
           state.current.progress = Math.max(percent, 1);
           state.current.uploadSpeed = networkSpeed(e, stat);
 
-          if (percent == 100 && state.current.state == 'uploading') {
+          if (percent === 100 && state.current.state === 'uploading') {
             state.current.state = 'waitingForCompleted';
             forceRender();
-          } else if (percent != 100) {
+          } else if (percent !== 100) {
             state.current.state = 'uploading';
             forceRender();
           }
@@ -472,7 +471,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
           return await handleOrdinaryUpload(file, _options);
         }
       } catch (e) {
-        if ((e as Error).name == 'AbortError') {
+        if ((e as Error).name === 'AbortError') {
           state.current.state = 'aborted';
           forceRender();
         } else {
@@ -511,7 +510,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       uploadSpeed,
       error,
       uploading:
-        uploadState == 'uploading' || uploadState == 'waitingForCompleted',
+        uploadState === 'uploading' || uploadState === 'waitingForCompleted',
       state: uploadState,
       reset,
       abort: uploadController.abort,

@@ -1,9 +1,9 @@
 import type { EdgeTypes } from 'react-flow-renderer';
 
-import ButtonEdge from '../components/ButtonEdge';
-
 import FloatingEdge from './FloatingEdge';
 import SimpleFloatingEdge from './FloatingEdge/SimpleFloatingEdge';
+
+import ButtonEdge from '../components/ButtonEdge';
 
 export default {
   buttonedge: ButtonEdge,

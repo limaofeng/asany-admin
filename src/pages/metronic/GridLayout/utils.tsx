@@ -1,8 +1,8 @@
 import type { CSSProperties } from 'react';
 import React, { useEffect, useRef } from 'react';
+import type { XYCoord } from 'react-dnd';
 
 import { isEqual, throttle as lodashThrottle } from 'lodash';
-import type { XYCoord } from 'react-dnd';
 
 import type {
   AnimatedProps,
@@ -21,6 +21,12 @@ import type {
 export const isProduction = process.env.NODE_ENV === 'production';
 const DEBUG = false;
 
+function log(...args: any) {
+  if (!DEBUG) return;
+  // eslint-disable-next-line no-console
+  console.log(...args);
+}
+
 /**
  * Return the bottom coordinate of the layout.
  *
@@ -35,14 +41,6 @@ export function bottom(layout: Layout): number {
     if (bottomY > max) max = bottomY;
   }
   return max;
-}
-
-export function cloneLayout(layout: Layout): Layout {
-  const newLayout = Array(layout.length);
-  for (let i = 0, len = layout.length; i < len; i++) {
-    newLayout[i] = cloneLayoutItem(layout[i]);
-  }
-  return newLayout;
 }
 
 // Fast path to cloning, since this is monomorphic
@@ -65,6 +63,14 @@ export function cloneLayoutItem(layoutItem: IGridItemLayout): IGridItemLayout {
   };
 }
 
+export function cloneLayout(layout: Layout): Layout {
+  const newLayout = Array(layout.length);
+  for (let i = 0, len = layout.length; i < len; i++) {
+    newLayout[i] = cloneLayoutItem(layout[i]);
+  }
+  return newLayout;
+}
+
 /**
  * Given two layoutitems, check if they collide.
  */
@@ -78,47 +84,12 @@ export function collides(l1: IGridItemLayout, l2: IGridItemLayout): boolean {
 }
 
 /**
- * Given a layout, compact it. This involves going down each y coordinate and removing gaps
- * between items.
- *
- * @param  {Array} layout Layout.
- * @param  {Boolean} verticalCompact Whether or not to compact the layout
- *   vertically.
- * @return {Array}       Compacted Layout.
+ * Get all static elements.
+ * @param  {Array} layout Array of layout objects.
+ * @return {Array}        Array of static layout items..
  */
-export function compact(
-  layout: Layout,
-  compactType: CompactType | undefined,
-  cols: number,
-): Layout {
-  // Statics go in the compareWith array right away so items flow around them.
-  const compareWith = getStatics(layout);
-  // We go through the items by row and column.
-  const sorted = sortLayoutItems(layout, compactType);
-  // Holding for new items.
-  const out = Array(layout.length);
-
-  for (let i = 0, len = sorted.length; i < len; i++) {
-    let l = cloneLayoutItem(sorted[i]);
-
-    // Don't move static elements
-    if (!l.static) {
-      l = compactItem(compareWith, l, compactType, cols, sorted);
-
-      // Add to comparison array. We only collide with items before this one.
-      // Statics are already in this array.
-      compareWith.push(l);
-    }
-
-    // Add to output array to make sure they still come out in the right order.
-    out[layout.indexOf(sorted[i])] = l;
-
-    // Clear moved flag, if it exists.
-    l.moved = false;
-  }
-
-  // console.log('compact', compactType, cols, layout, out);
-  return out;
+export function getStatics(layout: Layout): IGridItemLayout[] {
+  return layout.filter((l) => l.static);
 }
 
 const heightWidth: { x: 'w'; y: 'h' } = { x: 'w', y: 'h' };
@@ -162,84 +133,6 @@ function resolveCompactionCollision(
   item[axis] = moveToCoord;
 }
 
-/**
- * Compact an item in the layout.
- */
-export function compactItem(
-  compareWith: Layout,
-  l: IGridItemLayout,
-  compactType: CompactType | undefined,
-  cols: number,
-  fullLayout: Layout,
-): IGridItemLayout {
-  const compactV = compactType === 'vertical';
-  const compactH = compactType === 'horizontal';
-  if (compactV) {
-    // Bottom 'y' possible is the bottom of the layout.
-    // This allows you to do nice stuff like specify {y: Infinity}
-    // This is here because the layout must be sorted in order to get the correct bottom `y`.
-    l.y = Math.min(bottom(compareWith), l.y);
-    // Move the element up as far as it can go without colliding.
-    while (l.y > 0 && !getFirstCollision(compareWith, l)) {
-      l.y--;
-    }
-  } else if (compactH) {
-    l.y = Math.min(bottom(compareWith), l.y);
-    // Move the element left as far as it can go without colliding.
-    while (l.x > 0 && !getFirstCollision(compareWith, l)) {
-      l.x--;
-    }
-  }
-
-  // Move it down, and keep moving it down if it's colliding.
-  let _collides;
-  while ((_collides = getFirstCollision(compareWith, l))) {
-    if (compactH) {
-      resolveCompactionCollision(fullLayout, l, _collides.x + _collides.w, 'x');
-    } else {
-      resolveCompactionCollision(fullLayout, l, _collides.y + _collides.h, 'y');
-    }
-    // Since we can't grow without bounds horizontally, if we've overflown, let's move it down and try again.
-    if (compactH && l.x + l.w > cols) {
-      l.x = cols - l.w;
-      l.y++;
-    }
-  }
-  return l;
-}
-
-/**
- * Given a layout, make sure all elements fit within its bounds.
- *
- * @param  {Array} layout Layout array.
- * @param  {Number} bounds Number of columns.
- */
-export function correctBounds(
-  layout: Layout,
-  bounds: { cols: number },
-): Layout {
-  const collidesWith = getStatics(layout);
-  for (let i = 0, len = layout.length; i < len; i++) {
-    const l = layout[i];
-    // Overflows right
-    if (l.x + l.w > bounds.cols) l.x = bounds.cols - l.w;
-    // Overflows left
-    if (l.x < 0) {
-      l.x = 0;
-      l.w = bounds.cols;
-    }
-    if (!l.static) collidesWith.push(l);
-    else {
-      // If this is static and collides with other statics, we must move it down.
-      // We have to do something nicer than just letting them overlap.
-      while (getFirstCollision(collidesWith, l)) {
-        l.y++;
-      }
-    }
-  }
-  return layout;
-}
-
 export interface GridItemPositionState {
   resizing?: {
     width: number;
@@ -249,51 +142,6 @@ export interface GridItemPositionState {
     top: number;
     left: number;
   };
-}
-
-export function calcGridItemPosition(
-  positionParams: PositionParams,
-  { x, y, w, h }: IGridItemLayout,
-  state?: GridItemPositionState,
-): Position {
-  const { margin, containerPadding, rowHeight } = positionParams;
-  const colWidth = calcGridColWidth(positionParams);
-  const out: any = {};
-
-  // If resizing, use the exact width and height as returned from resizing callbacks.
-  if (state && state.resizing) {
-    out.width = Math.round(state.resizing.width);
-    out.height = Math.round(state.resizing.height);
-  }
-  // Otherwise, calculate from grid units.
-  else {
-    // 0 * Infinity === NaN, which causes problems with resize constraints;
-    // Fix this if it occurs.
-    // Note we do it here rather than later because Math.round(Infinity) causes deopt
-    out.width =
-      w === Infinity
-        ? w
-        : Math.round(colWidth * w + Math.max(0, w - 1) * margin[0]);
-    out.height =
-      h === Infinity
-        ? h
-        : Math.round(rowHeight * h + Math.max(0, h - 1) * margin[1]);
-  }
-
-  // If dragging, use the exact width and height as returned from dragging callbacks.
-  if (state && state.dragging) {
-    out.top = Math.round(state.dragging.top);
-    out.left = Math.round(state.dragging.left);
-  }
-  // Otherwise, calculate from grid units.
-  else {
-    out.top = Math.round((rowHeight + margin[1]) * y + containerPadding[1]);
-    out.left = Math.round((colWidth + margin[0]) * x + containerPadding[0]);
-  }
-
-  console.log('Widget calcGridItemPosition', out);
-
-  return out;
 }
 
 /**
@@ -308,7 +156,7 @@ export function getLayoutItem(
   id: string,
 ): IGridItemLayout | undefined {
   for (let i = 0, len = layout.length; i < len; i++) {
-    if (layout[i].id == id) return layout[i];
+    if (layout[i].id === id) return layout[i];
   }
   return undefined;
 }
@@ -376,177 +224,14 @@ export function getAllCollisions(
   return layout.filter((l) => collides(l, layoutItem));
 }
 
-/**
- * Get all static elements.
- * @param  {Array} layout Array of layout objects.
- * @return {Array}        Array of static layout items..
- */
-export function getStatics(layout: Layout): IGridItemLayout[] {
-  return layout.filter((l) => l.static);
-}
 
-/**
- * Move an element. Responsible for doing cascading movements of other elements.
- *
- * @param  {Array}      layout            Full layout to modify.
- * @param  {IGridItemLayout} l                 element to move.
- * @param  {Number}     [x]               X position in grid units.
- * @param  {Number}     [y]               Y position in grid units.
- */
-export function moveElement(
-  _layout: Layout,
-  l: IGridItemLayout,
-  x: number | undefined,
-  y: number | undefined,
-  isUserAction: boolean,
-  preventCollision: boolean | undefined,
-  compactType: CompactType,
-  cols: number,
-): Layout {
-  let layout = _layout;
-  // If this is static and not explicitly enabled as draggable,
-  // no move is possible, so we can short-circuit this immediately.
-  if (l.static && l.isDraggable !== true) return layout;
-
-  // Short-circuit if nothing to do.
-  if (l.y === y && l.x === x) return layout;
-
-  log(
-    `Moving element ${l.id} to [${String(x)},${String(y)}] from [${l.x},${
-      l.y
-    }]`,
-  );
-  const oldX = l.x;
-  const oldY = l.y;
-
-  // This is quite a bit faster than extending the object
-  if (typeof x === 'number') l.x = x;
-  if (typeof y === 'number') l.y = y;
-  l.moved = true;
-
-  // If this collides with anything, move it.
-  // When doing this comparison, we have to sort the items we compare with
-  // to ensure, in the case of multiple collisions, that we're getting the
-  // nearest collision.
-  let sorted = sortLayoutItems(layout, compactType);
-  const movingUp =
-    compactType === 'vertical' && typeof y === 'number'
-      ? oldY >= y
-      : compactType === 'horizontal' && typeof x === 'number'
-      ? oldX >= x
-      : false;
-  if (movingUp) sorted = sorted.reverse();
-  const collisions = getAllCollisions(sorted, l);
-
-  // There was a collision; abort
-  if (preventCollision && collisions.length) {
-    log(`Collision prevented on ${l.id}, reverting.`);
-    l.x = oldX;
-    l.y = oldY;
-    l.moved = false;
-    return layout;
-  }
-
-  // Move each item that collides away from this element.
-  for (let i = 0, len = collisions.length; i < len; i++) {
-    const collision = collisions[i];
-    log(
-      `Resolving collision between ${l.id} at [${l.x},${l.y}] and ${collision.id} at [${collision.x},${collision.y}]`,
-    );
-
-    // Short circuit so we can't infinite loop
-    if (collision.moved) continue;
-
-    // Don't move static items - we have to move *this* element away
-    if (collision.static) {
-      layout = moveElementAwayFromCollision(
-        layout,
-        collision,
-        l,
-        isUserAction,
-        compactType,
-        cols,
-      );
-    } else {
-      layout = moveElementAwayFromCollision(
-        layout,
-        l,
-        collision,
-        isUserAction,
-        compactType,
-        cols,
-      );
+export function sortLayoutItemsByColRow(layout: Layout): Layout {
+  return [].concat(layout as any).sort(function (a: any, b: any) {
+    if (a.x > b.x || (a.x === b.x && a.y > b.y)) {
+      return 1;
     }
-  }
-
-  return layout;
-}
-
-/**
- * This is where the magic needs to happen - given a collision, move an element away from the collision.
- * We attempt to move it up if there's room, otherwise it goes below.
- *
- * @param  {Array} layout            Full layout to modify.
- * @param  {IGridItemLayout} collidesWith Layout item we're colliding with.
- * @param  {IGridItemLayout} itemToMove   Layout item we're moving.
- */
-export function moveElementAwayFromCollision(
-  layout: Layout,
-  collidesWith: IGridItemLayout,
-  itemToMove: IGridItemLayout,
-  _isUserAction: boolean,
-  compactType: CompactType,
-  cols: number,
-): Layout {
-  const compactH = compactType === 'horizontal';
-  // Compact vertically if not set to horizontal
-  const compactV = compactType !== 'horizontal';
-  const preventCollision = collidesWith.static; // we're already colliding (not for static items)
-  let isUserAction = _isUserAction;
-  // If there is enough space above the collision to put this element, move it there.
-  // We only do this on the main collision as this can get funky in cascades and cause
-  // unwanted swapping behavior.
-  if (isUserAction) {
-    // Reset isUserAction flag because we're not in the main collision anymore.
-    isUserAction = false;
-
-    // Make a mock item so we don't modify the item here, only modify in moveElement.
-    const fakeItem: IGridItemLayout = {
-      x: compactH ? Math.max(collidesWith.x - itemToMove.w, 0) : itemToMove.x,
-      y: compactV ? Math.max(collidesWith.y - itemToMove.h, 0) : itemToMove.y,
-      w: itemToMove.w,
-      h: itemToMove.h,
-      id: '-1',
-    };
-
-    // No collision? If so, we can go up there; otherwise, we'll end up moving down as normal
-    if (!getFirstCollision(layout, fakeItem)) {
-      log(
-        `Doing reverse collision on ${itemToMove.id} up to [${fakeItem.x},${fakeItem.y}].`,
-      );
-      return moveElement(
-        layout,
-        itemToMove,
-        compactH ? fakeItem.x : undefined,
-        compactV ? fakeItem.y : undefined,
-        isUserAction,
-        preventCollision,
-        compactType,
-        cols,
-      );
-    }
-  }
-
-  return moveElement(
-    layout,
-    itemToMove,
-    compactH ? itemToMove.x + 1 : undefined,
-    compactV ? itemToMove.y + 1 : undefined,
-    isUserAction,
-    preventCollision,
-    compactType,
-    cols,
-  );
+    return -1;
+  });
 }
 
 /**
@@ -584,6 +269,19 @@ export function setTopLeft({ top, left, width, height }: Position) {
   };
 }
 
+
+export function sortLayoutItemsByRowCol(layout: Layout): Layout {
+  return [].concat(layout as any).sort(function (a: any, b: any) {
+    if (a.y > b.y || (a.y === b.y && a.x > b.x)) {
+      return 1;
+    } else if (a.y === b.y && a.x === b.x) {
+      // Without this, we can get different sort results in IE vs. Chrome/FF
+      return 0;
+    }
+    return -1;
+  });
+}
+
 /**
  * Get layout items sorted from top left to right and down.
  *
@@ -598,49 +296,6 @@ export function sortLayoutItems(
   else return sortLayoutItemsByRowCol(layout);
 }
 
-export function sortLayoutItemsByRowCol(layout: Layout): Layout {
-  return [].concat(layout as any).sort(function (a: any, b: any) {
-    if (a.y > b.y || (a.y === b.y && a.x > b.x)) {
-      return 1;
-    } else if (a.y === b.y && a.x === b.x) {
-      // Without this, we can get different sort results in IE vs. Chrome/FF
-      return 0;
-    }
-    return -1;
-  });
-}
-
-export function sortLayoutItemsByColRow(layout: Layout): Layout {
-  return [].concat(layout as any).sort(function (a: any, b: any) {
-    if (a.x > b.x || (a.x === b.x && a.y > b.y)) {
-      return 1;
-    }
-    return -1;
-  });
-}
-
-/**
- * Generate a layout using the initialLayout and children as a template.
- * Missing entries will be added, extraneous ones will be truncated.
- *
- * @param  {Array}  initialLayout Layout passed in through props.
- * @param  {String} breakpoint    Current responsive breakpoint.
- * @param  {?String} compact      Compaction option.
- * @return {Array}                Working layout.
- */
-export function synchronizeLayoutWithChildren(
-  initialLayout: Layout,
-  cols: number,
-  compactType?: CompactType,
-): Layout {
-  const _initialLayout = initialLayout || [];
-
-  let layout: Layout = _initialLayout;
-  layout = correctBounds(layout, { cols: cols });
-  layout = compact(layout, compactType, cols);
-
-  return layout;
-}
 
 /**
  * Validate a layout. Throws errors.
@@ -691,12 +346,6 @@ export function validateLayout(
 // Flow can't really figure this out, so we just use Object
 export function autoBindHandlers(el: any, fns: string[]): void {
   fns.forEach((key) => (el[key] = el[key].bind(el)));
-}
-
-function log(...args: any) {
-  if (!DEBUG) return;
-  // eslint-disable-next-line no-console
-  console.log(...args);
 }
 
 /**
@@ -805,6 +454,175 @@ export function getItemCoord(
     },
   };
 }
+
+/**
+ * This is where the magic needs to happen - given a collision, move an element away from the collision.
+ * We attempt to move it up if there's room, otherwise it goes below.
+ *
+ * @param  {Array} layout            Full layout to modify.
+ * @param  {IGridItemLayout} collidesWith Layout item we're colliding with.
+ * @param  {IGridItemLayout} itemToMove   Layout item we're moving.
+ */
+export function moveElementAwayFromCollision(
+  layout: Layout,
+  collidesWith: IGridItemLayout,
+  itemToMove: IGridItemLayout,
+  _isUserAction: boolean,
+  compactType: CompactType,
+  cols: number,
+): Layout {
+  const compactH = compactType === 'horizontal';
+  // Compact vertically if not set to horizontal
+  const compactV = compactType !== 'horizontal';
+  const preventCollision = collidesWith.static; // we're already colliding (not for static items)
+  let isUserAction = _isUserAction;
+  // If there is enough space above the collision to put this element, move it there.
+  // We only do this on the main collision as this can get funky in cascades and cause
+  // unwanted swapping behavior.
+  if (isUserAction) {
+    // Reset isUserAction flag because we're not in the main collision anymore.
+    isUserAction = false;
+
+    // Make a mock item so we don't modify the item here, only modify in moveElement.
+    const fakeItem: IGridItemLayout = {
+      x: compactH ? Math.max(collidesWith.x - itemToMove.w, 0) : itemToMove.x,
+      y: compactV ? Math.max(collidesWith.y - itemToMove.h, 0) : itemToMove.y,
+      w: itemToMove.w,
+      h: itemToMove.h,
+      id: '-1',
+    };
+
+    // No collision? If so, we can go up there; otherwise, we'll end up moving down as normal
+    if (!getFirstCollision(layout, fakeItem)) {
+      log(
+        `Doing reverse collision on ${itemToMove.id} up to [${fakeItem.x},${fakeItem.y}].`,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      return moveElement(
+        layout,
+        itemToMove,
+        compactH ? fakeItem.x : undefined,
+        compactV ? fakeItem.y : undefined,
+        isUserAction,
+        preventCollision,
+        compactType,
+        cols,
+      );
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  return moveElement(
+    layout,
+    itemToMove,
+    compactH ? itemToMove.x + 1 : undefined,
+    compactV ? itemToMove.y + 1 : undefined,
+    isUserAction,
+    preventCollision,
+    compactType,
+    cols,
+  );
+}
+
+/**
+ * Move an element. Responsible for doing cascading movements of other elements.
+ *
+ * @param  {Array}      layout            Full layout to modify.
+ * @param  {IGridItemLayout} l                 element to move.
+ * @param  {Number}     [x]               X position in grid units.
+ * @param  {Number}     [y]               Y position in grid units.
+ */
+export function moveElement(
+  _layout: Layout,
+  l: IGridItemLayout,
+  x: number | undefined,
+  y: number | undefined,
+  isUserAction: boolean,
+  preventCollision: boolean | undefined,
+  compactType: CompactType,
+  cols: number,
+): Layout {
+  let layout = _layout;
+  // If this is static and not explicitly enabled as draggable,
+  // no move is possible, so we can short-circuit this immediately.
+  if (l.static && l.isDraggable !== true) return layout;
+
+  // Short-circuit if nothing to do.
+  if (l.y === y && l.x === x) return layout;
+
+  log(
+    `Moving element ${l.id} to [${String(x)},${String(y)}] from [${l.x},${
+      l.y
+    }]`,
+  );
+  const oldX = l.x;
+  const oldY = l.y;
+
+  // This is quite a bit faster than extending the object
+  if (typeof x === 'number') l.x = x;
+  if (typeof y === 'number') l.y = y;
+  l.moved = true;
+
+  // If this collides with anything, move it.
+  // When doing this comparison, we have to sort the items we compare with
+  // to ensure, in the case of multiple collisions, that we're getting the
+  // nearest collision.
+  let sorted = sortLayoutItems(layout, compactType);
+  const movingUp =
+    compactType === 'vertical' && typeof y === 'number'
+      ? oldY >= y
+      : compactType === 'horizontal' && typeof x === 'number'
+      ? oldX >= x
+      : false;
+  if (movingUp) sorted = sorted.reverse();
+  const collisions = getAllCollisions(sorted, l);
+
+  // There was a collision; abort
+  if (preventCollision && collisions.length) {
+    log(`Collision prevented on ${l.id}, reverting.`);
+    l.x = oldX;
+    l.y = oldY;
+    l.moved = false;
+    return layout;
+  }
+
+  // Move each item that collides away from this element.
+  for (let i = 0, len = collisions.length; i < len; i++) {
+    const collision = collisions[i];
+    log(
+      `Resolving collision between ${l.id} at [${l.x},${l.y}] and ${collision.id} at [${collision.x},${collision.y}]`,
+    );
+
+    // Short circuit so we can't infinite loop
+    if (collision.moved) continue;
+
+    // Don't move static items - we have to move *this* element away
+    if (collision.static) {
+      layout = moveElementAwayFromCollision(
+        layout,
+        collision,
+        l,
+        isUserAction,
+        compactType,
+        cols,
+      );
+    } else {
+      layout = moveElementAwayFromCollision(
+        layout,
+        l,
+        collision,
+        isUserAction,
+        compactType,
+        cols,
+      );
+    }
+  }
+
+  return layout;
+}
+
+
+
 
 export function getCompactType(
   verticalCompact: boolean,
@@ -975,7 +793,7 @@ export function dragPreview(
           <div
             style={getScaleItemStyles(
               style,
-              typeof options.scale == 'function'
+              typeof options.scale === 'function'
                 ? options.scale()
                 : options.scale,
             )}
@@ -987,4 +805,194 @@ export function dragPreview(
     }
     return <div style={style}>{renderItem(itemRender, props)}</div>;
   };
+}
+
+/**
+ * Compact an item in the layout.
+ */
+export function compactItem(
+  compareWith: Layout,
+  l: IGridItemLayout,
+  compactType: CompactType | undefined,
+  cols: number,
+  fullLayout: Layout,
+): IGridItemLayout {
+  const compactV = compactType === 'vertical';
+  const compactH = compactType === 'horizontal';
+  if (compactV) {
+    // Bottom 'y' possible is the bottom of the layout.
+    // This allows you to do nice stuff like specify {y: Infinity}
+    // This is here because the layout must be sorted in order to get the correct bottom `y`.
+    l.y = Math.min(bottom(compareWith), l.y);
+    // Move the element up as far as it can go without colliding.
+    while (l.y > 0 && !getFirstCollision(compareWith, l)) {
+      l.y--;
+    }
+  } else if (compactH) {
+    l.y = Math.min(bottom(compareWith), l.y);
+    // Move the element left as far as it can go without colliding.
+    while (l.x > 0 && !getFirstCollision(compareWith, l)) {
+      l.x--;
+    }
+  }
+
+  // Move it down, and keep moving it down if it's colliding.
+  let _collides;
+  while ((_collides = getFirstCollision(compareWith, l))) {
+    if (compactH) {
+      resolveCompactionCollision(fullLayout, l, _collides.x + _collides.w, 'x');
+    } else {
+      resolveCompactionCollision(fullLayout, l, _collides.y + _collides.h, 'y');
+    }
+    // Since we can't grow without bounds horizontally, if we've overflown, let's move it down and try again.
+    if (compactH && l.x + l.w > cols) {
+      l.x = cols - l.w;
+      l.y++;
+    }
+  }
+  return l;
+}
+
+/**
+ * Given a layout, compact it. This involves going down each y coordinate and removing gaps
+ * between items.
+ *
+ * @param  {Array} layout Layout.
+ * @param  {Boolean} verticalCompact Whether or not to compact the layout
+ *   vertically.
+ * @return {Array}       Compacted Layout.
+ */
+export function compact(
+  layout: Layout,
+  compactType: CompactType | undefined,
+  cols: number,
+): Layout {
+  // Statics go in the compareWith array right away so items flow around them.
+  const compareWith = getStatics(layout);
+  // We go through the items by row and column.
+  const sorted = sortLayoutItems(layout, compactType);
+  // Holding for new items.
+  const out = Array(layout.length);
+
+  for (let i = 0, len = sorted.length; i < len; i++) {
+    let l = cloneLayoutItem(sorted[i]);
+
+    // Don't move static elements
+    if (!l.static) {
+      l = compactItem(compareWith, l, compactType, cols, sorted);
+
+      // Add to comparison array. We only collide with items before this one.
+      // Statics are already in this array.
+      compareWith.push(l);
+    }
+
+    // Add to output array to make sure they still come out in the right order.
+    out[layout.indexOf(sorted[i])] = l;
+
+    // Clear moved flag, if it exists.
+    l.moved = false;
+  }
+
+  // console.log('compact', compactType, cols, layout, out);
+  return out;
+}
+
+/**
+ * Given a layout, make sure all elements fit within its bounds.
+ *
+ * @param  {Array} layout Layout array.
+ * @param  {Number} bounds Number of columns.
+ */
+export function correctBounds(
+  layout: Layout,
+  bounds: { cols: number },
+): Layout {
+  const collidesWith = getStatics(layout);
+  for (let i = 0, len = layout.length; i < len; i++) {
+    const l = layout[i];
+    // Overflows right
+    if (l.x + l.w > bounds.cols) l.x = bounds.cols - l.w;
+    // Overflows left
+    if (l.x < 0) {
+      l.x = 0;
+      l.w = bounds.cols;
+    }
+    if (!l.static) collidesWith.push(l);
+    else {
+      // If this is static and collides with other statics, we must move it down.
+      // We have to do something nicer than just letting them overlap.
+      while (getFirstCollision(collidesWith, l)) {
+        l.y++;
+      }
+    }
+  }
+  return layout;
+}
+
+export function calcGridItemPosition(
+  positionParams: PositionParams,
+  { x, y, w, h }: IGridItemLayout,
+  state?: GridItemPositionState,
+): Position {
+  const { margin, containerPadding, rowHeight } = positionParams;
+  const colWidth = calcGridColWidth(positionParams);
+  const out: any = {};
+
+  // If resizing, use the exact width and height as returned from resizing callbacks.
+  if (state && state.resizing) {
+    out.width = Math.round(state.resizing.width);
+    out.height = Math.round(state.resizing.height);
+  }
+  // Otherwise, calculate from grid units.
+  else {
+    // 0 * Infinity === NaN, which causes problems with resize constraints;
+    // Fix this if it occurs.
+    // Note we do it here rather than later because Math.round(Infinity) causes deopt
+    out.width =
+      w === Infinity
+        ? w
+        : Math.round(colWidth * w + Math.max(0, w - 1) * margin[0]);
+    out.height =
+      h === Infinity
+        ? h
+        : Math.round(rowHeight * h + Math.max(0, h - 1) * margin[1]);
+  }
+
+  // If dragging, use the exact width and height as returned from dragging callbacks.
+  if (state && state.dragging) {
+    out.top = Math.round(state.dragging.top);
+    out.left = Math.round(state.dragging.left);
+  }
+  // Otherwise, calculate from grid units.
+  else {
+    out.top = Math.round((rowHeight + margin[1]) * y + containerPadding[1]);
+    out.left = Math.round((colWidth + margin[0]) * x + containerPadding[0]);
+  }
+
+  console.log('Widget calcGridItemPosition', out);
+
+  return out;
+}
+
+/**
+ * Generate a layout using the initialLayout and children as a template.
+ * Missing entries will be added, extraneous ones will be truncated.
+ *
+ * @param  {Array}  initialLayout Layout passed in through props.
+ * @param  {String} breakpoint    Current responsive breakpoint.
+ * @param  {?String} compact      Compaction option.
+ * @return {Array}                Working layout.
+ */
+export function synchronizeLayoutWithChildren(
+  initialLayout: Layout,
+  cols: number,
+  compactType?: CompactType,
+): Layout {
+  const _initialLayout = initialLayout || [];
+
+  let layout: Layout = _initialLayout;
+  layout = correctBounds(layout, { cols: cols });
+  layout = compact(layout, compactType, cols);
+
+  return layout;
 }

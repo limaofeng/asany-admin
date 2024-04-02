@@ -76,7 +76,7 @@ function SettingsMenu(
   };
 
   const handleCloseNextAside = async () => {
-    if (state.current.nextIndex == -1) {
+    if (state.current.nextIndex === -1) {
       return;
     }
     state.current.nextIndex--;
@@ -111,7 +111,7 @@ function SettingsMenu(
   );
 
   const { nextIndex, panels } = state.current;
-  const hasNextPanel = nextIndex != -1;
+  const hasNextPanel = nextIndex !== -1;
   return (
     <div
       ref={container}
@@ -176,6 +176,7 @@ function SettingsMenu(
             <div className="ember-view active">
               <div className="settings-menu-header subview">
                 <button
+                  type="button"
                   className="back settings-menu-header-action"
                   onClick={handleCloseNextAside}
                 >

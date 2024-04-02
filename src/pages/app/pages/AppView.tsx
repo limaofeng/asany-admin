@@ -1,9 +1,9 @@
 import { Outlet, useParams } from 'react-router';
 
+import { MicroApp } from '@/layouts/Demo7';
+
 import AppSidebar from '../components/AppSidebar';
 import { useAppQuery } from '../hooks';
-
-import { MicroApp } from '@/layouts/Demo7';
 
 function AppView() {
   const { id } = useParams<{ id: string }>();

@@ -68,7 +68,7 @@ function AreaContent(props: AreaContentProps) {
 
   const handleClick = useCallback(
     (data: AreaData, level: number) => async () => {
-      if (state.current.selectedKeys[level] == data.code) {
+      if (state.current.selectedKeys[level] === data.code) {
         if (!ends(data)) {
           state.current.activeKey = `level_${level + 1}`;
           forceRender();
@@ -109,7 +109,7 @@ function AreaContent(props: AreaContentProps) {
     state.current.selectedKeys = props.selectedKeys;
     const items = state.current.tabs[props.selectedKeys.length - 1];
     const _item = items?.items.find(
-      (t) => t.code == props.selectedKeys[props.selectedKeys.length - 1],
+      (t) => t.code === props.selectedKeys[props.selectedKeys.length - 1],
     );
     if (!_item) {
       return;
@@ -153,7 +153,7 @@ function initResultType(value?: AreaValueType) {
   if (!value || Array.isArray(value)) {
     return 'array';
   }
-  if (typeof value == 'string') {
+  if (typeof value === 'string') {
     return 'string';
   }
   return 'object';
@@ -194,7 +194,7 @@ function AreaPicker(props: AreaPickerProps) {
     if (!props.value) {
       return;
     }
-    if (resultType == 'object') {
+    if (resultType === 'object') {
       const areaObj = props.value as Region;
       const _newValue = [
         areaObj.province,
@@ -208,7 +208,7 @@ function AreaPicker(props: AreaPickerProps) {
       }
       return;
     }
-    if (resultType == 'array') {
+    if (resultType === 'array') {
       if (!isEqual(state.current.value, props.value)) {
         state.current.value = props.value as any;
         forceRender();
@@ -224,7 +224,7 @@ function AreaPicker(props: AreaPickerProps) {
   const isEnds = useCallback(
     (area: AreaData) => {
       if (typeof ends === 'string') {
-        return ends == area.type;
+        return ends === area.type;
       }
       return ends(area);
     },
@@ -242,7 +242,7 @@ function AreaPicker(props: AreaPickerProps) {
       const _tabs: TabType[] = [parentData];
       const _selectedItems: AreaData[] = [];
       for (const code of _value) {
-        const _data = parentData.items.find((t) => t.code == code)!;
+        const _data = parentData.items.find((t) => t.code === code)!;
         _selectedItems.push(_data);
         if (isEnds(_data)) {
           break;
@@ -271,9 +271,9 @@ function AreaPicker(props: AreaPickerProps) {
 
         if (onChange) {
           let retValue: any = newValue;
-          if (resultType == 'string') {
+          if (resultType === 'string') {
             retValue = newValue[newValue.length - 1];
-          } else if (resultType == 'object') {
+          } else if (resultType === 'object') {
             retValue = {};
             for (const _area of _selectedItems) {
               retValue[_area.type] = _area.code;
@@ -296,7 +296,7 @@ function AreaPicker(props: AreaPickerProps) {
   );
 
   const handleVisibleChange = useCallback((visible: boolean) => {
-    if (state.current.popover == visible) {
+    if (state.current.popover === visible) {
       return;
     }
     state.current.popover = visible;

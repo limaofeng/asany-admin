@@ -39,7 +39,7 @@ function Row(props: RowProps) {
     if (!gutter) {
       return;
     }
-    if (typeof gutter == 'number') {
+    if (typeof gutter === 'number') {
       return `g-${gutter}`;
     }
     if (Array.isArray(gutter)) {
@@ -55,7 +55,7 @@ function Row(props: RowProps) {
     if (!cols) {
       return;
     }
-    if (typeof cols == 'number') {
+    if (typeof cols === 'number') {
       return `row-cols-${cols}`;
     }
     return getResponsiveClassNames('row-cols', cols);

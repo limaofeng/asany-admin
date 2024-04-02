@@ -6,11 +6,11 @@ import React, {
   useState,
 } from 'react';
 import ReactDOM from 'react-dom';
+import { useClickAway } from 'react-use';
 
 import { Shortcuts } from '@asany/shortcuts';
 import useMergedRef from '@react-hook/merged-ref';
 import classnames from 'classnames';
-import { useClickAway } from 'react-use';
 
 import Menu from '../Menu';
 import type { OffsetValue } from '../utils/KTMenu';
@@ -124,7 +124,7 @@ function Dropdown(props: DropdownProps) {
   );
 
   useEffect(() => {
-    if (props.visible != visible) {
+    if (props.visible !== visible) {
       setVisible(props.visible);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -214,7 +214,7 @@ function Dropdown(props: DropdownProps) {
     itemRef as any,
     (e) => {
       const target = e.target!;
-      if (trigger == 'hover' && !subRef.current?.contains(target)) {
+      if (trigger === 'hover' && !subRef.current?.contains(target)) {
         handleMouseOut();
       }
     },
@@ -223,7 +223,7 @@ function Dropdown(props: DropdownProps) {
 
   const targetProps = useMemo(() => {
     const _targetProps: any = {};
-    if (trigger == 'click') {
+    if (trigger === 'click') {
       _targetProps.onClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
@@ -232,7 +232,7 @@ function Dropdown(props: DropdownProps) {
         }
         handleVisible();
       };
-    } else if (trigger == 'hover') {
+    } else if (trigger === 'hover') {
       _targetProps.onMouseOver = handleMouseOver;
     }
     return _targetProps;
@@ -244,7 +244,7 @@ function Dropdown(props: DropdownProps) {
   );
 
   const mergeProps = useCallback((element: any, overlayProps: any) => {
-    if (typeof element.type == 'string') {
+    if (typeof element.type === 'string') {
       delete overlayProps.closeDropdown;
       delete overlayProps.dropdown;
       delete overlayProps.selectedKeys;

@@ -9,22 +9,22 @@ import {
 } from '@asany/sunmao';
 import { isEqual } from 'lodash';
 
-import type { IGridItemLayout } from '../GridLayout';
-import GridLayout from '../GridLayout';
-import { dragPreview } from '../GridLayout/utils';
+import { ContentWrapper } from '@/layouts/components';
+import type { ContentWrapperProps } from '@/layouts/components/Content/ContentWrapper';
 
-import PortalItem from './Widget';
 import horizontal from './assets/horizontal.png';
 import noCompaction from './assets/no-compact.png';
 import vertical from './assets/vertical.png';
 import type { GridLayoutOptions } from './properties/GridLayoutSettings';
 import GridLayoutSettings from './properties/GridLayoutSettings';
 import type { IWidget } from './typings';
+import PortalItem from './Widget';
+
+import type { IGridItemLayout } from '../GridLayout';
+import GridLayout from '../GridLayout';
+import { dragPreview } from '../GridLayout/utils';
 
 export type PortalLayoutType = 'basic' | 'responsive';
-
-import { ContentWrapper } from '@/layouts/components';
-import type { ContentWrapperProps } from '@/layouts/components/Content/ContentWrapper';
 
 import './style/index.scss';
 
@@ -143,7 +143,7 @@ function Dashboard() {
     },
   } = otherProps;
 
-  const verticalCompact = compactType != 'none';
+  const verticalCompact = compactType !== 'none';
 
   // console.log('GridLayoutSettings', otherProps.settings);
 

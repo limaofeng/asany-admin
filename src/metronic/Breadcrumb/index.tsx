@@ -1,15 +1,15 @@
 import type { ReactNode } from 'react';
+import { generatePath } from 'react-router';
 
 import { useReactComponent } from '@asany/sunmao';
+import type { Route } from '@umijs/max';
 import type { MenuDataItem } from '@umijs/route-utils';
 import classnames from 'classnames';
 import { match } from 'path-to-regexp';
-import { generatePath } from 'react-router';
-import type { Route } from '@umijs/max';
-
-import BreadcrumbItem from './BreadcrumbItem';
 
 import type { Component } from '@/types';
+
+import BreadcrumbItem from './BreadcrumbItem';
 
 import './style.scss';
 
@@ -58,7 +58,7 @@ function Breadcrumb(props: BreadcrumbProps) {
 
               const isMatch = urlMatch(location.pathname);
 
-              if (isMatch == false) {
+              if (isMatch === false) {
                 return null;
               }
 
@@ -66,7 +66,7 @@ function Breadcrumb(props: BreadcrumbProps) {
               const url = !!item.path
                 ? generatePath(item.path, params)
                 : undefined;
-              const isLast = array.length == index + 1;
+              const isLast = array.length === index + 1;
 
               if (item.breadcrumb) {
                 return (

@@ -47,8 +47,8 @@ function Loading({ size, className }: any) {
     <span
       className={classnames(
         {
-          'spinner-border-sm': size == 'small',
-          'spinner-border-lg': size == 'large',
+          'spinner-border-sm': size === 'small',
+          'spinner-border-lg': size === 'large',
         },
         className,
         'spinner-border align-middle',
@@ -83,16 +83,16 @@ function Spin(props: SpinProps) {
     indicator = 'Loading',
   } = props;
   const indicatorNode =
-    typeof indicator == 'string'
+    typeof indicator === 'string'
       ? React.cloneElement(spinkits[indicator], {
           size,
           className: classnames(!!tip ? 'ms-2' : null),
         })
       : React.cloneElement(indicator, {
           className: classnames(indicator.props.className, {
-            'svg-icon-1x': size == 'small',
-            'svg-icon-2x': size == 'default',
-            'svg-icon-3x': size == 'large',
+            'svg-icon-1x': size === 'small',
+            'svg-icon-2x': size === 'default',
+            'svg-icon-3x': size === 'large',
           }),
         });
   if (React.Children.count(children)) {

@@ -15,7 +15,7 @@ function Notifications(props: NotificationsProps) {
   const [contentContainer, setContentContainer] =
     useState<HTMLDivElement | null>(null);
 
-  const handleClick = useCallback(async (e: any) => {}, [close]);
+  const handleClick = useCallback(async () => {}, [close]);
 
   const buildContentContainer = useCallback((node: HTMLDivElement) => {
     setContentContainer(node);

@@ -104,7 +104,7 @@ function useAreas(): UseAreasResult {
           .map((t: AreaData) => ({
             ...t,
             getChildren() {
-              if (this.type == 'street') {
+              if (this.type === 'street') {
                 return [];
               }
               if (!(this as any)._children) {
@@ -126,7 +126,7 @@ function useAreas(): UseAreasResult {
   useEffect(() => {
     temp.current.waiting = true;
     forceRender();
-    if (FIRST_LOAD == null) {
+    if (FIRST_LOAD === null) {
       FIRST_LOAD = fetchChildren({
         variables: {
           filter: {
@@ -145,7 +145,7 @@ function useAreas(): UseAreasResult {
               ({
                 ...item,
                 getChildren() {
-                  if (this.type == 'street') {
+                  if (this.type === 'street') {
                     return [];
                   }
                   if (!(this as any)._children) {
@@ -177,7 +177,7 @@ function useAreas(): UseAreasResult {
       const codes = data.dict.path.split('/').filter((t: any) => !!t);
 
       let ___areas = _areas;
-      const address: Region = { codes: [] };
+      const address: Region & any = { codes: [] };
       for (const _code of codes) {
         address.codes!.push(_code);
         const item = ___areas.find((_item) => _item.code === _code);

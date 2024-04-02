@@ -1,9 +1,9 @@
 import type { CSSProperties } from 'react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
-import classnames from 'classnames';
 import type { DropTargetMonitor, XYCoord } from 'react-dnd';
 import { useDrop } from 'react-dnd';
+
+import classnames from 'classnames';
 
 import useSortableSelector, {
   useEventManager,
@@ -212,8 +212,8 @@ function GridLayoutContainer(
       moveIn({ ...layout!, id: _item.id }, _item);
     } else if (
       !_item._originalSortable?.startsWith(rootId) &&
-      _item._sortable == rootId &&
-      rootId == _id
+      _item._sortable === rootId &&
+      rootId === _id
     ) {
       // console.log('isOverCurrent moveOut', id, item);
       moveOut(_item);

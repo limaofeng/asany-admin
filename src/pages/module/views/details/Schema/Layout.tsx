@@ -1,18 +1,18 @@
 import React, { useCallback, useMemo, useState } from 'react';
-
-import { Icon } from '@asany/icons';
-import classnames from 'classnames';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import type { RouteComponentProps } from 'react-router';
 import { matchPath } from 'react-router';
-import { Link } from '@umijs/max';
 
-import ModelModal from './components/ModelModal';
+import { Icon } from '@asany/icons';
+import { Link } from '@umijs/max';
+import classnames from 'classnames';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import SecondarySidebar from '@/components/SecondarySidebar';
 import { Button, Menu } from '@/metronic';
 import { useSchemaQuery } from '@/pages/module/hooks';
 import type { Model, Module } from '@/types';
+
+import ModelModal from './components/ModelModal';
 
 import './style/Layout.scss';
 
@@ -116,7 +116,7 @@ function ModuleSchema(props: ModuleSchemaProps) {
                     className={classnames(
                       'menu-section__link cursor-pointer text-muted',
                       {
-                        checked: menuKey == 'model_overview',
+                        checked: menuKey === 'model_overview',
                       },
                     )}
                   >

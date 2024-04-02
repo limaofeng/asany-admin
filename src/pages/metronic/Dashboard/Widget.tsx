@@ -2,14 +2,15 @@ import React from 'react';
 
 import { useComponent, useReactComponent } from '@asany/sunmao';
 
-import type { GridItemContentProps } from '../GridLayout';
+import { Card } from '@/metronic';
 
 import type { IWidget } from './typings';
 
-import { Card } from '@/metronic';
+import type { GridItemContentProps } from '../GridLayout';
 
 function Widget(
   {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     scale,
     preview,
     data,

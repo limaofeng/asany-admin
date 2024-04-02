@@ -99,7 +99,7 @@ function DayGridMonth(props: DayGridMonthProps) {
                         {
                           'is-other': item.isOther,
                           [`event-color-level-${
-                            stat.max == 1 ? 2 : eventNumber
+                            stat.max === 1 ? 2 : eventNumber
                           }`]: !item.isOther && eventNumber > 0,
                           'is-today':
                             !item.isOther && moment().isSame(item.date, 'date'),
@@ -159,7 +159,7 @@ function DayGridYear(props: DayGridYearProps) {
           date: day,
           isPast: _dif < 0,
           isFuture: _dif > 0,
-          isOther: _dif != 0,
+          isOther: _dif !== 0,
           dayNumberText: day.date() + '',
         });
       }

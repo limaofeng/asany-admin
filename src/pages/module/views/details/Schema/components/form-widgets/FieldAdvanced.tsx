@@ -63,15 +63,15 @@ function FieldAdvanced(props: FieldAdvancedProps) {
                     return;
                   }
                   if (
-                    value.toLowerCase() == prevDatabaseColumnName &&
-                    mode == 'edit'
+                    value.toLowerCase() === prevDatabaseColumnName &&
+                    mode === 'edit'
                   ) {
                     return;
                   }
                   if (
                     model.fields.some(
                       (f) =>
-                        f.metadata?.databaseColumnName?.toLowerCase() ==
+                        f.metadata?.databaseColumnName?.toLowerCase() ===
                         value.toLowerCase(),
                     )
                   ) {

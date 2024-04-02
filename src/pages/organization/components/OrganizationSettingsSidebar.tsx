@@ -1,15 +1,15 @@
 import { useMemo } from 'react';
-
-import { getMatchMenu, MenuDataItem } from '@umijs/route-utils';
 import { generatePath, useLocation, useMatch } from 'react-router-dom';
-import { Link } from '@umijs/max';
 
-import { useOrganizationQuery } from '../hooks/api';
+import { Link } from '@umijs/max';
+import { getMatchMenu, MenuDataItem } from '@umijs/route-utils';
 
 import { AsideWorkspace } from '@/layouts/Demo7';
 import { Menu, Symbol } from '@/metronic';
 import type { Menu as MenuData } from '@/types';
 import { getFileThumbnailUrlById } from '@/utils';
+
+import { useOrganizationQuery } from '../hooks/api';
 
 type OrganizationSettingsSidebarProps = {
   menu: MenuData;

@@ -1,4 +1,5 @@
 import { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
+import ReactDatePicker, { registerLocale } from 'react-datepicker';
 
 import classnames from 'classnames';
 import { getMonth, getYear } from 'date-fns';
@@ -6,12 +7,11 @@ import zh from 'date-fns/locale/zh-CN';
 import { range } from 'lodash';
 import type { Moment } from 'moment';
 import moment from 'moment';
-import ReactDatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import './style.scss';
 
-registerLocale('zh-CN', zh);
+registerLocale('zh-CN', zh as any);
 
 const months = [
   '1月',
@@ -61,10 +61,47 @@ const CustomInput = forwardRef(
   },
 );
 
+function toMoment(
+  value: string | Moment | number | undefined,
+): Moment | undefined {
+  if (typeof value === 'number') {
+    return moment(value);
+  }
+  if (typeof value === 'string' && !!value) {
+    return moment(value);
+  }
+  if (moment.isMoment(value)) {
+    return value;
+  }
+  return undefined;
+}
+
+function toDate(value: string | Moment | number | undefined): Date | undefined {
+  if (typeof value === 'string' || typeof value === 'number') {
+    const _m = toMoment(value);
+    return _m && _m.isValid() ? _m.toDate() : undefined;
+  }
+  if (moment.isMoment(value) && value.isValid()) {
+    return value.toDate();
+  }
+  return undefined;
+}
+
+function toDateString(
+  value: string | Moment | number | undefined,
+  format: string,
+) {
+  const _m = toMoment(value);
+  if (!_m || !_m.isValid()) {
+    return undefined;
+  }
+  return _m.format(format) || undefined;
+}
+
 function DatePicker(props: DatePickerProps) {
   const {
     value = '',
-    timePicker,
+    // timePicker,
     minDate,
     maxDate,
     format: _format = 'YYYY-MM-DD',
@@ -91,9 +128,11 @@ function DatePicker(props: DatePickerProps) {
   const handleChange = useCallback(
     (newValue: Date) => {
       const nv = moment(newValue);
-      onChange
-        ? onChange(nv, toDateString(nv, format))
-        : setStartDate(newValue);
+      if (onChange) {
+        onChange(nv, toDateString(nv, format));
+      } else {
+        setStartDate(newValue);
+      }
     },
     [format, onChange],
   );
@@ -114,6 +153,7 @@ function DatePicker(props: DatePickerProps) {
       }: any) => (
         <div className="react-datepicker-control">
           <button
+            type="button"
             className="prev available"
             onClick={decreaseMonth}
             disabled={prevMonthButtonDisabled}
@@ -148,6 +188,7 @@ function DatePicker(props: DatePickerProps) {
             </select>
           </div>
           <button
+            type="button"
             className="next available"
             onClick={increaseMonth}
             disabled={nextMonthButtonDisabled}
@@ -172,43 +213,6 @@ function DatePicker(props: DatePickerProps) {
       showPopperArrow={false}
     />
   );
-}
-
-function toDate(value: string | Moment | number | undefined): Date | undefined {
-  if (typeof value === 'string' || typeof value === 'number') {
-    const _m = toMoment(value);
-    return _m && _m.isValid() ? _m.toDate() : undefined;
-  }
-  if (moment.isMoment(value) && value.isValid()) {
-    return value.toDate();
-  }
-  return undefined;
-}
-
-function toMoment(
-  value: string | Moment | number | undefined,
-): Moment | undefined {
-  if (typeof value === 'number') {
-    return moment(value);
-  }
-  if (typeof value === 'string' && !!value) {
-    return moment(value);
-  }
-  if (moment.isMoment(value)) {
-    return value;
-  }
-  return undefined;
-}
-
-function toDateString(
-  value: string | Moment | number | undefined,
-  format: string,
-) {
-  const _m = toMoment(value);
-  if (!_m || !_m.isValid()) {
-    return undefined;
-  }
-  return _m.format(format) || undefined;
 }
 
 export default DatePicker;

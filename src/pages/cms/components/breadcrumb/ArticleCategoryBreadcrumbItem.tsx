@@ -1,7 +1,7 @@
-import { useArticleCategoryQuery } from '../../hooks';
-
 import BreadcrumbItem from '@/metronic/Breadcrumb/BreadcrumbItem';
 import type { Route } from '@/types';
+
+import { useArticleCategoryQuery } from '../../hooks';
 
 type ArticleCategoryBreadcrumbItemProps = {
   className: string;

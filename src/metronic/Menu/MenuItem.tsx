@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Icon } from '@asany/icons';
-import classnames from 'classnames';
-import { useNavigate } from 'react-router-dom';
 import { Link } from '@umijs/max';
+import classnames from 'classnames';
+
+import { useMenuContext, useSelector } from './MenuContext';
 
 import type { BulletProps } from '../Bullet';
 import Bullet from '../Bullet';
-
-import { useMenuContext, useSelector } from './MenuContext';
 
 export type MenuItemProps = {
   url?: string;

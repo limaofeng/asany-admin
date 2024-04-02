@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Icon from '@asany/icons';
+import { useModel } from '@umijs/max';
 import classnames from 'classnames';
 import moment from 'moment';
-import { useModel } from '@umijs/max';
-
-import { useAddCalendarEventMutation } from '../hooks';
-
-import CalendarPicker from './CalendarPicker';
 
 import { Button, Checkbox, DatePicker, Form, Input, Select } from '@/metronic';
 import type { OptionData } from '@/metronic/typings';
 import type { CalendarEvent, CalendarSet } from '@/types';
+
+import CalendarPicker from './CalendarPicker';
+
+import { useAddCalendarEventMutation } from '../hooks';
 
 const TextArea = Input.TextArea;
 
@@ -185,7 +185,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
   const selectedDay = useModel('calendar', ({ state }) =>
     moment(state.selectedDay || new Date()).format('YYYY-MM-DD'),
   );
-  const isNew = useModel('calendar', (model) => model.state.state == 'new');
+  const isNew = useModel('calendar', (model) => model.state.state === 'new');
   const calendarSet = useModel('calendar', (model) => model.state.calendarSet);
 
   const [addCalendarEvent] = useAddCalendarEventMutation();
@@ -198,7 +198,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
   }, []);
 
   const handleEsc = useCallback((e: KeyboardEvent) => {
-    if (e.key == 'Escape') {
+    if (e.key === 'Escape') {
       (document.querySelector('.calendar-event-header input') as any)?.focus();
     }
   }, []);
@@ -207,11 +207,11 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
 
   useEffect(() => {
     if (!formInitialValues.current.calendar) {
-      if (calendarSet == 'all') {
+      if (calendarSet === 'all') {
         formInitialValues.current.calendar = null;
       } else {
         formInitialValues.current.calendar = calendarSets.find(
-          (item) => item.id == calendarSet,
+          (item) => item.id === calendarSet,
         )?.defaultCalendar?.id;
       }
     }
@@ -220,7 +220,7 @@ function NewCalendarEvent(props: NewCalendarEventProps) {
 
   const handleSubmit = useCallback(
     async ({ calendar, alert, ...values }: any) => {
-      const remind = alertOptions.find((item) => item.value == alert)?.remind;
+      const remind = alertOptions.find((item) => item.value === alert)?.remind;
       const { data } = await addCalendarEvent({
         variables: {
           calendar,

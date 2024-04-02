@@ -72,7 +72,7 @@ function ModelModal(props: ModelModalProps) {
   }, [module]);
 
   const nameUniqueValidator = useAjaxValidator(async (rule, value, signal) => {
-    if (data && value == data.name) {
+    if (data && value === data.name) {
       return true;
     }
     const { data: _rdata } = await loadModelsByName({
@@ -97,7 +97,7 @@ function ModelModal(props: ModelModalProps) {
     }
     const code =
       codePrefix + value.charAt(0).toUpperCase() + value.substring(1);
-    if (data && code == data.code) {
+    if (data && code === data.code) {
       return true;
     }
     const { data: _rdata } = await loadModelsByCode({
@@ -119,7 +119,7 @@ function ModelModal(props: ModelModalProps) {
   const dbNameUniqueValidator = useAjaxValidator(
     async (rule, value, signal) => {
       const databaseTableName = tablePrefix + (value || '').toUpperCase();
-      if (data && databaseTableName == data.metadata?.databaseTableName) {
+      if (data && databaseTableName === data.metadata?.databaseTableName) {
         return true;
       }
       const { data: _rdata } = await loadModelsByDbName({
@@ -278,10 +278,10 @@ function ModelModal(props: ModelModalProps) {
         >
           <div className="mb-5">
             <Button
-              color={activeTabKey != 'settings' && 'gray-700'}
-              variant={activeTabKey == 'settings' ? 'light-primary' : false}
+              color={activeTabKey !== 'settings' && 'gray-700'}
+              variant={activeTabKey === 'settings' ? 'light-primary' : false}
               activeColor={
-                activeTabKey == 'settings' ? 'light-primary' : 'secondary'
+                activeTabKey === 'settings' ? 'light-primary' : 'secondary'
               }
               className="me-4 px-5"
               onClick={handleChangeTabKey('settings')}
@@ -289,10 +289,10 @@ function ModelModal(props: ModelModalProps) {
               设置
             </Button>
             <Button
-              color={activeTabKey != 'advanced' && 'gray-700'}
-              variant={activeTabKey == 'advanced' ? 'light-primary' : false}
+              color={activeTabKey !== 'advanced' && 'gray-700'}
+              variant={activeTabKey === 'advanced' ? 'light-primary' : false}
               activeColor={
-                activeTabKey == 'advanced' ? 'light-primary' : 'secondary'
+                activeTabKey === 'advanced' ? 'light-primary' : 'secondary'
               }
               className="me-4 px-5"
               onClick={handleChangeTabKey('advanced')}
@@ -302,7 +302,7 @@ function ModelModal(props: ModelModalProps) {
           </div>
           <div
             className={classnames('modal-tabpane', {
-              'd-none': activeTabKey != 'settings',
+              'd-none': activeTabKey !== 'settings',
             })}
           >
             <Form.Item
@@ -364,7 +364,7 @@ function ModelModal(props: ModelModalProps) {
           </div>
           <div
             className={classnames('modal-tabpane', {
-              'd-none': activeTabKey != 'advanced',
+              'd-none': activeTabKey !== 'advanced',
             })}
           >
             <Form.Item

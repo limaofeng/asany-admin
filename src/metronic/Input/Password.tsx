@@ -160,6 +160,7 @@ class PasswordMeter {
   }
 
   _checkChar() {
+    // eslint-disable-next-line no-useless-escape
     return /[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g.test(this.value); // 20 score
   }
 }
@@ -172,6 +173,7 @@ interface PasswordProps extends InputProps {
 
 function Password({
   meter: meterOptions,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   iconRender,
   visibilityToggle,
   className,

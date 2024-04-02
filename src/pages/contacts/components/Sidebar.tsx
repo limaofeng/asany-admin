@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Tree from '@asany/tree';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { useModel } from '@umijs/max';
-
-import { useBookQuery, useBooksQuery } from '../hooks';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import { AsideWorkspace } from '@/layouts/Demo7';
 import { Select, Tabs } from '@/metronic';
 import type { OptionData } from '@/metronic/typings';
 import type { ContactBook } from '@/types';
 import * as utils from '@/utils';
+
+import { useBookQuery, useBooksQuery } from '../hooks';
 
 const { TabPane } = Tabs;
 
@@ -137,7 +137,7 @@ function ContactGroupsAdapter(props: ContactGroupsProps) {
 
   console.log(book.namespaces);
 
-  if (book.type == 'ENTERPRISE') {
+  if (book.type === 'ENTERPRISE') {
     return <EnterpriseContactGroups book={book} />;
   }
 
@@ -155,7 +155,7 @@ function Sidebar() {
       return;
     }
     const books = data?.books;
-    if (!books.some((item) => item.id == bookId)) {
+    if (!books.some((item) => item.id === bookId)) {
       setBook(books[0].id);
     }
   }, [data?.books, bookId, setBook]);
@@ -164,7 +164,7 @@ function Sidebar() {
     if (!data?.books || !bookId) {
       return;
     }
-    return data.books.find((item) => item.id == bookId);
+    return data.books.find((item) => item.id === bookId);
   }, [data?.books, bookId]);
 
   console.log('books', data?.books, book, bookId);

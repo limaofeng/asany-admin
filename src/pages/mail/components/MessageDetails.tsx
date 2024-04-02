@@ -5,11 +5,11 @@ import classnames from 'classnames';
 import $ from 'jquery';
 import moment from 'moment';
 
-import { displayName } from '../utils';
-
 import { Popover, Symbol, Tooltip } from '@/metronic';
 import { toPlainText } from '@/metronic/utils/format';
 import type { MailboxMessage } from '@/types';
+
+import { displayName } from '../utils';
 
 const { Avatar } = Symbol;
 
@@ -79,13 +79,13 @@ function MessageWrapper(props: MessageWrapperProps) {
                 >
                   <table className="table mb-0">
                     <tbody>
-                      {mailbox != 'sent' && (
+                      {mailbox !== 'sent' && (
                         <tr>
                           <td className="w-75px text-muted">发件人</td>
                           <td>{message?.from.join('、')}</td>
                         </tr>
                       )}
-                      {mailbox != 'inbox' && (
+                      {mailbox !== 'inbox' && (
                         <tr>
                           <td className="w-75px text-muted">收件人</td>
                           <td>{message?.to.join('、')}</td>
@@ -118,7 +118,7 @@ function MessageWrapper(props: MessageWrapperProps) {
               >
                 <span className="text-muted fw-bold">
                   发送给{' '}
-                  {mailbox == 'inbox'
+                  {mailbox === 'inbox'
                     ? '我'
                     : message?.to.map(displayName).join('、')}
                 </span>
@@ -140,7 +140,7 @@ function MessageWrapper(props: MessageWrapperProps) {
                 },
               )}
             >
-              {message?.mimeType == 'text/html'
+              {message?.mimeType === 'text/html'
                 ? toPlainText(message.body || '')
                 : message?.body}
             </div>

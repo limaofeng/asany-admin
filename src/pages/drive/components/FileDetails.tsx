@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import Icon from '@asany/icons';
+import { Link } from '@umijs/max';
 import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import { Link } from '@umijs/max';
-
-import { useFileQuery } from '../hooks';
 
 import { BlockUI, Symbol, Tabs } from '@/metronic';
 import { fileSize } from '@/metronic/utils/format';
 import type { FileObject } from '@/types';
+
+import { useFileQuery } from '../hooks';
 
 type FileDetailsProps = {
   currentFolder?: FileObject;
@@ -191,7 +191,7 @@ function FileDetails(props: FileDetailsProps) {
   const { files, currentFolder } = props;
 
   const type = useMemo(() => {
-    if (files.length == 1) {
+    if (files.length === 1) {
       return 'file_details';
     }
     if (files.length > 1) {
@@ -215,7 +215,7 @@ function FileDetails(props: FileDetailsProps) {
 
   const [title, suffix] = useMemo(() => {
     const index = titleFull.lastIndexOf('.');
-    if (index == -1) {
+    if (index === -1) {
       return [titleFull, undefined];
     }
     return [titleFull.substring(0, index), titleFull.substring(index + 1)];
@@ -240,7 +240,7 @@ function FileDetails(props: FileDetailsProps) {
         </h4>
       </div>
       <div className="preview-body">
-        {type == 'file_details' && <OneFile file={files[0]} />}
+        {type === 'file_details' && <OneFile file={files[0]} />}
       </div>
     </div>
   );

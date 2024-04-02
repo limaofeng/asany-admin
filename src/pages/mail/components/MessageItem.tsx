@@ -1,11 +1,15 @@
 import type { CSSProperties } from 'react';
 import { useCallback } from 'react';
+import ContentLoader from 'react-content-loader';
+import { useNavigate } from 'react-router-dom';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 import moment from 'moment';
-import ContentLoader from 'react-content-loader';
-import { useNavigate } from 'react-router-dom';
+
+import { Modal } from '@/metronic';
+import { toPlainText } from '@/metronic/utils/format';
+import type { MailboxMessage } from '@/types';
 
 import {
   CountUnreadDocument,
@@ -16,10 +20,6 @@ import {
 } from '../hooks';
 import type { RefreshEvent, UseMessage } from '../typings';
 import { DEFAULT_MAILBOXES, displayName } from '../utils';
-
-import { Modal } from '@/metronic';
-import { toPlainText } from '@/metronic/utils/format';
-import type { MailboxMessage } from '@/types';
 
 export type MessageItemProps = {
   index: number;
@@ -33,7 +33,7 @@ export type MessageItemProps = {
 };
 
 function renderSummary(data: MailboxMessage) {
-  if (data.mimeType == 'text/html') {
+  if (data.mimeType === 'text/html') {
     return toPlainText(data.body || '');
   }
   return data.body;
@@ -42,20 +42,20 @@ function renderSummary(data: MailboxMessage) {
 function renderDataTime(data: MailboxMessage) {
   const mdate = moment(data.date);
   const days = moment().diff(mdate, 'days');
-  if (days == 0) {
+  if (days === 0) {
     return mdate.format('A HH:mm');
   }
-  if (days == 1) {
+  if (days === 1) {
     return mdate.fromNow();
   }
   return mdate.format('YYYY-MM-DD');
 }
 
 function renderWhose(data: MailboxMessage) {
-  if (data.mailboxName == DEFAULT_MAILBOXES.INBOX.id) {
+  if (data.mailboxName === DEFAULT_MAILBOXES.INBOX.id) {
     return data.from.map(displayName).join('、');
   }
-  if (data.mailboxName == DEFAULT_MAILBOXES.Sent.id) {
+  if (data.mailboxName === DEFAULT_MAILBOXES.Sent.id) {
     return data.to.map(displayName).join('、');
   }
   return data.to.map(displayName).join('、');
@@ -105,13 +105,13 @@ function MessageItemActions(props: MessageItemActionsProps) {
 
   const handleTrash = useCallback(async () => {
     if (
-      data.mailboxName == DEFAULT_MAILBOXES.Drafts.id ||
-      data.mailboxName == DEFAULT_MAILBOXES.Trash.id
+      data.mailboxName === DEFAULT_MAILBOXES.Drafts.id ||
+      data.mailboxName === DEFAULT_MAILBOXES.Trash.id
     ) {
       const result = await Modal.confirm({
         title: '警告',
         content:
-          data.mailboxName == DEFAULT_MAILBOXES.Trash.id
+          data.mailboxName === DEFAULT_MAILBOXES.Trash.id
             ? '确定永久删除信息？'
             : '确定永久删除草稿？',
       });
@@ -193,7 +193,7 @@ function MessageItem(props: MessageItemProps) {
   }, [data, index, onClick]);
 
   const handleDoubleClick = useCallback(() => {
-    if (data!.mailboxName != DEFAULT_MAILBOXES.Drafts.id) {
+    if (data!.mailboxName !== DEFAULT_MAILBOXES.Drafts.id) {
       return;
     }
     navigate(`/mail/compose/${data!.id}`, { state: { message: data } });

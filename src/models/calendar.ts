@@ -29,7 +29,7 @@ export default function useCalendarModel() {
   );
 
   useEffect(() => {
-    if (currentUser == null || state.current.calendarSet == 'all') {
+    if (currentUser === null || state.current.calendarSet === 'all') {
       return;
     }
     loadCalendarSets();
@@ -37,7 +37,7 @@ export default function useCalendarModel() {
   }, [currentUser, loadCalendarSets]);
 
   useEffect(() => {
-    if (loading == null || data == null) {
+    if (!loading || !data) {
       return;
     }
     if (!data.calendarSets.length) {
@@ -46,7 +46,7 @@ export default function useCalendarModel() {
       return;
     }
     if (
-      data.calendarSets.some((item) => item.id == state.current.calendarSet)
+      data.calendarSets.some((item) => item.id === state.current.calendarSet)
     ) {
       return;
     }

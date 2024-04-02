@@ -225,14 +225,14 @@ export interface Props extends DivProps {
 //   const handleShortcuts = useCallback(
 //     (action: string) => {
 //       console.log('shortcuts', action, state.current.html);
-//       if (action == 'SEND') {
+//       if (action === 'SEND') {
 //         if (onEnter) {
 //           onEnter(state.current.html);
 //         } else {
 //           state.current.html = '';
 //           forceRender();
 //         }
-//       } else if (action == 'LINE_FEED') {
+//       } else if (action === 'LINE_FEED') {
 //         contenteditableDivRange();
 //         move2end(el.current as any);
 //       }

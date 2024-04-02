@@ -3,11 +3,11 @@ import { useEffect, useMemo } from 'react';
 import { ComponentPicker } from '@asany/sunmao';
 import TagsInput from '@asany/tags-input';
 
-import useComponentSubmit from '../hooks/useComponentSubmit';
-
 import { Col, Form, Input, Modal, Row, Upload } from '@/metronic';
 import type { FormInstance } from '@/metronic/typings';
 import type { Component } from '@/types';
+
+import useComponentSubmit from '../hooks/useComponentSubmit';
 
 type ComponentFormProps = {
   libraryId: string;
