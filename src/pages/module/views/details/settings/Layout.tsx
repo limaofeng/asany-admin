@@ -4,7 +4,7 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import type { RouteComponentProps } from 'react-router';
 import { matchPath } from 'react-router';
 import styled from 'styled-components';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import SecondarySidebar from '@/components/SecondarySidebar';
 import { Menu } from '@/metronic';

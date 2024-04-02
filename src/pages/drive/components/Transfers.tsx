@@ -4,7 +4,7 @@ import Icon from '@asany/icons';
 import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { useNavigate } from 'react-router-dom';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import { Button, Progress, Tabs } from '@/metronic';
 import { fileSize } from '@/metronic/utils/format';

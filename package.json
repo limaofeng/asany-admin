@@ -17,6 +17,7 @@
     "@amir04lm26/react-modern-calendar-date-picker": "^1.0.1",
     "@ant-design/icons": "^5.0.1",
     "@ant-design/pro-components": "^2.4.4",
+    "@asany/sunmao": "^1.0.40",
     "@asany/tags-input": "^0.1.2",
     "@asany/tree": "^0.1.28",
     "@emoji-mart/data": "^1.1.2",
@@ -67,7 +68,7 @@
   },
   "devDependencies": {
     "@asany/umi-plugin-apollo": "^0.4.5",
-    "@asany/umi-plugin-app": "^0.4.18",
+    "@asany/umi-plugin-app": "^0.4.22",
     "@commitlint/cli": "^19.0.1",
     "@commitlint/config-conventional": "^19.0.0",
     "@graphql-codegen/cli": "^5.0.2",

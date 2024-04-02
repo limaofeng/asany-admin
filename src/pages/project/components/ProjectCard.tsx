@@ -1,4 +1,4 @@
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import { Card, Symbol } from '@/metronic';
 import type { Project } from '@/types';

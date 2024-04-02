@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import NewModule from '../components/NewModule';
 import { useModulesQuery } from '../hooks';

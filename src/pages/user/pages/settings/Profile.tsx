@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import { useProfileQuery, useUpdateProfileMutation } from '../../hooks';
 

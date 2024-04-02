@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import Icon from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import { useMatch } from 'react-router-dom';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import { useCloudDrivesQuery } from '../hooks';
 

@@ -3,7 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import type { BulletProps } from '../Bullet';
 import Bullet from '../Bullet';

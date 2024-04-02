@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import { SunmaoEditor } from '@asany/sunmao';
 import type { RouteComponentProps } from 'react-router';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 
 import { Toast } from '@/metronic';
 import { useComponentQuery, useSaveComponentMutation } from '@/pages/app/hooks';

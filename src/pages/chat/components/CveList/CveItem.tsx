@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 // import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import classnames from 'classnames';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 // import { formatDate } from '../../../../utils/open-im/utils/common';
 

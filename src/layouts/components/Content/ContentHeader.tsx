@@ -6,7 +6,7 @@ import type { MenuDataItem } from '@umijs/route-utils';
 import { getMatchMenu } from '@umijs/route-utils';
 import classnames from 'classnames';
 import { findLast } from 'lodash';
-import { useLocation, useModel } from 'umi';
+import { useLocation, useModel } from '@umijs/max';
 
 import { ThemeModeSwitcher } from '../theme-mode/ThemeModeSwitcher';
 

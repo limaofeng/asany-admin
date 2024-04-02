@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import type { RouteComponentProps } from 'react-router';
 import { matchPath } from 'react-router';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import ModelModal from './components/ModelModal';
 

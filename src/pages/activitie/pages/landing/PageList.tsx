@@ -2,9 +2,9 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
 import { QRCodeCanvas } from 'qrcode.react';
-import qs from 'qs';
+import qs from 'query-string';
 import type { RouteComponentProps } from 'react-router';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import {
   LandingPagesDocument,

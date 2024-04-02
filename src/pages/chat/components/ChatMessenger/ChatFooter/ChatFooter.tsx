@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Icon } from '@asany/icons';
 import { useLatest } from 'ahooks';
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import type { ContentEditableEvent } from '../../ContentEditable/ContentEditable';
 import ContentEditable from '../../ContentEditable/ContentEditable';

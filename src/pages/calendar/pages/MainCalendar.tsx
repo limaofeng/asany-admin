@@ -10,7 +10,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { Lunar } from 'lunar-javascript';
 import moment from 'moment';
 import { useWindowSize } from 'react-use';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import type {
   CalendarEventsQuery,

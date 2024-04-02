@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from '@asany/icons';
 import { matchPath } from 'react-router';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import { BlockUI, Menu, Symbol, Tooltip } from '@/metronic';
 import type { Application, ArticleCategory } from '@/types';

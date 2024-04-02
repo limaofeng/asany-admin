@@ -1,16 +1,20 @@
-import { apolloClient, clientId, tokenHelper } from 'umi';
+import { apolloClient, useAppClientId, tokenHelper } from '@umijs/max';
 
 import { LoginByUsernameDocument, LogoutDocument, ViewerDocument } from './api';
 
 import type { CurrentUser } from '@/types';
 import { delay, sleep } from '@/utils';
 
-export async function loadCurrentuser(): Promise<CurrentUser | undefined> {
+export function tokenExists() {
   const token = localStorage.getItem('credentials');
   if (!tokenHelper.withToken() && token) {
     tokenHelper.setToken(token);
   }
-  if (!token) {
+  return !!token;
+}
+
+export async function loadCurrentuser(): Promise<CurrentUser | undefined> {
+  if (!tokenExists()) {
     return undefined;
   }
   const {
@@ -23,6 +27,8 @@ export async function loadCurrentuser(): Promise<CurrentUser | undefined> {
 }
 
 export async function loginWithUsername(username: string, password: string) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const clientId = useAppClientId();
   const {
     data: { login },
   } = await delay(

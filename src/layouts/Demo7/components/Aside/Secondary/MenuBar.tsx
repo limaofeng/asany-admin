@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { getMatchMenu } from '@umijs/route-utils';
-import { useLocation } from 'umi';
+import { useLocation } from '@umijs/max';
 
 import Menu from '@/metronic/Menu';
 import type { Menu as MenuData } from '@/types';

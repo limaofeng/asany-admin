@@ -12,7 +12,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
-import { history, useApp, useLocation, useRouteProps } from 'umi';
+import { history, useApp, useLocation, useRouteProps } from '@umijs/max';
 
 import { LayoutProvider, useLayoutSelector } from '../LayoutContext';
 import { ThemeModeProvider } from '../components/theme-mode/ThemeModeProvider';

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 import moment from 'moment';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import { Input } from '@/metronic';
 

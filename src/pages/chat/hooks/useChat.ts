@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 // import type {
 //   ConversationItem,
 //   FriendItem,

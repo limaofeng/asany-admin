@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
 // import type { History } from 'history';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 // import { Icon } from '@asany/icons';
 import type * as Apollo from '@apollo/client';
 import type { ApolloCache } from '@apollo/client/cache';
@@ -13,7 +13,7 @@ import type {
   MutationTuple,
   QueryResult,
 } from '@apollo/client/react/types/types';
-import qs from 'qs';
+import qs from 'query-string';
 import type { RouteComponentProps } from 'react-router';
 // import { LandingStoresDocument, useDeleteStoreMutation, useLandingStoresQuery } from '../../hooks';
 

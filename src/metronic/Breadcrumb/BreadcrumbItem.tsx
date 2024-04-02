@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import classnames from 'classnames';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import type { MenuComponent as Menu } from '../Menu';
 

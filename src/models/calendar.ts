@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import type FullCalendar from '@fullcalendar/react';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import { useCalendarSetsLazyQuery } from '@/pages/calendar/hooks';
 

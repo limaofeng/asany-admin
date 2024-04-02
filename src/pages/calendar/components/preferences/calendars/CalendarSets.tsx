@@ -16,7 +16,7 @@ import type {
 import Sortable from '@asany/sortable';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import CalendarSetsFooter from './CalendarSetsFooter';
 

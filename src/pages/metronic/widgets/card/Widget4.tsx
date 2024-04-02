@@ -1,16 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 
 import { Icon } from '@asany/icons';
-import { Input, useBlock } from '@asany/sunmao';
+import { useBlock } from '@asany/sunmao';
 import useMergedRef from '@react-hook/merged-ref';
 
 import { Card } from '@/metronic';
 import * as KTUtil from '@/metronic/utils/KTUtil';
 
-function Widget4(
-  { data, actions, onRefReady, animated, ...otherProps }: any,
-  ref: any,
-) {
+function Widget4({ onRefReady, animated, ...otherProps }: any, ref: any) {
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -77,9 +74,6 @@ function Widget4(
           name: 'subtitle',
           type: 'String',
           label: '标题',
-          renderer: {
-            component: Input,
-          },
         },
       ],
     },

@@ -1,4 +1,4 @@
-import type { Reducer, Subscription } from 'umi';
+import type { Reducer, Subscription } from '@umijs/max';
 
 type Aside = {
   width: number;

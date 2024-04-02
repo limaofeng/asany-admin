@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import { logout } from '@/hooks';
 

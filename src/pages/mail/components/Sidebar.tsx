@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import {
   useCountUnreadQuery,

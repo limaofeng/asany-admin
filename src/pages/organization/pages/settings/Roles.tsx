@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import Controls from '@/components/Controls';
 import { ContentWrapper } from '@/layouts/components';

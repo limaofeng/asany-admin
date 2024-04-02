@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import { useFileQuery } from '../hooks';
 

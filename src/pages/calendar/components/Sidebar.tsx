@@ -12,7 +12,7 @@ import '@amir04lm26/react-modern-calendar-date-picker/lib/DatePicker.css';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import {
   useCalendarEventsWithDaysLazyQuery,

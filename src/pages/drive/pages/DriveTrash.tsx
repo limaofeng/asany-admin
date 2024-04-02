@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import ListFiles from '../components/ListFiles';
 import { useCloudDriveLazyQuery } from '../hooks';

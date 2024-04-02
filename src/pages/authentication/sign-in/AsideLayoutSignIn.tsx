@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react';
 
-import { history, useModel } from 'umi';
+import { useLocation, useModel, useNavigate } from '@umijs/max';
 
-import { loadCurrentuser, loginWithUsername } from '@/hooks';
+import { loginWithUsername } from '@/hooks';
 import { Button, Form, Input, Modal } from '@/metronic';
 import qs from 'query-string';
-import { useLocation } from 'react-router';
+import { sleep } from '@/utils';
 
 function Aside() {
   return (
@@ -92,28 +92,26 @@ function Footer() {
 
 function SignInForm() {
   const [loading, setLoading] = useState(false);
-  const { setInitialState } = useModel('@@initialState');
+  const { refresh } = useModel('@@initialState');
+
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleSignIn = useCallback(
     async (values: any) => {
       setLoading(true);
       try {
-        let user = await loginWithUsername(values.username, values.password);
-        user = await loadCurrentuser();
+        await loginWithUsername(values.username, values.password);
         await Modal.success({
           content: '登录成功!',
           okText: '知道了',
           timer: 1600,
           timerProgressBar: true,
         });
-        await setInitialState((s) => ({
-          ...s,
-          currentUser: user,
-        }));
-        if (!history) return;
-        const query = qs.parse(location.search);
-        history.replace((query.redirect as string) || '/');
+        await refresh();
+        const query = qs.parse(location.search) as { redirect?: string };
+        await sleep(120);
+        navigate(query.redirect || '/', { replace: true });
       } catch (e) {
         console.error(e);
         await Modal.error({
@@ -124,7 +122,7 @@ function SignInForm() {
         setLoading(false);
       }
     },
-    [history, setInitialState],
+    [refresh],
   );
 
   return (

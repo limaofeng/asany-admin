@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { Icon } from '@asany/icons';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import CreateWebsite from '../components/CreateWebsite';
 import { useWebsitesQuery } from '../hooks';

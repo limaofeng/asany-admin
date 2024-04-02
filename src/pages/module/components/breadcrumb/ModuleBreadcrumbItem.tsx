@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
-import { useLocation } from 'umi';
+import { useLocation } from '@umijs/max';
 
 import { useModuleLazyQuery } from '../../hooks';
 

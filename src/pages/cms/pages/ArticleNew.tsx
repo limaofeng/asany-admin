@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import type { RouteComponentProps } from 'react-router';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 
 import ArticleFormSidebar from '../components/ArticleFormSidebar';
 import {

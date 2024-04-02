@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
 import Icon from '@asany/icons';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import { useChangePasswordMutation, useSessionsQuery } from '../../hooks';
 

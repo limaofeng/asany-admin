@@ -1,5 +1,5 @@
 import { Icon } from '@asany/icons';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import worldMap from '../../assets/world_map.svg';
 

@@ -2,9 +2,9 @@ import { EditorLibrary } from '@asany/sunmao';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
-import { history, sunmao } from 'umi';
+import { sunmao } from '@umijs/max';
 
-import { loadCurrentuser } from './hooks';
+import { loadCurrentuser, tokenExists } from './hooks';
 import type { CurrentUser } from './types';
 
 sunmao.addLibrary(new EditorLibrary() as any);
@@ -19,14 +19,13 @@ moment.locale('zh-cn', {
   },
 });
 
-const loginPath = '/login';
 
 export async function getInitialState(): Promise<{
   settings?: Partial<any>;
   currentUser?: CurrentUser;
 }> {
   // 如果是登录页面，不执行
-  if (!history.location.pathname.endsWith(loginPath)) {
+  if (tokenExists()) {
     try {
       const currentUser = await loadCurrentuser();
       return {

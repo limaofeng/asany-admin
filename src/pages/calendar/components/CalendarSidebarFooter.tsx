@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import { Select } from '@/metronic';
 import type { OptionData } from '@/metronic/Select/typings';

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import { CbEvents } from 'open-im-sdk-wasm/lib/constant';
 import {

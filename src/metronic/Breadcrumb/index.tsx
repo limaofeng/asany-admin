@@ -5,7 +5,7 @@ import type { MenuDataItem } from '@umijs/route-utils';
 import classnames from 'classnames';
 import { match } from 'path-to-regexp';
 import { generatePath } from 'react-router';
-import type { Route } from 'umi';
+import type { Route } from '@umijs/max';
 
 import BreadcrumbItem from './BreadcrumbItem';
 

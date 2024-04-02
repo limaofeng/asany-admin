@@ -9,7 +9,7 @@ import type {
   MessageItem,
 } from 'open-im-sdk/types';
 import { Map, Marker } from 'react-amap';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import my_voice from '../../../assets/images/voice_my.png';
 import other_voice from '../../../assets/images/voice_other.png';

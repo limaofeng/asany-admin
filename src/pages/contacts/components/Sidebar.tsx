@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Tree from '@asany/tree';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import { useModel } from 'umi';
+import { useModel } from '@umijs/max';
 
 import { useBookQuery, useBooksQuery } from '../hooks';
 

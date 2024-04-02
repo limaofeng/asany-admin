@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
 import Icon from '@asany/icons';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 import {
   ChangeUsernameModal,

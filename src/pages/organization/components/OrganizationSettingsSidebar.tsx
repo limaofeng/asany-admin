@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
-import { getMatchMenu } from '@umijs/route-utils';
-import { generatePath, useLocation, useRouteMatch } from 'react-router-dom';
-import { Link } from 'umi';
+import { getMatchMenu, MenuDataItem } from '@umijs/route-utils';
+import { generatePath, useLocation, useMatch } from 'react-router-dom';
+import { Link } from '@umijs/max';
 
 import { useOrganizationQuery } from '../hooks/api';
 
@@ -27,7 +27,7 @@ function renderMenuItem(item: MenuData, params: any) {
         key={item.id}
         icon={item.icon}
         title={item.name}
-        url={generatePath(item.path, params)}
+        url={generatePath(item!.path!, params)}
       />
     );
   }
@@ -42,7 +42,7 @@ function renderMenuItem(item: MenuData, params: any) {
         icon={item.icon}
         title={item.name}
       >
-        {(item.routes || []).map((_item) => renderMenuItem(_item, params))}
+        {(item.children || []).map((_item) => renderMenuItem(_item, params))}
       </Menu.SubMenu>
     );
   }
@@ -54,18 +54,14 @@ const initMenus: MenuData[] = [];
 function OrganizationSettingsSidebar(props: OrganizationSettingsSidebarProps) {
   const { menu } = props;
 
-  const menus = menu?.routes || initMenus;
+  const menus = menu?.children || initMenus;
   const location = useLocation();
 
   const routeMatchedMenus = useMemo(() => {
-    return getMatchMenu(location.pathname, menus, true);
+    return getMatchMenu(location.pathname, menus as MenuDataItem[], true);
   }, [menus, location.pathname]);
 
-  const match = useRouteMatch<{ id: string }>({
-    path: '/organizations/:id/settings',
-    strict: true,
-    sensitive: true,
-  });
+  const match = useMatch('/organizations/:id/settings');
 
   const { data } = useOrganizationQuery({
     variables: {

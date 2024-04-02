@@ -10,7 +10,7 @@ query books {
   }
 }
 
-query book($id: ID!, $namespace: String) {
+query book($id: ID!) {
   book: contactBook(id: $id) {
     id
     name

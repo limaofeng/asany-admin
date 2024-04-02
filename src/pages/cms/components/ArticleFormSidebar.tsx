@@ -5,7 +5,7 @@ import { TreeSelect } from 'antd';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 
 import { useDeleteArticleMutation } from '../hooks';
 import useDelete from '../hooks/useDelete';
