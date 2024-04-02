@@ -1,0 +1,272 @@
+.user-status-modal {
+  .modal-header {
+    align-items: center !important;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  .user-status-limited-availability {
+    .form-check {
+      padding: 0;
+    }
+    .form-check-label {
+      color: #3f4254;
+      font-weight: bold;
+    }
+    .note {
+      padding-left: 28px;
+      color: #7e8299;
+      font-size: 12px;
+    }
+  }
+  .user-status-settings {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+
+    & > span {
+      margin-right: 4px;
+      color: #3f4254;
+    }
+
+    .form-select {
+      width: auto;
+      min-height: 28px;
+      margin-right: 16px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    .form-select-popover {
+      padding: 4px 0;
+
+      .menu-item:hover {
+        background-color: rgb(245, 248, 250);
+      }
+    }
+  }
+  .user-status-actions {
+    display: flex;
+    .btn {
+      flex: 1;
+      &:first-child {
+        margin-right: 8px;
+      }
+      &:last-child {
+        margin-left: 8px;
+      }
+    }
+  }
+}
+.user-status-form-group {
+  .input-group-text {
+    display: flex;
+    justify-content: center;
+    width: 46px;
+    padding: 0;
+    overflow: hidden;
+    .btn {
+      flex: 1;
+      border-radius: 0;
+    }
+  }
+}
+.emoji-mart-picker {
+  border: 1px solid #d9d9d9;
+  .emoji-mart {
+    border-width: 0;
+  }
+  .popover-arrow::before {
+    border-bottom-color: #d9d9d9;
+  }
+  .emoji-mart-search-icon {
+    top: 4px;
+  }
+}
+.user-account-menu {
+  .user-status-details {
+    cursor: pointer;
+    .menu-content {
+      padding: 2px 0px 2px 8px;
+      color: #5e6278;
+      &:hover,
+      &:hover .svg-icon {
+        color: #04c8c8;
+        transition: color 0.2s ease, background-color 0.2s ease;
+      }
+    }
+  }
+}
+.change-username-modal,
+.rename-organization-modal {
+  &.waiting-to-continue .modal-body {
+    padding: 0;
+  }
+  .inner-body {
+    padding: 1.75rem;
+    ul {
+      list-style-type: disc;
+    }
+  }
+  .btn.confirm-to-continue,
+  .btn.change-name-save {
+    width: 100%;
+  }
+  .alert {
+    margin-bottom: 0;
+    border-right-width: 0;
+    border-left-width: 0;
+    border-radius: 0;
+  }
+  .alert-danger {
+    color: var(--bs-gray-900);
+  }
+}
+.delete-account-modal,
+.delete-organization-modal {
+  .modal-body {
+    padding: 0;
+  }
+  .inner-body {
+    padding: 1.75rem;
+  }
+  .alert {
+    margin-bottom: 0;
+    border-right-width: 0;
+    border-left-width: 0;
+    border-radius: 0;
+  }
+  .alert-danger {
+    color: var(--bs-gray-900);
+  }
+  .btn.confirm-delete-account {
+    width: 100%;
+  }
+}
+.page-settings-emails {
+  .new-email-form {
+    .form-control-input-content {
+      display: flex;
+      align-items: center;
+    }
+  }
+  .set-primary-email-form {
+    .form-label {
+      margin-bottom: 0;
+    }
+
+    p code {
+      color: inherit;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
+        Liberation Mono, monospace;
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+  .settings-emails-list {
+    li {
+      &:last-child {
+        border-color: transparent !important;
+      }
+      .email-title {
+        height: 24px;
+
+        .remove-email {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+        }
+      }
+      ul {
+        list-style: disc;
+        li {
+          line-height: 21px;
+
+          .btn {
+            height: auto;
+            padding: 0 !important;
+            line-height: inherit;
+          }
+        }
+      }
+    }
+  }
+  .settings-email-preferences {
+    .form-checkbox {
+      margin-top: 15px;
+      margin-bottom: 15px;
+
+      .form-check-label {
+        font-weight: 600;
+      }
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+    .note {
+      margin-left: 26px;
+      font-size: 12px;
+    }
+  }
+}
+.page-settings-security,
+.page-settings-sessions-details {
+  --color-success-emphasis: #2da44e;
+  .session-item,
+  .user-session-details {
+    &.session-item:last-child {
+      border-color: transparent !important;
+    }
+    .session-state-indicator {
+      display: block;
+      width: 8px;
+      height: 8px;
+      margin-right: 8px;
+      background-color: var(--color-success-emphasis);
+      box-shadow: 0 0 10px rgba(108, 198, 68, 0.5);
+    }
+    .device-icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      margin-right: 8px;
+    }
+    .session-info {
+      strong {
+        display: block;
+        line-height: 21px;
+      }
+    }
+    .seen-in {
+      margin-top: 1.5px;
+      font-size: 13px;
+      line-height: 21px;
+    }
+    .btn-session-details {
+      height: 28px;
+      padding: 3px 12px;
+      font-size: 12px !important;
+      line-height: 20px;
+    }
+  }
+}
+.page-settings-sessions-details {
+  p {
+    line-height: 21px;
+  }
+  .map-container {
+    img {
+      width: 100%;
+    }
+  }
+}
+.page-settings-organizations {
+  .organization-item:last-child {
+    border-color: transparent !important;
+  }
+}

@@ -1,0 +1,128 @@
+query schema($module: ID!) {
+  models(module: $module, where: { type: ENTITY }) {
+    id
+    code
+    name
+    description
+  }
+}
+
+query models($moduleId: ID!, $where: ModelWhereInput, $limit: Int) {
+  models(module: $moduleId, where: $where, limit: $limit) {
+    id
+  }
+}
+
+query model($id: ID) {
+  model(id: $id) {
+    id
+    code
+    name
+    description
+    fields {
+      id
+      code
+      system
+      required
+      index
+      type {
+        id
+        name
+        family
+        description
+        graphQLType
+      }
+      name
+      description
+      metadata {
+        databaseColumnName
+      }
+    }
+    metadata {
+      databaseTableName
+    }
+  }
+}
+
+query modelFiledTypes {
+  filedTypes: modelFiledTypes {
+    id
+    name
+    description
+    family
+  }
+}
+
+query modelFields($model: ID!, $where: ModelFieldWhereInput, $limit: Int) {
+  listFields: modelFields(model: $model, where: $where, limit: $limit) {
+    id
+    name
+    description
+  }
+}
+
+mutation createModel($input: ModelCreateInput!) {
+  createModel(input: $input) {
+    id
+    name
+  }
+}
+
+mutation updateModel($id: ID!, $input: ModelUpdateInput!) {
+  updateModel(id: $id, input: $input) {
+    id
+    name
+  }
+}
+
+mutation deleteModel($id: ID!) {
+  deleteModel(id: $id)
+}
+
+mutation addModelField($modelId: ID!, $input: ModelFieldInput!) {
+  addModelField(modelId: $modelId, input: $input) {
+    id
+    code
+    system
+    type {
+      id
+      name
+      family
+      description
+      graphQLType
+    }
+    name
+    description
+    metadata {
+      databaseColumnName
+    }
+  }
+}
+
+mutation updateModelField(
+  $modelId: ID!
+  $fieldId: ID!
+  $input: ModelFieldInput!
+) {
+  updateModelField(modelId: $modelId, fieldId: $fieldId, input: $input) {
+    id
+    code
+    system
+    type {
+      id
+      name
+      family
+      description
+      graphQLType
+    }
+    name
+    description
+    metadata {
+      databaseColumnName
+    }
+  }
+}
+
+mutation removeModelField($modelId: ID!, $fieldId: ID!) {
+  removeModelField(modelId: $modelId, fieldId: $fieldId)
+}

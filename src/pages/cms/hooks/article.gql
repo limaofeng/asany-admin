@@ -1,0 +1,191 @@
+query articleStoreTemplates {
+  articleStoreTemplates {
+    id
+    name
+  }
+}
+
+query articles($where: ArticleWhereInput, $page: Int, $pageSize: Int) {
+  articles: articlesConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+  ) {
+    total: totalCount
+    current: currentPage
+    totalPage
+    pageSize
+    edges {
+      node {
+        id
+        title
+        image
+        summary
+        authors {
+          id
+          name
+        }
+        categories {
+          id
+          name
+        }
+        createdBy
+        createdAt
+        publishedAt
+        status
+      }
+    }
+  }
+}
+
+query articleCategories($id: ID!) {
+  categories: articleCategories(
+    where: { parent: { id: $id, subColumns: true } }
+  ) {
+    id
+    icon
+    name
+    fullName
+    path
+    index
+    level
+    image
+    parent {
+      id
+    }
+  }
+}
+
+query articleCategory($id: ID!) {
+  category: articleCategory(id: $id) {
+    id
+    icon
+    name
+    description
+    image
+    path
+    index
+    level
+    parent {
+      id
+    }
+    storeTemplate {
+      id
+    }
+    page {
+      enabled
+      route {
+        path
+      }
+      component {
+        id
+        template
+      }
+    }
+  }
+}
+
+mutation createArticle($input: ArticleCreateInput!) {
+  article: createArticle(input: $input) {
+    id
+    title
+    status
+    category {
+      id
+      name
+      __typename
+    }
+    categories {
+      id
+      name
+    }
+    body {
+      id
+      __typename
+      ... on ArticleContent {
+        text
+      }
+    }
+  }
+}
+
+mutation updateArticle($id: ID!, $input: ArticleUpdateInput!) {
+  article: updateArticle(id: $id, input: $input) {
+    id
+    title
+    status
+    image
+    summary
+    publishedAt
+    category {
+      id
+      name
+      __typename
+    }
+    categories {
+      id
+      name
+    }
+    body {
+      id
+      __typename
+      ... on ArticleContent {
+        type
+        text
+      }
+    }
+  }
+}
+
+mutation deleteArticle($id: ID!) {
+  deleteArticle(id: $id)
+}
+
+mutation deleteManyArticles($ids: [ID]!) {
+  deleteManyArticles(ids: $ids)
+}
+
+query article($id: ID!) {
+  article(id: $id) {
+    id
+    title
+    status
+    image
+    summary
+    publishedAt
+    category {
+      id
+      name
+    }
+    categories {
+      id
+      name
+    }
+    metafields {
+      id
+      key
+      namespace
+      value
+    }
+    body {
+      id
+      __typename
+      ... on ArticleContent {
+        type
+        text
+      }
+    }
+  }
+}
+
+mutation createArticleCategory($input: ArticleCategoryCreateInput!) {
+  createArticleCategory(input: $input) {
+    id
+  }
+}
+
+mutation updateArticleCategory($id: ID!, $input: ArticleCategoryUpdateInput!) {
+  updateArticleCategory(id: $id, input: $input) {
+    id
+  }
+}

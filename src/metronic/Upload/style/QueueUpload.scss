@@ -1,0 +1,10 @@
+.dropzone-queue {
+  outline: none;
+}
+.dropzone-file {
+  display: flex;
+  .dropzone-filename {
+    display: flex;
+    align-items: center;
+  }
+}

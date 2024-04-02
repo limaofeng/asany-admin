@@ -1,0 +1,63 @@
+query profile {
+  profile: user {
+    ...UserProfile
+  }
+}
+
+mutation updateProfile($id: ID!, $input: UserUpdateInput!) {
+  profile: updateUser(id: $id, input: $input) {
+    ...UserProfile
+  }
+}
+
+fragment UserProfile on User {
+  id
+  name
+  avatar(format: id)
+  email {
+    address
+  }
+  phone {
+    number
+  }
+  sex
+  birthday
+  bio
+  company
+  location
+}
+
+mutation changePassword($oldPassword: String!, $newPassword: String!) {
+  changePassword(oldPassword: $oldPassword, newPassword: $newPassword)
+}
+
+query sessions {
+  sessions {
+    id
+    ip
+    lastIp
+    location
+    lastLocation
+    loginTime
+    lastUsedTime
+    device {
+      type
+      browser
+      operatingSystem
+    }
+  }
+}
+
+query organizations {
+  organizations {
+    id
+    code
+    name
+    logo
+    role {
+      id
+      # code
+      name
+    }
+  }
+}

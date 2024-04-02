@@ -1,0 +1,55 @@
+query processModels(
+  $where: ProcessModelWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy
+) {
+  total: processModels(pageSize: 1, where: { user: "self" }) {
+    totalCount
+  }
+  processModels(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    totalPage
+    pageSize
+    current: currentPage
+    total: totalCount
+    edges {
+      node {
+        ...ProcessModelPart
+      }
+    }
+  }
+}
+
+query processModel($id: ID!) {
+  processModel(id: $id) {
+    ...ProcessModelPart
+    editorJson
+  }
+}
+
+mutation importProcessModel($file: Upload!) {
+  importProcessModel(file: $file) {
+    ...ProcessModelPart
+  }
+}
+
+mutation deleteProcessModel($id: ID!) {
+  deleteProcessModel(id: $id)
+}
+
+fragment ProcessModelPart on ProcessModel {
+  id
+  key
+  name
+  description
+  version
+  createdBy
+  created
+  lastUpdated
+  lastUpdatedBy
+}

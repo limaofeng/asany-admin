@@ -1,0 +1,20 @@
+.form-radio-group {
+  .form-radio-wrapper {
+    margin-right: 8px;
+  }
+}
+
+.form-check.form-check-custom {
+  display: inline-flex;
+}
+
+.form-radio {
+  display: contents;
+}
+
+.form-radio-wrapper.form-check.form-check-custom {
+  .form-check-label {
+    margin-left: 0;
+    padding: 0 8px;
+  }
+}

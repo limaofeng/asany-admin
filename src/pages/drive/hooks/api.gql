@@ -1,0 +1,149 @@
+query cloudDrive($id: ID!) {
+  cloudDrive(id: $id) {
+    id
+    name
+    type
+    space
+    rootFolder
+    recycleBin
+  }
+}
+
+mutation createFolder($name: String!, $parentFolder: ID!) {
+  folder: createFolder(name: $name, parentFolder: $parentFolder) {
+    id
+    name
+  }
+}
+
+mutation addStarForFiles($ids: [ID!]!, $mode: UpdateMode) {
+  files: addStarForFiles(ids: $ids, mode: $mode) {
+    id
+    starred
+  }
+}
+
+mutation deleteFiles($ids: [ID!]!) {
+  files: deleteFiles(ids: $ids) {
+    id
+  }
+}
+
+mutation moveFilesToTrash($ids: [ID!]!) {
+  files: moveFilesToTrash(ids: $ids) {
+    id
+  }
+}
+
+mutation clearFilesInTrash($folder: ID!) {
+  clearFilesInTrash(folder: $folder)
+}
+
+mutation restoreFiles($ids: [ID!]!) {
+  files: restoreFiles(ids: $ids) {
+    id
+    path
+  }
+}
+
+mutation renameFile($id: ID!, $name: String!) {
+  file: renameFile(id: $id, name: $name) {
+    id
+    name
+    lastModified(format: "yyyy-MM-dd HH:mm")
+  }
+}
+
+query cloudDrives {
+  cloudDrives {
+    id
+    name
+    type
+    space
+    quota {
+      id
+      count
+      usage
+      size
+      usageStr: usage(format: true)
+      sizeStr: size(format: true)
+    }
+    rootFolder
+  }
+}
+
+query file($id: ID!) {
+  file(id: $id) {
+    id
+    name
+    path
+    starred
+    size
+    sizeFormat: size(format: true)
+    mimeType
+    extension
+    isDirectory
+    isRootFolder
+    lastModified(format: "yyyy-MM-dd HH:mm")
+    createdAt(format: "yyyy-MM-dd HH:mm")
+    description
+    parents {
+      id
+      isDirectory
+      isRootFolder
+      name
+      path
+    }
+  }
+}
+
+query folder($folder: ID!) {
+  currentFolder: file(id: $folder) {
+    id
+    name
+    path
+    isDirectory
+    isRootFolder
+    parents {
+      id
+      isDirectory
+      isRootFolder
+      name
+      path
+    }
+  }
+}
+
+query listFiles(
+  $rootFolder: ID!
+  $where: FileWhereInput
+  $page: Int = 1
+  $pageSize: Int = 30
+  $orderBy: OrderBy
+) {
+  listFiles(
+    rootFolder: $rootFolder
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    pageSize
+    currentPage
+    totalPage
+    totalCount
+    edges {
+      node {
+        id
+        name
+        path
+        size
+        starred
+        mimeType
+        extension
+        isDirectory
+        lastModified(format: "yyyy-MM-dd HH:mm")
+      }
+    }
+  }
+}

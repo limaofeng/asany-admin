@@ -1,0 +1,41 @@
+{
+  "id": "dashboard",
+  "template": "cn.asany.ui.admin.metronic.Dashboard",
+  "blocks": [
+    {
+      "key": "dashboard",
+      "props": {
+        "widgets": [
+          {
+            "id": "ee64a80d-e8f3-4bfe-a448-01a18de21805",
+            "type": "widgets/maps",
+            "name": "MapsWidget1",
+            "component": "cn.asany.ui.admin.metronic.MapsWidget1",
+            "layout": { "w": 12, "h": 6 }
+          }
+        ],
+        "layout": [
+          {
+            "w": 12,
+            "h": 6,
+            "x": 0,
+            "y": 0,
+            "id": "ee64a80d-e8f3-4bfe-a448-01a18de21805",
+            "moved": false,
+            "static": false
+          }
+        ],
+        "compactType": "vertical",
+        "settings": {
+          "verticalCompact": true,
+          "compactType": "vertical",
+          "containerPadding": [0, 0],
+          "cols": 24,
+          "rowHeight": 60,
+          "margin": [30, 30]
+        },
+        "backgroundColor": "#f6f6f6"
+      }
+    }
+  ]
+}

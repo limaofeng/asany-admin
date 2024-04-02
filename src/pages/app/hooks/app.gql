@@ -1,0 +1,238 @@
+query myApps {
+  apps: applications {
+    id
+    name
+    title
+    description
+  }
+}
+
+query app($id: ID!) {
+  app: application(id: $id) {
+    id
+    name
+    title
+    description
+    dependencies {
+      id
+      name
+      value
+    }
+  }
+}
+
+query appWithClientSecret($id: ID!) {
+  app: application(id: $id) {
+    id
+    name
+    title
+    description
+    clientId
+    clientSecrets {
+      id
+      secret
+      createdAt
+      createdBy
+      lastUseTime
+    }
+  }
+}
+
+query loadRoutes($id: ID!) {
+  app: application(id: $id) {
+    id
+    routes {
+      ...RouteParts
+      application {
+        id
+      }
+    }
+  }
+}
+
+query loadMenus($id: ID!) {
+  app: application(id: $id) {
+    id
+    menus {
+      ...MenuParts
+      hideInBreadcrumb
+      hideChildrenInMenu
+      hideInMenu
+      authority
+    }
+  }
+}
+
+mutation createMenu($input: MenuCreateInput!) {
+  createMenu(input: $input) {
+    ...MenuParts
+    hideInBreadcrumb
+    hideChildrenInMenu
+    hideInMenu
+    authority
+    application {
+      id
+    }
+    component {
+      id
+    }
+  }
+}
+
+mutation updateMenu($id: ID!, $input: MenuUpdateInput!) {
+  updateMenu(id: $id, input: $input) {
+    ...MenuParts
+    hideInBreadcrumb
+    hideChildrenInMenu
+    hideInMenu
+    authority
+    application {
+      id
+    }
+    component {
+      id
+    }
+  }
+}
+
+mutation deleteMenu($id: ID!) {
+  deleteMenu(id: $id)
+}
+
+mutation createRoute($input: RouteCreateInput!) {
+  createRoute(input: $input) {
+    ...RouteParts
+    hideInBreadcrumb
+    access
+    application {
+      id
+    }
+    component {
+      id
+    }
+  }
+}
+
+mutation updateRoute($id: ID!, $input: RouteUpdateInput!) {
+  updateRoute(id: $id, input: $input) {
+    ...RouteParts
+    hideInBreadcrumb
+    access
+    application {
+      id
+    }
+    component {
+      id
+    }
+  }
+}
+
+mutation moveRoute($id: ID!, $parentRoute: ID, $location: Int!) {
+  moveRoute(id: $id, parentRoute: $parentRoute, location: $location) {
+    ...RouteParts
+    hideInBreadcrumb
+    access
+    application {
+      id
+    }
+    component {
+      id
+    }
+  }
+}
+
+mutation deleteRoute($id: ID!) {
+  deleteRoute(id: $id)
+}
+
+query loadComponents($id: ID!) {
+  library: componentLibrary(id: $id) {
+    id
+    name
+    components {
+      id
+      name
+      title
+      description
+      image
+      template
+      tags
+      createdAt
+      blocks {
+        key
+        props
+      }
+    }
+  }
+}
+
+mutation createComponent($input: ComponentCreateInput!) {
+  createComponent(input: $input) {
+    id
+    type
+    name
+    title
+    template
+  }
+}
+
+mutation updateComponent($id: ID!, $input: ComponentUpdateInput!) {
+  updateComponent(id: $id, input: $input) {
+    id
+    type
+    name
+    title
+    template
+  }
+}
+
+mutation deleteComponent($id: ID!) {
+  deleteComponent(id: $id)
+}
+
+fragment MenuParts on Menu {
+  id
+  icon
+  name
+  path
+  type
+  index
+  component {
+    id
+    template
+  }
+  parent {
+    id
+    path
+  }
+}
+
+fragment RouteParts on Route {
+  id
+  name
+  path
+  type
+  access
+  authorized
+  hideInBreadcrumb
+  redirect
+  component {
+    id
+    template
+  }
+  breadcrumb {
+    id
+    template
+  }
+  icon
+  index
+  layout {
+    pure
+    hideMenu
+  }
+  enabled
+  parent {
+    id
+    path
+  }
+}

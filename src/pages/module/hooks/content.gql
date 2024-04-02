@@ -1,0 +1,69 @@
+query content($module: ID!) {
+  models(module: $module, where: { type: ENTITY }) {
+    id
+    code
+    name
+    description
+    defaultView {
+      id
+      name
+    }
+  }
+}
+
+query modelWithEndpoints($id: ID) {
+  model(id: $id) {
+    id
+    code
+    name
+    description
+    fields {
+      id
+      code
+      system
+      required
+      index
+      type {
+        id
+        name
+        family
+        description
+        graphQLType
+      }
+      name
+      description
+      metadata {
+        databaseColumnName
+      }
+    }
+    endpoints {
+      id
+      code
+      name
+      type
+      arguments {
+        id
+        name
+        type
+      }
+    }
+    metadata {
+      databaseTableName
+    }
+  }
+}
+
+query modelView($id: ID!) {
+  view: modelView(id: $id) {
+    id
+    name
+    component {
+      id
+      template
+      blocks {
+        key
+        props
+      }
+    }
+  }
+}

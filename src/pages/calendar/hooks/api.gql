@@ -1,0 +1,180 @@
+mutation addCalendarEvent($calendar: ID!, $input: CalendarEventCreateInput!) {
+  event: addCalendarEvent(calendar: $calendar, input: $input) {
+    id
+    title
+    datetime {
+      allDay
+      starts
+      ends
+    }
+  }
+}
+
+query calendarAccounts {
+  calendarAccounts {
+    id
+    type
+    name
+    description
+    index
+  }
+}
+
+mutation addCalendarToSet($id: ID!, $set: ID!) {
+  addCalendarToSet(id: $id, set: $set) {
+    id
+    calendars {
+      id
+    }
+  }
+}
+
+mutation removeCalendarFromSet($id: ID!, $set: ID!) {
+  removeCalendarFromSet(id: $id, set: $set) {
+    id
+    calendars {
+      id
+    }
+  }
+}
+
+mutation createCalendar($input: CalendarCreateInput!) {
+  createCalendar(input: $input) {
+    id
+    name
+    color
+    index
+  }
+}
+
+mutation updateCalendar($id: ID!, $input: CalendarUpdateInput!) {
+  updateCalendar(id: $id, input: $input) {
+    id
+    name
+    color
+    index
+  }
+}
+
+mutation deleteCalendar($id: ID!) {
+  deleteCalendar(id: $id)
+}
+
+mutation deleteCalendarSet($id: ID!) {
+  deleteCalendarSet(id: $id)
+}
+
+mutation createCalendarSet {
+  createCalendarSet {
+    id
+    name
+    index
+  }
+}
+
+mutation updateCalendarSet($id: ID!, $input: CalendarSetUpdateInput!) {
+  updateCalendarSet(id: $id, input: $input) {
+    id
+    name
+    index
+    defaultCalendar {
+      id
+    }
+  }
+}
+
+query calendars {
+  calendars {
+    id
+    url
+    type
+    name
+    color
+    refresh
+    account {
+      id
+      name
+      index
+    }
+  }
+}
+
+query calendarSets {
+  calendarSets {
+    id
+    name
+    index
+    defaultCalendar {
+      id
+    }
+    calendars {
+      id
+    }
+  }
+}
+
+query calendarEvents(
+  $starts: Date!
+  $ends: Date!
+  $calendar: ID
+  $calendarSet: ID
+) {
+  events: calendarEvents(
+    starts: $starts
+    ends: $ends
+    calendar: $calendar
+    calendarSet: $calendarSet
+  ) {
+    id
+    title
+    color
+    notes
+    datetime {
+      allDay
+      start: starts
+      end: ends
+    }
+  }
+}
+
+query calendarEventsWithDays(
+  $date: Date!
+  $days: Int!
+  $calendar: ID
+  $calendarSet: ID
+) {
+  events: calendarEventsWithDays(
+    date: $date
+    days: $days
+    calendar: $calendar
+    calendarSet: $calendarSet
+  ) {
+    id
+    title
+    color
+    notes
+    datetime {
+      allDay
+      start: starts
+      end: ends
+    }
+    dates
+  }
+}
+
+query calendarEventDates(
+  $starts: Date!
+  $ends: Date!
+  $calendar: ID
+  $calendarSet: ID
+) {
+  dates: calendarEventDates(
+    starts: $starts
+    ends: $ends
+    calendar: $calendar
+    calendarSet: $calendarSet
+  ) {
+    date
+    number
+  }
+}

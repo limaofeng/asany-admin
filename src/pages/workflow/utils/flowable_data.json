@@ -1,0 +1,305 @@
+{
+  "bounds": {
+    "lowerRight": { "x": 1485.0, "y": 700.0 },
+    "upperLeft": { "x": 0.0, "y": 0.0 }
+  },
+  "resourceId": "canvas",
+  "stencil": { "id": "BPMNDiagram" },
+  "stencilset": {
+    "namespace": "http://b3mn.org/stencilset/bpmn2.0#",
+    "url": "../editor/stencilsets/bpmn2.0/bpmn2.0.json"
+  },
+  "properties": {
+    "process_id": "holidayRequest",
+    "name": "Holiday Request",
+    "process_namespace": "http://www.flowable.org/processdef",
+    "iseagerexecutionfetch": false,
+    "messages": [],
+    "executionlisteners": { "executionListeners": [] },
+    "eventlisteners": { "eventListeners": [] },
+    "signaldefinitions": [],
+    "messagedefinitions": []
+  },
+  "childShapes": [
+    {
+      "bounds": {
+        "lowerRight": { "x": 30.0, "y": 125.0 },
+        "upperLeft": { "x": 0.0, "y": 95.0 }
+      },
+      "resourceId": "startEvent",
+      "childShapes": [],
+      "stencil": { "id": "StartNoneEvent" },
+      "properties": {
+        "overrideid": "startEvent",
+        "interrupting": true,
+        "executionlisteners": { "executionListeners": [] }
+      },
+      "outgoing": [
+        { "resourceId": "sequenceFlow-4e45bdba-7c96-47e7-bf4b-281f56ce1edc" }
+      ]
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 172.0, "y": 212.0 },
+        "upperLeft": { "x": 128.0, "y": 212.0 }
+      },
+      "resourceId": "sequenceFlow-4e45bdba-7c96-47e7-bf4b-281f56ce1edc",
+      "childShapes": [],
+      "stencil": { "id": "SequenceFlow" },
+      "dockers": [
+        { "x": 15.0, "y": 15.0 },
+        { "x": 50.0, "y": 30.0 }
+      ],
+      "outgoing": [{ "resourceId": "approveTask" }],
+      "target": { "resourceId": "approveTask" },
+      "properties": {
+        "overrideid": "sequenceFlow-4e45bdba-7c96-47e7-bf4b-281f56ce1edc"
+      }
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 180.0, "y": 140.0 },
+        "upperLeft": { "x": 80.0, "y": 80.0 }
+      },
+      "resourceId": "approveTask",
+      "childShapes": [],
+      "stencil": { "id": "UserTask" },
+      "properties": {
+        "overrideid": "approveTask",
+        "name": "Approve or reject request",
+        "asynchronousdefinition": false,
+        "exclusivedefinition": true,
+        "tasklisteners": { "taskListeners": [] },
+        "executionlisteners": { "executionListeners": [] }
+      },
+      "outgoing": [
+        { "resourceId": "sequenceFlow-1c8fc867-af3e-42b2-bc9f-e26f7278352b" }
+      ]
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 172.0, "y": 212.0 },
+        "upperLeft": { "x": 128.0, "y": 212.0 }
+      },
+      "resourceId": "sequenceFlow-1c8fc867-af3e-42b2-bc9f-e26f7278352b",
+      "childShapes": [],
+      "stencil": { "id": "SequenceFlow" },
+      "dockers": [
+        { "x": 50.0, "y": 30.0 },
+        { "x": 20.0, "y": 20.0 }
+      ],
+      "outgoing": [{ "resourceId": "decision" }],
+      "target": { "resourceId": "decision" },
+      "properties": {
+        "overrideid": "sequenceFlow-1c8fc867-af3e-42b2-bc9f-e26f7278352b"
+      }
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 270.0, "y": 130.0 },
+        "upperLeft": { "x": 230.0, "y": 90.0 }
+      },
+      "resourceId": "decision",
+      "childShapes": [],
+      "stencil": { "id": "ExclusiveGateway" },
+      "properties": {
+        "overrideid": "decision",
+        "executionlisteners": { "executionListeners": [] }
+      },
+      "outgoing": [
+        { "resourceId": "sequenceFlow-2a94f2ad-2e69-4363-a75c-76644d813b4e" },
+        { "resourceId": "sequenceFlow-6545da77-405c-471b-8478-d37a683691f9" }
+      ]
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 172.0, "y": 212.0 },
+        "upperLeft": { "x": 128.0, "y": 212.0 }
+      },
+      "resourceId": "sequenceFlow-2a94f2ad-2e69-4363-a75c-76644d813b4e",
+      "childShapes": [],
+      "stencil": { "id": "SequenceFlow" },
+      "dockers": [
+        { "x": 20.0, "y": 20.0 },
+        { "x": 282.0, "y": 110.0 },
+        { "x": 282.0, "y": 30.000000000000007 },
+        { "x": 50.0, "y": 30.0 }
+      ],
+      "outgoing": [{ "resourceId": "externalSystemCall" }],
+      "target": { "resourceId": "externalSystemCall" },
+      "properties": {
+        "overrideid": "sequenceFlow-2a94f2ad-2e69-4363-a75c-76644d813b4e",
+        "conditionsequenceflow": "${approved}"
+      }
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 172.0, "y": 212.0 },
+        "upperLeft": { "x": 128.0, "y": 212.0 }
+      },
+      "resourceId": "sequenceFlow-6545da77-405c-471b-8478-d37a683691f9",
+      "childShapes": [],
+      "stencil": { "id": "SequenceFlow" },
+      "dockers": [
+        { "x": 20.0, "y": 20.0 },
+        { "x": 282.0, "y": 110.0 },
+        { "x": 282.0, "y": 190.0 },
+        { "x": 50.0, "y": 30.0 }
+      ],
+      "outgoing": [{ "resourceId": "sendRejectionMail" }],
+      "target": { "resourceId": "sendRejectionMail" },
+      "properties": {
+        "overrideid": "sequenceFlow-6545da77-405c-471b-8478-d37a683691f9",
+        "conditionsequenceflow": "${!approved}"
+      }
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 420.0, "y": 60.0 },
+        "upperLeft": { "x": 320.0, "y": 0.0 }
+      },
+      "resourceId": "externalSystemCall",
+      "childShapes": [],
+      "stencil": { "id": "ServiceTask" },
+      "properties": {
+        "overrideid": "externalSystemCall",
+        "name": "Enter holidays in external system",
+        "servicetaskclass": "org.flowable.CallExternalSystemDelegate",
+        "servicetaskfields": { "fields": [] },
+        "asynchronousdefinition": false,
+        "exclusivedefinition": true,
+        "executionlisteners": { "executionListeners": [] }
+      },
+      "outgoing": [
+        { "resourceId": "sequenceFlow-c9008b2f-10f8-4c8c-ab3e-0c1765211834" }
+      ]
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 172.0, "y": 212.0 },
+        "upperLeft": { "x": 128.0, "y": 212.0 }
+      },
+      "resourceId": "sequenceFlow-c9008b2f-10f8-4c8c-ab3e-0c1765211834",
+      "childShapes": [],
+      "stencil": { "id": "SequenceFlow" },
+      "dockers": [
+        { "x": 50.0, "y": 30.0 },
+        { "x": 432.0, "y": 30.0 },
+        { "x": 432.0, "y": 31.000000000000007 },
+        { "x": 50.0, "y": 30.0 }
+      ],
+      "outgoing": [{ "resourceId": "holidayApprovedTask" }],
+      "target": { "resourceId": "holidayApprovedTask" },
+      "properties": {
+        "overrideid": "sequenceFlow-c9008b2f-10f8-4c8c-ab3e-0c1765211834"
+      }
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 570.0, "y": 61.0 },
+        "upperLeft": { "x": 470.0, "y": 1.0 }
+      },
+      "resourceId": "holidayApprovedTask",
+      "childShapes": [],
+      "stencil": { "id": "UserTask" },
+      "properties": {
+        "overrideid": "holidayApprovedTask",
+        "name": "Holiday approved",
+        "asynchronousdefinition": false,
+        "exclusivedefinition": true,
+        "tasklisteners": { "taskListeners": [] },
+        "executionlisteners": { "executionListeners": [] }
+      },
+      "outgoing": [
+        { "resourceId": "sequenceFlow-322651df-8308-4e8b-84e5-9f15e414b180" }
+      ]
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 172.0, "y": 212.0 },
+        "upperLeft": { "x": 128.0, "y": 212.0 }
+      },
+      "resourceId": "sequenceFlow-322651df-8308-4e8b-84e5-9f15e414b180",
+      "childShapes": [],
+      "stencil": { "id": "SequenceFlow" },
+      "dockers": [
+        { "x": 50.0, "y": 30.0 },
+        { "x": 582.0, "y": 31.0 },
+        { "x": 582.0, "y": 31.000000000000004 },
+        { "x": 15.0, "y": 15.0 }
+      ],
+      "outgoing": [{ "resourceId": "approveEnd" }],
+      "target": { "resourceId": "approveEnd" },
+      "properties": {
+        "overrideid": "sequenceFlow-322651df-8308-4e8b-84e5-9f15e414b180"
+      }
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 420.0, "y": 220.0 },
+        "upperLeft": { "x": 320.0, "y": 160.0 }
+      },
+      "resourceId": "sendRejectionMail",
+      "childShapes": [],
+      "stencil": { "id": "ServiceTask" },
+      "properties": {
+        "overrideid": "sendRejectionMail",
+        "name": "Send out rejection email",
+        "servicetaskclass": "org.flowable.SendRejectionMail",
+        "servicetaskfields": { "fields": [] },
+        "asynchronousdefinition": false,
+        "exclusivedefinition": true,
+        "executionlisteners": { "executionListeners": [] }
+      },
+      "outgoing": [
+        { "resourceId": "sequenceFlow-dfddb871-ea40-489f-aab1-b25623e327e3" }
+      ]
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 172.0, "y": 212.0 },
+        "upperLeft": { "x": 128.0, "y": 212.0 }
+      },
+      "resourceId": "sequenceFlow-dfddb871-ea40-489f-aab1-b25623e327e3",
+      "childShapes": [],
+      "stencil": { "id": "SequenceFlow" },
+      "dockers": [
+        { "x": 50.0, "y": 30.0 },
+        { "x": 15.0, "y": 15.0 }
+      ],
+      "outgoing": [{ "resourceId": "rejectEnd" }],
+      "target": { "resourceId": "rejectEnd" },
+      "properties": {
+        "overrideid": "sequenceFlow-dfddb871-ea40-489f-aab1-b25623e327e3"
+      }
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 650.0, "y": 46.0 },
+        "upperLeft": { "x": 620.0, "y": 16.0 }
+      },
+      "resourceId": "approveEnd",
+      "childShapes": [],
+      "stencil": { "id": "EndNoneEvent" },
+      "properties": {
+        "overrideid": "approveEnd",
+        "executionlisteners": { "executionListeners": [] }
+      },
+      "outgoing": []
+    },
+    {
+      "bounds": {
+        "lowerRight": { "x": 535.0, "y": 205.0 },
+        "upperLeft": { "x": 505.0, "y": 175.0 }
+      },
+      "resourceId": "rejectEnd",
+      "childShapes": [],
+      "stencil": { "id": "EndNoneEvent" },
+      "properties": {
+        "overrideid": "rejectEnd",
+        "executionlisteners": { "executionListeners": [] }
+      },
+      "outgoing": []
+    }
+  ]
+}

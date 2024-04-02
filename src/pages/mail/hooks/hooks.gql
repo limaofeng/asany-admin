@@ -1,0 +1,148 @@
+query mailUser {
+  mailUser {
+    id
+    name
+    domain {
+      name
+    }
+    settings {
+      mailboxes
+    }
+  }
+}
+
+mutation createMailboxMessage($input: MailboxMessageCreateInput!) {
+  message: createMailboxMessage(input: $input) {
+    id
+    subject
+    to
+    cc
+    bcc
+    mimeType
+    body
+    draft
+  }
+}
+
+mutation updateMailboxMessage($id: ID!, $input: MailboxMessageUpdateInput!) {
+  message: updateMailboxMessage(id: $id, input: $input) {
+    id
+    subject
+    to
+    cc
+    bcc
+    mimeType
+    body
+    draft
+  }
+}
+
+mutation deleteMailboxMessage($id: ID!) {
+  deleteMailboxMessage(id: $id)
+}
+
+mutation sendMailboxMessage($id: ID!) {
+  message: sendMailboxMessage(id: $id) {
+    id
+  }
+}
+
+mutation clearTrashMailbox {
+  clearMailboxMessagesInTrashMailbox
+}
+
+query countUnread {
+  inbox: mailbox(id: "inbox") {
+    id
+    unread: count(type: UNREAD)
+  }
+}
+
+query mailboxes {
+  mailboxes {
+    id
+    name
+    namespace
+    count
+  }
+}
+
+mutation createMailbox($namespace: String!, $name: String!) {
+  createMailbox(namespace: $namespace, name: $name) {
+    id
+    name
+    namespace
+  }
+}
+
+mutation updateMyFavoriteMailboxes($mailboxes: [String!]!, $mode: UpdateMode) {
+  mailboxes: updateMyFavoriteMailboxes(mailboxes: $mailboxes, mode: $mode)
+}
+
+mutation moveMailboxMessageToFolder($id: ID!, $mailbox: ID!) {
+  moveMailboxMessageToFolder(id: $id, mailbox: $mailbox) {
+    id
+    ...MailboxMessageFlagParts
+  }
+}
+
+mutation updateMailboxMessageFlags(
+  $id: ID!
+  $flags: [String!]!
+  $mode: MailboxFlagsUpdateMode
+) {
+  updateMailboxMessageFlags(id: $id, flags: $flags, mode: $mode) {
+    id
+    ...MailboxMessageFlagParts
+  }
+}
+
+query mailboxMessage($id: ID!) {
+  message: mailboxMessage(id: $id) {
+    index
+    ...MailboxMessageParts
+    ...MailboxMessageFlagParts
+  }
+}
+
+query mailboxMessages(
+  $user: ID
+  $where: MailboxMessageWhereInput
+  $page: Int = 1
+) {
+  mailboxMessages(user: $user, where: $where, page: $page, pageSize: 30) {
+    totalCount
+    pageSize
+    totalPage
+    currentPage
+    edges {
+      node {
+        ...MailboxMessageParts
+        ...MailboxMessageFlagParts
+      }
+    }
+  }
+}
+
+fragment MailboxMessageParts on MailboxMessage {
+  id
+  subject
+  date
+  from
+  to
+  cc
+  bcc
+  mimeType
+  body
+  mailboxName
+  originalMailboxName
+}
+
+fragment MailboxMessageFlagParts on MailboxMessage {
+  answered
+  deleted
+  draft
+  flagged
+  recent
+  seen
+}

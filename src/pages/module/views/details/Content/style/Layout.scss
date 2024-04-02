@@ -1,0 +1,20 @@
+.module_content_menu.menu-state-bg {
+  .menu-sub-item {
+    & > .menu-link {
+      background-color: transparent !important;
+
+      .menu-arrow:after {
+        background-image: none !important;
+      }
+    }
+
+    .custom-view-notes {
+      padding: 8px;
+    }
+  }
+}
+
+.pages-module-content-model-view {
+  min-height: 100vh;
+  flex: 1;
+}

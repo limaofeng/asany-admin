@@ -1,0 +1,223 @@
+mutation createPage($input: LandingPageCreateInput!) {
+  page: createLandingPage(input: $input) {
+    ...LandingPageParts
+  }
+}
+
+mutation updatePage($id: ID!, $input: LandingPageUpdateInput!) {
+  page: updateLandingPage(id: $id, input: $input) {
+    ...LandingPageParts
+  }
+}
+
+mutation deletePage($ids: [ID!]!) {
+  deleteLandingPage(ids: $ids)
+}
+
+query landingPage($id: ID!) {
+  page: landingPage(id: $id) {
+    ...LandingPageParts
+  }
+}
+
+query landingPages(
+  $where: LandingPageWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy = "createdAt_desc"
+) {
+  total: landingPagesConnection(pageSize: 1) {
+    totalCount
+  }
+  landingPages: landingPagesConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    totalPage
+    pageSize
+    current: currentPage
+    total: totalCount
+    edges {
+      node {
+        ...LandingPageParts
+      }
+    }
+  }
+}
+
+mutation createPoster($input: LandingPosterCreateInput!) {
+  poster: createLandingPoster(input: $input) {
+    ...LandingPosterParts
+  }
+}
+
+mutation updatePoster($id: ID!, $input: LandingPosterUpdateInput!) {
+  poster: updateLandingPoster(id: $id, input: $input) {
+    ...LandingPosterParts
+  }
+}
+
+mutation deletePoster($ids: [ID!]!) {
+  deleteLandingPoster(ids: $ids)
+}
+
+query landingPoster($id: ID!) {
+  poster: landingPoster(id: $id) {
+    ...LandingPosterParts
+  }
+}
+
+query landingPosters(
+  $where: LandingPosterWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy = "createdAt_desc"
+) {
+  total: landingPostersConnection(pageSize: 1) {
+    totalCount
+  }
+  landingPosters: landingPostersConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    totalPage
+    pageSize
+    current: currentPage
+    total: totalCount
+    edges {
+      node {
+        ...LandingPosterParts
+      }
+    }
+  }
+}
+
+mutation updateStore($id: ID!, $input: LandingStoreUpdateInput!) {
+  store: updateLandingStore(id: $id, input: $input) {
+    ...LandingStoreParts
+  }
+}
+
+mutation deleteStore($ids: [ID!]!) {
+  deleteLandingStore(ids: $ids)
+}
+
+mutation createStore($input: LandingStoreCreateInput!) {
+  store: createLandingStore(input: $input) {
+    ...LandingStoreParts
+  }
+}
+
+query landingStore($id: ID!) {
+  store: landingStore(id: $id) {
+    ...LandingStoreParts
+  }
+}
+
+query landingStores(
+  $where: LandingStoreWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy = "createdAt_desc"
+) {
+  total: landingStoresConnection(pageSize: 1) {
+    totalCount
+  }
+  landingStores: landingStoresConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    totalPage
+    pageSize
+    current: currentPage
+    total: totalCount
+    edges {
+      node {
+        id
+        code
+        name
+        address {
+          province
+          city
+          district
+          street
+          detailedAddress
+          fullAddress(excludeDetailed: true)
+        }
+        qrCode
+        leader
+        description
+        createdAt(format: "yyyy-MM-dd HH:mm")
+      }
+    }
+  }
+}
+
+fragment LandingPageParts on LandingPage {
+  id
+  name
+  status
+  description
+  start(format: "yyyy-MM-dd HH:mm")
+  end(format: "yyyy-MM-dd HH:mm")
+  poster {
+    id
+    name
+    background
+  }
+  stores {
+    id
+    name
+  }
+  createdAt(format: "yyyy-MM-dd HH:mm")
+  metadata {
+    thumb
+    title
+    description
+  }
+}
+
+fragment LandingPosterParts on LandingPoster {
+  id
+  name
+  background
+  music
+  description
+  createdAt(format: "yyyy-MM-dd HH:mm")
+}
+
+fragment LandingStoreParts on LandingStore {
+  id
+  code
+  name
+  address {
+    province
+    city
+    district
+    street
+    detailedAddress
+  }
+  location {
+    longitude
+    latitude
+  }
+  qrCode
+  leader
+  description
+  createdAt(format: "yyyy-MM-dd HH:mm")
+}
+query geocode($address: String, $city: String) {
+  amapOpenAPI {
+    geocodes: geocode_geo(city: $city, address: $address) {
+      adcode
+      district
+      location
+    }
+  }
+}

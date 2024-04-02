@@ -1,0 +1,21 @@
+.image-input {
+  .image-input-wrapper {
+    background-position: center;
+
+    .symbol {
+      width: 100%;
+      height: 100%;
+
+      .symbol-label {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  &.image-input-empty {
+    .image-input-wrapper {
+      background-size: contain;
+    }
+  }
+}

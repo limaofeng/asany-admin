@@ -1,0 +1,15 @@
+.asany-popover-overlay {
+  max-width: none;
+
+  &.overlay-zero-gap .popover-body {
+    padding: 0;
+  }
+}
+.overlay-no-arrow {
+  .popover-arrow {
+    display: none;
+  }
+}
+.overlay-no-border {
+  --bs-popover-border-width: 0;
+}

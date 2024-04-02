@@ -1,0 +1,64 @@
+mutation logout {
+  logout
+}
+
+# mutation loginByWeiXin($code: String!) {
+#   login(loginType: weixin, authCode: $code) {
+#     uid
+#     name
+#     token
+#     type
+#     authoritys
+#   }
+# }
+
+# mutation loginByDingtalk($code: String!) {
+#   login(loginType: dingtalk, authCode: $code) {
+#     uid
+#     name
+#     token
+#     type
+#     authoritys
+#   }
+# }
+
+mutation loginByUsername(
+  $clientId: String!
+  $username: String
+  $password: String
+) {
+  login(clientId: $clientId, username: $username, password: $password) {
+    uid
+    name
+    type
+    token
+    authorities
+  }
+}
+
+query viewer {
+  viewer {
+    uid
+    type
+    name
+    title
+    avatar
+    phone
+    email
+    sex
+    bio
+    birthday
+    company
+    location
+    account
+    authorities
+    imToken(platform: Web)
+    onlineStatus {
+      status
+      detailPlatformStatus {
+        platform
+        status
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+.micro-app-website {
+  .app-sidebar {
+    .menu {
+      .menu-link {
+        .category-setting {
+          display: none;
+        }
+        &.active {
+          .category-setting {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}

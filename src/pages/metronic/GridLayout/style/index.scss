@@ -1,0 +1,116 @@
+.grid-layout {
+  flex: 1;
+}
+.grid-layout-container {
+  width: 100%;
+  position: relative;
+  height: auto;
+  background: #eee;
+  transition: height 100ms ease;
+
+  .grid-item {
+    display: flex;
+    transition: all 100ms ease;
+    transition-property: left, top;
+
+    &.react-draggable {
+      user-select: none;
+    }
+
+    &:not(.react-grid-placeholder) {
+      background: #fff;
+      // border: 1px solid transparent;
+    }
+
+    &.static {
+      background: #cce;
+    }
+
+    &.grid-item-dragging {
+      opacity: 0.6;
+
+      & > * {
+        display: none !important;
+      }
+    }
+
+    &.cssTransforms {
+      transition-property: transform;
+    }
+    &.resizing {
+      z-index: 1;
+      opacity: 0.9;
+      will-change: width, height;
+    }
+    &.react-draggable-dragging {
+      z-index: 3;
+      transition: none;
+      will-change: transform;
+    }
+    &.dropping {
+      visibility: hidden;
+    }
+    &.react-grid-placeholder {
+      z-index: 2;
+      background: red;
+      opacity: 0.2;
+      transition-duration: 100ms;
+      user-select: none;
+    }
+
+    & > .react-draggable-handle {
+      position: absolute;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      color: #fff;
+      background-color: #4af;
+      cursor: move;
+
+      .anticon {
+        font-size: 16px;
+      }
+    }
+    & > .react-delete-handle {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      color: #fff;
+      font-size: 20px;
+      background-color: #4af;
+      cursor: pointer;
+    }
+    & > .full-drag-style {
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+    }
+    & > .no-drag {
+      height: 0;
+    }
+
+    & > .react-resizable-handle::after {
+      position: absolute;
+      right: 3px;
+      bottom: 3px;
+      width: 5px;
+      height: 5px;
+      border-right: 2px solid rgba(0, 0, 0, 0.4);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+      content: '';
+    }
+  }
+
+  .react-resizable-hide > .react-resizable-handle {
+    display: none;
+  }
+}

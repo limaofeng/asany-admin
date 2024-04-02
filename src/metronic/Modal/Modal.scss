@@ -1,0 +1,85 @@
+.modal-confirm {
+  &.has-icon {
+    .swal2-icon {
+      margin: 1em auto 1.5em;
+    }
+    .swal2-html-container {
+      margin-right: 0;
+    }
+  }
+  .swal2-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    margin-top: 0;
+  }
+  .text-left {
+    text-align: left;
+  }
+  .swal2-title {
+    padding-top: 0;
+    padding-left: 0;
+    font-size: 14px;
+  }
+  .swal2-html-container {
+    margin-top: 1rem;
+    padding-left: 0;
+    font-size: 14px;
+    .tip-confirm {
+      margin-bottom: 4px;
+    }
+  }
+  .swal2-actions {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+.modal-dialog {
+  .modal-header {
+    padding-top: 1.15rem;
+    padding-bottom: 1.15rem;
+  }
+  .modal-footer {
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+.modal-dialog-small {
+  .modal-footer {
+    padding: 0.5rem 1.5rem 0.75rem 1.5rem;
+  }
+  .modal-content {
+    border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
+    box-shadow: var(--bs-modal-box-shadow);
+  }
+  .btn:not(.btn-outline):not(.btn-dashed):not(.border-hover):not(
+      .border-active
+    ):not(.btn-flush):not(.btn-icon).btn-xs {
+    padding: calc(0.25rem + 1px) calc(1.25rem + 1px);
+  }
+  .modal-dialog-header {
+    padding-bottom: 16px;
+    .modal-dialog-icon {
+      padding-right: 16px;
+    }
+    .modal-dialog-instructions {
+      flex: 1;
+      .modal-dialog-title {
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .modal-dialog-description {
+        padding: 8px 0;
+        font-size: 13px;
+      }
+    }
+  }
+  .asany-form {
+    .flex-row {
+      margin-bottom: 0.5rem;
+      &.last {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

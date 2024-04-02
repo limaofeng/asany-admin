@@ -1,0 +1,49 @@
+query websites {
+  websites {
+    id
+    name
+    description
+  }
+}
+
+query website($id: ID!) {
+  website(id: $id) {
+    id
+    name
+    description
+    channel {
+      id
+    }
+    application {
+      id
+    }
+  }
+}
+
+mutation createWebsite($input: WebsiteCreateInput!) {
+  createWebsite(input: $input) {
+    id
+    name
+  }
+}
+
+query websiteArticleCategories($id: ID!) {
+  categories: articleCategories(
+    where: { parent: { id: $id, subColumns: true } }
+  ) {
+    id
+    icon
+    name
+    fullName
+    path
+    index
+    level
+    image
+    storeTemplate {
+      id
+    }
+    parent {
+      id
+    }
+  }
+}

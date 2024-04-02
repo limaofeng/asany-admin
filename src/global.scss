@@ -1,0 +1,101 @@
+@import './metronic/style/index.scss';
+
+:root {
+  --bs-body-font-size: 14px;
+  --bg-body: #f3f6f9;
+  --bs-body-font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.colorWeak {
+  filter: invert(80%);
+}
+
+.ant-layout {
+  min-height: 100vh;
+}
+.ant-pro-sider.ant-layout-sider.ant-pro-sider-fixed {
+  left: unset;
+}
+
+canvas {
+  display: block;
+}
+
+.asany-treeview-node .monaco-tl-twistie {
+  padding-right: 14px;
+}
+
+body {
+  overflow-x: hidden;
+  color: #404040;
+  font-weight: 400;
+  font-size: var(--bs-body-font-size) !important;
+  font-family: var(--bs-body-font-family);
+  font-variant: tabular-nums;
+  background-color: var(--kt-page-bg);
+  font-feature-settings: 'tnum';
+  -webkit-font-smoothing: antialiased;
+}
+
+.theme-metronic {
+  .resizer {
+    &.active > .handle::before,
+    .handle:hover::before {
+      background: var(--kt-primary);
+    }
+  }
+}
+
+.bg-body-color {
+  background-color: var(--bg-body);
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+.text-small {
+  font-size: 12px;
+}
+
+.f-14px {
+  font-size: 14px;
+}
+
+.tooltip,
+.popover {
+  position: absolute;
+  left: -100px;
+}
+
+// Compatible with IE11
+@media screen /* and(-ms-high-contrast: active), (-ms-high-contrast: none) */ {
+  body .asany-web > .ant-layout {
+    min-height: 100vh;
+  }
+}
+@media (min-width: 992px) {
+  .aside-secondary-enabled .aside {
+    width: var(--met-aside-width);
+  }
+  .aside-secondary-enabled.aside-fixed .wrapper {
+    padding-left: var(--met-aside-width);
+  }
+  .aside .aside-secondary .aside-workspace {
+    width: calc(var(--met-aside-width) - 100px);
+  }
+  .aside-fixed.aside-secondary-enabled[data-kt-sticky-header='on'] .header {
+    left: var(--met-aside-width);
+    transition: left 0.3s ease;
+  }
+}

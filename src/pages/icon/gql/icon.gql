@@ -1,0 +1,42 @@
+query iconLibraries {
+  libraries: iconLibraries {
+    id
+    name
+    total
+    description
+  }
+}
+
+mutation createIconLibrary($name: String!) {
+  library: createLibrary(input: { name: $name, type: ICONS }) {
+    id
+    name
+  }
+}
+
+query iconLibrary($id: ID!) {
+  library: iconLibrary(id: $id) {
+    id
+    name
+    description
+    total
+    icons {
+      id
+      name
+      description
+      unicode
+      content
+    }
+  }
+}
+
+mutation deleteIconLibrary($id: ID!) {
+  deleteLibrary(id: $id)
+}
+
+mutation updateIconLibrary($id: ID!, $input: LibraryUpdateInput!) {
+  library: updateLibrary(id: $id, input: $input) {
+    id
+    name
+  }
+}

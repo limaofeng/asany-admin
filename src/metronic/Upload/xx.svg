@@ -1,0 +1,12 @@
+          <svg
+            view-box="0 0 64 64"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M59 1H5C2.79086 1 1 2.79086 1 5V59C1 61.2091 2.79086 63 5 63H59C61.2091 63 63 61.2091 63 59V5C63 2.79086 61.2091 1 59 1Z"
+              stroke="#b8c2cc"
+              stroke-dasharray="8 2"
+              stroke-width="1"
+            />
+          </svg>

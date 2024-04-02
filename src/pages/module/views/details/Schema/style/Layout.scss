@@ -1,0 +1,17 @@
+.menu-section__link {
+  margin-left: -12px;
+  padding: 3px 12px;
+  border-radius: 4px;
+  display: inline-block;
+  line-height: 20px;
+
+  &.checked {
+    color: var(--kt-primary) !important;
+    background-color: var(--kt-light);
+  }
+
+  &:hover {
+    color: var(--kt-light-inverse);
+    background-color: var(--kt-light);
+  }
+}

@@ -1,0 +1,97 @@
+.app-contacts-sidebar {
+  .tabs-container {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+
+    .tab-content {
+      display: flex;
+      flex: 1 0 auto;
+      flex-direction: column;
+      .tab-pane {
+        &.active {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        .custom-scrollbar {
+          flex: 1 0 auto;
+          padding-right: 1.25rem;
+          padding-left: 1.25rem;
+        }
+      }
+    }
+  }
+  .asany-treeview-node {
+    .monaco-icon-label {
+      .svg-icon svg {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+    }
+  }
+  .nav-tabs {
+    padding-right: 1.25rem;
+    padding-left: 1.25rem;
+  }
+}
+.app-contacts-main {
+  #kt_content_container {
+    padding-right: 0;
+  }
+  .kt_contacts_list {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 60px);
+    margin-top: 30px;
+
+    .card-body {
+      display: flex;
+      flex: 1 0 auto;
+      flex-direction: column;
+      padding: 2rem 0.25rem;
+
+      .custom-scrollbar {
+        flex: 1 0 auto;
+        padding: 0 1rem;
+        &:focus-within {
+          .contact-item.active {
+            background-color: #e7f2fb;
+          }
+        }
+      }
+    }
+
+    .contact-item {
+      width: 100%;
+      padding: 0 1rem;
+      border-radius: 16px;
+      &:hover {
+        background-color: #f4f6f8;
+      }
+
+      &.active {
+        background-color: #ecedee;
+        &::after,
+        &::before {
+          background-color: #e4e4e5;
+        }
+      }
+    }
+  }
+  .content-body {
+    padding-right: 12px;
+    .content-view-details {
+      height: 100vh;
+      padding-top: 30px;
+      padding-right: 20px;
+
+      .os-content > .card {
+        min-height: calc(100% - 30px);
+        margin-bottom: 30px;
+        box-shadow: none;
+      }
+    }
+  }
+}

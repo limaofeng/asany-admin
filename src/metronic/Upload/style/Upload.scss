@@ -1,0 +1,69 @@
+.file-input-upload {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  border: 1px solid #e4e6ef;
+  border-radius: 0.475rem;
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 8%);
+
+  cursor: pointer;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  appearance: none;
+
+  &.file-input-empty {
+    user-select: none;
+  }
+
+  .spinner-border {
+    width: 18px;
+    height: 18px;
+  }
+
+  &.file-input-loading {
+    .spinner-border {
+      margin-right: 8px;
+    }
+  }
+
+  .indicator {
+    padding-right: 8px;
+  }
+
+  .preview-content {
+    display: inline-flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    overflow: hidden;
+
+    &[placeholder]:empty:before {
+      color: #a1a5b7 !important;
+      font-size: 13px !important;
+      background-color: transparent;
+      content: attr(placeholder);
+    }
+
+    .file-name-container {
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 22px);
+
+      .file-title {
+        margin-right: -1px;
+      }
+    }
+  }
+
+  .input-clear {
+    color: #a1a5b7 !important;
+    cursor: pointer;
+    .svg-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    &:hover {
+      color: #8a8d9c !important;
+    }
+  }
+}
