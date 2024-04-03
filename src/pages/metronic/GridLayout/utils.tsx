@@ -224,7 +224,6 @@ export function getAllCollisions(
   return layout.filter((l) => collides(l, layoutItem));
 }
 
-
 export function sortLayoutItemsByColRow(layout: Layout): Layout {
   return [].concat(layout as any).sort(function (a: any, b: any) {
     if (a.x > b.x || (a.x === b.x && a.y > b.y)) {
@@ -269,7 +268,6 @@ export function setTopLeft({ top, left, width, height }: Position) {
   };
 }
 
-
 export function sortLayoutItemsByRowCol(layout: Layout): Layout {
   return [].concat(layout as any).sort(function (a: any, b: any) {
     if (a.y > b.y || (a.y === b.y && a.x > b.x)) {
@@ -295,7 +293,6 @@ export function sortLayoutItems(
   if (compactType === 'horizontal') return sortLayoutItemsByColRow(layout);
   else return sortLayoutItemsByRowCol(layout);
 }
-
 
 /**
  * Validate a layout. Throws errors.
@@ -620,9 +617,6 @@ export function moveElement(
 
   return layout;
 }
-
-
-
 
 export function getCompactType(
   verticalCompact: boolean,

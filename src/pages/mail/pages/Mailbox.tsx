@@ -251,7 +251,9 @@ function useMailboxMessagesMagicQuery(
         }
         if (!!latestSelectedState.current.message) {
           latestSelectedState.current.timer &&
-            clearTimeout(latestSelectedState.current.timer as unknown as number);
+            clearTimeout(
+              latestSelectedState.current.timer as unknown as number,
+            );
           return;
         }
         loadMailboxMessages(

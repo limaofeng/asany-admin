@@ -46,7 +46,6 @@ function ImageObject(props: ImageObjectProps) {
   );
 }
 
-
 function renderImg(
   src: string | React.ReactNode,
   gap: number | undefined,

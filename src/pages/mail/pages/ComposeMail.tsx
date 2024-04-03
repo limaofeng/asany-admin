@@ -110,8 +110,7 @@ function ComposeMail() {
 
   const { message, isChanged } = state.current;
 
-
-  console.log('handleDoNotStore', handleDoNotStore)
+  console.log('handleDoNotStore', handleDoNotStore);
 
   // <NavigationPrompt disableNative when={!!message?.id && isChanged}>
   // {({ afterConfirm: onConfirm, afterCancel: onCancel }: NavigationPromptProps) => (

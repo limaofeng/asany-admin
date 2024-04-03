@@ -3,7 +3,10 @@ import { useCallback } from 'react';
 // import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import { useModel } from '@umijs/max';
 import classnames from 'classnames';
-import { ConversationItem, MessageItem } from 'open-im-sdk-wasm/lib/types/entity';
+import {
+  ConversationItem,
+  MessageItem,
+} from 'open-im-sdk-wasm/lib/types/entity';
 import { MessageReceiveOptType } from 'open-im-sdk-wasm/lib/types/enum';
 
 import { Badge, Symbol } from '@/metronic';
@@ -48,7 +51,8 @@ function CveItem(props: CveItemProps) {
     return parseMessageType(pmsg, curUid);
   };
 
-  const isRecv = (opt: MessageReceiveOptType) => opt === MessageReceiveOptType.Nomal;
+  const isRecv = (opt: MessageReceiveOptType) =>
+    opt === MessageReceiveOptType.Nomal;
 
   const parseLastMessage = isRecv(cve?.recvMsgOpt)
     ? parseLatestMsg(cve.latestMsg)

@@ -1,5 +1,3 @@
-
-
 import { component, library } from '@asany/sunmao';
 import '@fullcalendar/react/dist/vdom';
 

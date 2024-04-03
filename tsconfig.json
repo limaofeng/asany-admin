@@ -2,7 +2,6 @@
   "extends": "./src/.umi/tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "types": ["webpack-env"],
     "typeRoots": ["src/types"],
     "experimentalDecorators": true
   }

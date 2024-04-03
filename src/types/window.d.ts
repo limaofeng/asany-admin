@@ -7,3 +7,5 @@ interface Window {
   luckysheet: any;
   pdfjsLib: any;
 }
+
+declare let __webpack_public_path__: string;

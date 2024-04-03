@@ -3,7 +3,10 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { Icon } from '@asany/icons';
 import { Resizer } from '@asany/sunmao';
 import classnames from 'classnames';
-import { ConversationItem, MessageItem } from 'open-im-sdk-wasm/lib/types/entity';
+import {
+  ConversationItem,
+  MessageItem,
+} from 'open-im-sdk-wasm/lib/types/entity';
 import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 
 import { ContentWrapper } from '@/layouts/components';

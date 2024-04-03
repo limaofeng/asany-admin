@@ -33,7 +33,6 @@ type PopoverProps = {
   arrowProps?: Partial<OverlayArrowProps>;
 };
 
-
 function getOffsetLeft(o: HTMLElement, parent: HTMLElement = document.body) {
   let left = 0;
   let offsetParent = o;

@@ -437,8 +437,6 @@ function slideDown(el: HTMLElement, speed: number, callback: any) {
   slide(el, 'down', speed, callback);
 }
 
-
-
 function getAttributeValueByBreakpoint(incomingAttr: string): string | JSON {
   const value = toJSON(incomingAttr);
   if (typeof value !== 'object') {

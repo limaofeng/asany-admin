@@ -3,7 +3,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Icon } from '@asany/icons';
 import { useModel } from '@umijs/max';
 import { useLatest } from 'ahooks';
-import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
+import {
+  ConversationItem,
+  MessageItem,
+} from 'open-im-sdk-wasm/lib/types/entity';
 import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 
 import { Button, Tooltip } from '@/metronic';
@@ -14,13 +17,16 @@ import {
   isSingleCve,
   move2end,
 } from '@/models/open-im/utils';
-import { ATSTATEUPDATE, ISSETDRAFT, MUTILMSGCHANGE } from '@/models/open-im/utils/constant';
+import {
+  ATSTATEUPDATE,
+  ISSETDRAFT,
+  MUTILMSGCHANGE,
+} from '@/models/open-im/utils/constant';
 import events from '@/models/open-im/utils/events';
 import { faceMap } from '@/models/open-im/utils/faceType';
 
 import type { ContentEditableEvent } from '../../ContentEditable/ContentEditable';
 import ContentEditable from '../../ContentEditable/ContentEditable';
-
 
 // import { messageTypes } from '@/utils/open-im/constants/messageContentType';
 // import { base64toFile, contenteditableDivRange, move2end } from '@/utils/open-im/utils/common';
@@ -357,7 +363,7 @@ function ChatFooter(props: ChatFooterProps) {
     const tmpAts: AtItem[] = [];
     const _groupMemberList = temp.current.groupMemberList;
 
-    for(const uid of arr){
+    for (const uid of arr) {
       const member = _groupMemberList.find(
         (gm) => gm.userID === uid.slice(1, -1),
       );

@@ -13,7 +13,10 @@ import {
   WsResponse,
 } from 'open-im-sdk-wasm/lib/types/entity';
 import { MessageType, SessionType } from 'open-im-sdk-wasm/lib/types/enum';
-import { MergerMsgParams, SendMsgParams } from 'open-im-sdk-wasm/lib/types/params';
+import {
+  MergerMsgParams,
+  SendMsgParams,
+} from 'open-im-sdk-wasm/lib/types/params';
 
 import { Toast } from '@/metronic';
 import { IMSDK } from '@/models/open-im/auth';
@@ -200,7 +203,7 @@ function useChat() {
     IMSDK.markMessagesAsReadByMsgID({
       conversationID: userID,
       clientMsgIDList: msgIDList,
-    })
+    });
     // IMSDK.markC2CMessageAsRead({ userID, msgIDList });
   }, []);
 
@@ -493,7 +496,9 @@ function useChat() {
         if (type === MessageType.MergeMessage) {
           data = await IMSDK.createMergerMessage(options as MergerMsgParams);
         } else {
-          data = await IMSDK.createForwardMessage(options as unknown as MessageItem);
+          data = await IMSDK.createForwardMessage(
+            options as unknown as MessageItem,
+          );
         }
         sendMsg(data.data, type, uid, gid);
         events.emit(MUTILMSG, false);

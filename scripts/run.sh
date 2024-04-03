@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+# 定义文件路径
+FILE_PATH="node_modules/@umijs/plugins/dist/antd.js"
+
+# 使用 sed 命令进行查找和替换
+sed -i 's/imports\.push({ source: "antd\/dist\/reset\.css" });/\/\/ imports.push({ source: "antd\/dist\/reset\.css" });/' "$FILE_PATH"
+
+echo "替换完成."

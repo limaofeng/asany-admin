@@ -98,7 +98,9 @@ function AppSidebar(props: AppSidebarProps) {
   }, [location.pathname]);
 
   const [selectedKey, setSelectedKey] = useState<string>(menuKey);
-  const [openKeys, setOpenKeys] = useState<string[]>(categories.map((item) => item.id));
+  const [openKeys, setOpenKeys] = useState<string[]>(
+    categories.map((item) => item.id),
+  );
 
   useEffect(() => {
     if (!menuKey) {

@@ -1,7 +1,6 @@
 export const faceMap = [
-    {
-      context: '[晕]',
-      src: '',
-    },
-  ];
-  
+  {
+    context: '[晕]',
+    src: '',
+  },
+];
