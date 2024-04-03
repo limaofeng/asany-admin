@@ -3,15 +3,11 @@ import { useCallback } from 'react';
 // import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
 import { useModel } from '@umijs/max';
 import classnames from 'classnames';
-import { ConversationItem } from 'open-im-sdk-wasm/lib/types/entity';
-
-// import { formatDate } from '../../../../utils/open-im/utils/common';
-
-// import { parseMessageType } from '@/utils/open-im/utils/im';
-// import { OptType } from '@/utils/open-im/sdk/types';
-
+import { ConversationItem, MessageItem } from 'open-im-sdk-wasm/lib/types/entity';
+import { MessageReceiveOptType } from 'open-im-sdk-wasm/lib/types/enum';
 
 import { Badge, Symbol } from '@/metronic';
+import { formatDate, parseMessageType } from '@/models/open-im/utils';
 
 type CveItemProps = {
   curCve: ConversationItem | null;
@@ -34,10 +30,11 @@ function CveItem(props: CveItemProps) {
 
     if (cve.draftText !== '') {
       let text = cve.draftText;
+      // eslint-disable-next-line no-useless-escape
       const pattern = /\<img.*?\">/g;
       const matchArr = text.match(pattern);
       if (matchArr && matchArr.length > 0) {
-        matchArr.map((matchRes) => {
+        matchArr.forEach((matchRes) => {
           text = text.replaceAll(matchRes, 'Picture');
         });
       }
@@ -51,7 +48,7 @@ function CveItem(props: CveItemProps) {
     return parseMessageType(pmsg, curUid);
   };
 
-  const isRecv = (opt: OptType) => opt === OptType.Nomal;
+  const isRecv = (opt: MessageReceiveOptType) => opt === MessageReceiveOptType.Nomal;
 
   const parseLastMessage = isRecv(cve?.recvMsgOpt)
     ? parseLatestMsg(cve.latestMsg)

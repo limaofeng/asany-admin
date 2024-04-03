@@ -56,7 +56,7 @@ const MsgMenu: FC<MsgMenuProps> = ({ msg, isSelf, children }) => {
   };
 
   const revMsg = useCallback(() => {
-    IMSDK.revokeMessage(JSON.stringify(msg))
+    IMSDK.revokeMessage(msg)
       .then((res) => {
         events.emit(REVOKEMSG, msg.clientMsgID);
         console.log('res', res);

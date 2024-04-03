@@ -5,11 +5,22 @@ import { Map, Marker } from 'react-amap';
 import { useModel } from '@umijs/max';
 import { Image } from 'antd';
 import moment from 'moment';
-import { ConversationItem, MergeElem, MessageItem } from 'open-im-sdk-wasm/lib/types/entity';
+import {
+  ConversationItem,
+  MergeElem,
+  MessageItem,
+} from 'open-im-sdk-wasm/lib/types/entity';
+import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 
 import { Symbol, Tooltip } from '@/metronic';
-import { isSingleCve } from '@/models/open-im/utils';
+import {
+  bytesToSize,
+  isSingleCve,
+  switchFileIcon,
+} from '@/models/open-im/utils';
+import { MERMSGMODAL } from '@/models/open-im/utils/constant';
 import events from '@/models/open-im/utils/events';
+import { faceMap } from '@/models/open-im/utils/faceType';
 
 import my_voice from '../../../assets/images/voice_my.png';
 import other_voice from '../../../assets/images/voice_other.png';
@@ -64,39 +75,11 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
     return selfID === sendID;
   };
 
-  const parseTime = (type: 0 | 1) => {
-    return moment(msg.sendTime).format(type ? 'HH:mm' : 'YYYY-MM-DD HH:mm');
-  };
-
-  const merClick = (el: MergeElem, sender: string) => {
-    events.emit(MERMSGMODAL, el, sender);
-  };
-
-  const timeTip = (className: string = 'chat_bg_msg_content_time') => (
-    <Tooltip placement="bottom" inverse title={parseTime(0)}>
-      <div className={className}>{parseTime(1)}</div>
-    </Tooltip>
-  );
-
-  const parseEmojiFace = (mstr: string) => {
-    let _mstr = mstr;
-    faceMap.map((f) => {
-      const idx = _mstr.indexOf(f.context);
-      if (idx > -1) {
-        _mstr = _mstr.replaceAll(
-          f.context,
-          `<img style="padding-right:2px" width="24px" src=${f.src} />`,
-        );
-      }
-    });
-    return _mstr;
-  };
-
   const parseAt = (_mstr: string) => {
     let mstr = _mstr;
     const pattern = /@\S+\s/g;
-    const arr = mstr.match(pattern);
-    arr?.map((a) => {
+    const arr = mstr.match(pattern) || [];
+    for (const a of arr) {
       const member = groupMemberList.find((gm) => gm.userID === a.slice(1, -1));
       if (member) {
         mstr = mstr.replaceAll(
@@ -117,8 +100,36 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
           )}')" style="color:#428be5;cursor: pointer;"> ${a}</span>`,
         );
       }
-    });
+    }
     return mstr;
+  };
+
+  const parseTime = (type: 0 | 1) => {
+    return moment(msg.sendTime).format(type ? 'HH:mm' : 'YYYY-MM-DD HH:mm');
+  };
+
+  const merClick = (el: MergeElem, sender: string) => {
+    events.emit(MERMSGMODAL, el, sender);
+  };
+
+  const timeTip = (className: string = 'chat_bg_msg_content_time') => (
+    <Tooltip placement="bottom" inverse title={parseTime(0)}>
+      <div className={className}>{parseTime(1)}</div>
+    </Tooltip>
+  );
+
+  const parseEmojiFace = (mstr: string) => {
+    let _mstr = mstr;
+    for (const f of faceMap) {
+      const idx = _mstr.indexOf(f.context);
+      if (idx > -1) {
+        _mstr = _mstr.replaceAll(
+          f.context,
+          `<img style="padding-right:2px" width="24px" src=${f.src} />`,
+        );
+      }
+    }
+    return _mstr;
   };
 
   const parseBr = (mstr: string) => {
@@ -129,20 +140,21 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
   const parseUrl = (_mstr: string) => {
     let mstr = _mstr;
     const pattern =
+      // eslint-disable-next-line no-useless-escape
       /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:._\+-~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:_\+.~#?&\/\/=]*)/g;
-    const arr = mstr.match(pattern);
-    arr?.map((a) => {
+    const arr = mstr.match(pattern) || [];
+    for (const a of arr) {
       mstr = mstr.replaceAll(
         a,
         `<a onclick="urlClick('${a}')" href="javascript:;">${a}</a>`,
       );
-    });
+    }
     return mstr;
   };
 
   const parseQute = (quMsg: MessageItem) => {
-    switch (quMsg.contentType as number) {
-      case messageTypes.TEXTMESSAGE:
+    switch (quMsg.contentType) {
+      case MessageType.TextMessage: {
         const parsedMsg = parseBr(
           parseUrl(parseAt(parseEmojiFace(quMsg.content))),
         );
@@ -152,9 +164,10 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             dangerouslySetInnerHTML={{ __html: parsedMsg }}
           />
         );
-      case messageTypes.ATTEXTMESSAGE:
-        return parseAt(quMsg.atElem.text);
-      case messageTypes.PICTUREMESSAGE:
+      }
+      case MessageType.AtTextMessage:
+        return parseAt(quMsg.atTextElem.text);
+      case MessageType.PictureMessage:
         return <Image width={60} src={quMsg.pictureElem.sourcePicture.url} />;
       default:
         return '';
@@ -181,8 +194,8 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
 
   const msgType = () => {
     // console.log('msgType', msgType);
-    switch (msg.contentType as number) {
-      case messageTypes.TEXTMESSAGE:
+    switch (msg.contentType) {
+      case MessageType.TextMessage: {
         let mstr = msg.content;
         mstr = parseEmojiFace(mstr);
         mstr = parseUrl(mstr);
@@ -201,8 +214,9 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             {timeTip()}
           </>
         );
-      case messageTypes.ATTEXTMESSAGE:
-        let atMsg = msg.atElem.text;
+      }
+      case MessageType.AtTextMessage: {
+        let atMsg = msg.atTextElem.text;
         atMsg = parseEmojiFace(atMsg);
         atMsg = parseAt(atMsg);
         atMsg = parseUrl(atMsg);
@@ -221,7 +235,8 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             {timeTip()}
           </div>
         );
-      case messageTypes.PICTUREMESSAGE:
+      }
+      case MessageType.PictureMessage:
         return (
           <div
             className={`chat_bg_msg_content_pic ${
@@ -243,7 +258,7 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             {timeTip('pic_msg_time')}
           </div>
         );
-      case messageTypes.VOICEMESSAGE:
+      case MessageType.VoiceMessage: {
         const isSelfMsg = isSelf(msg.sendID);
         const imgStyle = isSelfMsg
           ? { paddingLeft: '4px' }
@@ -266,7 +281,8 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             {timeTip()}
           </div>
         );
-      case messageTypes.FILEMESSAGE:
+      }
+      case MessageType.FileMessage: {
         const fileEl = msg.fileElem;
         const suffix = fileEl.fileName.slice(
           fileEl.fileName.lastIndexOf('.') + 1,
@@ -287,7 +303,8 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             {timeTip()}
           </div>
         );
-      case messageTypes.VIDEOMESSAGE:
+      }
+      case MessageType.VideoMessage: {
         const videoJsOptions = {
           width: 240,
           controls: true,
@@ -312,7 +329,8 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             {timeTip('video_msg_time')}
           </div>
         );
-      case messageTypes.QUOTEMESSAGE:
+      }
+      case MessageType.QuoteMessage: {
         const quMsg = msg.quoteElem.quoteMessage;
         let replyMsg = msg.quoteElem.text;
 
@@ -336,7 +354,8 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             {timeTip()}
           </div>
         );
-      case messageTypes.MERGERMESSAGE:
+      }
+      case MessageType.MergeMessage: {
         const merEl = msg.mergeElem;
         return (
           <div
@@ -357,7 +376,8 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             {timeTip()}
           </div>
         );
-      case messageTypes.CARDMESSAGE:
+      }
+      case MessageType.CardMessage: {
         const ctx = JSON.parse(msg.content);
         return (
           <div
@@ -375,7 +395,8 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             {timeTip()}
           </div>
         );
-      case messageTypes.LOCATIONMESSAGE:
+      }
+      case MessageType.LocationMessage: {
         const locationEl = msg.locationElem;
         const postion = {
           longitude: locationEl.longitude,
@@ -397,6 +418,7 @@ const SwitchMsgType: FC<SwitchMsgTypeProps> = ({
             {timeTip('pic_msg_time')}
           </div>
         );
+      }
       default:
         return (
           <div

@@ -4,11 +4,23 @@ import { Icon } from '@asany/icons';
 import { useModel } from '@umijs/max';
 import { useLatest } from 'ahooks';
 import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
+import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 
 import { Button, Tooltip } from '@/metronic';
+import { IMSDK } from '@/models/open-im/auth';
+import {
+  base64toFile,
+  contenteditableDivRange,
+  isSingleCve,
+  move2end,
+} from '@/models/open-im/utils';
+import { ATSTATEUPDATE, ISSETDRAFT, MUTILMSGCHANGE } from '@/models/open-im/utils/constant';
+import events from '@/models/open-im/utils/events';
+import { faceMap } from '@/models/open-im/utils/faceType';
 
 import type { ContentEditableEvent } from '../../ContentEditable/ContentEditable';
 import ContentEditable from '../../ContentEditable/ContentEditable';
+
 
 // import { messageTypes } from '@/utils/open-im/constants/messageContentType';
 // import { base64toFile, contenteditableDivRange, move2end } from '@/utils/open-im/utils/common';
@@ -34,13 +46,14 @@ const blobToDataURL = (blob: File, cb: (base64: string) => void) => {
 
 const parseImg = (_text: string) => {
   let text = _text;
+  // eslint-disable-next-line no-useless-escape
   const pattern = /\<img.*?\">/g;
   const patternArr = text.match(pattern);
 
   if (patternArr && patternArr.length > 0) {
-    patternArr.map((img) => {
+    for (const img of patternArr) {
       text = text.replaceAll(img, '');
-    });
+    }
   }
 
   return text;
@@ -51,10 +64,8 @@ const parseEmojiFace = (_text: string) => {
   const faceEls = [
     ...Array.from(document.getElementsByClassName('face_el')),
   ] as HTMLImageElement[];
-  if (faceEls.length > 0) {
-    faceEls.map((face) => {
-      text = text.replaceAll(face.outerHTML, face.alt);
-    });
+  for (const face of faceEls) {
+    text = text.replaceAll(face.outerHTML, face.alt);
   }
   return text;
 };
@@ -91,7 +102,7 @@ type ChatFooterProps = {
   curCve: ConversationItem;
   sendMsg: (
     nMsg: string,
-    type: messageTypes,
+    type: MessageType,
     uid?: string,
     gid?: string,
   ) => void;
@@ -116,7 +127,7 @@ function ChatFooter(props: ChatFooterProps) {
   const [mutilMsg, setMutilMsg] = useState<MessageItem[]>([]);
 
   const updateTypeing = (recvID: string, msgTip: string) => {
-    im.typingStatusUpdate({ recvID, msgTip });
+    IMSDK.typingStatusUpdate({ recvID, msgTip });
   };
 
   const typing = useCallback(() => {
@@ -180,9 +191,9 @@ function ChatFooter(props: ChatFooterProps) {
   const parseAt = useCallback((_text: string) => {
     let text = _text;
     const _atList = temp.current.atList;
-    _atList.map((at) => {
+    for (const at of _atList) {
       text = text.replaceAll(at.tag, `@${at.id} `);
-    });
+    }
     return text;
   }, []);
 
@@ -204,7 +215,7 @@ function ChatFooter(props: ChatFooterProps) {
           conversationID: cve.conversationID,
           draftText: _atList.length > 0 ? parseAt(text) : text,
         };
-        im.setConversationDraft(option)
+        IMSDK.setConversationDraft(option)
           .then((res) => {
             console.warn(res);
           })
@@ -230,13 +241,13 @@ function ChatFooter(props: ChatFooterProps) {
 
   const sendTextMsg = useCallback(
     async (text: string) => {
-      const { data } = await im.createTextMessage(text);
+      const { data } = await IMSDK.createTextMessage(text);
       // im.insertGroupMessageToLocalStorage({
       //   message: data,
       //   groupID: curCve.groupID,
       //   sendID: "17396220460",
       // }).then((res) => console.log(JSON.parse(res.data)));
-      sendMsg(data, messageTypes.TEXTMESSAGE);
+      sendMsg(data.atTextElem.text, MessageType.TextMessage);
       reSet();
     },
     [reSet, sendMsg],
@@ -248,8 +259,8 @@ function ChatFooter(props: ChatFooterProps) {
         text,
         atUserIDList: atList.map((au) => au.id),
       };
-      const { data } = await im.createTextAtMessage(options);
-      sendMsg(data, messageTypes.ATTEXTMESSAGE);
+      const { data } = await IMSDK.createTextAtMessage(options);
+      sendMsg(data.atTextElem.text, MessageType.AtTextMessage);
       reSet();
     },
     [atList, reSet, sendMsg],
@@ -257,11 +268,11 @@ function ChatFooter(props: ChatFooterProps) {
 
   const quoteMsg = useCallback(
     async (text: string) => {
-      const { data } = await im.createQuoteMessage({
+      const { data } = await IMSDK.createQuoteMessage({
         text,
         message: JSON.stringify(replyMsg),
       });
-      sendMsg(data, messageTypes.QUOTEMESSAGE);
+      sendMsg(data.atTextElem.text, MessageType.QuoteMessage);
       reSet();
     },
     [reSet, replyMsg, sendMsg],
@@ -329,24 +340,24 @@ function ChatFooter(props: ChatFooterProps) {
 
   const reParseEmojiFace = useCallback((_text: string) => {
     let text = _text;
-    faceMap.map((f) => {
+    for (const f of faceMap) {
       const idx = text.indexOf(f.context);
       if (idx > -1) {
         const faceStr = `<img class="face_el" alt="${f.context}" style="padding-right:2px" width="24px" src="${f.src}">`;
         text = text.replaceAll(f.context, faceStr);
       }
-    });
+    }
     return text;
   }, []);
 
   const reParseAt = useCallback((_text: string) => {
     let text = _text;
     const pattern = /@\S+\s/g;
-    const arr = text.match(pattern);
+    const arr = text.match(pattern) || [];
     const tmpAts: AtItem[] = [];
     const _groupMemberList = temp.current.groupMemberList;
 
-    arr?.map((uid) => {
+    for(const uid of arr){
       const member = _groupMemberList.find(
         (gm) => gm.userID === uid.slice(1, -1),
       );
@@ -355,7 +366,7 @@ function ChatFooter(props: ChatFooterProps) {
         text = text.replaceAll(uid, tag);
         tmpAts.push({ id: member.userID, name: member.nickname, tag });
       }
-    });
+    }
     setAtList(tmpAts);
     return text;
   }, []);

@@ -7,6 +7,8 @@ import {
 } from 'open-im-sdk-wasm/lib/types/entity';
 
 import { useCurrentuser } from '@/hooks';
+import { isSingleCve } from '@/models/open-im/utils';
+import { MUTILMSG, tipsTypes } from '@/models/open-im/utils/constant';
 import events from '@/models/open-im/utils/events';
 
 import ScrollView from '../../ScrollView';
@@ -33,10 +35,7 @@ function ChatContent(props: ChatContentProps) {
   const [mutilSelect, setMutilSelect] = useState(false);
   const selfID = useCurrentuser().data?.uid;
 
-  // TODO: OpenIM tipsTypes
-  const tipsTypes = {};
-
-  const tipList = Object.values(tipsTypes) as number[];
+  const tipList = Object.values(tipsTypes);
 
   const mutilHandler = (flag: boolean) => {
     setMutilSelect(flag);
@@ -53,19 +52,16 @@ function ChatContent(props: ChatContentProps) {
 
   const parseTip = useCallback(
     (msg: MessageItem): string | JSX.Element => {
-      if (
-        (msg.contentType as number) === tipsTypes.REVOKEMESSAGE ||
-        (msg.contentType as number) === tipsTypes.ADVANCEREVOKEMESSAGE
-      ) {
+      if (msg.contentType === tipsTypes.RevokeMessage) {
         let revokerID = msg.sendID;
         let nickname = isSingleCve(curCve!)
           ? curCve?.showName
           : msg.senderNickname;
-        if ((msg.contentType as number) === tipsTypes.ADVANCEREVOKEMESSAGE) {
-          const content = JSON.parse(msg.content);
-          nickname = content.revokerNickname;
-          revokerID = content.revokerID;
-        }
+        // if ((msg.contentType as number) === tipsTypes.ADVANCEREVOKEMESSAGE) {
+        //   const content = JSON.parse(msg.content);
+        //   nickname = content.revokerNickname;
+        //   revokerID = content.revokerID;
+        // }
         return (
           <>
             {isSelf(revokerID) ? (
@@ -78,9 +74,9 @@ function ChatContent(props: ChatContentProps) {
         );
       }
       switch (msg.contentType as any) {
-        case tipsTypes.FRIENDADDED:
+        case tipsTypes.FriendAdded:
           return 'AlreadyFriend';
-        case tipsTypes.GROUPCREATED:
+        case tipsTypes.GroupCreated: {
           const groupCreatedDetail = JSON.parse(msg.notificationElem.detail);
           const groupCreatedUser = groupCreatedDetail.opUser;
           return (
@@ -93,7 +89,8 @@ function ChatContent(props: ChatContentProps) {
               {'GroupCreated'}
             </>
           );
-        case tipsTypes.GROUPINFOUPDATED:
+        }
+        case tipsTypes.GroupNameUpdated: {
           const groupUpdateDetail = JSON.parse(msg.notificationElem.detail);
           const groupUpdateUser = groupUpdateDetail.opUser;
           return (
@@ -106,7 +103,8 @@ function ChatContent(props: ChatContentProps) {
               {'ModifiedGroup'}
             </>
           );
-        case tipsTypes.GROUPOWNERTRANSFERRED:
+        }
+        case tipsTypes.GroupOwnerTransferred: {
           const transferDetails = JSON.parse(msg.notificationElem.detail);
           const transferOpUser = transferDetails.opUser;
           const newOwner = transferDetails.newGroupOwner;
@@ -123,7 +121,8 @@ function ChatContent(props: ChatContentProps) {
               </b>
             </>
           );
-        case tipsTypes.MEMBERQUIT:
+        }
+        case tipsTypes.MemberQuit: {
           const quitDetails = JSON.parse(msg.notificationElem.detail);
           const quitUser = quitDetails.quitUser;
           return (
@@ -134,7 +133,8 @@ function ChatContent(props: ChatContentProps) {
               {'QuitedGroup'}
             </>
           );
-        case tipsTypes.MEMBERINVITED:
+        }
+        case tipsTypes.MemberInvited: {
           const inviteDetails = JSON.parse(msg.notificationElem.detail);
           const inviteOpUser = inviteDetails.opUser;
           const invitedUserList = inviteDetails.invitedUserList ?? [];
@@ -160,7 +160,8 @@ function ChatContent(props: ChatContentProps) {
               {'IntoGroup'}
             </>
           );
-        case tipsTypes.MEMBERKICKED:
+        }
+        case tipsTypes.MemberKicked: {
           const kickDetails = JSON.parse(msg.notificationElem.detail);
           const kickOpUser = kickDetails.opUser;
           const kickdUserList = kickDetails.kickedUserList ?? [];
@@ -186,7 +187,8 @@ function ChatContent(props: ChatContentProps) {
               {'OutGroup'}
             </>
           );
-        case tipsTypes.MEMBERENTER:
+        }
+        case tipsTypes.MemberEnter: {
           const enterDetails = JSON.parse(msg.notificationElem.detail);
           const enterUser = enterDetails.entrantUser;
           return (
@@ -197,6 +199,7 @@ function ChatContent(props: ChatContentProps) {
               {'JoinedGroup'}
             </>
           );
+        }
         default:
           return JSON.parse(msg.content).defaultTips;
       }

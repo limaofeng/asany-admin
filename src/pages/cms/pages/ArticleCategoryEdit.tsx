@@ -89,7 +89,7 @@ function ArticleChannelSettings() {
     await updateCategory({ variables: { id: params.id, input } });
 
     Toast.success(`栏目 “${values.name}” 修改成功`, 2000, {
-      placement: 'bottom-start',
+      placement: 'bottom-left',
       progressBar: true,
     });
   }, [form, params.id, updateCategory]);

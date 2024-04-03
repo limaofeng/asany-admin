@@ -12,22 +12,25 @@ import {
   MessageItem,
   WsResponse,
 } from 'open-im-sdk-wasm/lib/types/entity';
-import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
-import { MergerMsgParams } from 'open-im-sdk-wasm/lib/types/params';
+import { MessageType, SessionType } from 'open-im-sdk-wasm/lib/types/enum';
+import { MergerMsgParams, SendMsgParams } from 'open-im-sdk-wasm/lib/types/params';
 
 import { Toast } from '@/metronic';
 import { IMSDK } from '@/models/open-im/auth';
+import { createNotification, isSingleCve } from '@/models/open-im/utils';
 import {
   DELETEMESSAGE,
+  ISSETDRAFT,
   MERMSGMODAL,
+  MUTILMSG,
   RESETCVE,
   REVOKEMSG,
   SENDFORWARDMSG,
   TOASSIGNCVE,
+  notOssMessageTypes,
+  tipsTypes,
 } from '@/models/open-im/utils/constant';
 import events from '@/models/open-im/utils/events';
-
-
 
 // import type {
 //   ConversationItem,
@@ -139,7 +142,6 @@ function useChat() {
   });
   const timer = useRef<NodeJS.Timeout | null>(null);
 
-
   const scrollbar = useRef<OverlayScrollbars>();
 
   const scrollToBottom = useCallback((duration?: number) => {
@@ -152,7 +154,7 @@ function useChat() {
       return;
     }
     if (
-      JSON.stringify(rs.historyMsgList[rs.historyMsgList.length - 1]) ==
+      JSON.stringify(rs.historyMsgList[rs.historyMsgList.length - 1]) ===
       JSON.stringify(JSON.parse(res.data).reverse()[0])
     ) {
       rs.historyMsgList.pop();
@@ -195,7 +197,11 @@ function useChat() {
   );
 
   const markC2CHasRead = useCallback((userID: string, msgIDList: string[]) => {
-    IMSDK.markC2CMessageAsRead({ userID, msgIDList });
+    IMSDK.markMessagesAsReadByMsgID({
+      conversationID: userID,
+      clientMsgIDList: msgIDList,
+    })
+    // IMSDK.markC2CMessageAsRead({ userID, msgIDList });
   }, []);
 
   const markCveHasRead = useCallback(
@@ -204,7 +210,7 @@ function useChat() {
       if (isSingleCve(cve)) {
         markC2CHasRead(cve.userID, []);
       } else {
-        IMSDK.markGroupMessageHasRead(cve.groupID);
+        // IMSDK.markGroupMessageHasRead(cve.groupID);
       }
     },
     [markC2CHasRead],
@@ -263,21 +269,23 @@ function useChat() {
   );
 
   const sendMsgCB = useCallback(
-    (res: WsResponse, type: messageTypes, err?: boolean) => {
-      nMsgMaps.map((tn) => {
+    (res: WsResponse<MessageItem>, type: MessageType, err?: boolean) => {
+      nMsgMaps.forEach((tn) => {
         if (tn.oid === res.operationID) {
           const idx = rs.historyMsgList.findIndex(
             (his) => his.clientMsgID === tn?.mid,
           );
           if (idx !== -1) {
             tn.flag = true;
-            err
-              ? (rs.historyMsgList[idx].status = 3)
-              : (rs.historyMsgList[idx] = JSON.parse(res.data));
+            if (err) {
+              rs.historyMsgList[idx].status = 3;
+            } else {
+              rs.historyMsgList[idx] = res.data;
+            }
           }
         }
       });
-      if (type === messageTypes.MERGERMESSAGE) {
+      if (type === MessageType.MergeMessage) {
         Toast.success('ForwardSuccessTip');
       }
       scrollToBottom();
@@ -286,14 +294,14 @@ function useChat() {
   );
 
   const sendMsg = useCallback(
-    (nMsg: string, type: messageTypes, uid?: string, gid?: string) => {
+    (nMsg: MessageItem, type: MessageType, uid?: string, gid?: string) => {
       const operationID = uuid();
       if (
         (uid && curCve?.userID === uid) ||
         (gid && curCve?.groupID === gid) ||
         (!uid && !gid)
       ) {
-        const parsedMsg = JSON.parse(nMsg);
+        const parsedMsg = nMsg;
         const tMsgMap = {
           oid: operationID,
           mid: parsedMsg.clientMsgID,
@@ -305,7 +313,7 @@ function useChat() {
         setTimeout(() => {
           const item = nMsgMaps.find((n) => n.mid === parsedMsg.clientMsgID);
           if (item && !item.flag) {
-            rs.historyMsgList.find((h) => {
+            rs.historyMsgList.forEach((h) => {
               if (h.clientMsgID === item.mid) {
                 h.status = 1;
               }
@@ -321,14 +329,14 @@ function useChat() {
         iOSPushSound: '+1',
         iOSBadgeCount: true,
       };
-      const sendOption = {
+      const sendOption: SendMsgParams = {
         recvID: uid ?? curCve!.userID,
         groupID: gid ?? curCve!.groupID,
         offlinePushInfo,
         message: nMsg,
       };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       nMsgMaps = nMsgMaps.filter((f) => !f.flag);
+
       if (notOssMessageTypes.includes(type)) {
         IMSDK.sendMessageNotOss(sendOption, operationID)
           .then((res) => sendMsgCB(res, type))
@@ -360,7 +368,7 @@ function useChat() {
         newServerMsg.sendID === curCve?.userID ||
         (newServerMsg.sendID === selfID &&
           newServerMsg.recvID === curCve?.userID);
-      return newServerMsg.sessionType === (SessionType.SINGLECVE as number)
+      return newServerMsg.sessionType === SessionType.Single
         ? isCurSingle
         : newServerMsg.groupID === curCve?.groupID;
     },
@@ -379,7 +387,7 @@ function useChat() {
     (data: WsResponse) => {
       const newServerMsg: MessageItem = JSON.parse(data.data);
       if (
-        newServerMsg.contentType !== (messageTypes.TYPINGMESSAGE as number) &&
+        newServerMsg.contentType !== (MessageType.TypingMessage as number) &&
         newServerMsg.sendID !== selfID
       ) {
         createNotification(newServerMsg, (id, sessionType) => {
@@ -428,9 +436,9 @@ function useChat() {
 
   const c2cMsgHandler = useCallback(
     (data: WsResponse) => {
-      JSON.parse(data.data).map((cr: any) => {
-        cr.msgIDList.map((crt: string) => {
-          rs.historyMsgList.find((hism) => {
+      JSON.parse(data.data).forEach((cr: any) => {
+        cr.msgIDList.forEach((crt: string) => {
+          rs.historyMsgList.forEach((hism) => {
             if (hism.clientMsgID === crt) {
               hism.isRead = true;
             }
@@ -459,7 +467,7 @@ function useChat() {
   const revokeMyMsgHandler = useCallback(
     (mid: string) => {
       const idx = rs.historyMsgList.findIndex((h) => h.clientMsgID === mid);
-      rs.historyMsgList[idx].contentType = tipsTypes.REVOKEMESSAGE as number;
+      rs.historyMsgList[idx].contentType = tipsTypes.RevokeMessage;
     },
     [rs],
   );
@@ -481,11 +489,11 @@ function useChat() {
       list.map(async (s) => {
         const uid = (s as FriendUserItem).userID ?? '';
         const gid = (s as GroupItem).groupID ?? '';
-        let data;
+        let data: WsResponse<MessageItem>;
         if (type === MessageType.MergeMessage) {
           data = await IMSDK.createMergerMessage(options as MergerMsgParams);
         } else {
-          data = await IMSDK.createForwardMessage(options as string);
+          data = await IMSDK.createForwardMessage(options as unknown as MessageItem);
         }
         sendMsg(data.data, type, uid, gid);
         events.emit(MUTILMSG, false);

@@ -43,13 +43,14 @@ export default class ContentEditable extends React.Component<Props> {
     ).current;
 
   render() {
-    const { tagName, html, innerRef, ...props } = this.props;
+    const { tagName, html, innerRef, placeholder, ...props } = this.props;
 
     // eslint-disable-next-line react/no-danger-with-children
     return React.createElement(
       tagName || 'div',
       {
         ...props,
+        ['data-placeholder']: placeholder,
         ref:
           typeof innerRef === 'function'
             ? (current: HTMLElement) => {
@@ -141,6 +142,7 @@ export interface Props extends DivProps {
   tagName?: string;
   className?: string;
   style?: CSSProperties;
+  placeholder?: string;
   innerRef?: React.RefObject<HTMLElement> | ((e: HTMLElement) => void);
 }
 

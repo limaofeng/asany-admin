@@ -84,13 +84,13 @@ function ComposeMail() {
     }
   }, []);
 
-  // const handleDoNotStore = useCallback(
-  //   (onConfirm: () => void) => async () => {
-  //     await deleteMessage({ variables: { id: state.current.message!.id } });
-  //     onConfirm();
-  //   },
-  //   [deleteMessage],
-  // );
+  const handleDoNotStore = useCallback(
+    (onConfirm: () => void) => async () => {
+      await deleteMessage({ variables: { id: state.current.message!.id } });
+      onConfirm();
+    },
+    [deleteMessage],
+  );
 
   useEffect(() => {
     if (!messageId) {
@@ -109,6 +109,9 @@ function ComposeMail() {
   }, [messageResult?.message]);
 
   const { message, isChanged } = state.current;
+
+
+  console.log('handleDoNotStore', handleDoNotStore)
 
   // <NavigationPrompt disableNative when={!!message?.id && isChanged}>
   // {({ afterConfirm: onConfirm, afterCancel: onCancel }: NavigationPromptProps) => (

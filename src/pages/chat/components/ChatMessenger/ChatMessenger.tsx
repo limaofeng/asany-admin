@@ -3,20 +3,20 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { Icon } from '@asany/icons';
 import { Resizer } from '@asany/sunmao';
 import classnames from 'classnames';
-import type { ConversationItem, MessageItem } from 'open-im-sdk/types';
-
-import '../../style/chat_app.scss';
+import { ConversationItem, MessageItem } from 'open-im-sdk-wasm/lib/types/entity';
+import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 
 import { ContentWrapper } from '@/layouts/components';
 import { Badge, Button, Card, Symbol, Tooltip } from '@/metronic';
+import { isSingleCve } from '@/models/open-im/utils';
 
 import ChatContent from './ChatContent/ChatContent';
 import ChatFooter from './ChatFooter/ChatFooter';
 import WelcomeContent from './WelcomeContent';
 
 import { useGetUserOnlineStatusLazyQuery } from '../../hooks/api';
-// import { isSingleCve } from '@/utils/open-im/utils/im';
-// import type { messageTypes } from '@/utils/open-im/constants/messageContentType';
+
+import '../../style/chat_app.scss';
 
 type ChatMessengerProps = {
   typing?: boolean;
@@ -28,7 +28,7 @@ type ChatMessengerProps = {
   merID?: string;
   sendMsg: (
     nMsg: string,
-    type: messageTypes,
+    type: MessageType,
     uid?: string,
     gid?: string,
   ) => void;
@@ -57,11 +57,11 @@ const SingleCveInfo = ({
   const onlineStatus = useMemo(() => {
     if (oType === 'online') {
       let str = '';
-      details?.map((detail) => {
+      for (const detail of details || []) {
         if (detail.status === 'online') {
           str += `${detail.platform}/`;
         }
-      });
+      }
       return `${str.slice(0, -1)} 在线`;
     }
     return '离线';
