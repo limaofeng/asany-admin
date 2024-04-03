@@ -7,7 +7,6 @@
     "format": "prettier --cache --write .",
     "gql-gen": "graphql-codegen",
     "postinstall": "max setup && run-script-os",
-    "lint-staged:js": "eslint --ext .js,.jsx,.ts,.tsx,.gql",
     "lint:fix": "eslint --fix --cache --ext .js,.jsx,.ts,.tsx,.gql ./src",
     "postinstall:darwin": "sh ./scripts/run.osx",
     "postinstall:linux": "sh ./scripts/run.sh",
@@ -17,13 +16,6 @@
     "start": "npm run dev",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "postversion": "git push --follow-tags"
-  },
-  "lint-staged": {
-    "**/*.less": "stylelint --syntax less",
-    "**/*.{js,jsx,ts,tsx}": "npm run lint-staged:js",
-    "**/*.{js,jsx,tsx,ts,less,md,json,gql}": [
-      "prettier --write"
-    ]
   },
   "dependencies": {
     "@amcharts/amcharts5": "^5.8.4",
