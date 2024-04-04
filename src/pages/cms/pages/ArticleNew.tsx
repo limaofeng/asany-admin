@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useReducer, useRef, useState } from 'react';
 
-import { useLocation, useNavigate, useParams } from '@umijs/max';
+import { useNavigate, useParams } from '@umijs/max';
+import { useOutletContext } from '@umijs/max';
 import { Affix } from 'antd';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
@@ -21,9 +22,8 @@ import {
 } from '../components/bodys/classic';
 import type { PublishAction } from '../components/bodys/classic/PublishButton';
 import { useCreateArticleMutation } from '../hooks';
-
+import { ArticleOutletContextParams } from '../typings';
 import '../style/ArticleForm.scss';
-
 // type ArticleCategoryNewProps = RouteComponentProps<
 //   { cid: string; id: string },
 //   any,
@@ -42,9 +42,9 @@ function ArticleCategoryNew() {
 
   const params = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const { categories, baseUrl } = location.state;
+  const { categories, baseUrl } =
+    useOutletContext<ArticleOutletContextParams>();
 
   const { cid: categoryId } = params;
 

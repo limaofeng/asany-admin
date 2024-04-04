@@ -6,7 +6,7 @@ import { AsideWorkspace } from '@/layouts/Demo7';
 import { Button, Menu, Modal } from '@/metronic';
 import type { SelectEvent } from '@/metronic/Menu/typings';
 
-import { useModelsQuery } from './hooks';
+import { useObjectModelsQuery } from './hooks';
 
 import './style/MenuSidebar.scss';
 
@@ -26,7 +26,7 @@ import './style/MenuSidebar.scss';
 } */
 
 function ArticleSidebar() {
-  const { data = { models: [] }, loading } = useModelsQuery();
+  const { data = { models: [] }, loading } = useObjectModelsQuery();
 
   const models = data;
 

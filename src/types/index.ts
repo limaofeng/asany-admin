@@ -143,12 +143,14 @@ export type Application = {
   logo?: Maybe<Scalars['String']['output']>;
   /** 菜单 */
   menus: Array<Menu>;
+  /** 模块配置 */
+  module?: Maybe<ApplicationModuleConfiguration>;
+  /** 应用模块配置 */
+  modules: Array<ApplicationModuleConfiguration>;
   /** 名称 (英文) */
   name: Scalars['String']['output'];
   /** 路由 */
   routes: Array<Route>;
-  /** 路由命名空间 */
-  routespaces?: Maybe<Array<Maybe<Routespace>>>;
   /** 名称 (中文) */
   title?: Maybe<Scalars['String']['output']>;
   /** 应用访问地址 */
@@ -156,13 +158,8 @@ export type Application = {
 };
 
 
-export type ApplicationLayoutRouteArgs = {
-  space?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
-export type ApplicationLoginRouteArgs = {
-  space?: InputMaybe<Scalars['ID']['input']>;
+export type ApplicationModuleArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -175,8 +172,6 @@ export type ApplicationCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   /** 名称 */
   name: Scalars['String']['input'];
-  /** 路由空间 */
-  routespaces?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 export type ApplicationDependency = {
@@ -192,6 +187,24 @@ export enum ApplicationIdType {
   ClientId = 'CLIENT_ID',
   Id = 'ID'
 }
+
+export type ApplicationModuleConfiguration = {
+  __typename?: 'ApplicationModuleConfiguration';
+  /** 模块配置 */
+  configuration?: Maybe<Scalars['JSON']['output']>;
+  /** 模块描述 */
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  /** 模块名称 */
+  name?: Maybe<Scalars['String']['output']>;
+  /** 模块配置值 */
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+
+export type ApplicationModuleConfigurationValueArgs = {
+  key: Scalars['String']['input'];
+};
 
 export type ApplicationUpdateInput = {
   /** 简介 */
@@ -783,6 +796,11 @@ export type BaseEntityCreatedAtArgs = {
 /** 基础的实体 */
 export type BaseEntityUpdatedAtArgs = {
   format?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BatchPayload = {
+  __typename?: 'BatchPayload';
+  count: Scalars['Int']['output'];
 };
 
 /** 品牌 */
@@ -4232,6 +4250,8 @@ export type Mutation = {
   deleteManyCnAsanyTestUsers?: Maybe<Array<Maybe<CnAsanyTestUser>>>;
   /** 批量删除模块 */
   deleteManyModules?: Maybe<Scalars['Int']['output']>;
+  /** 删除短链接 */
+  deleteManyShortLinks: BatchPayload;
   /** 批量删除用户 */
   deleteManyUsers: Array<User>;
   /** 删除菜单 */
@@ -4248,6 +4268,8 @@ export type Mutation = {
   deleteProduct?: Maybe<Product>;
   /** 删除路由 */
   deleteRoute?: Maybe<Scalars['Boolean']['output']>;
+  /** 删除短链接 */
+  deleteShortLink?: Maybe<ShortLink>;
   /** 删除工单 */
   deleteTicket?: Maybe<Ticket>;
   /** 删除用户 */
@@ -4767,6 +4789,11 @@ export type MutationDeleteManyModulesArgs = {
 };
 
 
+export type MutationDeleteManyShortLinksArgs = {
+  where?: InputMaybe<ShortLinkWhereInput>;
+};
+
+
 export type MutationDeleteManyUsersArgs = {
   ids: Array<Scalars['ID']['input']>;
 };
@@ -4803,6 +4830,11 @@ export type MutationDeleteProductArgs = {
 
 
 export type MutationDeleteRouteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteShortLinkArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -5992,7 +6024,6 @@ export type Query = {
 export type QueryApplicationArgs = {
   id: Scalars['ID']['input'];
   idType?: InputMaybe<ApplicationIdType>;
-  space?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -6859,13 +6890,6 @@ export type RouteUpdateInput = {
 export type RouteWhereInput = {
   /** 是否启用 */
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
-  space?: InputMaybe<Scalars['ID']['input']>;
-};
-
-export type Routespace = {
-  __typename?: 'Routespace';
-  id?: Maybe<Scalars['ID']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type Service = {
@@ -6926,13 +6950,25 @@ export type ShortLink = {
   accessCount: Scalars['Int']['output'];
   /** 分类 */
   category: Scalars['String']['output'];
-  /** 短链接码 */
+  /** 短链编码 */
   code: Scalars['String']['output'];
+  /** 创建时间 */
+  createdAt?: Maybe<Scalars['Date']['output']>;
   /** 过期时间 */
   expiresAt?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
   /** 长链接 */
   url?: Maybe<Scalars['String']['output']>;
+};
+
+
+export type ShortLinkCreatedAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ShortLinkExpiresAtArgs = {
+  format?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ShortLinkConnection = {
@@ -6947,8 +6983,8 @@ export type ShortLinkConnection = {
 
 export type ShortLinkEdge = {
   __typename?: 'ShortLinkEdge';
-  cursor?: Maybe<Scalars['String']['output']>;
-  node?: Maybe<ShortLink>;
+  cursor: Scalars['String']['output'];
+  node: ShortLink;
 };
 
 export enum ShortLinkIdType {
@@ -6959,6 +6995,8 @@ export enum ShortLinkIdType {
 export type ShortLinkWhereInput = {
   /** 分类 */
   category?: InputMaybe<Scalars['String']['input']>;
+  /** 短链ID */
+  id_in?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
 export enum SocialProvider {

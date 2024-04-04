@@ -1,3 +1,4 @@
+import { ApolloError } from '@apollo/client';
 import { apolloClient, tokenHelper, useAppClientId } from '@umijs/max';
 
 import type { CurrentUser } from '@/types';
@@ -17,13 +18,24 @@ export async function loadCurrentuser(): Promise<CurrentUser | undefined> {
   if (!tokenExists()) {
     return undefined;
   }
-  const {
-    data: { viewer },
-  } = await apolloClient.query({
-    query: ViewerDocument,
-    fetchPolicy: 'no-cache',
-  });
-  return viewer;
+  try {
+    const {
+      data: { viewer },
+    } = await apolloClient.query({
+      query: ViewerDocument,
+      fetchPolicy: 'no-cache',
+    });
+    return viewer;
+  } catch (error) {
+    const needLogIn = (error as ApolloError).graphQLErrors.some(
+      (item) => item.extensions.code === '100401',
+    );
+    if (needLogIn) {
+      localStorage.removeItem('credentials');
+      tokenHelper.resetToken();
+    }
+    throw error;
+  }
 }
 
 export async function loginWithUsername(username: string, password: string) {

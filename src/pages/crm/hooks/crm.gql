@@ -1,0 +1,16 @@
+query customers {
+  customersConnection {
+    pageInfo {
+      totalPages
+      current
+      pageSize
+    }
+    edges {
+      node {
+        id
+        name
+      }
+      cursor
+    }
+  }
+}

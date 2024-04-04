@@ -13,7 +13,7 @@ type MenuPaneProps = {
 
 export function renderMenuItem(item: MenuData) {
   if (item.type === 'SECTION') {
-    return <Menu.Section key={item.id} title={item.name} />;
+    return <Menu.Section key={item.id}>{item.name}</Menu.Section>;
   }
   if (item.type === 'URL') {
     return (
@@ -22,7 +22,7 @@ export function renderMenuItem(item: MenuData) {
         key={item.id}
         icon={item.icon}
         title={item.name}
-        url={item.path}
+        url={item.path!}
       />
     );
   }
@@ -37,7 +37,7 @@ export function renderMenuItem(item: MenuData) {
         icon={item.icon}
         title={item.name}
       >
-        {(item.routes || []).map(renderMenuItem)}
+        {(item.children || []).map(renderMenuItem)}
       </Menu.SubMenu>
     );
   }

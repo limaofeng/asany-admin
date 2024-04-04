@@ -1,0 +1,39 @@
+query deviceQrCodes {
+  deviceQrCodes: shortLinksConnection {
+    pageInfo {
+      totalPages
+      pageSize
+      total
+      current
+    }
+    edges {
+      node {
+        id
+        code
+        url
+        category
+        accessCount
+        expiresAt(format: "yyyy-MM-dd HH:mm:ss")
+        createdAt(format: "yyyy-MM-dd HH:mm:ss")
+      }
+    }
+  }
+}
+
+mutation deleteManyShortLinks($where: ShortLinkWhereInput) {
+  result: deleteManyShortLinks(where: $where) {
+    count
+  }
+}
+
+mutation generateEmptyShortLinks($category: String!, $count: Int!) {
+  result: generateEmptyShortLinks(category: $category, count: $count) {
+    id
+    code
+    url
+    category
+    accessCount
+    expiresAt(format: "yyyy-MM-dd HH:mm:ss")
+    createdAt(format: "yyyy-MM-dd HH:mm:ss")
+  }
+}

@@ -191,7 +191,8 @@ function LayoutWrapper(props: LayoutProps) {
     if (!menu) {
       return false;
     }
-    if (!menu.component && !(menu.routes || []).length) {
+    console.log('menu', menu);
+    if (!menu.component && !(menu.children || []).length) {
       return false;
     }
     return buildMenuRender(menu);

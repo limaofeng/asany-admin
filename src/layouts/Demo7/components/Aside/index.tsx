@@ -101,9 +101,9 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
                   active: activeKey === item.id,
                 },
               )}
-              title={item.name}
+              title={item.name!}
             >
-              <Icon name={item.icon} className="svg-icon-2 svg-icon-lg-1" />
+              <Icon name={item.icon!} className="svg-icon-2 svg-icon-lg-1" />
             </div>
           </Tooltip>
         </div>

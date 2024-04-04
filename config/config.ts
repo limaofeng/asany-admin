@@ -13,7 +13,7 @@ export default defineConfig({
     wsUrl: 'wss://api.asany.cn/subscriptions',
   },
   app: {
-    id: '6068485332c5fc853a65',
+    id: 'jdc7t953mea633v9mzkc',
   },
   define: {
     'process.env.NODE_ENV': process.env.NODE_ENV,

@@ -12,7 +12,7 @@ function buildMenuRender(menu: MenuData) {
   }
   return (
     <AsideWorkspace>
-      <Navigation title={menu.name} menus={menu.routes!} />
+      <Navigation title={menu.name!} menus={menu.children!} />
     </AsideWorkspace>
   );
 }
