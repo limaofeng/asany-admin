@@ -243,7 +243,7 @@ function DeviceQrCodeListView() {
             <Form.Item
               className="d-flex flex-column mb-7"
               name="numberRule"
-              label="编号规则"
+              label="设备编号规则"
               help="编号规则支持变量：{YYYY} {MM} {DD} {SEQ:3}"
               rules={[{ required: true, message: '请输入编号规则' }]}
             >

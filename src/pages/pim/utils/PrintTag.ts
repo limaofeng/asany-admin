@@ -1,15 +1,25 @@
 import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
 
-let width, height;
-let pdf;
-let timer;
+import '../../../assets/fonts/SourceHanSansCN-bold';
 
-function addfont(pdf) {
-  var font = 'AA****'; // 中的就是ttf转化成的编码
-  pdf.addFileToVFS('bolds', font);
-  return true;
+let width, height;
+let pdf: jsPDF;
+
+async function loadImage(url: string): Promise<string> {
+  const response = await fetch(url)
+  const blob = await response.blob()
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.onloadend = () => {
+      resolve(reader.result as any)
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(blob)
+  });
 }
+
+const logoLoadPromise = loadImage('/assets/images/log.png');
 
 class PrintTag {
   imageList: never[];
@@ -31,15 +41,15 @@ class PrintTag {
     this.list = data;
     this.printConfig = {
       pageWidth: 80, // 一页宽度
-      pageHeight: 60, // 一页的高度
-      left: 35, // 标签左边距
+      pageHeight: 40, // 一页的高度
+      left: 5, // 标签左边距
       offsetLeft: 174, // 每个标签的偏移量
-      top: 25, // 标签上间距
-      picWidth: 100, // 二维码宽度
-      picHeight: 100, // 二维码高度
+      top: 5, // 标签上间距
+      picWidth: 40, // 二维码宽度
+      picHeight: 40, // 二维码高度
       linePicNum: 5, // 一排显示个数
-      rotateDeg: 270, // 角度
-      fontSize: 58, // 字号
+      rotateDeg: 10, // 角度
+      // fontSize: 18, // 字号
     };
     this.setPdfConfig();
   }
@@ -52,51 +62,66 @@ class PrintTag {
     height = this.printConfig.pageHeight;
     pdf = new jsPDF('l', 'mm', [width, height]);
     //添加并设置字体
-    addfont(pdf);
-    pdf.addFont('bolds', 'customFont', 'normal');
-    pdf.setFont('customFont');
-    pdf.setFontSize(58);
+    // addfont(pdf);
+    // pdf.addFont('bolds', 'customFont', 'normal');
+    // pdf.setFont('customFont');
+    // pdf.setFontSize(58);
   }
   // 生成二维码
   async buildQRcode() {
-    const qrCodes = await Promise.all(this.list.map((item) => QRCode.toDataURL(item.qrcode)))
+    const qrCodes = await Promise.all(this.list.map((item) => QRCode.toDataURL(item.qrcode, {
+      width: 40,
+      height: 40,
+    })))
     this.generate(qrCodes);
   }
   // 生成pdf
-  generate(qrCodes) {
+  async generate(qrCodes) {
     console.time('print');
-    const picWidth = this.printConfig.picWidth;
-    const picHeight = this.printConfig.picWidth;
-    let left = 0;
-    let top = this.printConfig.top;
-    const textOpt = { angle: this.printConfig.rotateDeg };
 
-    qrCodes.map((base64, index) => {
-      left =
-        this.printConfig.left +
-        this.printConfig.offsetLeft * (index % this.printConfig.linePicNum);
-      pdf.addImage(base64, 'JPEG', left, top, picWidth, picHeight, '', 'FAST');
+    let index = 0;
+    for (const base64 of qrCodes) {
+      pdf.addImage(base64, 'JPEG', 0, 0, 40, 40, '', 'FAST');
+
+      const logoBase64 = await logoLoadPromise
+      pdf.addImage(logoBase64, 'JPEG', 35, 0, 20, 20, '', 'FAST');
+
+      pdf.setLineWidth(.5);
+      pdf.line(54, 8, 54,13); 
+
+      let top = 0;
+      pdf.setFont('SourceHanSansCN', 'bold');
+      pdf.setFontSize(14)
       pdf.text(
-        'hello 12345',
-        left,
-        top,
-        textOpt,
-      );
-      pdf.text(
-        '我说中文',
-        left,
-        top + 25,
-        textOpt,
+        '品牌名称',
+        56,
+        12
       );
 
-      if (
-        index !== 0 &&
-        (index + 1) % this.printConfig.linePicNum === 0 &&
-        index < qrCodes.length - 1
-      ) {
+
+
+      pdf.setFont('SourceHanSansCN', 'bold');
+      pdf.setFontSize(13)
+      pdf.text(
+        '服务请扫二维码',
+        40,
+        top += 24
+      );
+
+      pdf.setFont('SourceHanSansCN', 'bold');
+      pdf.setFontSize(10)
+      pdf.text(
+        '售后服务: 4008196788',
+        40,
+        top += 10
+      );
+
+
+      if (index < qrCodes.length - 1) {
         pdf.addPage([width, height], 'l');
       }
-    });
+      index++;
+    }
 
     window.open(pdf.output('bloburl'), '_blank');
     console.timeEnd('print');
