@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { Icon } from '@asany/icons';
+import { QRCodeCanvas } from 'qrcode.react';
 import qs from 'query-string';
 
 import { Controls } from '@/components';
@@ -19,14 +19,15 @@ import {
   Toast,
 } from '@/metronic';
 import { Sorter } from '@/metronic/typings';
+import { ShortLink } from '@/types';
 
 import {
   DeviceQrCodesDocument,
   useDeleteManyShortLinksMutation,
   useDeviceQrCodesQuery,
-  useGenerateEmptyShortLinksMutation,
+  useGenerateShortLinksMutation,
 } from '../hooks';
-import { generatePrint } from '../utils/PrintTag';
+import { generateQRCodeLabel } from '../utils/labelPrinter';
 
 function generateNumber(ruleStr: string, sequence: number) {
   // 获取当前日期
@@ -60,8 +61,25 @@ function DeviceQrCodeListView() {
   const [visible, setVisible] = useState(false);
   const form = Form.useForm();
 
-  const [generateEmptyShortLinks, { loading: submitting }] =
-    useGenerateEmptyShortLinksMutation();
+  const variables = useMemo(() => {
+    if (query.q) {
+      query.filter = { name_contains: query.q };
+      delete query.q;
+    }
+    return query;
+  }, [query]);
+
+  const [deleteManyShortLinks] = useDeleteManyShortLinksMutation({
+    refetchQueries: [DeviceQrCodesDocument],
+  });
+  const { data, loading, previousData } = useDeviceQrCodesQuery({
+    fetchPolicy: 'cache-and-network',
+    variables,
+  });
+  const [generateShortLinks, { loading: submitting }] =
+    useGenerateShortLinksMutation({
+      refetchQueries: [DeviceQrCodesDocument],
+    });
 
   const handleNewQrCode = useCallback(() => {
     setVisible(true);
@@ -70,23 +88,28 @@ function DeviceQrCodeListView() {
   const handleGenerateEmptyShortLinks = useCallback(async () => {
     const values = await form.validateFields();
     console.log(values);
-    const numbers = Array.from({ length: values.count }).map((_, index) =>
-      generateNumber(values.numberRule, index + 1),
-    );
-    console.log(numbers);
-    generatePrint(numbers.map(item => ({
-      no: item,
-      qrcode: 'https://www.baidu.com',
-    })), 3, 'qrCode');
+    const { data } = await generateShortLinks({
+      variables: {
+        links: Array.from({ length: values.count }).map((_, index) => ({
+          category: 'wxb',
+          metadata: {
+            no: generateNumber(values.numberRule, index + 1),
+          },
+        })),
+      },
+    });
+    const links =
+      data?.result.map((item) => ({
+        ...item,
+        qrcode: process.env.SHORT_DOMAIN_NAME + '/s/' + item.code,
+      })) || [];
+    generateQRCodeLabel(links);
+    Toast.success(`二维码批量删除成功`, 2000, {
+      placement: 'bottom-left',
+      progressBar: true,
+    });
+    setVisible(false);
   }, []);
-
-  const variables = useMemo(() => {
-    if (query.q) {
-      query.filter = { name_contains: query.q };
-      delete query.q;
-    }
-    return query;
-  }, [query]);
 
   const sorter = useMemo<Sorter>(() => {
     if (!variables.orderBy) {
@@ -101,14 +124,6 @@ function DeviceQrCodeListView() {
       field,
     };
   }, [variables.orderBy]);
-
-  const [deleteManyShortLinks] = useDeleteManyShortLinksMutation({
-    refetchQueries: [DeviceQrCodesDocument],
-  });
-  const { data, loading, previousData } = useDeviceQrCodesQuery({
-    fetchPolicy: 'cache-and-network',
-    variables,
-  });
 
   const total = useMemo(() => {
     if (loading) {
@@ -202,8 +217,20 @@ function DeviceQrCodeListView() {
     [handleDelete],
   );
 
+  const handlePrintInBatch = useCallback(
+    (_selectedRowKeys: string[], selectedRows: ShortLink[]) => async () => {
+      generateQRCodeLabel(
+        selectedRows.map((item) => ({
+          ...item,
+          qrcode: process.env.SHORT_DOMAIN_NAME + '/s/' + item.code,
+        })),
+      );
+    },
+    [],
+  );
+
   const tableToolbar = useMemo(() => {
-    return (selectedRowKeys: string[]) => {
+    return (selectedRowKeys: string[], selectedRows: ShortLink[]) => {
       return (
         <div>
           <Button
@@ -213,10 +240,28 @@ function DeviceQrCodeListView() {
           >
             批量删除
           </Button>
+          <Button
+            color="success"
+            onClick={handlePrintInBatch(selectedRowKeys, selectedRows)}
+            variant={false}
+          >
+            打印二维码
+          </Button>
         </div>
       );
     };
   }, [handleDeleteInBatch]);
+
+  const [qrCode, setQrCode] = useState<string>();
+
+  const handleOpenQRCode = useCallback((url: string) => {
+    console.log(url);
+    setQrCode(url);
+  }, []);
+
+  const handleCloseQRCode = useCallback(() => {
+    setQrCode(undefined);
+  }, []);
 
   return (
     <ContentWrapper>
@@ -258,6 +303,21 @@ function DeviceQrCodeListView() {
             </Form.Item>
           </Form>
         </Modal.Body>
+      </Modal>
+      <Modal
+        title="预览二维码"
+        dialogClassName="w-250px"
+        onCancel={handleCloseQRCode}
+        visible={!!qrCode}
+        centered
+        okButtonProps={{
+          style: { display: 'none' },
+        }}
+      >
+        <div className="d-inline-block">
+          {!!qrCode && <QRCodeCanvas size={200} value={qrCode} />}
+        </div>
+        <span>使用手机扫码二维码预览</span>
       </Modal>
       <div className="d-flex flex-wrap flex-stack pb-7">
         <div className="d-flex flex-wrap align-items-center">
@@ -344,18 +404,22 @@ function DeviceQrCodeListView() {
                       key: 'qrCode',
                       title: '二维码',
                       width: 180,
-                      render(file) {
-                        return file ? (
-                          <img
-                            src={
-                              process.env.STORAGE_URL + `/preview/${file.id}`
-                            }
-                            className="h-30px w-30px"
-                          />
-                        ) : (
-                          <Icon
-                            className="svg-icon-2qx text-muted"
-                            name="Bootstrap/qr-code"
+                      render(_, record) {
+                        const qrcode =
+                          process.env.SHORT_DOMAIN_NAME + '/s/' + record.code;
+                        return (
+                          <QRCodeCanvas
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleOpenQRCode(
+                                process.env.SHORT_DOMAIN_NAME +
+                                  '/s/' +
+                                  record.code,
+                              );
+                            }}
+                            size={30}
+                            value={qrcode}
                           />
                         );
                       },

@@ -8,6 +8,7 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': process.env.NODE_ENV,
     'process.env.WEBSITE_URL': '//localhost:8001',
+    'process.env.SHORT_DOMAIN_NAME': 'http://192.168.5.7:8080',
     'process.env.STORAGE_URL': 'http://192.168.5.7:8080',
     'process.env.MOBILE_URL': '//localhost:8001',
     'process.env.OPEN_IM_API_URL': 'https://im.asany.cn/api/',

@@ -4275,9 +4275,7 @@ export type Mutation = {
   /** 删除用户 */
   deleteUser: User;
   /** 生成短链接 */
-  generateEmptyShortLinks: Array<ShortLink>;
-  /** 生成短链接 */
-  generateShortLink: ShortLink;
+  generateShortLinks: Array<ShortLink>;
   /** 通过 yml 导入一个应用 */
   importApplication?: Maybe<Application>;
   /** 导入图标 */
@@ -4849,16 +4847,8 @@ export type MutationDeleteUserArgs = {
 };
 
 
-export type MutationGenerateEmptyShortLinksArgs = {
-  category: Scalars['String']['input'];
-  count: Scalars['Int']['input'];
-};
-
-
-export type MutationGenerateShortLinkArgs = {
-  category: Scalars['String']['input'];
-  expiresAt?: InputMaybe<Scalars['Date']['input']>;
-  url: Scalars['String']['input'];
+export type MutationGenerateShortLinksArgs = {
+  links: Array<ShortLinkCreateInput>;
 };
 
 
@@ -6957,6 +6947,8 @@ export type ShortLink = {
   /** 过期时间 */
   expiresAt?: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
+  /** 元数据 */
+  metadata?: Maybe<Scalars['JSON']['output']>;
   /** 长链接 */
   url?: Maybe<Scalars['String']['output']>;
 };
@@ -6979,6 +6971,17 @@ export type ShortLinkConnection = {
   pageSize: Scalars['Int']['output'];
   totalCount: Scalars['Int']['output'];
   totalPage: Scalars['Int']['output'];
+};
+
+export type ShortLinkCreateInput = {
+  /** 分类 */
+  category?: InputMaybe<Scalars['String']['input']>;
+  /** 过期时间 */
+  expiresAt?: InputMaybe<Scalars['Date']['input']>;
+  /** 元数据 */
+  metadata?: InputMaybe<Scalars['JSON']['input']>;
+  /** 长链接 */
+  url?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ShortLinkEdge = {

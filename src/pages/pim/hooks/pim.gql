@@ -15,6 +15,7 @@ query deviceQrCodes {
         accessCount
         expiresAt(format: "yyyy-MM-dd HH:mm:ss")
         createdAt(format: "yyyy-MM-dd HH:mm:ss")
+        metadata
       }
     }
   }
@@ -26,14 +27,12 @@ mutation deleteManyShortLinks($where: ShortLinkWhereInput) {
   }
 }
 
-mutation generateEmptyShortLinks($category: String!, $count: Int!) {
-  result: generateEmptyShortLinks(category: $category, count: $count) {
+mutation generateShortLinks($links: [ShortLinkCreateInput!]!) {
+ result: generateShortLinks(links: $links) {
     id
     code
     url
-    category
     accessCount
-    expiresAt(format: "yyyy-MM-dd HH:mm:ss")
-    createdAt(format: "yyyy-MM-dd HH:mm:ss")
+    metadata
   }
 }
