@@ -19,6 +19,7 @@ export default defineConfig({
     'process.env.NODE_ENV': process.env.NODE_ENV,
     'process.env.WEBSITE_URL': '//localhost:8001',
     'process.env.STORAGE_URL': 'https://api.asany.cn',
+    'process.env.SHORT_DOMAIN_NAME': 'https://wxb.app.asany.cn',
     'process.env.MOBILE_URL': '//localhost:8001',
     'process.env.OPEN_IM_API_URL': 'https://im.asany.cn/api/',
     'process.env.OPEN_IM_WS_URL': 'wss://im.asany.cn/msg_gateway/',
