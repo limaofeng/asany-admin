@@ -21,6 +21,114 @@ query deviceQrCodes {
   }
 }
 
+query devices(
+  $where: DeviceWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy = "createdAt_desc"
+) {
+  result: devicesConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    pageInfo {
+      totalPages
+      pageSize
+      total
+      current
+    }
+    edges {
+      node {
+        id
+        no
+        sn
+        name
+        status {
+          id
+          name
+        }
+        brand {
+          id
+          name
+        }
+        warrantyStatus
+        warrantyEndDate(format: "yyyy-MM-dd")
+        address {
+          province
+          city
+          district
+          street
+          detailedAddress
+          fullAddress(excludeDetailed: true)
+        }
+        createdAt(format: "yyyy-MM-dd")
+      }
+    }
+  }
+}
+
+query brands(
+  $where: BrandWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy = "createdAt_desc"
+) {
+  result: brandsConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    pageInfo {
+      totalPages
+      pageSize
+      total
+      current
+    }
+    edges {
+      node {
+        id
+        name
+        createdAt(format: "yyyy-MM-dd")
+      }
+    }
+  }
+}
+
+query products(
+  $where: ProductWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy = "createdAt_desc"
+) {
+  result: productsConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    pageInfo {
+      totalPages
+      pageSize
+      total
+      current
+    }
+    edges {
+      node {
+        id
+        name
+        brand {
+          id
+          name
+        }
+        createdAt(format: "yyyy-MM-dd")
+      }
+    }
+  }
+}
+
 mutation deleteManyShortLinks($where: ShortLinkWhereInput) {
   result: deleteManyShortLinks(where: $where) {
     count
@@ -28,7 +136,7 @@ mutation deleteManyShortLinks($where: ShortLinkWhereInput) {
 }
 
 mutation generateShortLinks($links: [ShortLinkCreateInput!]!) {
- result: generateShortLinks(links: $links) {
+  result: generateShortLinks(links: $links) {
     id
     code
     url

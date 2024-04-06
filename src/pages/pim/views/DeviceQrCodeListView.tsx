@@ -264,7 +264,11 @@ function DeviceQrCodeListView() {
   }, []);
 
   return (
-    <ContentWrapper>
+    <ContentWrapper
+      header={{
+        title: '设备二维码',
+      }}
+    >
       <Modal
         width={640}
         centered
@@ -360,7 +364,7 @@ function DeviceQrCodeListView() {
                     type: 'checkbox',
                     renderTitle: (size) => (
                       <>
-                        已选中<span className="mx-2">{size}</span>个门店
+                        已选中<span className="mx-2">{size}</span>个二维码
                       </>
                     ),
                     toolbar: tableToolbar,

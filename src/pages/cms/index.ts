@@ -10,12 +10,22 @@ import dynamic from '@/utils/dynamic';
 })
 class Cms {
   @component({
+    name: 'Layout',
+    title: 'CMS 布局',
+    tags: ['布局'],
+  })
+  Layout = dynamic({
+    loader: () => import('./views/Layout'),
+    loading: LoadingComponent,
+  });
+
+  @component({
     name: 'ArticleList',
     title: '文章列表',
     tags: ['内容管理'],
   })
   ArticleList = dynamic({
-    loader: () => import('./pages/ArticleList'),
+    loader: () => import('./views/ArticleList'),
     loading: LoadingComponent,
   });
   @component({
@@ -51,7 +61,7 @@ class Cms {
     tags: ['内容管理'],
   })
   ArticleNew = dynamic({
-    loader: () => import('./pages/ArticleNew'),
+    loader: () => import('./views/ArticleNew'),
     loading: LoadingComponent,
   });
   @component({
@@ -60,7 +70,7 @@ class Cms {
     tags: ['内容管理'],
   })
   ArticleEdit = dynamic({
-    loader: () => import('./pages/ArticleEdit'),
+    loader: () => import('./views/ArticleEdit'),
     loading: LoadingComponent,
   });
   @component({
@@ -79,7 +89,7 @@ class Cms {
     tags: ['内容管理'],
   })
   ArticleChannelNew = dynamic({
-    loader: () => import('./pages/ArticleCategoryNew'),
+    loader: () => import('./views/ArticleCategoryNew'),
     loading: LoadingComponent,
   });
   @component({
@@ -88,7 +98,7 @@ class Cms {
     tags: ['内容管理'],
   })
   ArticleChannelEdit = dynamic({
-    loader: () => import('./pages/ArticleCategoryEdit'),
+    loader: () => import('./views/ArticleCategoryEdit'),
     loading: LoadingComponent,
   });
   @component({
@@ -96,7 +106,7 @@ class Cms {
     tags: ['内容管理'],
   })
   MyDrafts = dynamic({
-    loader: () => import('./pages/MyDrafts'),
+    loader: () => import('./views/MyDrafts'),
     loading: LoadingComponent,
   });
   @component({
@@ -104,7 +114,7 @@ class Cms {
     tags: ['内容管理'],
   })
   MyPublished = dynamic({
-    loader: () => import('./pages/MyPublished'),
+    loader: () => import('./views/MyPublished'),
     loading: LoadingComponent,
   });
 }

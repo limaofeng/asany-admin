@@ -8,15 +8,13 @@ import { Button, Menu } from '@/metronic';
 import type { ArticleCategory } from '@/types';
 import { tree } from '@/utils';
 
-import { useArticleCategoriesQuery } from '../hooks';
-
 import './style/ArticleSidebar.scss';
 
 function renderChannel(item: any) {
   if (item.children && item.children.length) {
     return (
       <Menu.SubMenu
-        url={`/cms/channels/${item.id}`}
+        url={`/cms/categories/${item.id}/articles`}
         bullet
         key={item.id}
         icon={item.icon}
@@ -28,7 +26,7 @@ function renderChannel(item: any) {
   }
   return (
     <Menu.Item
-      url={`/cms/channels/${item.id}`}
+      url={`/cms/categories/${item.id}/articles`}
       bullet
       key={item.id}
       icon={item.icon}
@@ -38,19 +36,20 @@ function renderChannel(item: any) {
   );
 }
 
-function ArticleSidebar() {
-  const { data = { categories: [] }, loading } = useArticleCategoriesQuery({
-    fetchPolicy: 'cache-and-network',
-  });
+type ArticleSidebarProps = {
+  loading: boolean;
+  categories: ArticleCategory[];
+};
 
+function ArticleSidebar(props: ArticleSidebarProps) {
   const [selectedKey, setSelectedKey] = useState<string>('draft');
 
   const categories: ArticleCategory[] = useMemo(() => {
-    if (!data.categories || !data.categories.length) {
+    if (!props.categories || !props.categories.length) {
       return [];
     }
     return tree(
-      data.categories.map((item: any) => ({ ...item })),
+      props.categories.map((item: any) => ({ ...item })),
       {
         idKey: 'id',
         childrenKey: 'children',
@@ -58,7 +57,7 @@ function ArticleSidebar() {
         sort: (left: any, right: any) => left.index - right.index,
       },
     );
-  }, [data.categories]);
+  }, [props.categories]);
 
   const [openKeys, setOpenKeys] = useState<string[]>(
     categories.map((item) => item.id),
@@ -111,7 +110,7 @@ function ArticleSidebar() {
           </Menu.Item>
           <Menu.Section className="d-flex align-items-center">
             <span className="menu-section text-muted text-uppercase fs-8 ls-1 flex-row-fluid">
-              信息栏目 {loading && ' - loading...'}
+              信息栏目 {props.loading && ' - loading...'}
             </span>
             <Button
               icon={

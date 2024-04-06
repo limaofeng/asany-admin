@@ -26,6 +26,30 @@ class ProductInformationManagement {
     loader: () => import('./views/DeviceQrCodeListView'),
     loading: LoadingComponent,
   });
+
+  @component({
+    name: 'DeviceListView',
+  })
+  DeviceListView = dynamic({
+    loader: () => import('./views/DeviceListView'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    name: 'BrandListView',
+  })
+  BrandListView = dynamic({
+    loader: () => import('./views/BrandListView'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    name: 'ProductListView',
+  })
+  ProductListView = dynamic({
+    loader: () => import('./views/ProductListView'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new ProductInformationManagement();

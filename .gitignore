@@ -15,7 +15,7 @@
 
 # tmp
 graphql/index.schema.json
-src/types.ts
+src/types/index.ts
 src/hooks/api.ts
 src/pages/**/*/hooks.ts
 src/pages/*/hooks.ts

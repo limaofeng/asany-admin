@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
-import type { RouteComponentProps } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link, Outlet, useParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 
@@ -10,21 +9,17 @@ import type { ArticleCategory } from '@/types';
 
 import { useArticleCategoryQuery } from '../hooks';
 
-type ArticleChannelProps = RouteComponentProps<{ id: string }>;
-
-function ArticleChannel(props: ArticleChannelProps) {
-  const {
-    match: {
-      params: { id },
-    },
-  } = props;
+function ArticleChannel() {
+  const params = useParams<{
+    id: string;
+  }>();
 
   const temp = useRef<ArticleCategory>({} as any);
 
   const [visibleMoreActions, setVisibleMoreActions] = useState(false);
 
   const { data, loading } = useArticleCategoryQuery({
-    variables: { id },
+    variables: { id: params.id },
   });
 
   const { category } = data || { category: temp.current };
@@ -160,7 +155,13 @@ function ArticleChannel(props: ArticleChannelProps) {
           </Nav>
         </Navbar.Footer>
       </Navbar>
-      {/*  <ArticleList {...props} /> */}
+      <Outlet
+        context={{
+          rootCategoryId: category?.id,
+          categories: [],
+          baseUrl: location.pathname,
+        }}
+      />
     </ContentWrapper>
   );
 }
