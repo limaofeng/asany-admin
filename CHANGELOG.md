@@ -1,3 +1,9 @@
+## [0.4.6](https://github.com/limaofeng/asany-admin/compare/v0.4.5...v0.4.6) (2024-04-06)
+
+### Features
+
+- 优化内容管理结构 ([47aa993](https://github.com/limaofeng/asany-admin/commit/47aa993655ecfeafee07cf7c2217187e5976c17e))
+
 ## 0.4.5 (2024-04-06)
 
 ### Bug Fixes
