@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[1804,3634],{53076:function(l,s,t){t.r(s);var a=t(97330),e=t(73588),n=t(27095),u=t(86074);function r(){var E=(0,a.ot)(),_=E.data;return(0,u.jsx)(e.vs,{header:{title:"\u8349\u7A3F\u7BB1"},children:_&&(0,u.jsx)(n.default,{query:{filter:{createdBy:_.uid,status:"DRAFT"}}})})}s.default=r}}]);

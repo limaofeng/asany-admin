@@ -1,1 +1,0 @@
-(self.webpackChunkasany_admin=self.webpackChunkasany_admin||[]).push([[1381],{23433:function(u,n,s){"use strict";s.r(n);var a=s(85893);function e(){return(0,a.jsx)("div",{children:"12313"})}n.default=e}}]);
