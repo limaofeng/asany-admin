@@ -3,8 +3,9 @@ import { defineConfig } from '@umijs/max';
 import routes from './routes';
 
 export default defineConfig({
+  esbuildMinifyIIFE: true,
   plugins: [
-    require.resolve('../plugins/document'),
+    require.resolve('./document'),
     '@asany/umi-plugin-apollo',
     '@asany/umi-plugin-app',
   ],
@@ -24,6 +25,13 @@ export default defineConfig({
     'process.env.OPEN_IM_API_URL': 'https://im.asany.cn/api/',
     'process.env.OPEN_IM_WS_URL': 'wss://im.asany.cn/msg_gateway/',
   },
+  styles: [
+    '/assets/plugins/custom/datatables/datatables.bundle.css',
+    '/assets/plugins/global/google.font.css',
+    '/assets/plugins/global/plugins.bundle.css',
+    '/assets/css/style.bundle.css',
+  ],
+  scripts: ['/wasm_exec.js'],
   dva: {},
   antd: {},
   access: {},
