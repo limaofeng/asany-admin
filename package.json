@@ -6,7 +6,7 @@
     "dev": "max dev",
     "format": "prettier --cache --write .",
     "gql-gen": "graphql-codegen",
-    "postinstall": "max setup && run-script-os",
+    "postinstall": "graphql-codegen && max setup && run-script-os",
     "lint:fix": "eslint --fix --cache --ext .js,.jsx,.ts,.tsx,.gql ./src",
     "postinstall:darwin": "sh ./scripts/run.osx",
     "postinstall:linux": "sh ./scripts/run.sh",
