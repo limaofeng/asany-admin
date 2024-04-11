@@ -9,9 +9,8 @@ import classnames from 'classnames';
 import { findLast } from 'lodash';
 
 import { useLayoutSelector } from '@/layouts/LayoutContext';
-import { Bullet, Button } from '@/metronic';
+import { Bullet, Button, Sticky } from '@/metronic';
 import Breadcrumb from '@/metronic/Breadcrumb';
-import { useSticky } from '@/metronic/hooks';
 
 import { ThemeModeSwitcher } from '../theme-mode/ThemeModeSwitcher';
 
@@ -84,11 +83,6 @@ export type ContentHeaderProps = {
 };
 
 function ContentHeader(props: ContentHeaderProps) {
-  const [ref] = useSticky({
-    name: 'header',
-    offset: { default: 200, lg: 300 },
-  });
-
   const location = useLocation();
 
   const allRoutes = useLayoutSelector((_state) => _state.routes);
@@ -140,41 +134,43 @@ function ContentHeader(props: ContentHeaderProps) {
   }, [props.breadcrumb, props.title, location.pathname, allRoutes]);
 
   return (
-    <div id="kt_header" ref={ref} className="header">
-      <div
-        className="container-xxl d-flex align-items-center justify-content-between"
-        id="kt_header_container"
-      >
-        <div className="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-2 pb-2 pb-lg-0">
-          {props.children ? (
-            props.children
-          ) : (
-            <>
-              <h1 className="text-dark fw-bolder my-0 fs-2">
-                {props.title || title}
-              </h1>
-              {breadcrumb}
-            </>
-          )}
-        </div>
-        <div className="d-flex d-lg-none align-items-center ms-n2 me-2">
-          <div
-            className="btn btn-icon btn-active-icon-primary"
-            id="kt_aside_mobile_toggle"
-          >
-            <Icon name="Duotune/abs015" className="svg-icon-1" />
+    <Sticky>
+      <div id="kt_header" className="header">
+        <div
+          className="container-xxl d-flex align-items-center justify-content-between"
+          id="kt_header_container"
+        >
+          <div className="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-2 pb-2 pb-lg-0">
+            {props.children ? (
+              props.children
+            ) : (
+              <>
+                <h1 className="text-dark fw-bolder my-0 fs-2">
+                  {props.title || title}
+                </h1>
+                {breadcrumb}
+              </>
+            )}
           </div>
-          <a href="/" className="d-flex align-items-center">
-            <img
-              alt="Logo"
-              src="assets/media/logos/demo7.svg"
-              className="h-30px"
-            />
-          </a>
+          <div className="d-flex d-lg-none align-items-center ms-n2 me-2">
+            <div
+              className="btn btn-icon btn-active-icon-primary"
+              id="kt_aside_mobile_toggle"
+            >
+              <Icon name="Duotune/abs015" className="svg-icon-1" />
+            </div>
+            <a href="/" className="d-flex align-items-center">
+              <img
+                alt="Logo"
+                src="assets/media/logos/demo7.svg"
+                className="h-30px"
+              />
+            </a>
+          </div>
+          <Toolbar>{props.toolbar}</Toolbar>
         </div>
-        <Toolbar>{props.toolbar}</Toolbar>
       </div>
-    </div>
+    </Sticky>
   );
 }
 

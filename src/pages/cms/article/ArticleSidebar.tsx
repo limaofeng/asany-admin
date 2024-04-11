@@ -38,11 +38,15 @@ function renderChannel(item: any) {
 
 type ArticleSidebarProps = {
   loading: boolean;
+  menuKey: {
+    key: string;
+    params: any;
+  };
   categories: ArticleCategory[];
 };
 
 function ArticleSidebar(props: ArticleSidebarProps) {
-  const [selectedKey, setSelectedKey] = useState<string>('draft');
+  const { menuKey } = props;
 
   const categories: ArticleCategory[] = useMemo(() => {
     if (!props.categories || !props.categories.length) {
@@ -63,10 +67,6 @@ function ArticleSidebar(props: ArticleSidebarProps) {
     categories.map((item) => item.id),
   );
 
-  const handleSelect = useCallback((e: any) => {
-    setSelectedKey(e.key);
-  }, []);
-
   const handleOpenChange = useCallback((keys: string[]) => {
     setOpenKeys(keys);
   }, []);
@@ -75,6 +75,17 @@ function ArticleSidebar(props: ArticleSidebarProps) {
     setOpenKeys(categories.map((item) => item.id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories.map((item) => item.id).join(',')]);
+
+  const selectedKey = useMemo(() => {
+    switch (menuKey.key) {
+      case 'category':
+        return menuKey.params.cid;
+      default:
+        return menuKey.key;
+    }
+  }, [menuKey]);
+
+  console.log('selectedKey', selectedKey, menuKey);
 
   return (
     <AsideWorkspace>
@@ -89,7 +100,6 @@ function ArticleSidebar(props: ArticleSidebarProps) {
       >
         <Menu
           className="cms-menu-sider menu-title-gray-600 menu-icon-gray-400 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 fw-bold fs-6 my-5 my-lg-0"
-          onSelect={handleSelect}
           openKeys={openKeys}
           selectedKeys={selectedKey ? [selectedKey] : []}
           onOpenChange={handleOpenChange}
@@ -108,7 +118,11 @@ function ArticleSidebar(props: ArticleSidebarProps) {
           >
             已发布
           </Menu.Item>
-          <Menu.Section className="d-flex align-items-center">
+          <Menu.Section
+            className="d-flex align-items-center"
+            contentClassName="w-100"
+            sectionClassName="w-100 d-flex align-items-center justify-content-between"
+          >
             <span className="menu-section text-muted text-uppercase fs-8 ls-1 flex-row-fluid">
               信息栏目 {props.loading && ' - loading...'}
             </span>

@@ -2,8 +2,8 @@ import type { DOMAttributes } from 'react';
 import React, {
   useCallback,
   useContext,
+  useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -68,17 +68,26 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [value, setValue] = useState(
-    props.value !== null ? props.value : props.defaultValue || '',
-  );
+  const state = useRef({
+    isFirst: true,
+  });
+  const [value, setValue] = useState(props.value || props.defaultValue || '');
 
-  const handleChange = useCallback(
-    (e: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-unused-expressions
-      !!onChange ? onChange(e) : setValue(e.target.value);
-    },
-    [onChange],
-  );
+  useEffect(() => {
+    if (state.current.isFirst) {
+      state.current.isFirst = false;
+      return;
+    }
+    if (value === props.value) {
+      return;
+    }
+    console.log('>>>>>>>>>', value, props.value);
+    onChange && onChange({ target: { value } } as any);
+  }, [value]);
+
+  const handleChange = useCallback((e: any) => {
+    setValue(e.target.value);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -91,13 +100,8 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     [onPressEnter, onKeyDown],
   );
 
-  const newValue = useMemo(() => {
-    if (props.value === value) {
-      return value !== null ? value : '';
-    }
-    setValue(props.value!);
-    return props.value !== null ? props.value : '';
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    setValue(props.value! || props.defaultValue || '');
   }, [props.value]);
 
   useImperativeHandle(
@@ -168,8 +172,8 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
         getStatusClassNames('form-item', mergedStatus),
       )}
       defaultValue={props.defaultValue}
-      value={onChange ? newValue : undefined}
-      onChange={onChange ? handleChange : undefined}
+      value={value}
+      onChange={handleChange}
       type={type}
       autoComplete={autoComplete ? 'off' : 'on'}
     />

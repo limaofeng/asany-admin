@@ -28,8 +28,10 @@ function BreadcrumbItem(props: BreadcrumbItemProps) {
         <Link to={href} className={classnames(className)}>
           {children}
         </Link>
-      ) : (
+      ) : (props as any).isLast ? (
         children
+      ) : (
+        <a className="">{children}</a>
       )}
     </li>
   );

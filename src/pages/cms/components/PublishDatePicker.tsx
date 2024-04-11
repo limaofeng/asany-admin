@@ -21,7 +21,7 @@ function PublishDatePicker(props: PublishDatePickerProps) {
         getPopupContainer={(triggerNode) => triggerNode.parentNode as any}
         transitionName=""
         allowClear={false}
-        dropdownClassName="article-publish-dropdown-published-at"
+        popupClassName="article-publish-dropdown-published-at"
         placement="topLeft"
         value={value}
         disabled={disabled}

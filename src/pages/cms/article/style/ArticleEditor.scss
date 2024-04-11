@@ -1,6 +1,22 @@
 .art-main {
   background: #fff;
 
+  &.modal-fullscreen {
+    position: fixed;
+    z-index: 98;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  .ck.ck-balloon-panel.ck-powered-by-balloon.ck-balloon-panel_visible {
+    display: none;
+  }
+  .ck-powered-by {
+    display: none;
+  }
+
   .settings-menu-toggle {
     position: absolute;
     top: 30px;

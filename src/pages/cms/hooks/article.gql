@@ -46,12 +46,18 @@ query articleCategories($id: ID!) {
     icon
     name
     fullName
+    slug
     path
     index
     level
     image
     parent {
       id
+    }
+    storeTemplate {
+      id
+      name
+      contentType
     }
   }
 }
@@ -71,6 +77,8 @@ query articleCategory($id: ID!) {
     }
     storeTemplate {
       id
+      name
+      contentType
     }
     page {
       enabled
@@ -167,12 +175,35 @@ query article($id: ID!) {
       namespace
       value
     }
+    contentType
     content {
       id
-      __typename
       ... on TextContent {
-        type
+        textType: type
         text
+      }
+      ... on DocumentContent {
+        url
+        document
+        documentType: type
+        size
+        title
+        description
+      }
+      ... on ImageContent {
+        images {
+          id
+          url
+          title
+          description
+        }
+      }
+      ... on VideoContent {
+        id
+        url
+        title
+        video
+        description
       }
     }
   }

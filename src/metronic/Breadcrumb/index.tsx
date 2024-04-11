@@ -1,13 +1,14 @@
 import type { ReactNode } from 'react';
+import React from 'react';
 import { generatePath } from 'react-router';
 
 import { useReactComponent } from '@asany/sunmao';
-import type { Route } from '@umijs/max';
 import type { MenuDataItem } from '@umijs/route-utils';
 import classnames from 'classnames';
 import { match } from 'path-to-regexp';
 
-import type { Component } from '@/types';
+import type { Component, Route } from '@/types';
+import { flattenChildren } from '@/utils';
 
 import BreadcrumbItem from './BreadcrumbItem';
 
@@ -43,7 +44,9 @@ function CustomBreadcrumb({
 }
 
 function Breadcrumb(props: BreadcrumbProps) {
-  const { className, routes, children } = props;
+  const { className, routes } = props;
+
+  const children = flattenChildren(props.children);
 
   return (
     <ol className={classnames('breadcrumb', className)}>
@@ -67,7 +70,6 @@ function Breadcrumb(props: BreadcrumbProps) {
                 ? generatePath(item.path, params)
                 : undefined;
               const isLast = array.length === index + 1;
-
               if (item.breadcrumb) {
                 return (
                   <CustomBreadcrumb
@@ -98,7 +100,16 @@ function Breadcrumb(props: BreadcrumbProps) {
                 </BreadcrumbItem>
               );
             })
-        : children}
+        : React.Children.map(children, (child, index) => {
+            const isLast = children.length === index + 1;
+            if (!isLast) {
+              return child;
+            }
+            return React.cloneElement(child, {
+              href: undefined,
+              isLast: true,
+            });
+          })}
     </ol>
   );
 }

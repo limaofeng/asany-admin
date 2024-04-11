@@ -6,19 +6,19 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useOutletContext, useParams } from 'react-router';
+import { useNavigate, useOutletContext, useParams } from 'react-router';
 
-import { Affix } from 'antd';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Form, Tabs, Toast } from '@/metronic';
+import { Breadcrumb, Button, Form, Modal, Tabs, Toast } from '@/metronic';
 import type { QueueUploadRef } from '@/metronic/typings';
-import type { Article } from '@/types';
+import type { Article, ArticleCategory } from '@/types';
 import { delay, tree } from '@/utils';
 
+import ArticleBreadcrumb from '../article/ArticleBreadcrumb';
 import ArticleFormSidebar from '../components/ArticleFormSidebar';
 import {
   Advanced,
@@ -28,15 +28,18 @@ import {
 } from '../components/bodys/classic';
 import type { PublishAction } from '../components/bodys/classic/PublishButton';
 import { useArticleQuery, useUpdateArticleMutation } from '../hooks';
-import '../style/ArticleForm.scss';
 import { ArticleOutletContextParams } from '../typings';
 type ArticleEditParams = { cid: string; id: string };
 
+import '../style/ArticleForm.scss';
+
 function ArticleEdit() {
-  const { cid: channelId, id } = useParams<ArticleEditParams>();
+  const { cid: categoryId, id } = useParams<ArticleEditParams>();
 
   const { categories, baseUrl } =
     useOutletContext<ArticleOutletContextParams>();
+
+  const navigate = useNavigate();
 
   const queueUpload = useRef<QueueUploadRef>(null);
 
@@ -81,25 +84,37 @@ function ArticleEdit() {
 
   const [updateArticle, { loading: submitting }] = useUpdateArticleMutation();
 
-  const [storeTemplate, setStoreTemplate] = useState<string | undefined>();
+  const [category, setCategory] = useState<ArticleCategory>();
 
   const handleChangeCategory = useCallback(
-    (cid: string) => {
-      const category = categories.find((item) => item.id === cid);
-      setStoreTemplate(category?.storeTemplate?.id);
+    async (cid: string) => {
+      const newCategory = categories.find((item) => item.id === cid);
+      if (
+        newCategory?.storeTemplate?.contentType !==
+        category?.storeTemplate?.contentType
+      ) {
+        const result = await Modal.confirm({
+          title: '修改栏目确认',
+          content: '目标栏目的正文类型不一致，是否确定切换 ？',
+        });
+        if (!result.isConfirmed) {
+          form.setFieldValue(['category', 'id'], category?.id);
+          return;
+        }
+      }
+      navigate(`${baseUrl}/categories/${newCategory?.id}/articles/${id}`, {
+        replace: true,
+      });
     },
-    [categories],
+    [categories, category],
   );
 
   useEffect(() => {
-    if (!categories || !categories.length || !article) {
+    if (!categories || !categories.length || !categoryId) {
       return;
     }
-    setStoreTemplate(
-      categories.find((item) => item.id === article.category?.id)?.storeTemplate
-        ?.id,
-    );
-  }, [article, categories]);
+    setCategory(categories.find((item) => item.id === categoryId));
+  }, [categories, categoryId]);
 
   const handleSubmit = useCallback(
     async (action: PublishAction) => {
@@ -109,8 +124,8 @@ function ArticleEdit() {
       const {
         meta,
         category,
-        body,
         publishedAt: _publishedAt,
+        content,
         ...values
       } = await form.validateFields();
 
@@ -132,11 +147,22 @@ function ArticleEdit() {
         }
       }
 
+      if (content.hasOwnProperty('__typename')) {
+        delete content.__typename;
+      }
+
+      if (content.hasOwnProperty('documentType')) {
+        if (!content.type && content.documentType) {
+          content.type = content.documentType;
+        }
+        delete content.documentType;
+      }
+
       const input = {
         ...values,
+        content,
         metafields,
         category: category.id,
-        body: { type: 'HTML', text: body.text },
       };
 
       if (action === 'publish') {
@@ -225,7 +251,7 @@ function ArticleEdit() {
     form.setFieldsValue({ publishedAt: _publishedAt });
   }, [form]);
 
-  console.log('storeTemplate', storeTemplate, publishedAt);
+  const contentType = category?.storeTemplate?.contentType;
 
   return (
     <ContentWrapper
@@ -233,45 +259,35 @@ function ArticleEdit() {
       header={{
         title: '编辑文章',
       }}
-      // breadcrumb={
-      //   <Breadcrumb className="fw-bold fs-base text-muted my-1">
-      //     <Breadcrumb.Item key="website">互升官网</Breadcrumb.Item>
-      //     <Breadcrumb.Item key="column">栏目</Breadcrumb.Item>
-      //     {article ? (
-      //       <>
-      //         {article.categories
-      //           .filter((item) => item.id !== rootCategoryId)
-      //           .map((item) => (
-      //             <Breadcrumb.Item key={item.id}>
-      //               <Link
-      //                 to={`${baseUrl}/cms/categories/${item.id}/articles`}
-      //                 className="text-muted"
-      //               >
-      //                 {item.name}
-      //               </Link>
-      //             </Breadcrumb.Item>
-      //           ))}
-      //         <Breadcrumb.Item className="text-dark">{article?.title}</Breadcrumb.Item>
-      //       </>
-      //     ) : (
-      //       <Breadcrumb.Item>加载中...</Breadcrumb.Item>
-      //     )}
-      //   </Breadcrumb>
-      // }
+      breadcrumb={
+        <ArticleBreadcrumb
+          categoryId={category?.id}
+          append={
+            <Breadcrumb.Item className="text-dark">
+              {article?.title}
+            </Breadcrumb.Item>
+          }
+        />
+      }
     >
       <Form
         form={form}
-        initialValues={{ status: 'DRAFT', channel: channelId }}
+        initialValues={{ status: 'DRAFT', channel: categoryId }}
         className="form d-flex flex-column flex-lg-row"
       >
         <div className="d-flex flex-column flex-row-fluid gap-7 gap-lg-10  me-lg-10">
           <Tabs
+            type="line-tabs"
             defaultActiveKey="general"
             contentContainer={false}
             className="border-0 fs-4 fw-bold mb-n2 nav-line-tabs-2x"
           >
             <Tabs.TabPane key="general" tab="基本信息" forceRender>
-              <General queueUpload={queueUpload} />
+              <General
+                article={article as Article}
+                contentType={contentType}
+                queueUpload={queueUpload}
+              />
             </Tabs.TabPane>
             <Tabs.TabPane key="advanced" tab="高级设置" forceRender>
               <Advanced />
@@ -280,45 +296,43 @@ function ArticleEdit() {
               <Metadata />
             </Tabs.TabPane>
           </Tabs>
-          <Affix offsetBottom={16}>
-            <div
-              className={classnames(
-                'd-flex bg-body-color p-5 mx-4 tw-rounded-2xl align-items-center',
+          <div
+            className={classnames(
+              'd-flex bg-body-color p-5 mx-4 tw-rounded-2xl align-items-center',
+            )}
+          >
+            <div className="text-primary flex-row-fluid">
+              {article?.status === 'SCHEDULED' && (
+                <>
+                  将于{' '}
+                  {moment(article.publishedAt).format(
+                    'YYYY 年 MM 月 DD 日 HH:mm',
+                  )}{' '}
+                  发布
+                </>
               )}
-            >
-              <div className="text-primary flex-row-fluid">
-                {article?.status === 'SCHEDULED' && (
-                  <>
-                    将于{' '}
-                    {moment(article.publishedAt).format(
-                      'YYYY 年 MM 月 DD 日 HH:mm',
-                    )}{' '}
-                    发布
-                  </>
-                )}
-              </div>
-              {article?.status === 'DRAFT' && (
-                <Button
-                  variant="light"
-                  loading={temp.current.action === 'update' && submitting}
-                  onClick={handleSaveDraft}
-                  className="me-5"
-                >
-                  {temp.current.action === 'update' && submitting
-                    ? '保存中...'
-                    : '保存草稿'}
-                </Button>
-              )}
-              <PublishButton
-                article={article as any}
-                onPublish={handlePublish}
-                publishedAt={publishedAt}
-                submitting={submitting}
-                setPublishedAt={handlePublishedAtChange}
-                onCancel={handlePublishCancel}
-              />
             </div>
-          </Affix>
+            {article?.status === 'DRAFT' && (
+              <Button
+                variant="light"
+                loading={temp.current.action === 'update' && submitting}
+                onClick={handleSaveDraft}
+                className="me-5"
+              >
+                {temp.current.action === 'update' && submitting
+                  ? '保存中...'
+                  : '保存草稿'}
+              </Button>
+            )}
+            <PublishButton
+              article={article as any}
+              onPublish={handlePublish}
+              publishedAt={publishedAt}
+              submitting={submitting}
+              setPublishedAt={handlePublishedAtChange}
+              onCancel={handlePublishCancel}
+            />
+          </div>
         </div>
         <ArticleFormSidebar
           baseUrl={baseUrl}

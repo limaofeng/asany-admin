@@ -56,6 +56,7 @@ export interface ButtonProps<AsProps = any> {
   type?: 'dashed' | 'link' | 'solid' | 'circle';
   background?: Variant;
   disabled?: boolean;
+  full?: boolean;
   icon?: React.ReactNode;
   color?: ButtonColor | false;
   iconColor?: ButtonColor;

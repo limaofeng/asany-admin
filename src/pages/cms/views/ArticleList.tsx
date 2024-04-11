@@ -16,7 +16,6 @@ import qs from 'query-string';
 import { ContentWrapper } from '@/layouts/components';
 import {
   Badge,
-  Breadcrumb,
   Button,
   Card,
   Dropdown,
@@ -28,6 +27,7 @@ import {
 } from '@/metronic';
 import type { Article, ArticleWhereInput } from '@/types';
 
+import ArticleBreadcrumb from '../article/ArticleBreadcrumb';
 import type { IArticle } from '../article/typings';
 import {
   useArticlesQuery,
@@ -35,8 +35,9 @@ import {
   useDeleteManyArticlesMutation,
 } from '../hooks';
 import useDelete from '../hooks/useDelete';
-import '../style/article-list.scss';
 import { ArticleOutletContextParams } from '../typings';
+
+import '../style/article-list.scss';
 
 const status: {
   [key: string]: { title: string; lightStyle?: any };
@@ -199,28 +200,18 @@ function ArticleActions(props: ArticleActionsProps) {
   );
 }
 
-function ArticleList() {
+type ArticleListProps = {
+  where?: ArticleWhereInput;
+};
+
+function ArticleList(props: ArticleListProps) {
   const { cid: categoryId } = useParams<{ cid: string }>();
 
-  const { rootCategoryId, categories, baseUrl, breadcrumbs } =
+  const { rootCategoryId, categories, baseUrl } =
     useOutletContext<ArticleOutletContextParams>();
 
   const localtion = useLocation();
   const navigate = useNavigate();
-
-  const breadcrumbCategories = useMemo(() => {
-    const category = categories.find((item) => item.id === categoryId);
-    return (category?.path?.split('/') || [])
-      .map((_categoryId) => categories.find((item) => item.id === _categoryId)!)
-      .filter((item) => item);
-  }, [categories, categoryId]);
-
-  console.log(
-    'breadcrumbCategories',
-    breadcrumbCategories,
-    categories,
-    categoryId,
-  );
 
   const variables = useMemo(() => {
     const { q, ...query } = qs.parse(localtion.search) as unknown as {
@@ -228,10 +219,12 @@ function ArticleList() {
       q: string;
     };
     if (!query.where) {
-      query.where = {};
+      query.where = { ...props.where };
+    } else {
+      query.where = { ...query.where, ...props.where };
     }
     if (q) {
-      query.where = { Keyword: q };
+      query.where.keyword = q;
     }
     query.where.category = { id: categoryId!, subColumns: true };
     return query;
@@ -262,8 +255,8 @@ function ArticleList() {
   const handleChange = useCallback(
     (_pagination: any, _filters: any, _sorter: any) => {
       const _query: any = {};
-      if (variables.where?.Keyword) {
-        _query.q = variables.where?.Keyword;
+      if (variables.where?.keyword) {
+        _query.q = variables.where?.keyword;
       }
       if (!!_sorter) {
         _query.orderBy =
@@ -274,7 +267,7 @@ function ArticleList() {
         replace: true,
       });
     },
-    [variables.where?.Keyword],
+    [variables.where?.keyword],
   );
 
   const [selectedRows, setSelectedRows] = useState<Article[]>([]);
@@ -298,42 +291,7 @@ function ArticleList() {
       header={{
         title: categories.find((item) => item.id === categoryId)?.name,
       }}
-      breadcrumb={
-        <Breadcrumb className="fw-bold fs-base text-muted my-1">
-          {breadcrumbs.map((item) => (
-            <Breadcrumb.Item key={item.title}>
-              <Link to={item.url} className="text-muted">
-                {item.title}
-              </Link>
-            </Breadcrumb.Item>
-          ))}
-          <Breadcrumb.Item key="column">栏目</Breadcrumb.Item>
-          {breadcrumbCategories ? (
-            <>
-              {breadcrumbCategories
-                .filter((item) => item.id !== rootCategoryId)
-                .map((item) =>
-                  item.id === categoryId ? (
-                    <Breadcrumb.Item key={item.id} className="text-dark">
-                      {item.name}
-                    </Breadcrumb.Item>
-                  ) : (
-                    <Breadcrumb.Item key={item.id}>
-                      <Link
-                        to={`${baseUrl}/cms/categories/${item.id}/articles`}
-                        className="text-muted"
-                      >
-                        {item.name}
-                      </Link>
-                    </Breadcrumb.Item>
-                  ),
-                )}
-            </>
-          ) : (
-            <Breadcrumb.Item>加载中...</Breadcrumb.Item>
-          )}
-        </Breadcrumb>
-      }
+      breadcrumb={<ArticleBreadcrumb categoryId={categoryId} />}
     >
       <div className="tab-content">
         <Card flush headerClassName="mt-5">
@@ -397,7 +355,7 @@ function ArticleList() {
                   variant="primary"
                   className="me-3"
                   icon={<Icon className="svg-icon-2" name="Duotune/arr075" />}
-                  to={`${baseUrl}/cms/categories/${categoryId}/articles/new`}
+                  to={`${baseUrl}/categories/${categoryId}/articles/new`}
                 >
                   新建文章
                 </Button>
@@ -449,7 +407,7 @@ function ArticleList() {
                 <Button
                   as={Link}
                   variant="primary"
-                  to={`${baseUrl}/cms/categories/${categoryId}/articles/new`}
+                  to={`${baseUrl}/categories/${categoryId}/articles/new`}
                 >
                   新建文章
                 </Button>
@@ -494,7 +452,7 @@ function ArticleList() {
                                   .map((category) => (
                                     <Link
                                       key={category.id}
-                                      to={`${baseUrl}/cms/categories/${category.id}/articles`}
+                                      to={`${baseUrl}/categories/${category.id}/articles`}
                                       className="tag"
                                     >
                                       {category.name}
@@ -504,7 +462,7 @@ function ArticleList() {
                             </div>
                             <Link
                               onClick={(e) => e.stopPropagation()}
-                              to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}`}
+                              to={`${baseUrl}/categories/${categoryId}/articles/${record.id}`}
                               className="mt-2 mb-2 text-gray-800 no-selecto-drag fs-4 text-hover-primary mb-1"
                             >
                               {title}
@@ -524,7 +482,7 @@ function ArticleList() {
                             <div className="fs-base">
                               <Link
                                 className="text-muted no-selecto-drag text-hover-primary me-8"
-                                to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}`}
+                                to={`${baseUrl}/categories/${categoryId}/articles/${record.id}`}
                               >
                                 <Icon
                                   className="svg-icon-4 me-2"
@@ -534,7 +492,7 @@ function ArticleList() {
                               </Link>
                               <Link
                                 className="text-muted no-selecto-drag text-hover-primary me-8"
-                                to={`${baseUrl}/cms/categories/${categoryId}/articles/${record.id}#comments`}
+                                to={`${baseUrl}/categories/${categoryId}/articles/${record.id}#comments`}
                               >
                                 <Icon
                                   className="svg-icon-6 me-2"
@@ -578,7 +536,7 @@ function ArticleList() {
                     render: (_, record: any) => {
                       return (
                         <ArticleActions
-                          baseUrl={`${baseUrl}/cms/categories/${categoryId}`}
+                          baseUrl={`${baseUrl}/categories/${categoryId}`}
                           data={record}
                           refetch={refetch}
                         />

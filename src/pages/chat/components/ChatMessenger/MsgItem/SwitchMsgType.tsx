@@ -12,7 +12,7 @@ import {
 } from 'open-im-sdk-wasm/lib/types/entity';
 import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 
-import { Symbol, Tooltip } from '@/metronic';
+import { Symbol, Tooltip, VideoPlayer } from '@/metronic';
 import {
   bytesToSize,
   isSingleCve,
@@ -24,7 +24,6 @@ import { faceMap } from '@/models/open-im/utils/faceType';
 
 import my_voice from '../../../assets/images/voice_my.png';
 import other_voice from '../../../assets/images/voice_other.png';
-import VideoPlayer from '../../../components/VideoPlayer';
 
 // import { isSingleCve } from '@/utils/open-im/utils/im';
 // import { messageTypes } from '@/utils/open-im/constants/messageContentType';

@@ -13,6 +13,9 @@ import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 
 import { Symbol } from '@/metronic';
 import { IMSDK } from '@/models/open-im/auth';
+import { isSingleCve } from '@/models/open-im/utils';
+import { ATSTATEUPDATE, MUTILMSGCHANGE } from '@/models/open-im/utils/constant';
+import events from '@/models/open-im/utils/events';
 
 import MsgMenu from './MsgMenu';
 import SwitchMsgType from './SwitchMsgType';

@@ -16,7 +16,7 @@ type PaginationProps = {
 };
 
 function Pagination(props: PaginationProps) {
-  const { className, total = 0, onChange } = props;
+  const { className, total = 0, onChange, showSizeChanger } = props;
 
   const [current, setCurrent] = useState(props.current || 0);
   const [pageSize, setPageSize] = useState(props.pageSize || 10);
@@ -43,10 +43,12 @@ function Pagination(props: PaginationProps) {
 
   return (
     <div className={classnames('d-flex flex-stack flex-wrap', className)}>
-      <div className="fs-6 fw-bold text-gray-700">
-        Showing {current} to {Math.min(current * pageSize, total)} of {total}{' '}
-        entries
-      </div>
+      {showSizeChanger && (
+        <div className="fs-6 fw-bold text-gray-700">
+          Showing {current} to {Math.min(current * pageSize, total)} of {total}{' '}
+          entries
+        </div>
+      )}
       <PaginationInner
         current={current}
         total={total}

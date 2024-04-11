@@ -4,6 +4,7 @@ node_modules
 package-lock.json
 public
 dist
+public/
 graphql/index.schema.json
 src/types/index.ts
 src/hooks/api.ts

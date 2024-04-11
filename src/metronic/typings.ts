@@ -1,3 +1,4 @@
+export type { UploadFileData } from '@/metronic/Upload/utils/upload';
 export type { AreaValueType } from './AreaPicker/AreaPicker';
 export type { FormInstance } from './Form';
 export type { InfiniteScrollRef, RowRendererParams } from './InfiniteScroll';

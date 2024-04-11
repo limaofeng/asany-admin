@@ -45,6 +45,7 @@ function TabBar(props: TabBarProps) {
         onClick={onClick}
         style={style}
         className={classnames('nav-link', className, { active })}
+        href={'#' + props.id}
       >
         {children}
       </a>

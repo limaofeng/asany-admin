@@ -6,8 +6,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import type { RouteComponentProps } from 'react-router';
-import NavigationPrompt from 'react-router-navigation-prompt';
+// import NavigationPrompt from 'react-router-navigation-prompt';
+import { useNavigate, useParams } from 'react-router';
 import { useHoverDirty } from 'react-use';
 
 import Icon from '@asany/icons';
@@ -21,7 +21,6 @@ import { delay } from '@/utils';
 
 import type { EditorStyle } from './components/ArticleContentEditor';
 import ArticleContentEditor from './components/ArticleContentEditor';
-import NavigationPromptModal from './components/NavigationPromptModal';
 
 import {
   useArticleCategoriesQuery,
@@ -34,11 +33,10 @@ import './style/ArticleEditor.scss';
 
 const useForm = Form.useForm;
 
-type ArticleEditorProps =
-  | {
-      data?: Article;
-      loading?: boolean;
-    } & RouteComponentProps;
+type ArticleEditorProps = {
+  data?: Article;
+  loading?: boolean;
+};
 
 type IArticleStatus = 'New' | 'Draft' | 'Published';
 type IArticleSavedStatus = 'Saving' | 'NotSaved' | 'Saved';
@@ -48,7 +46,9 @@ type ArticleSettingsProps = {
   onChange: (values: Article) => void;
 };
 
-const STATUS_MAPPINGS = {
+const STATUS_MAPPINGS: {
+  [key: string]: IArticleStatus;
+} = {
   DRAFT: 'Draft',
   PUBLISHED: 'Published',
 };
@@ -151,7 +151,9 @@ function focusFirstRange(editor: any, writer: any) {
 }
 
 function ArticleEditor(props: ArticleEditorProps) {
-  const { history, loading = false } = props;
+  const { loading = false } = props;
+
+  const navigate = useNavigate();
 
   const form = useForm();
   const editorRef = useRef<any>(null);
@@ -163,7 +165,7 @@ function ArticleEditor(props: ArticleEditorProps) {
   const [, forceRender] = useReducer((s) => s + 1, 0);
   const stateRef = useRef<ArticleState>({ status: 'New', saved: 'Saved' });
   const [settingsMenuCollapsed, setSettingsMenuCollapsed] = useState(true);
-  const [editor, setEditor] = useState<EditorStyle>('BalloonBlockEditor');
+  const [editor, setEditor] = useState<EditorStyle>('ClassicEditor');
   const [wordCount, setWordCount] = useState<number>(0);
 
   const { data: { categories: _categories } = {} } = useArticleCategoriesQuery({
@@ -196,7 +198,10 @@ function ArticleEditor(props: ArticleEditorProps) {
     state.status = STATUS_MAPPINGS[state.data!.status!] as IArticleStatus;
     forceRender();
 
-    const values = { ...state.data, content: (state.data.body as any)?.text };
+    const values = {
+      ...state.data,
+      content: (state.data.content as any)?.text,
+    };
     for (const key in values) {
       if (values[key] === null) {
         values[key] = undefined;
@@ -354,14 +359,14 @@ function ArticleEditor(props: ArticleEditorProps) {
   return (
     <Spin spinning={loading}>
       <div className="tw-flex tw-flex-row modal-fullscreen art-main">
-        <NavigationPrompt
+        {/* <NavigationPrompt
           disableNative
           when={stateRef.current.saved === 'NotSaved'}
         >
           {({ onConfirm, onCancel }) => (
             <NavigationPromptModal onConfirm={onConfirm} onCancel={onCancel} />
           )}
-        </NavigationPrompt>
+        </NavigationPrompt> */}
         <div className="art-editor">
           <div className="art-editor-header">
             <div className="tw-flex tw-items-center pe-auto">
@@ -500,16 +505,12 @@ function ArticleEditor(props: ArticleEditorProps) {
   );
 }
 
-export type ArticleNewProps = RouteComponentProps<any>;
-
-export type ArticleEditProps = RouteComponentProps<any>;
-
-export function ArticleNew(props: ArticleNewProps) {
-  return <ArticleEditor {...props} />;
+export function ArticleNew() {
+  return <ArticleEditor />;
 }
 
-export function ArticleEdit(props: ArticleEditProps) {
-  const { id } = props.match.params;
+export function ArticleEdit() {
+  const { id } = useParams();
 
   const loaded = useRef<number>(0);
 
@@ -528,9 +529,7 @@ export function ArticleEdit(props: ArticleEditProps) {
     return loading;
   }, [loading]);
 
-  return (
-    <ArticleEditor {...props} loading={isLoading} data={data?.article as any} />
-  );
+  return <ArticleEditor loading={isLoading} data={data?.article as any} />;
 }
 
 export default ArticleEditor;

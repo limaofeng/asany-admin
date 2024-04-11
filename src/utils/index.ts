@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { ApolloError } from '@apollo/client';
 import { isEqual } from 'lodash';
@@ -104,8 +104,8 @@ export function flat<T>(treeData: T[], childrenKey: string = 'children'): T[] {
   const narray = [];
   for (const item of treeData) {
     narray.push(item);
-    if (item[childrenKey]) {
-      narray.push(...flat(item[childrenKey] as any, childrenKey));
+    if ((item as any)[childrenKey]) {
+      narray.push(...flat((item as any)[childrenKey] as any, childrenKey));
     }
   }
   return narray as any;
@@ -166,4 +166,17 @@ export function getFileThumbnailUrlById(
     id &&
     protocol + process.env.STORAGE_URL + `/thumbnail/${id}?size=${options.size}`
   );
+}
+
+export function flattenChildren(
+  children: React.ReactNode,
+): React.ReactElement[] {
+  const elements = React.Children.toArray(children) as React.ReactElement[];
+  return elements.reduce<React.ReactElement[]>((acc, child) => {
+    if (child.type === React.Fragment) {
+      return [...acc, ...flattenChildren(child.props.children)];
+    } else {
+      return [...acc, child];
+    }
+  }, []);
 }

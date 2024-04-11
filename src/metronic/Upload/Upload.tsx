@@ -18,7 +18,7 @@ import type { UploadFileData, UploadState } from './utils/upload';
 import { useUpload } from './utils/upload';
 
 import CirclePlayer from '../MediaPlayer/CirclePlayer';
-import Progress from '../Progress';
+import { Progress } from '../Progress';
 import Tooltip from '../Tooltip';
 
 import './style/Upload.scss';

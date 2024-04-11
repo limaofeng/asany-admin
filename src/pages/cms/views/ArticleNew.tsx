@@ -1,17 +1,17 @@
-import { useCallback, useMemo, useReducer, useRef, useState } from 'react';
+import { useCallback, useMemo, useReducer, useRef } from 'react';
 
 import { useNavigate, useOutletContext, useParams } from '@umijs/max';
-import { Affix } from 'antd';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
 import moment from 'moment';
 
 import { ContentWrapper } from '@/layouts/components';
-import { Button, Form, Tabs, Toast } from '@/metronic';
+import { Breadcrumb, Button, Form, Modal, Tabs, Toast } from '@/metronic';
 import type { QueueUploadRef } from '@/metronic/typings';
 import type { Article } from '@/types';
 import { delay, tree } from '@/utils';
 
+import ArticleBreadcrumb from '../article/ArticleBreadcrumb';
 import ArticleFormSidebar from '../components/ArticleFormSidebar';
 import {
   Advanced,
@@ -20,32 +20,29 @@ import {
   PublishButton,
 } from '../components/bodys/classic';
 import type { PublishAction } from '../components/bodys/classic/PublishButton';
-import { useCreateArticleMutation } from '../hooks';
-import '../style/ArticleForm.scss';
+import { useArticleCategoryQuery, useCreateArticleMutation } from '../hooks';
 import { ArticleOutletContextParams } from '../typings';
-// type ArticleCategoryNewProps = RouteComponentProps<
-//   { cid: string; id: string },
-//   any,
-//   { rootCategoryId: string; categories: ArticleCategory[]; baseUrl: string }
-// >;
 
-function ArticleCategoryNew() {
-  // const {
-  //   match: {
-  //     params: { cid: categoryId },
-  //   },
-  //   location: {
-  //     state: { categories, baseUrl },
-  //   },
-  // } = props;
+import '../style/ArticleForm.scss';
 
-  const params = useParams();
-  const navigate = useNavigate();
+type ArticleNewParams = { cid: string; id: string };
+
+function ArticleNew() {
+  const { cid: categoryId } = useParams<ArticleNewParams>();
 
   const { categories, baseUrl } =
     useOutletContext<ArticleOutletContextParams>();
 
-  const { cid: categoryId } = params;
+  const navigate = useNavigate();
+
+  const { data } = useArticleCategoryQuery({
+    variables: {
+      id: categoryId,
+    },
+    fetchPolicy: 'network-only',
+  });
+
+  const category = data?.category;
 
   const temp = useRef<{
     publishedAt: Moment;
@@ -82,22 +79,28 @@ function ArticleCategoryNew() {
 
   const [createArticle, { loading: submitting }] = useCreateArticleMutation();
 
-  const [storeTemplate, setStoreTemplate] = useState<string | undefined>();
-
   const handleChangeCategory = useCallback(
-    (cid: string) => {
-      const category = categories.find((item) => (item.id = cid));
-      setStoreTemplate(category?.storeTemplate?.id);
+    async (cid: string) => {
+      const newCategory = categories.find((item) => item.id === cid);
+      if (
+        newCategory?.storeTemplate?.contentType !==
+        category?.storeTemplate?.contentType
+      ) {
+        const result = await Modal.confirm({
+          title: '修改栏目确认',
+          content: '目标栏目的正文类型不一致，是否确定切换 ？',
+        });
+        if (!result.isConfirmed) {
+          form.setFieldValue(['category', 'id'], category?.id);
+          return;
+        }
+      }
+      navigate(`${baseUrl}/categories/${newCategory?.id}/articles/new`, {
+        replace: true,
+      });
     },
-    [categories],
+    [categories, category],
   );
-
-  // const breadcrumbCategories = useMemo(() => {
-  //   const category = categories.find((item) => item.id === categoryId);
-  //   return (category?.path?.split('/') || [])
-  //     .map((_categoryId) => categories.find((item) => item.id === _categoryId)!)
-  //     .filter((item) => item);
-  // }, [categories, categoryId]);
 
   const handleSubmit = useCallback(
     async (action: PublishAction | 'draft') => {
@@ -107,7 +110,6 @@ function ArticleCategoryNew() {
       const {
         meta,
         category,
-        body,
         publishedAt: _publishedAt,
         ...values
       } = await form.validateFields();
@@ -134,7 +136,6 @@ function ArticleCategoryNew() {
         ...values,
         metafields,
         category: category.id,
-        body: { type: 'HTML', text: body.text },
       };
 
       if (action === 'publish') {
@@ -164,7 +165,7 @@ function ArticleCategoryNew() {
         },
       );
       navigate(
-        `${baseUrl}/cms/categories/${category.id}/articles/${_data.data.article.id}`,
+        `${baseUrl}/categories/${category.id}/articles/${_data.data.article.id}`,
         {
           replace: true,
         },
@@ -201,43 +202,21 @@ function ArticleCategoryNew() {
     form.setFieldsValue({ publishedAt: temp.current.publishedAt });
   }, [form]);
 
-  console.log('storeTemplate', storeTemplate, publishedAt);
+  console.log('storeTemplate', category?.storeTemplate?.contentType);
 
   return (
     <ContentWrapper
       header={{
         title: '新增文章',
       }}
-      // breadcrumb={
-      //   <Breadcrumb className="fw-bold fs-base text-muted my-1">
-      //     <Breadcrumb.Item key="website">互升官网</Breadcrumb.Item>
-      //     <Breadcrumb.Item key="column">栏目</Breadcrumb.Item>
-      //     {breadcrumbCategories ? (
-      //       <>
-      //         {breadcrumbCategories
-      //           .filter((item) => item.id !== rootCategoryId)
-      //           .map((item) =>
-      //             item.id === categoryId ? (
-      //               <Breadcrumb.Item key={item.id} className="text-dark">
-      //                 {item.name}
-      //               </Breadcrumb.Item>
-      //             ) : (
-      //               <Breadcrumb.Item key={item.id}>
-      //                 <Link
-      //                   to={`${baseUrl}/cms/categories/${item.id}/articles`}
-      //                   className="text-muted"
-      //                 >
-      //                   {item.name}
-      //                 </Link>
-      //               </Breadcrumb.Item>
-      //             ),
-      //           )}
-      //       </>
-      //     ) : (
-      //       <Breadcrumb.Item>加载中...</Breadcrumb.Item>
-      //     )}
-      //   </Breadcrumb>
-      // }
+      breadcrumb={
+        <ArticleBreadcrumb
+          categoryId={categoryId}
+          append={
+            <Breadcrumb.Item className="text-dark">新增文章</Breadcrumb.Item>
+          }
+        />
+      }
     >
       <Form
         form={form}
@@ -250,12 +229,16 @@ function ArticleCategoryNew() {
       >
         <div className="d-flex flex-column flex-row-fluid gap-7 gap-lg-10  me-lg-10">
           <Tabs
+            type="line-tabs"
             defaultActiveKey="general"
             contentContainer={false}
             className="border-0 fs-4 fw-bold mb-n2 nav-line-tabs-2x"
           >
             <Tabs.TabPane key="general" tab="基本信息" forceRender>
-              <General queueUpload={queueUpload} />
+              <General
+                contentType={category?.storeTemplate?.contentType}
+                queueUpload={queueUpload}
+              />
             </Tabs.TabPane>
             <Tabs.TabPane key="advanced" tab="高级设置" forceRender>
               <Advanced />
@@ -264,29 +247,27 @@ function ArticleCategoryNew() {
               <Metadata />
             </Tabs.TabPane>
           </Tabs>
-          <Affix offsetBottom={16}>
-            <div
-              className={classnames(
-                'd-flex bg-body-color p-5 mx-4 tw-rounded-2xl justify-content-end',
-              )}
+          <div
+            className={classnames(
+              'd-flex bg-body-color p-5 mx-4 tw-rounded-2xl justify-content-end',
+            )}
+          >
+            <Button
+              variant="light"
+              loading={temp.current.action === 'draft' && submitting}
+              onClick={handleSaveDraft}
+              className="me-5"
             >
-              <Button
-                variant="light"
-                loading={temp.current.action === 'draft' && submitting}
-                onClick={handleSaveDraft}
-                className="me-5"
-              >
-                {!temp.current.action && submitting ? '保存中...' : '保存草稿'}
-              </Button>
-              <PublishButton
-                onPublish={handlePublish}
-                publishedAt={publishedAt}
-                submitting={temp.current.action !== 'draft' && submitting}
-                setPublishedAt={handlePublishedAtChange}
-                onCancel={handlePublishCancel}
-              />
-            </div>
-          </Affix>
+              {!temp.current.action && submitting ? '保存中...' : '保存草稿'}
+            </Button>
+            <PublishButton
+              onPublish={handlePublish}
+              publishedAt={publishedAt}
+              submitting={temp.current.action !== 'draft' && submitting}
+              setPublishedAt={handlePublishedAtChange}
+              onCancel={handlePublishCancel}
+            />
+          </div>
         </div>
         <ArticleFormSidebar
           baseUrl={baseUrl}
@@ -298,4 +279,8 @@ function ArticleCategoryNew() {
   );
 }
 
-export default ArticleCategoryNew;
+export default ArticleNew;
+// const OldArticleNew =  require('../article/ArticleEditor').ArticleNew;
+// export default () => {
+//   return <OldArticleNew />;
+// };

@@ -3,15 +3,20 @@ import { useCallback } from 'react';
 
 import { Icon } from '@asany/icons';
 
-import { Button, Card, Form, Input, QuillEditor, Upload } from '@/metronic';
+import { Button, Card, Form, Input, Upload } from '@/metronic';
 import type { QueueUploadRef } from '@/metronic/typings';
+import { Article, ContentType } from '@/types';
+
+import ArticleContent from '../../ArticleContent';
 
 type GeneralProps = {
+  contentType?: ContentType | null;
+  article?: Article;
   queueUpload: RefObject<QueueUploadRef>;
 };
 
 function General(props: GeneralProps) {
-  const { queueUpload } = props;
+  const { queueUpload, contentType } = props;
 
   const handleUploadAttachment = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
@@ -24,7 +29,6 @@ function General(props: GeneralProps) {
     <div className="d-flex flex-column gap-7 gap-lg-10">
       <Card flush className="py-4">
         <Form.Item
-          className="mb-8"
           name="title"
           label="标题"
           required
@@ -33,14 +37,12 @@ function General(props: GeneralProps) {
         >
           <Input placeholder="文章标题" className="mw-400px" />
         </Form.Item>
-        <Form.Item
-          name={['body', 'text']}
-          label="正文"
-          help="您可以选择适合自己的，编辑方式"
-        >
-          <QuillEditor className="h-300px" />
-        </Form.Item>
       </Card>
+
+      <Form.Item name="content" noStyle help="您可以选择适合自己的，编辑方式">
+        <ArticleContent contentType={contentType} />
+      </Form.Item>
+
       <Card flush className="py-4" title="附件" bodyClassName="pt-0">
         <Form.Item name="attachments" noStyle>
           <Upload.Queue ref={queueUpload} namespace="email" />

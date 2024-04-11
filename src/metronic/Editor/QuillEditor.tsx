@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 
 import classnames from 'classnames';
@@ -65,6 +65,7 @@ function QuillEditor(props: QuillEditorProps) {
   } = props;
 
   const valueRef = useRef(props.value || '');
+  const [, forceUpdate] = useReducer((s) => s + 1, 0);
 
   const handleChange = useCallback(
     (_value) => {
@@ -79,6 +80,14 @@ function QuillEditor(props: QuillEditorProps) {
     },
     [onChange],
   );
+
+  useEffect(() => {
+    if (valueRef.current === props.value) {
+      return;
+    }
+    valueRef.current = props.value || '';
+    forceUpdate();
+  }, [props.value]);
 
   if (mode === 'html') {
     return (
@@ -99,7 +108,7 @@ function QuillEditor(props: QuillEditorProps) {
         }}
         placeholder={placeholder}
         theme={theme}
-        value={props.value || ''}
+        value={valueRef.current}
         onChange={handleChange}
       />
     );

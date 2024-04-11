@@ -175,6 +175,7 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
           <Card.Body>
             <Button
               onClick={handleDelete}
+              full
               className="mb-3"
               variant="light-danger"
               icon={<Icon className="svg-icon-2" name="Bootstrap/trash" />}

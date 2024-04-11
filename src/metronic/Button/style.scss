@@ -5,6 +5,13 @@
   line-height: 24px;
   border-radius: 6px;
 
+  &.btn-full {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   &:not(.btn-outline):not(.btn-dashed):not(.border-hover):not(
       .border-active
     ):not(.btn-flush):not(.btn-icon) {

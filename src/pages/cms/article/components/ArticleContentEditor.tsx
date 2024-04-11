@@ -6,8 +6,11 @@ import React, {
   useState,
 } from 'react';
 
-import { BalloonBlockEditor, ClassicEditor } from '@asany/ckeditor5';
+import { BalloonBlockEditor, ClassicEditor } from '@asany/ckeditor';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
+import { NESTED_TOOLBAR_ICONS } from '@ckeditor/ckeditor5-ui/src/toolbar/toolbarview';
+
+console.log('NESTED_TOOLBAR_ICONS', NESTED_TOOLBAR_ICONS);
 
 export type EditorStyle = 'ClassicEditor' | 'BalloonBlockEditor';
 
@@ -49,6 +52,7 @@ const CKEditorWrapper = React.forwardRef(function CKEditorWrapper(
   }, [editorStyle]);
 
   const handleReady = useCallback((editor: any) => {
+    console.log('Editor is ready to use!', editor);
     if (!editor?.ui) {
       return;
     }
@@ -83,8 +87,8 @@ const CKEditorWrapper = React.forwardRef(function CKEditorWrapper(
 
   return (
     <CKEditor
-      editor={editorType}
-      data={value}
+      editor={editorType!}
+      data="123123123123"
       config={{
         language: 'zh-cn',
       }}
@@ -98,7 +102,7 @@ function ArticleContentEditor(
   props: ArticleContentEditorProps,
   editorRef: any,
 ) {
-  const { editor: editorStyle = 'BalloonBlockEditor' } = props;
+  const { editor: editorStyle = 'ClassicEditor' } = props;
   const [switching, setSwitching] = useState(false);
 
   useEffect(() => {
