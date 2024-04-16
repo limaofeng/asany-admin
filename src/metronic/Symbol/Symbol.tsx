@@ -10,6 +10,7 @@ function Symbol(props: SymbolProps) {
 }
 
 Symbol.Avatar = Avatar;
+Symbol.Image = Avatar;
 Symbol.Group = SymbolGroup;
 Symbol.More = MoreSymbol;
 Symbol.Users = UsersGroup;

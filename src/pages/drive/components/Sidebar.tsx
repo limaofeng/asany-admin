@@ -31,7 +31,6 @@ function SidebarFooter(props: SidebarFooterProps) {
     (key: string) => {
       if (key.startsWith('drive-')) {
         console.log(key);
-        // setCalendarSet(key.substring('contacts-'.length));
       } else {
         onAction(key);
         return false;
@@ -76,7 +75,8 @@ function Sidebar() {
   );
   const api = useModel('cloud-drive.index', (model) => model.api.base);
 
-  const match = useMatch('/drive/:type/:value');
+  const matchType = useMatch('/drive/:type');
+  const matchValue = useMatch('/drive/:type/:value');
 
   // const twoMatch = useRouteMatch<{ type: string }>({
   //   path: '/drive/:type',
@@ -109,8 +109,11 @@ function Sidebar() {
     return data.cloudDrives.find((item) => item.id === currentDriveId);
   }, [data?.cloudDrives, currentDriveId]);
 
-  const type = useMemo(() => match?.params.type || match?.params.type, [match]);
-  const value = useMemo(() => match?.params.value, [match]);
+  const type = useMemo(
+    () => matchType?.params.type || matchValue?.params.type,
+    [matchType, matchValue],
+  );
+  const value = useMemo(() => matchValue?.params.value, [matchValue]);
 
   const handleVisibleChange = useCallback(
     (visible: boolean) => {

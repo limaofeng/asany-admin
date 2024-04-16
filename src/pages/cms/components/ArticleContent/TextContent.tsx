@@ -22,8 +22,8 @@ function TextContent(props: TextContentProps) {
   }, [value]);
 
   const handleChange = useCallback(
-    (value: string) => {
-      onChange && onChange({ text: value, type: textType });
+    (text: string) => {
+      onChange && onChange({ ...value, text, type: textType });
     },
     [value],
   );

@@ -11,7 +11,7 @@ import dynamic from '@/utils/dynamic';
 class System {
   @component({ name: 'Sidebar', title: '侧边栏', tags: ['系统管理'] })
   Sidebar = dynamic({
-    loader: () => import('./components/Sidebar'),
+    loader: () => import('./components/SystemSidebar'),
     loading: LoadingComponent,
   });
   @component({
@@ -21,6 +21,46 @@ class System {
   })
   WebsiteList = dynamic({
     loader: () => import('./message/pages/MessageTypeList'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    name: 'MainSystem',
+    title: '消息列表',
+    tags: ['系统管理/消息管理'],
+  })
+  MainSystem = dynamic({
+    loader: () => import('./views/MainSystem'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    name: 'UserListView',
+    title: '用户列表',
+    tags: ['系统管理/用户管理'],
+  })
+  UserListView = dynamic({
+    loader: () => import('./views/UserListView'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    name: 'UserNewView',
+    title: '新建用户',
+    tags: ['系统管理/用户管理'],
+  })
+  UserNewView = dynamic({
+    loader: () => import('./views/UserNewView'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    name: 'UserEditView',
+    title: '编辑用户',
+    tags: ['系统管理/用户管理'],
+  })
+  UserEditView = dynamic({
+    loader: () => import('./views/UserEditView'),
     loading: LoadingComponent,
   });
 }

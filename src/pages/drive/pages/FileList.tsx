@@ -26,8 +26,8 @@ function FileList() {
   }, [driveId, loadCloudDrive]);
 
   const cloudDrive = useMemo(() => {
-    return data?.cloudDrive || location.state?.cloudDrive;
-  }, [data?.cloudDrive, location.state?.cloudDrive]);
+    return data?.cloudDrive;
+  }, [data?.cloudDrive]);
 
   // console.log('paths', cloudDrive, location.state?.currentFolder);
 
@@ -51,7 +51,7 @@ function FileList() {
     return 'my-drive';
   }, [location.pathname]);
 
-  const fileFilter = useMemo(() => {
+  const where = useMemo(() => {
     if (menuKey === 'image') {
       return {
         isDirectory: false,
@@ -141,9 +141,10 @@ function FileList() {
     return { ..._rootFolder, isRootFolder: true, name: '全部文件' } as any;
   }, [cloudDrive, menuKey]);
 
+  console.log('cloudDrive', cloudDrive);
   console.log('rootFolder', rootFolder);
   console.log('folder', folder);
-  console.log('fileFilter', fileFilter);
+  console.log('where', where);
 
   return (
     <ContentWrapper className="app-drive-main" header={false} footer={false}>
@@ -151,7 +152,7 @@ function FileList() {
         <ListFiles
           key="list-files"
           folder={folder}
-          filter={fileFilter}
+          where={where}
           orderBy={location.state?.orderBy}
           rootFolder={rootFolder}
           currentFolder={location.state?.currentFolder}

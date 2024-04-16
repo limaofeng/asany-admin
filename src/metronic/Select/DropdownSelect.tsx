@@ -82,6 +82,7 @@ const SelectMenuBody = React.forwardRef(function (
 export type SelectProps = {
   placeholder?: string;
   options: OptionData[];
+  readOnly?: boolean;
   solid?: boolean;
   offset?: [number, number];
   size?: 'xs' | 'sm' | 'lg';
@@ -102,6 +103,7 @@ function DropdownSelect(
   const {
     placement,
     offset,
+    readOnly,
     options,
     itemRender,
     size,
@@ -187,7 +189,7 @@ function DropdownSelect(
       >
         <a
           data-kt-menu-offset={offset ? offset.join(',') : undefined}
-          onClick={handleClick}
+          onClick={readOnly ? undefined : handleClick}
           className="current-option text-gray-700"
         >
           {displayText}

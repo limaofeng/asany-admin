@@ -74,6 +74,7 @@ function Avatar(props: AvatarProps, ref: any) {
   const {
     onClick,
     shape,
+    style,
     className,
     light,
     labelClassName,
@@ -118,6 +119,9 @@ function Avatar(props: AvatarProps, ref: any) {
   }, []);
 
   const url = useMemo(() => {
+    if (!!src && typeof src === 'object' && src.hasOwnProperty('id')) {
+      return process.env.STORAGE_URL + `/preview/${(src as any).id}`;
+    }
     if (typeof src !== 'string') {
       return src;
     }
@@ -128,7 +132,7 @@ function Avatar(props: AvatarProps, ref: any) {
     ) {
       return src;
     }
-    return process.env.STORAGE_URL + src;
+    return src;
   }, [src]);
 
   useLayoutEffect(() => {
@@ -154,6 +158,7 @@ function Avatar(props: AvatarProps, ref: any) {
     <div
       ref={ref}
       onClick={onClick}
+      style={style}
       className={classnames(
         'symbol',
         {

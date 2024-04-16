@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 
 import type { UseLazyQuery } from '@/metronic/hooks';
 import { useLongListLazyQuery } from '@/metronic/hooks';
-import type { FileFilter, FileObject } from '@/types';
+import type { FileObject, FileWhereInput } from '@/types';
 
 import { useListFilesLazyQuery } from './api';
 
 type QueryCondition = {
   rootFolder?: string;
-  filter?: FileFilter;
+  where?: FileWhereInput;
   orderBy?: string;
 };
 
@@ -52,12 +52,12 @@ const useLazyQuery: UseLazyQuery<FileObject, QueryCondition> = function () {
 
 export function useListFiles(
   rootFolder: string | undefined,
-  filter: FileFilter | undefined,
+  where: FileWhereInput | undefined,
   orderBy: string | undefined,
 ) {
   return useLongListLazyQuery<FileObject, QueryCondition>(useLazyQuery, {
     rootFolder,
-    filter,
+    where,
     orderBy,
   });
 }

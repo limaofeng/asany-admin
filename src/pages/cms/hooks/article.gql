@@ -38,6 +38,37 @@ query articles($where: ArticleWhereInput, $page: Int, $pageSize: Int) {
   }
 }
 
+query articleList(
+  $where: ArticleWhereInput
+  $offset: Int
+  $limit: Int
+  $orderBy: OrderBy
+) {
+  articles: articles(
+    where: $where
+    offset: $offset
+    limit: $limit
+    orderBy: $orderBy
+  ) {
+    id
+    title
+    image
+    summary
+    authors {
+      id
+      name
+    }
+    categories {
+      id
+      name
+    }
+    createdBy
+    createdAt(format: "yyyy-MM-dd HH:mm")
+    publishedAt
+    status
+  }
+}
+
 query articleCategories($id: ID!) {
   categories: articleCategories(
     where: { parent: { id: $id, subColumns: true } }
@@ -98,22 +129,10 @@ mutation createArticle($input: ArticleCreateInput!) {
     id
     title
     status
-    category {
-      id
-      name
-      __typename
-    }
-    categories {
-      id
-      name
-    }
-    content {
-      id
-      __typename
-      ... on TextContent {
-        text
-      }
-    }
+    image
+    summary
+    publishedAt
+    ...ArticleParts
   }
 }
 
@@ -125,23 +144,7 @@ mutation updateArticle($id: ID!, $input: ArticleUpdateInput!) {
     image
     summary
     publishedAt
-    category {
-      id
-      name
-      __typename
-    }
-    categories {
-      id
-      name
-    }
-    content {
-      id
-      __typename
-      ... on TextContent {
-        type
-        text
-      }
-    }
+    ...ArticleParts
   }
 }
 
@@ -161,51 +164,7 @@ query article($id: ID!) {
     image
     summary
     publishedAt
-    category {
-      id
-      name
-    }
-    categories {
-      id
-      name
-    }
-    metafields {
-      id
-      key
-      namespace
-      value
-    }
-    contentType
-    content {
-      id
-      ... on TextContent {
-        textType: type
-        text
-      }
-      ... on DocumentContent {
-        url
-        document
-        documentType: type
-        size
-        title
-        description
-      }
-      ... on ImageContent {
-        images {
-          id
-          url
-          title
-          description
-        }
-      }
-      ... on VideoContent {
-        id
-        url
-        title
-        video
-        description
-      }
-    }
+    ...ArticleParts
   }
 }
 
@@ -218,5 +177,54 @@ mutation createArticleCategory($input: ArticleCategoryCreateInput!) {
 mutation updateArticleCategory($id: ID!, $input: ArticleCategoryUpdateInput!) {
   updateArticleCategory(id: $id, input: $input) {
     id
+  }
+}
+
+fragment ArticleParts on Article {
+  category {
+    id
+    name
+  }
+  categories {
+    id
+    name
+  }
+  metafields {
+    id
+    key
+    namespace
+    value
+  }
+  contentType
+  content {
+    id
+    ... on TextContent {
+      textType: type
+      text
+    }
+    ... on DocumentContent {
+      url
+      document
+      documentType: type
+      size
+      title
+      description
+    }
+    ... on ImageContent {
+      images {
+        id
+        url
+        title
+        image
+        description
+      }
+    }
+    ... on VideoContent {
+      id
+      url
+      title
+      video
+      description
+    }
   }
 }

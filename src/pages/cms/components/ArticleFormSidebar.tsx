@@ -12,8 +12,8 @@ import type { Article } from '@/types';
 
 import PublishDatePicker from './PublishDatePicker';
 
+import useDelete from '../../../hooks/useDelete';
 import { useDeleteArticleMutation } from '../hooks';
-import useDelete from '../hooks/useDelete';
 
 type ArticleFormSidebarProps = {
   baseUrl: string;

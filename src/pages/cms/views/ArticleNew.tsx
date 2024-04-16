@@ -8,7 +8,7 @@ import moment from 'moment';
 import { ContentWrapper } from '@/layouts/components';
 import { Breadcrumb, Button, Form, Modal, Tabs, Toast } from '@/metronic';
 import type { QueueUploadRef } from '@/metronic/typings';
-import type { Article } from '@/types';
+import { ContentType, ImageContent, type Article } from '@/types';
 import { delay, tree } from '@/utils';
 
 import ArticleBreadcrumb from '../article/ArticleBreadcrumb';
@@ -79,13 +79,12 @@ function ArticleNew() {
 
   const [createArticle, { loading: submitting }] = useCreateArticleMutation();
 
+  const contentType = category?.storeTemplate?.contentType;
+
   const handleChangeCategory = useCallback(
     async (cid: string) => {
       const newCategory = categories.find((item) => item.id === cid);
-      if (
-        newCategory?.storeTemplate?.contentType !==
-        category?.storeTemplate?.contentType
-      ) {
+      if (newCategory?.storeTemplate?.contentType !== contentType) {
         const result = await Modal.confirm({
           title: '修改栏目确认',
           content: '目标栏目的正文类型不一致，是否确定切换 ？',
@@ -111,6 +110,7 @@ function ArticleNew() {
         meta,
         category,
         publishedAt: _publishedAt,
+        content,
         ...values
       } = await form.validateFields();
 
@@ -132,9 +132,20 @@ function ArticleNew() {
         }
       }
 
+      if (contentType === ContentType.Image) {
+        for (const img of (content as ImageContent).images) {
+          delete img.__typename;
+          delete (img as any).id;
+          if (!!img.image && typeof img.image === 'object') {
+            img.image = img.image.id;
+          }
+        }
+      }
+
       const input = {
         ...values,
         metafields,
+        content,
         category: category.id,
       };
 
@@ -172,7 +183,7 @@ function ArticleNew() {
       );
       console.log('submit result set', _data);
     },
-    [baseUrl, createArticle, form],
+    [baseUrl, createArticle, form, contentType],
   );
 
   const handleSaveDraft = useCallback(() => {
@@ -201,8 +212,6 @@ function ArticleNew() {
     forceRender();
     form.setFieldsValue({ publishedAt: temp.current.publishedAt });
   }, [form]);
-
-  console.log('storeTemplate', category?.storeTemplate?.contentType);
 
   return (
     <ContentWrapper
@@ -235,10 +244,7 @@ function ArticleNew() {
             className="border-0 fs-4 fw-bold mb-n2 nav-line-tabs-2x"
           >
             <Tabs.TabPane key="general" tab="基本信息" forceRender>
-              <General
-                contentType={category?.storeTemplate?.contentType}
-                queueUpload={queueUpload}
-              />
+              <General contentType={contentType} queueUpload={queueUpload} />
             </Tabs.TabPane>
             <Tabs.TabPane key="advanced" tab="高级设置" forceRender>
               <Advanced />

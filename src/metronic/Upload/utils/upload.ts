@@ -133,6 +133,7 @@ export type UploadFileData = {
   size: number;
   mimeType: string;
   createdAt: string;
+  url: string;
   parentFolder: {
     id: string;
   };
@@ -258,7 +259,11 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
             },
           },
         });
-        return data.upload;
+        const uploadResult = data.upload;
+        return {
+          ...uploadResult,
+          url: process.env.STORAGE_URL + '/preview/' + uploadResult.id,
+        };
       } catch (e) {
         if (
           (e as Error).name !== 'AbortError' &&
@@ -388,7 +393,11 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         },
       });
 
-      state.current.data = xdata!.upload;
+      const uploadResult = xdata!.upload;
+      state.current.data = {
+        ...uploadResult,
+        url: process.env.STORAGE_URL + '/preview/' + uploadResult.id,
+      };
       state.current.state = 'completed';
 
       forceRender();
@@ -430,12 +439,16 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         },
       );
 
-      state.current.data = _upload;
+      const uploadResult = _upload;
+      state.current.data = {
+        ...uploadResult,
+        url: process.env.STORAGE_URL + '/preview/' + uploadResult.id,
+      };
       state.current.state = 'completed';
 
       forceRender();
 
-      return _upload;
+      return state.current.data!;
     },
     [executeUploadFile],
   );

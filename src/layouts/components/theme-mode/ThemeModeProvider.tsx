@@ -80,7 +80,7 @@ const ThemeModeProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem(themeModeLSKey, updatedMode);
     }
 
-    document.documentElement.setAttribute('data-theme', updatedMode);
+    document.documentElement.setAttribute('data-bs-theme', updatedMode);
     ThemeModeComponent.init();
   };
 

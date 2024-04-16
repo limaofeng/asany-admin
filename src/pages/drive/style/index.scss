@@ -109,6 +109,7 @@ $transfers_border_color: #f4f4f4;
   }
 
   .transfer-file-list {
+    padding-left: 0;
     .file-item {
       display: flex;
       flex-direction: row;

@@ -71,7 +71,7 @@ export interface ButtonProps<AsProps = any> {
   htmlType?: 'submit' | 'button' | 'reset';
   children?: React.ReactNode;
   loading?: boolean;
-  onClick?: (e: React.MouseEvent<any>) => void;
+  onClick?: (e: React.MouseEvent<any>) => void | Promise<any>;
   to?: string;
   style?: CSSProperties;
 }

@@ -34,6 +34,7 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
   status?: InputStatus;
   addonBefore?: React.ReactNode;
   style?: React.CSSProperties;
+  readOnly?: boolean;
 }
 
 export type InputRef = {
@@ -63,6 +64,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     boxClassName,
     status: customStatus,
     style,
+    readOnly,
     ...otherProps
   } = props;
 
@@ -152,11 +154,14 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     [onClick],
   );
 
+  console.log('otherProps', otherProps);
+
   const input = (
     <input
       {...otherProps}
       ref={inputRef}
       style={style}
+      readOnly={readOnly}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       className={classnames(

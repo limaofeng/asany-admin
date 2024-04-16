@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import classnames from 'classnames';
 
@@ -18,7 +18,7 @@ function Button(
     children,
     className,
     flushed,
-    loading,
+    loading: withoutLoading,
     htmlType,
     type,
     background,
@@ -36,17 +36,42 @@ function Button(
   }: ButtonProps<any>,
   ref: any,
 ) {
+  const [loading, setLoading] = useState<boolean>(!!withoutLoading);
+
   if (loading !== null) {
     (props as any)['data-kt-indicator'] = loading ? 'on' : 'off';
   }
 
   const isEmpty = unpack(children).length === 0;
 
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      const result = onClick && onClick(e);
+      if (typeof withoutLoading === 'boolean') {
+        return;
+      }
+      if (result instanceof Promise) {
+        setLoading(true);
+        result.finally(() => {
+          setLoading(false);
+        });
+      }
+    },
+    [withoutLoading, onClick],
+  );
+
+  useEffect(() => {
+    if (typeof withoutLoading !== 'boolean') {
+      return;
+    }
+    setLoading(!!withoutLoading);
+  }, [withoutLoading]);
+
   return React.createElement(
     htmlType ? 'button' : (as as any),
     {
       ...props,
-      onClick,
+      onClick: handleClick,
       ref,
       type: htmlType,
       disabled: as === 'button' ? disabled || loading : undefined,

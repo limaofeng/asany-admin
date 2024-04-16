@@ -50,6 +50,22 @@ class ProductInformationManagement {
     loader: () => import('./views/ProductListView'),
     loading: LoadingComponent,
   });
+
+  @component({
+    name: 'ProductEditView',
+  })
+  ProductEditView = dynamic({
+    loader: () => import('./views/ProductEditView'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    name: 'ProductNewView',
+  })
+  ProductNewView = dynamic({
+    loader: () => import('./views/ProductNewView'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new ProductInformationManagement();

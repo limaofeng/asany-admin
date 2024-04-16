@@ -73,7 +73,10 @@ function SymbolGroup(props: SymbolGroupProps) {
 
   const newChildren = useMemo(() => {
     const children = React.Children.toArray(props.children).map((item) =>
-      React.cloneElement(item as any, { size, shape }),
+      React.cloneElement(item as any, {
+        size: (item as any).props.size || size,
+        shape,
+      }),
     );
     if (children.length <= maxCount) {
       if (maxCount === children.length + 1 && more) {

@@ -17,7 +17,7 @@ export function useSymbolSize(size?: SymbolSize) {
     }
     return classnames(
       ...Object.keys(size).map(
-        (breakpoint) => `symbol-${breakpoint}-${size[breakpoint]}px`,
+        (breakpoint) => `symbol-${breakpoint}-${(size as any)[breakpoint]}px`,
       ),
     );
   }, [size]);

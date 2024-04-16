@@ -15,7 +15,12 @@ import moment from 'moment';
 import { ContentWrapper } from '@/layouts/components';
 import { Breadcrumb, Button, Form, Modal, Tabs, Toast } from '@/metronic';
 import type { QueueUploadRef } from '@/metronic/typings';
-import type { Article, ArticleCategory } from '@/types';
+import {
+  ContentType,
+  ImageContent,
+  type Article,
+  type ArticleCategory,
+} from '@/types';
 import { delay, tree } from '@/utils';
 
 import ArticleBreadcrumb from '../article/ArticleBreadcrumb';
@@ -55,7 +60,7 @@ function ArticleEdit() {
   const form = Form.useForm();
 
   const { data, loading } = useArticleQuery({
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
     variables: {
       id,
     },
@@ -116,6 +121,8 @@ function ArticleEdit() {
     setCategory(categories.find((item) => item.id === categoryId));
   }, [categories, categoryId]);
 
+  const contentType = category?.storeTemplate?.contentType;
+
   const handleSubmit = useCallback(
     async (action: PublishAction) => {
       temp.current.action = action;
@@ -156,6 +163,23 @@ function ArticleEdit() {
           content.type = content.documentType;
         }
         delete content.documentType;
+      }
+
+      if (content.hasOwnProperty('textType')) {
+        if (!content.type && content.textType) {
+          content.type = content.textType;
+        }
+        delete content.textType;
+      }
+
+      if (contentType === ContentType.Image) {
+        for (const img of (content as ImageContent).images) {
+          delete img.__typename;
+          delete (img as any).id;
+          if (!!img.image && typeof img.image === 'object') {
+            img.image = img.image.id;
+          }
+        }
       }
 
       const input = {
@@ -202,7 +226,7 @@ function ArticleEdit() {
       // }
       console.log('submit result set', _data);
     },
-    [form, updateArticle, id, article?.status],
+    [form, updateArticle, id, article?.status, contentType],
   );
 
   const publishedAt = temp.current.publishedAt;
@@ -250,8 +274,6 @@ function ArticleEdit() {
     forceRender();
     form.setFieldsValue({ publishedAt: _publishedAt });
   }, [form]);
-
-  const contentType = category?.storeTemplate?.contentType;
 
   return (
     <ContentWrapper

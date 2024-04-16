@@ -144,3 +144,117 @@ mutation generateShortLinks($links: [ShortLinkCreateInput!]!) {
     metadata
   }
 }
+
+query product($id: ID!) {
+  result: product(id: $id) {
+    id
+    name
+    brand {
+      id
+      name
+    }
+    warrantyPolicies {
+      id
+      name
+      duration
+      createdAt(format: "yyyy-MM-dd")
+    }
+    images {
+      id
+      url
+      alt
+      title
+      description
+      image
+    }
+    videos: articles(linkageType: "videos") {
+      id
+      title
+      createdAt(format: "yyyy-MM-dd")
+    }
+    knowledgebase: articles(linkageType: "knowledgebase") {
+      id
+      title
+      createdAt(format: "yyyy-MM-dd")
+    }
+    notebook: articles(linkageType: "notebook") {
+      id
+      title
+    }
+    tutorials: articles(linkageType: "tutorials") {
+      id
+      title
+    }
+    createdAt(format: "yyyy-MM-dd")
+  }
+}
+
+mutation deleteProduct($id: ID!) {
+  result: deleteProduct(id: $id) {
+    id
+  }
+}
+
+mutation createProduct($input: ProductCreateInput!) {
+  result: createProduct(input: $input) {
+    id
+  }
+}
+
+mutation updateProduct($id: ID!, $input: ProductUpdateInput!) {
+  result: updateProduct(id: $id, input: $input) {
+    id
+  }
+}
+
+mutation addArticleToProduct(
+  $productId: ID!
+  $linkageType: String!
+  $articleIds: [ID!]!
+) {
+  result: addArticlesToProduct(
+    productId: $productId
+    linkageType: $linkageType
+    articleIds: $articleIds
+  ) {
+    id
+  }
+}
+
+mutation removeArticleFromProduct(
+  $productId: ID!
+  $linkageType: String!
+  $articleIds: [ID!]!
+) {
+  result: removeArticlesFromProduct(
+    productId: $productId
+    linkageType: $linkageType
+    articleIds: $articleIds
+  ) {
+    id
+  }
+}
+
+mutation createWarrantyPolicy($input: WarrantyPolicyCreateInput!) {
+  result: createWarrantyPolicy(input: $input) {
+    id
+  }
+}
+
+mutation updateWarrantyPolicy($id: ID!, $input: WarrantyPolicyUpdateInput!) {
+  result: updateWarrantyPolicy(id: $id, input: $input) {
+    id
+  }
+}
+
+mutation deleteWarrantyPolicy($id: ID!) {
+  result: deleteWarrantyPolicy(id: $id) {
+    id
+  }
+}
+
+mutation deleteManyWarrantyPolicies($where: WarrantyPolicyWhereInput) {
+  result: deleteManyWarrantyPolicies(where: $where) {
+    count
+  }
+}

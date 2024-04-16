@@ -3,6 +3,7 @@ import ReactQuill, { Quill } from 'react-quill';
 
 import classnames from 'classnames';
 
+import { useUpload } from '../hooks';
 import Input from '../Input';
 
 import './style/quill.scss';
@@ -64,18 +65,51 @@ function QuillEditor(props: QuillEditorProps) {
     className,
   } = props;
 
+  const editorRef = useRef<ReactQuill | null>(null);
   const valueRef = useRef(props.value || '');
   const [, forceUpdate] = useReducer((s) => s + 1, 0);
 
+  const [upload, {}] = useUpload({ space: 'XXTIeJCp' });
+
+  const handleImageUpload = useCallback(() => {
+    const editor = editorRef.current!.getEditor();
+
+    const input = document.createElement('input') as HTMLInputElement;
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files![0];
+      try {
+        const fileData = await upload(file);
+        const range = editor.getSelection()!;
+        editor.insertEmbed(range.index, 'image', fileData.url);
+      } catch (error) {
+        console.error('Error uploading image: ', error);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!editorRef.current) {
+      return;
+    }
+    editorRef.current
+      .getEditor()
+      .getModule('toolbar')
+      .addHandler('image', handleImageUpload);
+  }, []);
+
   const handleChange = useCallback(
-    (_value) => {
+    (_value: string) => {
       onChange && onChange((valueRef.current = _value));
     },
     [onChange],
   );
 
   const handleTextChange = useCallback(
-    function (e) {
+    function (e: React.ChangeEvent<HTMLTextAreaElement>) {
       onChange && onChange(e.target.value);
     },
     [onChange],
@@ -93,12 +127,14 @@ function QuillEditor(props: QuillEditorProps) {
     return (
       <ReactQuill
         id="kt_inbox_form_editor"
+        ref={editorRef}
         className={classnames('quill-zh_hans d-flex flex-column', className)}
         modules={{
           toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
             [{ font: fontFamily }],
             [{ size: fontSize }],
+            ['link', 'image'],
             [{ color: [] }, { background: [] }],
             [{ list: 'bullet' }, { list: 'ordered' }],
             [{ indent: '-1' }, { indent: '+1' }],

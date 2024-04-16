@@ -46,9 +46,7 @@ type SearchOptions = {
 };
 
 function useListPage<T, Q = any>(
-  useDataQuery: (
-    baseOptions?: QueryHookOptions<Q, OperationVariables>,
-  ) => QueryResult<ResultQuery<T>, OperationVariables>,
+  useDataQuery: (baseOptions?: QueryHookOptions<Q, OperationVariables>) => any,
   search?: SearchOptions,
 ): [
   T[],
@@ -56,6 +54,7 @@ function useListPage<T, Q = any>(
     loading: boolean;
     pageInfo: PageInfo;
     sorter: Sorter;
+    refetch: () => void;
     onChange: (pagination: any, filters: any, sorter: any) => void;
   },
 ] {
@@ -81,10 +80,10 @@ function useListPage<T, Q = any>(
     };
   }, [variables.orderBy]);
 
-  const { data, loading, previousData } = useDataQuery({
+  const { data, loading, previousData, refetch } = useDataQuery({
     fetchPolicy: 'cache-and-network',
     variables,
-  });
+  }) as QueryResult<ResultQuery<T>, OperationVariables>;
 
   const pageInfo = useMemo(() => {
     if (loading) {
@@ -112,7 +111,10 @@ function useListPage<T, Q = any>(
 
   const nodes = data?.result.edges.map((edge) => edge.node) || [];
 
-  return [nodes, { loading, pageInfo, sorter, onChange: handleChange }];
+  return [
+    nodes,
+    { loading, pageInfo, sorter, onChange: handleChange, refetch },
+  ];
 }
 
 export default useListPage;

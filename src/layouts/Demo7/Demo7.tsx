@@ -5,12 +5,18 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
-import { Inspector, InspectParams } from 'react-dev-inspector';
+import { InspectParams, Inspector } from 'react-dev-inspector';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
-import { history, useApp, useLocation, useRouteProps } from '@umijs/max';
-import { getMatchMenu, transformRoute } from '@umijs/route-utils';
+import {
+  history,
+  useApp,
+  useLocation,
+  useRouteProps,
+  useSelectedRoutes,
+} from '@umijs/max';
+import { getMatchMenu } from '@umijs/route-utils';
 import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
 
@@ -20,7 +26,6 @@ import Aside from './components/Aside';
 import buildMenuRender from './components/utils';
 import getLayoutRenderConfig from './utils';
 
-import { ThemeModeProvider } from '../components/theme-mode/ThemeModeProvider';
 import { LayoutProvider, useLayoutSelector } from '../LayoutContext';
 
 import './style.scss';
@@ -83,6 +88,7 @@ function InternalLayout(props: LayoutProps) {
             menuRender={menuRender}
             onSelect={onSelect}
             activeKey={activeKey}
+            logo='/assets/media/logos/coffee_machine_1.svg'
           />
           {children}
         </div>
@@ -114,6 +120,7 @@ function LayoutWrapper(props: LayoutProps) {
   const route = useRouteProps();
   const location = useLocation();
   const navigate = useNavigate();
+  const routes = useSelectedRoutes();
 
   const { menus: sourceMenus } = useApp();
 
@@ -134,16 +141,7 @@ function LayoutWrapper(props: LayoutProps) {
     [sourceMenus],
   );
 
-  const currentPathConfig = useMemo(() => {
-    const { menuData } = transformRoute(
-      route?.routes || [],
-      undefined,
-      undefined,
-      true,
-    );
-    // 动态路由匹配
-    return getMatchMenu(location.pathname, menuData).pop();
-  }, [location?.pathname, route?.routes]);
+  const currentPathConfig = route;
 
   const layoutRestProps = useMemo(() => {
     if (!currentPathConfig) {
@@ -167,8 +165,6 @@ function LayoutWrapper(props: LayoutProps) {
 
   const currentMenu = useMemo(() => {
     const matchMenus = getMatchMenu(location.pathname, menus, true);
-    // console.log('currentMenu', matchMenus, menus, location.pathname);
-    // console.log('>>>>', getMatchMenu('/activities', menus, true));
     return matchMenus[0];
   }, [location.pathname, menus]);
 
@@ -199,47 +195,45 @@ function LayoutWrapper(props: LayoutProps) {
   }, [layoutRestProps.menuRender, currentMenu]);
 
   return (
-    <ThemeModeProvider>
-      <LayoutProvider
-        state={{
+    <LayoutProvider
+      state={{
+        menus,
+        routes: routes.map((item) => item.route),
+        aside: {
           menus,
-          routes: route.routes || [],
-          aside: {
-            menus,
-            minimize: false,
-            pure: layoutRestProps.pure,
-            width: 200,
-          },
-        }}
+          minimize: false,
+          pure: layoutRestProps.pure,
+          width: 200,
+        },
+      }}
+    >
+      <LayoutInner
+        {...props}
+        activeKey={state.current.activeMenuKey}
+        onSelect={handleSelect}
+        menuRender={menuRender}
+        pure={layoutRestProps.pure}
       >
-        <LayoutInner
-          {...props}
-          activeKey={state.current.activeMenuKey}
-          onSelect={handleSelect}
-          menuRender={menuRender}
-          pure={layoutRestProps.pure}
-        >
-          <Outlet />
-        </LayoutInner>
-        {isDev}
-        {isDev && (
-          <Inspector
-            keys={['control', 'shift', 'command', 'c']}
-            // disableLaunchEditor={!isDev}
-            // onHoverElement={(inspect: InspectParams) => {
-            //   console.debug(inspect);
+        <Outlet />
+      </LayoutInner>
+      {isDev}
+      {isDev && (
+        <Inspector
+          keys={['control', 'shift', 'command', 'c']}
+          // disableLaunchEditor={!isDev}
+          // onHoverElement={(inspect: InspectParams) => {
+          //   console.debug(inspect);
+          //   if (isDev || !inspect.codeInfo?.relativePath) return;
+          // }}
+          onClickElement={(inspect: InspectParams) => {
+            console.debug(inspect);
             //   if (isDev || !inspect.codeInfo?.relativePath) return;
-            // }}
-            onClickElement={(inspect: InspectParams) => {
-              console.debug(inspect);
-              //   if (isDev || !inspect.codeInfo?.relativePath) return;
-              //   // const { relativePath, lineNumber } = inspect.codeInfo;
-              //   // window.open(`${projectRepo}/blob/master/examples/umi3/${relativePath}#L${lineNumber}`);
-            }}
-          />
-        )}
-      </LayoutProvider>
-    </ThemeModeProvider>
+            //   // const { relativePath, lineNumber } = inspect.codeInfo;
+            //   // window.open(`${projectRepo}/blob/master/examples/umi3/${relativePath}#L${lineNumber}`);
+          }}
+        />
+      )}
+    </LayoutProvider>
   );
 }
 

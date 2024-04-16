@@ -2,9 +2,8 @@ import { useCallback, useMemo, useState } from 'react';
 
 import Icon from '@asany/icons';
 import { useReactComponent } from '@asany/sunmao';
-import { useLocation, useModel } from '@umijs/max';
+import { useLocation, useModel, useSelectedRoutes } from '@umijs/max';
 import type { MenuDataItem } from '@umijs/route-utils';
-import { getMatchMenu } from '@umijs/route-utils';
 import classnames from 'classnames';
 import { findLast } from 'lodash';
 
@@ -84,6 +83,7 @@ export type ContentHeaderProps = {
 
 function ContentHeader(props: ContentHeaderProps) {
   const location = useLocation();
+  const selectedRoutes = useSelectedRoutes();
 
   const allRoutes = useLayoutSelector((_state) => _state.routes);
 
@@ -91,20 +91,20 @@ function ContentHeader(props: ContentHeaderProps) {
     if (props.breadcrumb) {
       return { breadcrumb: props.breadcrumb, title: props.title };
     }
-    const _matchRoutes = getMatchMenu(location.pathname, allRoutes, true);
+    const matchRoutes = selectedRoutes.map((item) => item.route);
 
     let last: MenuDataItem | undefined;
 
-    const startIndex = _matchRoutes.findIndex(
+    const startIndex = matchRoutes.findIndex(
       (item) => item.path === last?.path,
     );
 
     let breadcrumbData: MenuDataItem[] = [];
 
-    breadcrumbData.push(..._matchRoutes);
+    breadcrumbData.push(...matchRoutes);
 
     if (startIndex !== -1) {
-      breadcrumbData.push(..._matchRoutes.slice(startIndex + 1));
+      breadcrumbData.push(...matchRoutes.slice(startIndex + 1));
     }
 
     if (breadcrumbData.length) {
@@ -116,19 +116,11 @@ function ContentHeader(props: ContentHeaderProps) {
         item.key === last!.key ? { ...last, name: props.title } : item,
       );
     }
-    const _routes = [
-      {
-        key: 'root',
-        name: '控制台',
-        path: '/',
-      },
-      ...breadcrumbData,
-    ];
 
     return {
       title: last?.name,
       breadcrumb: (
-        <Breadcrumb routes={_routes} className="fw-bold fs-base my-1" />
+        <Breadcrumb routes={breadcrumbData} className="fw-bold fs-base my-1" />
       ),
     };
   }, [props.breadcrumb, props.title, location.pathname, allRoutes]);

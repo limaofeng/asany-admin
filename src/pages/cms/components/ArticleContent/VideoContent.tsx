@@ -17,7 +17,7 @@ const parseUrl = (value?: VideoContentData) => {
   if (typeof value?.video === 'string') {
     return process.env.STORAGE_URL + `/preview/${value.video}`;
   } else if (typeof value?.video === 'object') {
-    return URL.createObjectURL(value.video.id);
+    return process.env.STORAGE_URL + `/preview/${value.video.id}`;
   }
   return '';
 };

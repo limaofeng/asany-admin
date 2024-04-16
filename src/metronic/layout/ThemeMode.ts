@@ -25,7 +25,7 @@ class ThemeMode {
       return ls as Mode;
     }
 
-    const dataTheme = this.element?.getAttribute('data-theme');
+    const dataTheme = this.element?.getAttribute('data-bs-theme');
     if (dataTheme) {
       return dataTheme as Mode;
     }
@@ -76,7 +76,7 @@ class ThemeMode {
     this.element?.setAttribute('data-kt-theme-mode-switching', 'true');
 
     // Set mode to the target element
-    this.element?.setAttribute('data-theme', mode);
+    this.element?.setAttribute('data-bs-theme', mode);
 
     // Disable switching state
     // eslint-disable-next-line @typescript-eslint/no-this-alias

@@ -126,7 +126,7 @@ function useAreas(): UseAreasResult {
   useEffect(() => {
     temp.current.waiting = true;
     forceRender();
-    if (FIRST_LOAD === null) {
+    if (!FIRST_LOAD) {
       FIRST_LOAD = fetchChildren({
         variables: {
           filter: {

@@ -54,7 +54,7 @@ function FileName(props: FileNameProps) {
         setSaving(false);
         await Toast.error(_e.message, 200000, {
           progressBar: true,
-          placement: 'middle-center',
+          placement: 'top-center',
         });
         await sleep(300);
         inputRef.current?.select();
@@ -178,7 +178,7 @@ function FileName(props: FileNameProps) {
         </>
       ) : (
         <a
-          className="text-gray-800 text-hover-primary no-selecto-drag"
+          className="text-gray-800 text-ellipsis text-hover-primary no-selecto-drag"
           onClick={handleClick}
           href={
             data.isDirectory

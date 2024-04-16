@@ -378,7 +378,12 @@ function Transfers() {
           )}
         </div>
       </div>
-      <Tabs activeKey={activeKey} onChange={handleChange} tabPosition="left">
+      <Tabs
+        tabBarClassName="border-0"
+        activeKey={activeKey}
+        onChange={handleChange}
+        tabPosition="left"
+      >
         <Tabs.TabPane key="upload" tab="文件上传">
           <UploadFileList />
         </Tabs.TabPane>

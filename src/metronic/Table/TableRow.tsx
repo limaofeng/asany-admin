@@ -80,6 +80,10 @@ function TableRow<T>(props: TableRowProps<T>) {
       if (isNoSelectoDrag(e.target, ref.current!)) {
         return;
       }
+      if (e.target.tagName === 'A') {
+        e.stopPropagation();
+        return;
+      }
       if (e.target.type === 'checkbox' && e.type === 'click') {
         e.stopPropagation();
         return;

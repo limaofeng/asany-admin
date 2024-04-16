@@ -1,4 +1,10 @@
 .quill-zh_hans {
+  .ql-tooltip {
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+  }
+
   .ql-picker.ql-header {
     .ql-picker-label::before {
       content: '普通' !important;
@@ -162,12 +168,24 @@
     font-family: '苹方';
   }
   .ql-tooltip[data-mode='link']::before {
-    content: 'Entrer le lien' !important;
+    content: '输入链接' !important;
+    color: var(--kt-text-muted) !important;
   }
   .ql-tooltip[data-mode='video']::before {
     content: 'Entrez la vidéo' !important;
   }
   .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
-    content: 'Sauvegarder' !important;
+    content: '保存' !important;
+  }
+  .ql-snow .ql-tooltip a.ql-remove::before {
+    content: '删除' !important;
+    color: var(--kt-text-muted) !important;
+  }
+  .ql-snow .ql-tooltip a.ql-action::after {
+    content: '修改' !important;
+  }
+  .ql-snow .ql-tooltip::before {
+    content: 'URL:' !important;
+    color: var(--kt-text-muted) !important;
   }
 }

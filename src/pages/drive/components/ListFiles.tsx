@@ -27,7 +27,7 @@ import {
 import type { OnChange } from '@/metronic/Table/typings';
 import type { DataSource, Sorter } from '@/metronic/typings';
 import { fileSize } from '@/metronic/utils/format';
-import type { FileFilter, FileObject } from '@/types';
+import type { FileObject, FileWhereInput } from '@/types';
 
 import FileDetails from './FileDetails';
 import FileName from './FileName';
@@ -48,7 +48,7 @@ import '../style/ListFiles.scss';
 type ListFilesProps = {
   toolbar?: 'default' | 'starred' | 'trash';
   orderBy?: Sorter;
-  filter?: FileFilter;
+  where?: FileWhereInput;
   rootFolder?: FileObject;
   currentFolder?: FileObject;
   folder?: string;
@@ -76,7 +76,7 @@ function generatePaths(rootFolder?: FileObject, currentFolder?: FileObject) {
 }
 
 function ListFiles(props: ListFilesProps) {
-  const { folder, rootFolder, filter, toolbar = 'default' } = props;
+  const { folder, rootFolder, where, toolbar = 'default' } = props;
 
   const navigate = useNavigate();
 
@@ -148,7 +148,7 @@ function ListFiles(props: ListFilesProps) {
       refetchForObjects,
       refetchWithRemoveForObjects,
     },
-  ] = useListFiles(rootFolder?.id, filter, orderBy);
+  ] = useListFiles(rootFolder?.id, where, orderBy);
 
   const dataSource: DataSource<FileObject> = useMemo(() => {
     return {
@@ -760,7 +760,7 @@ function ListFiles(props: ListFilesProps) {
                     key: 'lastModified',
                     title: '更新时间',
                     sorter: true,
-                    className: 'min-w-125px',
+                    width: 160,
                     sortOrder:
                       sorter?.field === 'lastModified'
                         ? sorter.order
@@ -770,7 +770,7 @@ function ListFiles(props: ListFilesProps) {
                     key: 'size',
                     title: '文件大小',
                     sorter: true,
-                    className: 'min-w-100px',
+                    width: 100,
                     sortOrder:
                       sorter?.field === 'size' ? sorter.order : undefined,
                     render(value, record) {

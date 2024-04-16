@@ -27,6 +27,7 @@ import {
 } from '@/metronic';
 import type { Article, ArticleWhereInput } from '@/types';
 
+import useDelete from '../../../hooks/useDelete';
 import ArticleBreadcrumb from '../article/ArticleBreadcrumb';
 import type { IArticle } from '../article/typings';
 import {
@@ -34,7 +35,6 @@ import {
   useDeleteArticleMutation,
   useDeleteManyArticlesMutation,
 } from '../hooks';
-import useDelete from '../hooks/useDelete';
 import { ArticleOutletContextParams } from '../typings';
 
 import '../style/article-list.scss';

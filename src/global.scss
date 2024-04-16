@@ -99,3 +99,14 @@ ol {
     transition: left 0.3s ease;
   }
 }
+
+table.dataTable > tbody > tr.selected > * a:not([class='btn']) {
+  text-decoration: none;
+  text-decoration-style: none;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

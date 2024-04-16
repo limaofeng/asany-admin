@@ -1,0 +1,75 @@
+query users(
+  $where: UserWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy
+) {
+  result: usersConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      totalPages
+      total
+      current
+    }
+    edges {
+      cursor
+      node {
+        ...UserFragment
+      }
+    }
+  }
+}
+
+query user($id: ID!) {
+  result: user(id: $id) {
+    ...UserFragment
+  }
+}
+
+mutation createUser($input: UserCreateInput!) {
+  result: createUser(input: $input) {
+    ...UserFragment
+  }
+}
+
+mutation updateUser($id: ID!, $input: UserUpdateInput!) {
+  result: updateUser(id: $id, input: $input, merge: true) {
+    ...UserFragment
+  }
+}
+
+query findUserByUsername($username: String) {
+  result: users(where: { username: $username }, first: 1) {
+    id
+    name
+  }
+}
+
+mutation deleteManyUsers($where: UserWhereInput!) {
+  result: deleteManyUsers(where: $where) {
+    count
+  }
+}
+
+fragment UserFragment on User {
+  id
+  name
+  nickname
+  userType
+  username
+  phone {
+    number
+    status
+  }
+  email {
+    address
+    status
+  }
+  avatar
+}

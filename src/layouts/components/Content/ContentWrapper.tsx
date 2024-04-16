@@ -36,7 +36,7 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
     className,
     contentClassName,
     breadcrumb,
-    footer = { copyright: '版权所有 2022 李茂峰 | 沪ICP备2022024659号' },
+    footer = { copyright: '' },
     children,
   } = props;
 

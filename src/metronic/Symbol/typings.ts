@@ -1,3 +1,7 @@
+import { CSSProperties } from 'react';
+
+import { BadgeProps } from '../Badge/Badge';
+
 export type Breakpoint = 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 export type Sizes =
@@ -25,6 +29,7 @@ export type SymbolSize = Sizes | Record<Breakpoint, Sizes>;
 export type AvatarProps = {
   onClick?: (e: React.MouseEvent) => void;
   className?: string;
+  style?: CSSProperties;
   shape?: 'circle' | 'square';
   size?: SymbolSize;
   light?: boolean;
@@ -32,8 +37,9 @@ export type AvatarProps = {
   alt?: string | React.ReactNode;
   gap?: number;
   labelClassName?: string;
-  badge?: React.ReactElement<any> | false;
+  badge?: React.ReactElement<BadgeProps>;
   autoColor?: boolean;
+  children?: React.ReactNode;
 };
 
 export type SymbolProps = AvatarProps;

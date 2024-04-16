@@ -15,7 +15,7 @@ class Authentication {
     tags: ['身份认证'],
   })
   AsideLayoutSignIn = dynamic({
-    loader: () => import('./sign-in/AsideLayoutSignIn'),
+    loader: () => import('./sign-in/CreativeSignin'),
     loading: LoadingComponent,
   });
 }

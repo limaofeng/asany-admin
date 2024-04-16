@@ -2,9 +2,9 @@ import type { CSSProperties } from 'react';
 import React, { useEffect, useRef } from 'react';
 
 import * as am5 from '@amcharts/amcharts5';
-import am5geodata_worldLow from '@amcharts/amcharts5-geodata/worldLow';
 import * as am5map from '@amcharts/amcharts5/map';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import am5geodata_worldLow from '@amcharts/amcharts5-geodata/worldLow';
 import { Icon } from '@asany/icons';
 import { useBlock } from '@asany/sunmao';
 import useMergedRef from '@react-hook/merged-ref';
