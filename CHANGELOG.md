@@ -1,3 +1,10 @@
+## [0.4.7](https://github.com/limaofeng/asany-admin/compare/v0.4.6...v0.4.7) (2024-04-16)
+
+### Features
+
+- add new components and update error messages ([27f6983](https://github.com/limaofeng/asany-admin/commit/27f6983346dce3266fd258adad461fc6bd45d82e))
+- 用户操作 ([db3e0b1](https://github.com/limaofeng/asany-admin/commit/db3e0b125c6028e9eeb7e5a240c6f422dd565ff0))
+
 ## [0.4.6](https://github.com/limaofeng/asany-admin/compare/v0.4.5...v0.4.6) (2024-04-06)
 
 ### Features
