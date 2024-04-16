@@ -1,4 +1,4 @@
-"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[2471],{82471:function(fe,U,i){i.d(U,{tz:function(){return Y},HD:function(){return _},f4:function(){return G},dH:function(){return oe},we:function(){return N},lK:function(){return ie},rn:function(){return ae},Eo:function(){return pe},_D:function(){return k},Ep:function(){return re},fX:function(){return ne}});var W=i(97857),t=i.n(W),X=i(68400),a=i.n(X),s=i(75063),j=i(73359),u=i(50319),c=i(37887),g,$,Q,b,z,h,M,L,P,C,I,T,r={},p=(0,s.Ps)(g||(g=a()([`
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[2471],{82471:function(fe,U,i){i.d(U,{tz:function(){return Y},HD:function(){return _},f4:function(){return G},dH:function(){return oe},we:function(){return N},lK:function(){return ie},rn:function(){return ae},Eo:function(){return pe},_D:function(){return k},Ep:function(){return re},fX:function(){return ne}});var W=i(97857),t=i.n(W),X=i(68400),a=i.n(X),s=i(75063),j=i(73359),u=i(50319),c=i(37887),g,$,Q,b,h,z,M,L,P,C,I,T,r={},p=(0,s.Ps)(g||(g=a()([`
     query cloudDrive($id: ID!) {
   cloudDrive(id: $id) {
     id
@@ -29,13 +29,13 @@
     id
   }
 }
-    `])));function Se(n){var e=_objectSpread(_objectSpread({},r),n);return Apollo.useMutation(Z,e)}var w=(0,s.Ps)(z||(z=a()([`
+    `])));function Se(n){var e=_objectSpread(_objectSpread({},r),n);return Apollo.useMutation(Z,e)}var w=(0,s.Ps)(h||(h=a()([`
     mutation moveFilesToTrash($ids: [ID!]!) {
   files: moveFilesToTrash(ids: $ids) {
     id
   }
 }
-    `])));function k(n){var e=t()(t()({},r),n);return u.D(w,e)}var q=(0,s.Ps)(h||(h=a()([`
+    `])));function k(n){var e=t()(t()({},r),n);return u.D(w,e)}var q=(0,s.Ps)(z||(z=a()([`
     mutation clearFilesInTrash($folder: ID!) {
   clearFilesInTrash(folder: $folder)
 }
@@ -114,7 +114,7 @@
     }
   }
 }
-    `])));function ae(n){var e=t()(t()({},r),n);return c.a(y,e)}function be(n){var e=_objectSpread(_objectSpread({},r),n);return Apollo.useLazyQuery(y,e)}function ze(n){var e=_objectSpread(_objectSpread({},r),n);return Apollo.useSuspenseQuery(y,e)}var f=(0,s.Ps)(T||(T=a()([`
+    `])));function ae(n){var e=t()(t()({},r),n);return c.a(y,e)}function be(n){var e=_objectSpread(_objectSpread({},r),n);return Apollo.useLazyQuery(y,e)}function he(n){var e=_objectSpread(_objectSpread({},r),n);return Apollo.useSuspenseQuery(y,e)}var f=(0,s.Ps)(T||(T=a()([`
     query listFiles($rootFolder: ID!, $where: FileWhereInput, $page: Int = 1, $pageSize: Int = 30, $orderBy: OrderBy) {
   listFiles(
     rootFolder: $rootFolder
@@ -142,4 +142,4 @@
     }
   }
 }
-    `])));function he(n){var e=_objectSpread(_objectSpread({},r),n);return Apollo.useQuery(f,e)}function se(n){var e=t()(t()({},r),n);return j.t(f,e)}function Me(n){var e=_objectSpread(_objectSpread({},r),n);return Apollo.useSuspenseQuery(f,e)}var ue=i(5574),le=i.n(ue),F=i(62435),de=i(9537),ce=function(){var e=se({fetchPolicy:"cache-and-network"}),l=le()(e,2),A=l[0],D=l[1],o=D.data,O=D.loading,H=D.refetch,R=(o==null?void 0:o.listFiles.pageSize)||0,B=(o==null?void 0:o.listFiles.currentPage)||0,x=(o==null?void 0:o.listFiles.totalCount)||0,E=(o==null?void 0:o.listFiles.totalPage)||0,K=(0,F.useMemo)(function(){return{totalCount:x,currentPage:B,pageSize:R,totalPage:E}},[B,R,x,E]),ve=(0,F.useMemo)(function(){return function(d,S){A({variables:t()(t()({},d),{},{page:S})})}},[A]),me=(0,F.useMemo)(function(){return{pagination:K,items:(o==null?void 0:o.listFiles.edges.map(function(d){return d.node}))||[],loading:O,refetch:function(S,ye){return H(t()(t()({},S),{},{page:ye}))}}},[O,K,o==null?void 0:o.listFiles.edges,H]);return[ve,me]};function pe(n,e,l){return(0,de.RM)(ce,{rootFolder:n,filter:e,orderBy:l})}}}]);
+    `])));function ze(n){var e=_objectSpread(_objectSpread({},r),n);return Apollo.useQuery(f,e)}function se(n){var e=t()(t()({},r),n);return j.t(f,e)}function Me(n){var e=_objectSpread(_objectSpread({},r),n);return Apollo.useSuspenseQuery(f,e)}var ue=i(5574),le=i.n(ue),F=i(62435),de=i(30773),ce=function(){var e=se({fetchPolicy:"cache-and-network"}),l=le()(e,2),A=l[0],D=l[1],o=D.data,O=D.loading,H=D.refetch,R=(o==null?void 0:o.listFiles.pageSize)||0,B=(o==null?void 0:o.listFiles.currentPage)||0,x=(o==null?void 0:o.listFiles.totalCount)||0,E=(o==null?void 0:o.listFiles.totalPage)||0,K=(0,F.useMemo)(function(){return{totalCount:x,currentPage:B,pageSize:R,totalPage:E}},[B,R,x,E]),ve=(0,F.useMemo)(function(){return function(d,S){A({variables:t()(t()({},d),{},{page:S})})}},[A]),me=(0,F.useMemo)(function(){return{pagination:K,items:(o==null?void 0:o.listFiles.edges.map(function(d){return d.node}))||[],loading:O,refetch:function(S,ye){return H(t()(t()({},S),{},{page:ye}))}}},[O,K,o==null?void 0:o.listFiles.edges,H]);return[ve,me]};function pe(n,e,l){return(0,de.RM)(ce,{rootFolder:n,where:e,orderBy:l})}}}]);
