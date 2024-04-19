@@ -7,7 +7,7 @@ import type { MenuDataItem } from '@umijs/route-utils';
 import classnames from 'classnames';
 import { findLast } from 'lodash';
 
-import { useLayoutSelector } from '@/layouts/LayoutContext';
+import { useLayout, useLayoutSelector } from '@/layouts/LayoutContext';
 import { Bullet, Button, Sticky } from '@/metronic';
 import Breadcrumb from '@/metronic/Breadcrumb';
 
@@ -86,6 +86,13 @@ function ContentHeader(props: ContentHeaderProps) {
   const selectedRoutes = useSelectedRoutes();
 
   const allRoutes = useLayoutSelector((_state) => _state.routes);
+  const logo = useLayoutSelector((_state) => _state.logo);
+
+  const api = useLayout();
+
+  const handleAsideMobileToggle = useCallback(() => {
+    api.aside.drawer(!api.aside.state.drawer);
+  }, []);
 
   const { breadcrumb, title } = useMemo(() => {
     if (props.breadcrumb) {
@@ -148,15 +155,12 @@ function ContentHeader(props: ContentHeaderProps) {
             <div
               className="btn btn-icon btn-active-icon-primary"
               id="kt_aside_mobile_toggle"
+              onClick={handleAsideMobileToggle}
             >
               <Icon name="Duotune/abs015" className="svg-icon-1" />
             </div>
             <a href="/" className="d-flex align-items-center">
-              <img
-                alt="Logo"
-                src="assets/media/logos/demo7.svg"
-                className="h-30px"
-              />
+              <img alt="Logo" src={logo} className="h-30px" />
             </a>
           </div>
           <Toolbar>{props.toolbar}</Toolbar>

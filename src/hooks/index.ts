@@ -76,4 +76,5 @@ export async function logout() {
 }
 
 export { default as useCurrentuser } from './useCurrentuser';
+export { default as useEnquire } from './useEnquire';
 export { default as useLogout } from './useLogout';

@@ -17,6 +17,7 @@ import {
   useSelectedRoutes,
 } from '@umijs/max';
 import { getMatchMenu } from '@umijs/route-utils';
+import classnames from 'classnames';
 import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
 
@@ -73,13 +74,33 @@ function InternalLayout(props: LayoutProps) {
   const { children, menuRender, activeKey, onSelect } = props;
   const width = useLayoutSelector((state) => state.aside.width);
   const minimize = useLayoutSelector((state) => state.aside.minimize);
+  const logo = useLayoutSelector((state) => state.logo);
+
+  const bodyClass = classnames(
+    'header-fixed header-tablet-and-mobile-fixed aside-fixed',
+    {
+      'aside-secondary-enabled': menuRender !== false,
+    },
+  );
+
+  useEffect(() => {
+    bodyClass.split(' ').forEach((item) => {
+      document.body.classList.add(item);
+    });
+    return () => {
+      bodyClass.split(' ').forEach((item) => {
+        console.log('menuRender remove', item);
+        document.body.classList.remove(item);
+      });
+    };
+  }, [bodyClass]);
 
   return (
     <RootLayout
       width={width}
       minimize={minimize || menuRender === false}
       data-kt-aside-minimize={minimize || menuRender === false ? 'on' : 'off'}
-      className="theme-metronic header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled"
+      className="theme-metronic"
     >
       <div className="d-flex flex-column flex-root">
         <ToastContainer />
@@ -88,7 +109,7 @@ function InternalLayout(props: LayoutProps) {
             menuRender={menuRender}
             onSelect={onSelect}
             activeKey={activeKey}
-            logo='/assets/media/logos/coffee_machine_1.svg'
+            logo={logo}
           />
           {children}
         </div>
@@ -187,7 +208,6 @@ function LayoutWrapper(props: LayoutProps) {
     if (!menu) {
       return false;
     }
-    console.log('menu', menu);
     if (!menu.component && !(menu.children || []).length) {
       return false;
     }
@@ -197,6 +217,7 @@ function LayoutWrapper(props: LayoutProps) {
   return (
     <LayoutProvider
       state={{
+        logo: '/assets/media/logos/coffee_machine_1.svg',
         menus,
         routes: routes.map((item) => item.route),
         aside: {

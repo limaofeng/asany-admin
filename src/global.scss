@@ -110,3 +110,25 @@ table.dataTable > tbody > tr.selected > * a:not([class='btn']) {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+@media (max-width: 992px) {
+  .aside-fixed .micro-app-container.page-full-content {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+  .theme-metronic .aside.no-secondary {
+    width: 70px;
+  }
+  .app-aside.aside.drawer {
+    left: -70px;
+    max-width: 230px;
+    --met-aside-width: 230px;
+    &.drawer-on {
+      left: 70px;
+      z-index: 100;
+    }
+  }
+  .drawer-overlay {
+    z-index: 99;
+  }
+}

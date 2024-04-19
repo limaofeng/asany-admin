@@ -12,20 +12,24 @@ import type { Route } from '@umijs/route-utils/dist/types';
 
 import type { Menu as MenuData } from '@/types';
 
+export type LayoutAsideState = {
+  pure: boolean;
+  width: number;
+  menus: MenuData[];
+  minimize: boolean;
+  collapsible?: boolean;
+  drawer?: boolean;
+};
+
 export type LayoutState = {
+  logo: string;
   routes: Route[];
   menus: MenuData[];
-  aside: {
-    pure: boolean;
-    width: number;
-    menus: MenuData[];
-    minimize: boolean;
-    collapsible?: boolean;
-  };
+  aside: LayoutAsideState;
 };
 
 type LayoutAction = {
-  type: 'ASIDE_MINIMIZE' | 'ASIDE_WIDTH' | 'ASIDE_COLLAPSIBLE';
+  type: 'ASIDE_MINIMIZE' | 'ASIDE_WIDTH' | 'ASIDE_COLLAPSIBLE' | 'ASIDE_DRAWER';
   payload?: any;
 };
 
@@ -68,6 +72,9 @@ const reducer = (state: LayoutState, action?: LayoutAction) => {
   }
   if (action.type === 'ASIDE_COLLAPSIBLE') {
     return { ...state, aside: { ...state.aside, collapsible: action.payload } };
+  }
+  if (action.type === 'ASIDE_DRAWER') {
+    return { ...state, aside: { ...state.aside, drawer: action.payload } };
   }
   return state;
 };
@@ -124,10 +131,11 @@ const defaultEqualityFn = (a: any, b: any) => a === b;
 
 export interface LayoutApi {
   aside: {
-    state: { minimize: boolean };
+    state: LayoutAsideState;
     minimize: (miniable: boolean) => void;
     width: (w: number) => void;
     collapsible: (b: boolean) => void;
+    drawer: (b: boolean) => void;
   };
 }
 
@@ -146,6 +154,9 @@ export function useLayout(): LayoutApi {
       },
       collapsible(b: boolean) {
         store.dispatch({ type: 'ASIDE_COLLAPSIBLE', payload: b });
+      },
+      drawer(b: boolean) {
+        store.dispatch({ type: 'ASIDE_DRAWER', payload: b });
       },
     },
   });
@@ -180,7 +191,7 @@ export function useLayoutSelector<Selected>(
   return useSelector(selector, equalityFn);
 }
 
-export function useDispatch() {
+export function useLayoutDispatch() {
   const store = useContext<LayoutStoreContext>(LayoutContext)!;
   return store.dispatch;
 }

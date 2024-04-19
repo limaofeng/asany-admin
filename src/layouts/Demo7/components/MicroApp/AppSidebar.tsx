@@ -4,7 +4,8 @@ import { useCallback, useEffect } from 'react';
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
 
-import { useLayout } from '@/layouts/LayoutContext';
+import { useEnquire } from '@/hooks';
+import { useLayout, useLayoutSelector } from '@/layouts/LayoutContext';
 import { Button } from '@/metronic';
 
 import { MicroAppActionKind, useMicroApp } from './MicroAppContext';
@@ -54,6 +55,12 @@ type AppSidebarProps = {
   className?: string;
 };
 
+const query = {
+  'drawer drawer-start': {
+    maxWidth: 992,
+  },
+};
+
 function AppSidebar(props: AppSidebarProps) {
   const {
     className,
@@ -72,8 +79,15 @@ function AppSidebar(props: AppSidebarProps) {
     dispatch({ type: MicroAppActionKind.AsideWidth, payload: width });
   }, [layout.aside, dispatch, width]);
 
+  const drawerClassName = useEnquire(query);
+  const drawer = useLayoutSelector((state) => state.aside.drawer);
+
   return (
-    <div className={classnames('app-aside aside', className)}>
+    <div
+      className={classnames('app-aside aside', className, drawerClassName, {
+        'drawer-on': drawer,
+      })}
+    >
       <AsideSecondary>
         <AsideWorkspace header={header} resizeable className="app-sidebar">
           {children}

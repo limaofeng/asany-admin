@@ -37,7 +37,7 @@ function ContentFooter(props: ContentFooterProps) {
             <a
               target="_blank"
               href="mailto:limaofeng@msn.com"
-              className="menu-link px-2" 
+              className="menu-link px-2"
               rel="noreferrer"
             >
               技术支持

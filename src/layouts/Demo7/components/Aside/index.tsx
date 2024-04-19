@@ -1,12 +1,18 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Button, Nav } from 'react-bootstrap';
 
 import Icon from '@asany/icons';
 import { useReactComponent } from '@asany/sunmao';
 import classnames from 'classnames';
 
-import { useCurrentuser } from '@/hooks';
-import { Symbol, Tooltip } from '@/metronic';
+import { useCurrentuser, useEnquire } from '@/hooks';
+import { Symbol, Tooltip, useDrawer } from '@/metronic';
 import Popover from '@/metronic/Popover';
 import { useScroll } from '@/metronic/utils';
 import type { Menu as MenuData } from '@/types';
@@ -165,6 +171,12 @@ const DEFAULT_APP_PATHS = ['/drive', '/calendar', '/contacts', '/mail'];
 // const MIN_WIDTH = 300;
 // const MAX_WIDTH = 500;
 
+const query = {
+  'drawer drawer-start': {
+    maxWidth: 992,
+  },
+};
+
 function Aside(props: AsideProps) {
   const { logo, menuRender, activeKey, onSelect } = props;
 
@@ -248,12 +260,40 @@ function Aside(props: AsideProps) {
 
   const hideAside = menuRender === false;
 
+  const params = useEnquire(query);
+  const drawer = useLayoutSelector((state) => state.aside.drawer);
+
+  const [overlay, { visible: drawerVisible, className }] = useDrawer({
+    placement: 'left',
+    visible: drawer,
+  });
+
+  useEffect(() => {
+    if (drawerVisible !== drawer) {
+      layout.aside.drawer(drawerVisible);
+      console.log('drawerVisible', drawerVisible, drawer);
+    }
+  }, [drawerVisible]);
+
+  const drawerClassName = useMemo(() => {
+    if (!params['drawer drawer-start']) {
+      return className
+        .split(' ')
+        .filter((item) => !['drawer', 'drawer-start'].includes(item))
+        .join(' ');
+    }
+    return className;
+  }, [params, className]);
+
   return (
     <div
-      className={classnames('aside', {
+      className={classnames('aside', drawerClassName, {
         'aside-extended': !minimize,
+        'drawer-on': drawer,
+        'no-secondary': hideAside,
       })}
     >
+      {overlay}
       <div className="aside-primary d-flex flex-column align-items-lg-center flex-row-auto">
         <Logo ref={logoRef} url="/" logo={logo} />
         <div

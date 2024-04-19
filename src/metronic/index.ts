@@ -11,7 +11,7 @@ export * from './Colors';
 export { default as CountUp } from './CountUp';
 export { default as DatePicker } from './DatePicker';
 export { default as Device } from './Device';
-export { default as Drawer } from './Drawer';
+export * from './Drawer';
 export { default as Dropdown } from './Dropdown';
 export { QuillEditor } from './Editor';
 export { default as Empty } from './Empty';

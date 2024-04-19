@@ -59,8 +59,7 @@ function Creative(props: CreativeProps) {
             {/*--begin::Footer--*/}
             <div className="d-flex flex-stack px-lg-10">
               {/*--begin::Languages--*/}
-              <div className="me-0">
-              </div>
+              <div className="me-0"></div>
               {/*--end::Languages--*/}
               {/*--begin::Links
               <div className="d-flex fw-semibold text-primary fs-base gap-5">
