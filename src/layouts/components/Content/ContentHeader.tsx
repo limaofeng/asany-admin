@@ -1,15 +1,16 @@
-import { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import Icon from '@asany/icons';
-import { useReactComponent } from '@asany/sunmao';
 import { useLocation, useModel, useSelectedRoutes } from '@umijs/max';
 import type { MenuDataItem } from '@umijs/route-utils';
 import classnames from 'classnames';
 import { findLast } from 'lodash';
 
+import LoadingComponent from '@/components/PageLoading';
 import { useLayout, useLayoutSelector } from '@/layouts/LayoutContext';
 import { Bullet, Button, Sticky } from '@/metronic';
 import Breadcrumb from '@/metronic/Breadcrumb';
+import dynamic from '@/utils/dynamic';
 
 import { ThemeModeSwitcher } from '../theme-mode/ThemeModeSwitcher';
 
@@ -17,15 +18,18 @@ type ToolbarProps = {
   children?: React.ReactNode;
 };
 
-function Toolbar(props: ToolbarProps) {
+const ChatDrawer = dynamic({
+  loader: () => import('@/pages/chat/components/ChatDrawer'),
+  loading: LoadingComponent,
+});
+
+const Toolbar = React.memo(function Toolbar(props: ToolbarProps) {
   const [visible, setVisible] = useState(false);
 
   const unreadCount = useModel(
     'open-im.auth',
     ({ state }) => state.unReadCount,
   );
-
-  const ChatDrawer = useReactComponent('cn.asany.ui.admin.chat.ChatDrawer');
 
   const handleChatClose = useCallback(() => {
     setVisible(false);
@@ -72,9 +76,10 @@ function Toolbar(props: ToolbarProps) {
       <ChatDrawer visible={visible} onClose={handleChatClose} />
     </div>
   );
-}
+});
 
 export type ContentHeaderProps = {
+  headless?: boolean;
   title?: string;
   toolbar?: React.ReactNode;
   children?: React.ReactNode;
@@ -132,6 +137,8 @@ function ContentHeader(props: ContentHeaderProps) {
     };
   }, [props.breadcrumb, props.title, location.pathname, allRoutes]);
 
+  console.log('ContentHeader', props.headless);
+
   return (
     <Sticky>
       <div id="kt_header" className="header">
@@ -163,11 +170,11 @@ function ContentHeader(props: ContentHeaderProps) {
               <img alt="Logo" src={logo} className="h-30px" />
             </a>
           </div>
-          <Toolbar>{props.toolbar}</Toolbar>
+          {!props.headless && <Toolbar>{props.toolbar}</Toolbar>}
         </div>
       </div>
     </Sticky>
   );
 }
 
-export default ContentHeader;
+export default React.memo(ContentHeader);

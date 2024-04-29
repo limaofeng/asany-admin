@@ -77,9 +77,9 @@ function InternalLayout(props: LayoutProps) {
   const logo = useLayoutSelector((state) => state.logo);
 
   const bodyClass = classnames(
-    'header-fixed header-tablet-and-mobile-fixed aside-fixed',
+    'header-fixed header-tablet-and-mobile-fixed aside-fixed aside-secondary-enabled',
     {
-      'aside-secondary-enabled': menuRender !== false,
+      // 'aside-secondary-enabled': menuRender !== false,
     },
   );
 

@@ -270,20 +270,29 @@ function Aside(props: AsideProps) {
 
   useEffect(() => {
     if (drawerVisible !== drawer) {
+      console.log('ContentHeader', drawerVisible, drawer);
       layout.aside.drawer(drawerVisible);
-      console.log('drawerVisible', drawerVisible, drawer);
     }
   }, [drawerVisible]);
 
+  const isMobile = params['drawer drawer-start'];
+
   const drawerClassName = useMemo(() => {
-    if (!params['drawer drawer-start']) {
+    if (!isMobile) {
       return className
         .split(' ')
         .filter((item) => !['drawer', 'drawer-start'].includes(item))
         .join(' ');
     }
     return className;
-  }, [params, className]);
+  }, [isMobile, className]);
+
+  useEffect(() => {
+    if (isMobile === false) {
+      console.log('ContentHeader', isMobile, drawer);
+      layout.aside.drawer(false);
+    }
+  }, [isMobile]);
 
   return (
     <div

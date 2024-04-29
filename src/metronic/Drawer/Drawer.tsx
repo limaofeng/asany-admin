@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import { Icon } from '@asany/icons';
@@ -161,4 +161,4 @@ function Drawer({ getContainer, destroyOnClose, ...props }: DrawerProps) {
   return mountPoint ? ReactDOM.createPortal(drawer, mountPoint) : drawer;
 }
 
-export default Drawer;
+export default React.memo(Drawer);

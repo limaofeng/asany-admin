@@ -25,6 +25,7 @@ const initialState: UserState = {
 };
 
 function reducer(state = initialState, action: UserActionTypes) {
+  console.log('reducer', action);
   switch (action.type) {
     case SET_UNREAD_COUNT:
       return { ...state, unReadCount: action.payload };

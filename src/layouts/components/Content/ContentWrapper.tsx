@@ -24,10 +24,6 @@ export type ContentWrapperProps = {
   children?: React.ReactNode;
 };
 
-function renderHeader(props: ContentHeaderProps) {
-  return <ContentHeader {...props} />;
-}
-
 function ContentWrapper(props: ContentWrapperProps, ref: any) {
   const {
     loading,
@@ -51,6 +47,8 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
     };
   }, [loading]);
 
+  console.log('ContentWrapper', props);
+
   return (
     <div
       ref={ref}
@@ -68,13 +66,14 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
         message="加载中..."
         loading={loading}
       >
-        {!!header &&
-          renderHeader({
-            ...(React.isValidElement(header)
-              ? { children: header }
-              : (header as ContentHeaderProps)),
-            breadcrumb,
-          })}
+        <ContentHeader
+          {...(React.isValidElement(header)
+            ? { children: header }
+            : !header
+            ? {}
+            : (header as ContentHeaderProps))}
+          breadcrumb={breadcrumb}
+        />
         <Content
           style={{
             minHeight: `calc(100vh - ${!!header ? 100 : 0}px - ${
@@ -93,4 +92,4 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
 
 const ContentForwardRef = React.forwardRef(ContentWrapper);
 
-export default ContentForwardRef;
+export default React.memo(ContentForwardRef);

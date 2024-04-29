@@ -3,6 +3,20 @@
     --bs-card-bg: transparent;
     --kt-card-box-shadow: 0px 10px 35px 0pxrgb (0 0 0 / 0%);
     border-radius: none;
+
+    .card-footer {
+      height: 80px;
+      display: flex;
+      align-items: center;
+
+      .chat-menu {
+        cursor: pointer;
+        width: 60px;
+        .menu-text {
+          margin-top: 4px;
+        }
+      }
+    }
   }
 
   .cve-searchbar {
@@ -19,7 +33,7 @@
   }
 
   .custom-scrollbar {
-    height: calc(100vh - 70px - 40px - 2rem);
+    height: calc(100vh - 70px - 40px - 1rem - 80px);
   }
 
   .cve-list {

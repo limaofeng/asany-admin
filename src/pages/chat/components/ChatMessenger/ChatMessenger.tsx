@@ -9,7 +9,6 @@ import {
 } from 'open-im-sdk-wasm/lib/types/entity';
 import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 
-import { ContentWrapper } from '@/layouts/components';
 import { Badge, Button, Card, Symbol, Tooltip } from '@/metronic';
 import { isSingleCve } from '@/models/open-im/utils';
 
@@ -30,7 +29,7 @@ type ChatMessengerProps = {
   loading: boolean;
   merID?: string;
   sendMsg: (
-    nMsg: string,
+    nMsg: MessageItem,
     type: MessageType,
     uid?: string,
     gid?: string,
@@ -151,12 +150,7 @@ function ChatMessenger(props: ChatMessengerProps) {
   }, []);
 
   return (
-    <ContentWrapper
-      className="app-chat-main background-transparent"
-      contentClassName="px-0"
-      footer={false}
-      header={false}
-    >
+    <div className="wrapper d-flex flex-column flex-row-fluid app-chat-main background-transparent">
       <Card className="card chat_messenger" id="kt_chat_messenger">
         {curCve && (
           <Card.Header id="kt_chat_messenger_header">
@@ -273,7 +267,7 @@ function ChatMessenger(props: ChatMessengerProps) {
           </Card.Footer>
         )}
       </Card>
-    </ContentWrapper>
+    </div>
   );
 }
 

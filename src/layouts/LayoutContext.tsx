@@ -156,6 +156,9 @@ export function useLayout(): LayoutApi {
         store.dispatch({ type: 'ASIDE_COLLAPSIBLE', payload: b });
       },
       drawer(b: boolean) {
+        if (store.getState().aside.drawer === b) {
+          return;
+        }
         store.dispatch({ type: 'ASIDE_DRAWER', payload: b });
       },
     },

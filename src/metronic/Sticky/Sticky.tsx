@@ -30,11 +30,16 @@ function Sticky(props: StickyProps) {
     };
   }, [isFixed]);
 
+  console.log('Sticky', isFixed);
+  const newChildren = useMemo(() => {
+    console.log('Sticky newChildren', isFixed);
+    return React.cloneElement(children, {
+      ref,
+    });
+  }, [children]);
   return (
     <div style={containerStyle} className="sticky">
-      {React.cloneElement(children, {
-        ref,
-      })}
+      {newChildren}
     </div>
   );
 }

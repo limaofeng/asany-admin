@@ -14,7 +14,7 @@ query modules($where: ModuleWhereInput, $limit: Int) {
     name
     code
     picture
-    pictureUrl: picture(format: url)
+    # pictureUrl: picture(format: url)
     description
   }
 }

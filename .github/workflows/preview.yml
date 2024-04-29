@@ -24,7 +24,7 @@ jobs:
           npm run gql-gen && npm run build
         env:
           CI: true
-          GRAPHQL_SCHEMA_URL: https://api.asany.cn/graphql
+          GRAPHQL_SCHEMA_URL: https://api.mh-procoffeemachine.com/graphql
           NODE_OPTIONS: --max_old_space_size=4096
 
       - name: Deploy 🚀

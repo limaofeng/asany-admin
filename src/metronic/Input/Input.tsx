@@ -65,6 +65,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     status: customStatus,
     style,
     readOnly,
+    value: propsValue,
     ...otherProps
   } = props;
 
@@ -73,17 +74,17 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   const state = useRef({
     isFirst: true,
   });
-  const [value, setValue] = useState(props.value || props.defaultValue || '');
+  const [value, setValue] = useState(propsValue || props.defaultValue || '');
 
   useEffect(() => {
     if (state.current.isFirst) {
       state.current.isFirst = false;
       return;
     }
-    if (value === props.value) {
+    if (value === propsValue) {
       return;
     }
-    console.log('>>>>>>>>>', value, props.value);
+    console.log('>>>>>>>>>', value, propsValue);
     onChange && onChange({ target: { value } } as any);
   }, [value]);
 
@@ -103,8 +104,8 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   );
 
   useEffect(() => {
-    setValue(props.value! || props.defaultValue || '');
-  }, [props.value]);
+    setValue(propsValue! || props.defaultValue || '');
+  }, [propsValue]);
 
   useImperativeHandle(
     ref,
@@ -153,8 +154,6 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     },
     [onClick],
   );
-
-  console.log('otherProps', otherProps);
 
   const input = (
     <input

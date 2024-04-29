@@ -107,7 +107,7 @@ const forEachImgMsg = () => {
 type ChatFooterProps = {
   curCve: ConversationItem;
   sendMsg: (
-    nMsg: string,
+    nMsg: MessageItem,
     type: MessageType,
     uid?: string,
     gid?: string,
@@ -253,7 +253,7 @@ function ChatFooter(props: ChatFooterProps) {
       //   groupID: curCve.groupID,
       //   sendID: "17396220460",
       // }).then((res) => console.log(JSON.parse(res.data)));
-      sendMsg(data.atTextElem.text, MessageType.TextMessage);
+      sendMsg(data, MessageType.TextMessage);
       reSet();
     },
     [reSet, sendMsg],
@@ -266,7 +266,7 @@ function ChatFooter(props: ChatFooterProps) {
         atUserIDList: atList.map((au) => au.id),
       };
       const { data } = await IMSDK.createTextAtMessage(options);
-      sendMsg(data.atTextElem.text, MessageType.AtTextMessage);
+      sendMsg(data, MessageType.AtTextMessage);
       reSet();
     },
     [atList, reSet, sendMsg],
@@ -278,7 +278,7 @@ function ChatFooter(props: ChatFooterProps) {
         text,
         message: JSON.stringify(replyMsg),
       });
-      sendMsg(data.atTextElem.text, MessageType.QuoteMessage);
+      sendMsg(data, MessageType.QuoteMessage);
       reSet();
     },
     [reSet, replyMsg, sendMsg],

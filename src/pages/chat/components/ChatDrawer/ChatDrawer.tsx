@@ -69,7 +69,7 @@ function ChatDrawer(props: ChatDrawerProps) {
           },
         )}
       >
-        <Card style={{ width: 500 }} className="card-cve">
+        <Card style={{ width: 500 }} className="card-cve tw-shadow-none">
           <Card.Header className="pe-5">
             <Card.Title>消息</Card.Title>
             <Card.Toolbar>
@@ -81,7 +81,7 @@ function ChatDrawer(props: ChatDrawerProps) {
               />
             </Card.Toolbar>
           </Card.Header>
-          <Card.Body className="px-0 pb-0">
+          <Card.Body className="px-0 pt-2 pb-0">
             <SearchBar className="mx-3" onSearch={handleCveSearch} />
             <CveList
               curCve={curCve}
@@ -90,6 +90,18 @@ function ChatDrawer(props: ChatDrawerProps) {
               cves={rs.searchStatus ? rs.searchCve : cveList}
             />
           </Card.Body>
+          <Card.Footer className="px-0 py-0">
+            <div className="d-flex justify-content-around flex-grow-1">
+              <div className="chat-menu d-flex flex-column align-items-center">
+                <Icon className="svg-icon-2x" name="Duotune/com007" />
+                <span className="fs-7 menu-text">消息</span>
+              </div>
+              <div className="chat-menu d-flex flex-column align-items-center">
+                <Icon className="svg-icon-2x" name="Duotune/com005" />
+                <span className="fs-7 menu-text">通讯录</span>
+              </div>
+            </div>
+          </Card.Footer>
         </Card>
         <Card
           style={{ width: 500 }}

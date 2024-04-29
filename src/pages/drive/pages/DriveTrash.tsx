@@ -62,7 +62,7 @@ function DriveTrash() {
           toolbar="trash"
           key="list-files"
           folder={folder}
-          filter={fileFilter}
+          where={fileFilter}
           rootFolder={rootFolder}
         />
       )}

@@ -24,7 +24,7 @@ function CveList(props: CveListProps) {
     >
       <Card
         flush
-        className="py-0 px-2 background-transparent"
+        className="py-0 border-0 px-2 background-transparent"
         bodyClassName="pt-5 pb-0 px-1 cve-list"
       >
         {cves.map((item) => (
