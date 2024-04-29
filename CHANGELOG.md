@@ -1,3 +1,10 @@
+## [0.4.8](https://github.com/limaofeng/asany-admin/compare/v0.4.7...v0.4.8) (2024-04-29)
+
+### Features
+
+- wxb prod ([7a3f7eb](https://github.com/limaofeng/asany-admin/commit/7a3f7ebb3ef1bf66eaa79cbfe94a118ccd739f94))
+- 优化手机上菜单显示效果 ([279cb16](https://github.com/limaofeng/asany-admin/commit/279cb16bf49c1e6393a86af5e3da8a0ebec1b379))
+
 ## [0.4.7](https://github.com/limaofeng/asany-admin/compare/v0.4.6...v0.4.7) (2024-04-16)
 
 ### Features
