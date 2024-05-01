@@ -270,7 +270,6 @@ function Aside(props: AsideProps) {
 
   useEffect(() => {
     if (drawerVisible !== drawer) {
-      console.log('ContentHeader', drawerVisible, drawer);
       layout.aside.drawer(drawerVisible);
     }
   }, [drawerVisible]);

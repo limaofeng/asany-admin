@@ -43,3 +43,9 @@
     }
   }
 }
+
+@media (min-width: 993px) {
+  #kt_header.headless {
+    display: none;
+  }
+}

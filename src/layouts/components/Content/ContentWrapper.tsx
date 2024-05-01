@@ -72,6 +72,7 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
             : !header
             ? {}
             : (header as ContentHeaderProps))}
+          headless={!header}
           breadcrumb={breadcrumb}
         />
         <Content

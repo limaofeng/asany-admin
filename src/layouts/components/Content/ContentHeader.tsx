@@ -137,11 +137,14 @@ function ContentHeader(props: ContentHeaderProps) {
     };
   }, [props.breadcrumb, props.title, location.pathname, allRoutes]);
 
-  console.log('ContentHeader', props.headless);
-
   return (
     <Sticky>
-      <div id="kt_header" className="header">
+      <div
+        id="kt_header"
+        className={classnames('header', {
+          headless: props.headless,
+        })}
+      >
         <div
           className="container-xxl d-flex align-items-center justify-content-between"
           id="kt_header_container"
