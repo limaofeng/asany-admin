@@ -1,3 +1,9 @@
+## [0.4.11](https://github.com/limaofeng/asany-admin/compare/v0.4.10...v0.4.11) (2024-05-13)
+
+### Features
+
+- 去掉默认的登录名与密码 ([effc6c0](https://github.com/limaofeng/asany-admin/commit/effc6c00cd98fad177e5e9a6358410e1fd12c016))
+
 ## [0.4.10](https://github.com/limaofeng/asany-admin/compare/v0.4.9...v0.4.10) (2024-05-01)
 
 ## [0.4.9](https://github.com/limaofeng/asany-admin/compare/v0.4.8...v0.4.9) (2024-04-29)
