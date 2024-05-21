@@ -92,6 +92,7 @@ query brands(
         id
         name
         createdAt(format: "yyyy-MM-dd")
+        description
       }
     }
   }
@@ -255,6 +256,28 @@ mutation deleteWarrantyPolicy($id: ID!) {
 
 mutation deleteManyWarrantyPolicies($where: WarrantyPolicyWhereInput) {
   result: deleteManyWarrantyPolicies(where: $where) {
+    count
+  }
+}
+
+mutation createBrand($input: BrandCreateInput!) {
+  result: createBrand(input: $input) {
+    id
+    name
+    description
+  }
+}
+
+mutation updateBrand($id: ID!, $input: BrandUpdateInput!) {
+  result: updateBrand(id: $id, input: $input) {
+    id
+    name
+    description
+  }
+}
+
+mutation deleteManyBrands($where: BrandWhereInput) {
+  result: deleteManyBrands(where: $where) {
     count
   }
 }
