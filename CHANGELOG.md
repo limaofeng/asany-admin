@@ -1,3 +1,9 @@
+## [0.4.12](https://github.com/limaofeng/asany-admin/compare/v0.4.11...v0.4.12) (2024-05-21)
+
+### Features
+
+- 添加品牌的新增与编辑删除 ([932b15e](https://github.com/limaofeng/asany-admin/commit/932b15ea3f8746e1f322536193f0ed45c581f63a))
+
 ## [0.4.11](https://github.com/limaofeng/asany-admin/compare/v0.4.10...v0.4.11) (2024-05-13)
 
 ### Features
