@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { sleep } from '@asany/sunmao';
@@ -12,8 +12,19 @@ function SignInForm() {
   const [loading, setLoading] = useState(false);
   const { refresh } = useModel('@@initialState');
 
+  const form = Form.useForm();
+
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const dataValues = localStorage.getItem('remember');
+    if (!dataValues) {
+      return () => {};
+    }
+    const [username, password] = dataValues.split('###');
+    form.setFieldsValue({ username, password });
+  }, []);
 
   const handleSignIn = useCallback(
     async (values: any) => {
@@ -29,6 +40,10 @@ function SignInForm() {
         await refresh();
         const query = qs.parse(location.search) as { redirect?: string };
         await sleep(120);
+        localStorage.setItem(
+          'remember',
+          values.username + '###' + values.password,
+        );
         navigate(query.redirect || '/', { replace: true });
       } catch (e) {
         console.error(e);
@@ -44,7 +59,12 @@ function SignInForm() {
   );
 
   return (
-    <Form className="w-100" onFinish={handleSignIn} autoComplete="off">
+    <Form
+      className="w-100"
+      onFinish={handleSignIn}
+      form={form}
+      autoComplete="off"
+    >
       {/* --begin::Heading--*/}
       <div className="text-center mb-10">
         {/* --begin::Title--*/}
