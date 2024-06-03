@@ -2,7 +2,15 @@ import { useCallback } from 'react';
 
 import useListPage from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
-import { BlockUI, Button, Card, Empty, Table } from '@/metronic';
+import {
+  BlockUI,
+  Button,
+  Card,
+  Empty,
+  Input,
+  Select2,
+  Table,
+} from '@/metronic';
 import { Device } from '@/types';
 
 import { useDevicesQuery } from '../hooks';
@@ -59,6 +67,45 @@ function DeviceListView() {
       ) : (
         <>
           <Card className="mb-5 mb-xl-10">
+            <Card.Header className="pt-8">
+              <Card.Title className="flex-column">
+                <Input.Search
+                  solid
+                  className="w-250px"
+                  placeholder="搜索设备"
+                  // onSearch={handleSearch}
+                />
+              </Card.Title>
+              <Card.Toolbar>
+                <div className="me-4 my-1">
+                  <Select2
+                    solid
+                    size="lg"
+                    className="w-125px"
+                    options={[
+                      { label: '全部客户', value: 'all' },
+                      { label: '今年', value: 'thisyear' },
+                      { label: '这个月', value: 'thismonth' },
+                      { label: '最近一个月', value: 'lastmonth' },
+                      { label: '最近90天', value: 'last90days' },
+                    ]}
+                  />
+                </div>
+                <div className="me-4 my-1">
+                  <Select2
+                    solid
+                    size="lg"
+                    className="w-125px"
+                    options={[
+                      { label: '全部门店', value: 'all' },
+                      { label: '草稿', value: 'DRAFT' },
+                      { label: '已发布', value: 'PUBLISHED' },
+                      { label: '等待发布', value: 'SCHEDULED' },
+                    ]}
+                  />
+                </div>
+              </Card.Toolbar>
+            </Card.Header>
             <Card.Body>
               <BlockUI
                 overlayClassName="bg-white bg-opacity-25"
