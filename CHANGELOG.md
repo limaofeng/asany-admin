@@ -1,3 +1,9 @@
+## [0.4.13](https://github.com/limaofeng/asany-admin/compare/v0.4.12...v0.4.13) (2024-06-03)
+
+### Features
+
+- 登录页记住密码 ([fd5f680](https://github.com/limaofeng/asany-admin/commit/fd5f680ee7b2ee7b1bb142d531a426a141fa0b8d))
+
 ## [0.4.12](https://github.com/limaofeng/asany-admin/compare/v0.4.11...v0.4.12) (2024-05-21)
 
 ### Features
