@@ -1,3 +1,10 @@
+## [0.4.14](https://github.com/limaofeng/asany-admin/compare/v0.4.13...v0.4.14) (2024-06-05)
+
+### Features
+
+- 扩展设备列表功能 ([f450519](https://github.com/limaofeng/asany-admin/commit/f450519e1716fc7406a24c6c28335be9da587fac))
+- 设备编辑 ([c560f2f](https://github.com/limaofeng/asany-admin/commit/c560f2f58138e297a17954025cf134b5ae23c0f8))
+
 ## [0.4.13](https://github.com/limaofeng/asany-admin/compare/v0.4.12...v0.4.13) (2024-06-03)
 
 ### Features
