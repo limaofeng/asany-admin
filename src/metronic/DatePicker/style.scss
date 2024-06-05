@@ -26,8 +26,8 @@
   border: 0;
   width: auto;
   font-family: Inter, Helvetica, sans-serif;
-  background-color: var(--kt-body-bg);
-  box-shadow: var(--kt-dropdown-box-shadow);
+  background-color: var(--general-background);
+  box-shadow: var(--bs-dropdown-box-shadow);
   border-radius: 0.475rem;
 
   .react-datepicker__header {

@@ -5,9 +5,9 @@ import { gql, useLazyQuery } from '@apollo/client';
 import { tree } from '@/utils';
 
 const QUERY_DICTS = gql(`
-query dicts($filter: DictFilter){
+query dicts($where: DictWhereInput){
   dicts(
-    filter:$filter
+    where:$where
   ) {
     id
     code
@@ -95,7 +95,7 @@ function useAreas(): UseAreasResult {
     (id: string) => {
       return fetchChildren({
         variables: {
-          filter: {
+          where: {
             parent: id,
           },
         },
@@ -129,7 +129,7 @@ function useAreas(): UseAreasResult {
     if (!FIRST_LOAD) {
       FIRST_LOAD = fetchChildren({
         variables: {
-          filter: {
+          where: {
             type_in: ['province', 'city', 'district', 'street'],
             level_lte: 2,
           },

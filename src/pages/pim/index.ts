@@ -36,6 +36,14 @@ class ProductInformationManagement {
   });
 
   @component({
+    name: 'DeviceDetailsView',
+  })
+  DeviceDetailsView = dynamic({
+    loader: () => import('./views/DeviceDetailsView'),
+    loading: LoadingComponent,
+  });
+
+  @component({
     name: 'BrandListView',
   })
   BrandListView = dynamic({

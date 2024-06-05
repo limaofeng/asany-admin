@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import $ from 'jquery';
 import 'select2';
+import { OptGroupData, SearchOptions } from 'select2';
 
 import type { OptionData } from './typings';
 
@@ -22,6 +23,10 @@ type SelectProps = {
   options?: OptionData[];
   selectClassName?: string;
   dropdownClassName?: string;
+  matcher?: (
+    params: SearchOptions,
+    data: OptGroupData | OptionData,
+  ) => OptGroupData | OptionData | any;
   onChange?: (
     value: string[] | string | number,
     option: OptionData | OptionData[],
@@ -36,6 +41,7 @@ function Select(props: SelectProps) {
     solid,
     size,
     multiple = false,
+    matcher,
     placeholder,
     className,
     selectClassName,
@@ -70,7 +76,11 @@ function Select(props: SelectProps) {
       .select2({
         multiple,
         placeholder,
-        minimumResultsForSearch: Infinity,
+        matcher,
+        language: {
+          noResults: () => '无匹配结果',
+        },
+        minimumResultsForSearch: matcher ? 10 : Infinity,
         closeOnSelect: multiple ? false : undefined,
         width: width as any,
         dropdownCssClass: classnames(

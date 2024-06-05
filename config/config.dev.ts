@@ -2,8 +2,8 @@ import { defineConfig } from '@umijs/max';
 
 export default defineConfig({
   apollo: {
-    url: 'http://10.7.5.4:30880/graphql',
-    wsUrl: 'ws://10.7.5.4:30880/subscriptions',
+    url: 'http://10.7.5.4:8080/graphql',
+    wsUrl: 'ws://10.7.5.4:8080/subscriptions',
   },
   define: {
     'process.env.NODE_ENV': process.env.NODE_ENV,

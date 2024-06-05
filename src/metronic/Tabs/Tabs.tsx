@@ -14,6 +14,7 @@ interface TabsProps {
   tabPosition?: 'left' | 'top';
   tabBarStyle?: CSSProperties;
   tabBarClassName?: string;
+  tabContentClassName?: string;
   type?: 'tabs' | 'pills-custom' | 'pills' | 'line-tabs';
   contentContainer?:
     | Element
@@ -130,7 +131,10 @@ function Tabs(props: TabsProps) {
   );
 
   const content = (
-    <div key="tab-content" className="tab-content">
+    <div
+      key="tab-content"
+      className={classnames('tab-content', props.tabContentClassName)}
+    >
       {panes.map((item) =>
         React.cloneElement(item.content, {
           key: item.id,

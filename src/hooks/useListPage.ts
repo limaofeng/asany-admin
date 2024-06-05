@@ -37,7 +37,7 @@ type SearchOptions = {
   toQuery?: (
     variables: any,
     pagination: PaginationProps,
-    filters: any | undefined,
+    filters: { [key: string]: any } | undefined,
     sorter: Sorter,
   ) => any;
   toVariables?: (query: { [key: string]: any }) => {
@@ -55,7 +55,8 @@ function useListPage<T, Q = any>(
     pageInfo: PageInfo;
     sorter: Sorter;
     refetch: () => void;
-    onChange: (pagination: any, filters: any, sorter: any) => void;
+    variables: { [key: string]: any };
+    onChange: (pagination: any, where: any, sorter: any) => void;
   },
 ] {
   const navigate = useNavigate();
@@ -97,10 +98,10 @@ function useListPage<T, Q = any>(
   ]);
 
   const handleChange = useCallback(
-    (_pagination: any, _filters: any, _sorter: any) => {
+    (_pagination: any, _where: any, _sorter: any) => {
       const query =
         (search?.toQuery &&
-          search.toQuery(variables, _pagination, _filters, _sorter)) ||
+          search.toQuery(variables, _pagination, _where, _sorter)) ||
         '';
       navigate(location.pathname + '?' + qs.stringify(query), {
         replace: true,
@@ -113,7 +114,7 @@ function useListPage<T, Q = any>(
 
   return [
     nodes,
-    { loading, pageInfo, sorter, onChange: handleChange, refetch },
+    { loading, pageInfo, sorter, variables, onChange: handleChange, refetch },
   ];
 }
 

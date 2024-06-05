@@ -1,5 +1,13 @@
-query deviceQrCodes {
-  deviceQrCodes: shortLinksConnection {
+query deviceQrCodes(
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy = "createdAt_desc"
+) {
+  deviceQrCodes: shortLinksConnection(
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
     pageInfo {
       totalPages
       pageSize
@@ -53,6 +61,16 @@ query devices(
           id
           name
         }
+        owner {
+          id
+          name
+          ... on CustomerStore {
+            customer {
+              id
+              name
+            }
+          }
+        }
         warrantyStatus
         warrantyEndDate(format: "yyyy-MM-dd")
         address {
@@ -66,6 +84,72 @@ query devices(
         createdAt(format: "yyyy-MM-dd")
       }
     }
+  }
+}
+
+query device($id: ID!) {
+  result: device(id: $id) {
+    id
+    no
+    sn
+    name
+    brand {
+      id
+      name
+    }
+    warrantyStatus
+    purchaseDate(format: "yyyy-MM-dd")
+    warrantyStartDate(format: "yyyy-MM-dd")
+    warrantyEndDate(format: "yyyy-MM-dd")
+    warrantyCards {
+      id
+      status
+      endDate
+      policy {
+        id
+      }
+    }
+    address {
+      country
+      province
+      city
+      district
+      street
+      detailedAddress
+    }
+    contactInfo {
+      name
+      phone
+      email
+    }
+    product {
+      id
+      name
+    }
+    owner {
+      id
+      ... on CustomerStore {
+        name
+        customer {
+          id
+          name
+          ticketStrategy
+        }
+      }
+    }
+    createdAt(format: "yyyy-MM-dd HH:mm")
+  }
+}
+
+mutation deleteManyDevices($where: DeviceWhereInput) {
+  result: deleteManyDevices(where: $where) {
+    count
+  }
+}
+
+mutation updateDevice($id: ID!, $input: DeviceUpdateInput!) {
+  result: updateDevice(id: $id, input: $input) {
+    id
   }
 }
 
@@ -94,6 +178,29 @@ query brands(
         createdAt(format: "yyyy-MM-dd")
         description
       }
+    }
+  }
+}
+
+query productAll($where: ProductWhereInput) {
+  products(where: $where, limit: 100) {
+    id
+    name
+    brand {
+      id
+      name
+    }
+    warrantyPolicies {
+      id
+      name
+      duration
+    }
+    images {
+      id
+      url
+      alt
+      title
+      description
     }
   }
 }
@@ -279,5 +386,31 @@ mutation updateBrand($id: ID!, $input: BrandUpdateInput!) {
 mutation deleteManyBrands($where: BrandWhereInput) {
   result: deleteManyBrands(where: $where) {
     count
+  }
+}
+
+query customers($where: CustomerWhereInput, $limit: Int = 1000) {
+  result: customers(where: $where, limit: $limit) {
+    id
+    name
+  }
+}
+
+query customerStores($where: CustomerStoreWhereInput, $limit: Int = 1000) {
+  result: customerStores(where: $where, limit: $limit) {
+    id
+    name
+    address {
+      province
+      city
+      district
+      street
+      detailedAddress
+    }
+    contactInfo {
+      name
+      phone
+      email
+    }
   }
 }

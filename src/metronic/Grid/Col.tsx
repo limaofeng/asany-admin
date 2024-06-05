@@ -32,7 +32,7 @@ export type ColResponsive = {
 
 type ColProps = {
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 } & ColResponsive;
 
 function Col(props: ColProps) {

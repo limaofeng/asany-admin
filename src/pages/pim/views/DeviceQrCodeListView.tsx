@@ -87,7 +87,6 @@ function DeviceQrCodeListView() {
 
   const handleGenerateEmptyShortLinks = useCallback(async () => {
     const values = await form.validateFields();
-    console.log(values);
     const { data } = await generateShortLinks({
       variables: {
         links: Array.from({ length: values.count }).map((_, index) => ({
@@ -255,7 +254,6 @@ function DeviceQrCodeListView() {
   const [qrCode, setQrCode] = useState<string>();
 
   const handleOpenQRCode = useCallback((url: string) => {
-    console.log(url);
     setQrCode(url);
   }, []);
 
@@ -390,8 +388,18 @@ function DeviceQrCodeListView() {
                       sorter: true,
                       sortOrder:
                         sorter.field === 'url' ? sorter.order : undefined,
-                      render(name) {
-                        return <div className="text-gray-700">{name}</div>;
+                      render(url, data) {
+                        // console.log('metadata', data.metadata, url);
+                        if (!url) {
+                          return (
+                            <span className="text-gray-700">未绑定设备</span>
+                          );
+                        }
+                        return (
+                          <a className="text-gray-700" href={url} target="_">
+                            {data.metadata?.no}
+                          </a>
+                        );
                       },
                     },
                     {

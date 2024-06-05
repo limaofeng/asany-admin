@@ -12,7 +12,7 @@ function DrawerOverlay({
 }) {
   const container = document.body;
 
-  console.log('DrawerOverlay', visible, onClose);
+  // console.log('DrawerOverlay', visible, onClose);
 
   if (!visible) {
     return;
@@ -54,7 +54,7 @@ function useDrawer(options: DrawerOptions): [
     setVisible(false);
   }, []);
 
-  console.log('DrawerOverlay ===> ', visible);
+  // console.log('DrawerOverlay ===> ', visible);
 
   return [
     <DrawerOverlay
