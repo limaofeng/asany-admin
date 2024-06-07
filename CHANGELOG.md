@@ -1,3 +1,9 @@
+## [0.4.16](https://github.com/limaofeng/asany-admin/compare/v0.4.15...v0.4.16) (2024-06-07)
+
+### Features
+
+- 解决浏览器缓存问题 ([eefc965](https://github.com/limaofeng/asany-admin/commit/eefc965598f819a8af11aef517a2555006c28e16))
+
 ## [0.4.15](https://github.com/limaofeng/asany-admin/compare/v0.4.14...v0.4.15) (2024-06-07)
 
 ### Features
