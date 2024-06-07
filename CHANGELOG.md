@@ -1,3 +1,9 @@
+## [0.4.15](https://github.com/limaofeng/asany-admin/compare/v0.4.14...v0.4.15) (2024-06-07)
+
+### Features
+
+- 设备显示创建人 ([d13f72d](https://github.com/limaofeng/asany-admin/commit/d13f72d794a6c22ed5da426551ccb0af1711efcb))
+
 ## [0.4.14](https://github.com/limaofeng/asany-admin/compare/v0.4.13...v0.4.14) (2024-06-05)
 
 ### Features
