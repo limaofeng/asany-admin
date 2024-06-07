@@ -1,3 +1,9 @@
+## [0.4.17](https://github.com/limaofeng/asany-admin/compare/v0.4.16...v0.4.17) (2024-06-07)
+
+### Features
+
+- update updatedAt format to include time in device query ([f72d4d8](https://github.com/limaofeng/asany-admin/commit/f72d4d82a2649127e63b9a4988dfc509d2404169))
+
 ## [0.4.16](https://github.com/limaofeng/asany-admin/compare/v0.4.15...v0.4.16) (2024-06-07)
 
 ### Features
