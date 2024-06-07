@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 
@@ -19,6 +19,7 @@ import {
   Table,
   Toast,
 } from '@/metronic';
+import { useUsersQuery } from '@/pages/system/hooks';
 import { Device } from '@/types';
 
 import {
@@ -99,13 +100,44 @@ function DeviceActions({
 }
 
 function DeviceListView() {
+  const [searchParams] = useSearchParams();
+
   const [where, setWhere] = useState<{
     name_contains?: string;
     customer?: string;
     customerStore?: string;
+    createdBy?: string;
   }>({});
 
+  useEffect(() => {
+    setWhere((where) => {
+      if (searchParams.get('name_contains')) {
+        where.name_contains = searchParams.get('name_contains')!;
+      }
+      if (searchParams.get('customer')) {
+        where.customer = searchParams.get('customer')!;
+      }
+      if (searchParams.get('customerStore')) {
+        where.customerStore = searchParams.get('customerStore')!;
+      }
+      if (searchParams.get('createdBy')) {
+        where.createdBy = searchParams.get('createdBy')!;
+      }
+      return where;
+    });
+  }, [searchParams]);
+
   const [deleteManyDevices] = useDeleteManyDevicesMutation();
+
+  const { data: usersData } = useUsersQuery({
+    variables: {
+      where: {
+        tenantId: '1691832353955123200',
+      },
+      pageSize: 100,
+    },
+    fetchPolicy: 'network-only',
+  });
 
   const { data: customersData } = useCustomersQuery({
     fetchPolicy: 'network-only',
@@ -123,6 +155,9 @@ function DeviceListView() {
         }
         if (where?.customerStore) {
           _query.customerStore = where.customerStore;
+        }
+        if (where?.createdBy) {
+          _query.createdBy = where.createdBy;
         }
         if (!!sorter) {
           _query.orderBy =
@@ -145,6 +180,10 @@ function DeviceListView() {
           query.where['customerStore'] = query.customerStore;
           delete query.customerStore;
         }
+        if (query.createdBy) {
+          query.where['createdBy'] = query.createdBy;
+          delete query.createdBy;
+        }
         return query;
       },
     });
@@ -159,6 +198,13 @@ function DeviceListView() {
     },
     [onChange, sorter],
   );
+
+  const setWhereCreatedBy = useCallback((value: string) => {
+    setWhere((where) => ({
+      ...where,
+      createdBy: !value ? undefined : value,
+    }));
+  }, []);
 
   const setCustomerStoreId = useCallback((value: string) => {
     setWhere((where) => ({
@@ -193,6 +239,8 @@ function DeviceListView() {
 
   const customers = customersData?.result || [];
   const stores = customerStoresData?.result || [];
+
+  const users = usersData?.result.edges.map((edge) => edge.node) || [];
 
   const handleDeleteInBatch = useCallback(
     (selectedRowKeys: string[]) => async () => {
@@ -244,6 +292,29 @@ function DeviceListView() {
             />
           </Card.Title>
           <Card.Toolbar>
+            <div className="me-4 my-1">
+              <Select2
+                solid
+                size="sm"
+                className="w-150px"
+                onChange={(value) => setWhereCreatedBy(value as string)}
+                matcher={(params, data) => {
+                  if (!params.term || params.term === '') {
+                    return data;
+                  }
+                  if (data.text.includes(params.term)) {
+                    return data;
+                  }
+                  return null;
+                }}
+                placeholder="创建人"
+                value={where?.createdBy}
+                options={users.map((user) => ({
+                  label: user.name!,
+                  value: user.id!,
+                }))}
+              />
+            </div>
             <div className="me-4 my-1">
               <Select2
                 solid

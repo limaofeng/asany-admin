@@ -253,7 +253,11 @@ function DeviceDetailsView() {
                     </Row>
                   </div>
                 </Tabs.TabPane>
-                <Tabs.TabPane key="bx" tab="保修信息" forceRender>
+                <Tabs.TabPane
+                  key="warranty-information"
+                  tab="保修信息"
+                  forceRender
+                >
                   <div className="py-4">
                     <Row className="mt-5">
                       <Col span={6}>
@@ -296,7 +300,7 @@ function DeviceDetailsView() {
                   </div>
                 </Tabs.TabPane>
                 <Tabs.TabPane
-                  key="product-maintenance-video"
+                  key="store-information"
                   tab="门店信息"
                   forceRender
                 >
@@ -365,7 +369,7 @@ function DeviceDetailsView() {
                   </div>
                 </Tabs.TabPane>
                 <Tabs.TabPane
-                  key="product-knowledge-base"
+                  key="contact-information"
                   tab="联系方式"
                   forceRender
                 >
@@ -401,6 +405,46 @@ function DeviceDetailsView() {
                         </Form.Item>
                       </Col>
                       <Col span={6} />
+                    </Row>
+                  </div>
+                </Tabs.TabPane>
+                <Tabs.TabPane
+                  key="maintainer-information"
+                  tab="维护人信息"
+                  forceRender
+                >
+                  <div className="py-4">
+                    <Row className="mt-5">
+                      <Col span={6}>
+                        <Form.Item className="mb-5" label="创建人">
+                          <Input
+                            value={device?.createdBy?.name}
+                            solid
+                            readOnly
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={6}>
+                        <Form.Item className="mb-5" label="创建时间">
+                          <Input value={device?.createdAt} solid readOnly />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row className="mt-5">
+                      <Col span={6}>
+                        <Form.Item className="mb-5" label="更新人">
+                          <Input
+                            value={device?.updatedBy?.name}
+                            solid
+                            readOnly
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={6}>
+                        <Form.Item className="mb-5" label="更新时间">
+                          <Input value={device?.updatedAt} solid readOnly />
+                        </Form.Item>
+                      </Col>
                     </Row>
                   </div>
                 </Tabs.TabPane>
