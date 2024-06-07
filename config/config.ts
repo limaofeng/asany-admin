@@ -34,6 +34,21 @@ export default defineConfig({
     '/assets/css/style.bundle.css',
   ],
   scripts: ['/wasm_exec.js'],
+  metas: [
+    {
+      'http-equiv': 'Cache-Control',
+      content: 'no-cache',
+    },
+    {
+      'http-equiv': 'Pragma',
+      content: 'no-cache',
+    },
+    {
+      'http-equiv': 'Expires',
+      content: '0',
+    },
+  ],
+  hash: true,
   dva: {},
   antd: {},
   access: {},
