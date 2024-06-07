@@ -142,7 +142,7 @@ query device($id: ID!) {
       id
       name
     }
-    updatedAt(format: "yyyy-MM-dd")
+    updatedAt(format: "yyyy-MM-dd HH:mm")
     updatedBy {
       id
       name
