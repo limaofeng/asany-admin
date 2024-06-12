@@ -1,3 +1,9 @@
+## [0.4.18](https://github.com/limaofeng/asany-admin/compare/v0.4.17...v0.4.18) (2024-06-12)
+
+### Features
+
+- add Select2 component for store selection in DeviceDetailsView ([b3324fa](https://github.com/limaofeng/asany-admin/commit/b3324fa22cd808a5a19a74a8c9932fc78d6d7dfc))
+
 ## [0.4.17](https://github.com/limaofeng/asany-admin/compare/v0.4.16...v0.4.17) (2024-06-07)
 
 ### Features
