@@ -224,8 +224,12 @@ function DeviceListView() {
   );
 
   useEffect(() => {
-    onChange({ current: 1, pageSize: 10 }, where, sorter);
-  }, [where, onChange, sorter]);
+    onChange(
+      { current: searchParams.get('page') || 1, pageSize: 10 },
+      where,
+      sorter,
+    );
+  }, [where, onChange, sorter, searchParams.get('page')]);
 
   const { data: customerStoresData } = useCustomerStoresQuery({
     fetchPolicy: 'network-only',

@@ -13,6 +13,7 @@ import {
   RegionPicker,
   Row,
   Select,
+  Select2,
   Tabs,
   Toast,
 } from '@/metronic';
@@ -334,8 +335,19 @@ function DeviceDetailsView() {
                             { required: true, message: '请选择一个门店' },
                           ]}
                         >
-                          <Select
+                          <Select2
                             solid
+                            className="w-150px"
+                            selectClassName="w-150px"
+                            matcher={(params, data) => {
+                              if (!params.term || params.term === '') {
+                                return data;
+                              }
+                              if (data.text.includes(params.term)) {
+                                return data;
+                              }
+                              return null;
+                            }}
                             options={stores.map((c) => ({
                               label: c.name!,
                               value: c.id,
