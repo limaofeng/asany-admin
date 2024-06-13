@@ -97,6 +97,7 @@ function DocumentContent(props: DocumentContentProps) {
     (fileId: string) => {
       handleChange({
         ...value,
+        type: 'PDF' as any,
         document: fileId,
         url: undefined,
       });

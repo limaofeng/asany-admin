@@ -186,11 +186,11 @@ function ProductArticleList(props: ProductArticleListProps) {
               return (
                 <div>
                   {hasSelected(record.id) ? (
-                    <a href="" onClick={handleUnlinkToArticle(record.id)}>
+                    <a href="#" onClick={handleUnlinkToArticle(record.id)}>
                       取消关联
                     </a>
                   ) : (
-                    <a href="" onClick={handleLinkToArticle(record.id)}>
+                    <a href="#" onClick={handleLinkToArticle(record.id)}>
                       关联
                     </a>
                   )}
