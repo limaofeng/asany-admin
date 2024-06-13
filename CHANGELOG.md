@@ -1,3 +1,9 @@
+## [0.4.19](https://github.com/limaofeng/asany-admin/compare/v0.4.18...v0.4.19) (2024-06-13)
+
+### Features
+
+- add PDF type to DocumentContent component and fix link URLs in ProductArticleList component ([fbf7570](https://github.com/limaofeng/asany-admin/commit/fbf75709576b5a9ad35e6d13add3c525cf764edd))
+
 ## [0.4.18](https://github.com/limaofeng/asany-admin/compare/v0.4.17...v0.4.18) (2024-06-12)
 
 ### Features
