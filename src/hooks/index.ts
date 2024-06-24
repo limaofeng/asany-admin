@@ -62,7 +62,7 @@ export async function loginWithUsername(username: string, password: string) {
 
 export async function logout() {
   try {
-    await Promise.race([
+    await Promise.all([
       apolloClient.mutate({
         mutation: LogoutDocument,
         fetchPolicy: 'no-cache',

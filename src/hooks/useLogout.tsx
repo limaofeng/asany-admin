@@ -11,7 +11,7 @@ function useLogout(): UseLogoutResult {
 
   const handleLogout = useCallback(async () => {
     await logout();
-    refresh();
+    await refresh();
   }, [refresh]);
 
   return [handleLogout, { loading }];
