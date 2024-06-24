@@ -1,3 +1,9 @@
+## [0.4.20](https://github.com/limaofeng/asany-admin/compare/v0.4.19...v0.4.20) (2024-06-24)
+
+### Bug Fixes
+
+- logout race condition in useLogout hook ([c7e05ab](https://github.com/limaofeng/asany-admin/commit/c7e05ab0c1eb43e3a66067561768896cfc6d2060))
+
 ## [0.4.19](https://github.com/limaofeng/asany-admin/compare/v0.4.18...v0.4.19) (2024-06-13)
 
 ### Features
