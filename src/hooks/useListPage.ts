@@ -48,6 +48,7 @@ type SearchOptions = {
 function useListPage<T, Q = any>(
   useDataQuery: (baseOptions?: QueryHookOptions<Q, OperationVariables>) => any,
   search?: SearchOptions,
+  skip?: boolean,
 ): [
   T[],
   {
@@ -84,6 +85,7 @@ function useListPage<T, Q = any>(
   const { data, loading, previousData, refetch } = useDataQuery({
     fetchPolicy: 'cache-and-network',
     variables,
+    skip: skip,
   }) as QueryResult<ResultQuery<T>, OperationVariables>;
 
   const pageInfo = useMemo(() => {

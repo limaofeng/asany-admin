@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useCurrentuser } from '@/hooks';
 import { ContentWrapper } from '@/layouts/components';
 import {
   Button,
@@ -22,6 +23,7 @@ import {
 } from '../hooks';
 
 function UserNewView() {
+  const { data: user } = useCurrentuser();
   const navigate = useNavigate();
   const form = Form.useForm();
 
@@ -53,7 +55,7 @@ function UserNewView() {
       variables: {
         input: {
           ...values,
-          tenantId: '1691832353955123200',
+          tenantId: user?.tenantId,
         },
       },
     });
@@ -64,7 +66,7 @@ function UserNewView() {
     navigate('/system/users/' + data!.result!.id, {
       replace: true,
     });
-  }, []);
+  }, [user?.tenantId]);
 
   return (
     <ContentWrapper

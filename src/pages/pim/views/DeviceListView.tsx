@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 
+import { useCurrentuser } from '@/hooks';
 import useDelete from '@/hooks/useDelete';
 import useListPage from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
@@ -100,6 +101,7 @@ function DeviceActions({
 }
 
 function DeviceListView() {
+  const { data: user } = useCurrentuser();
   const [searchParams] = useSearchParams();
 
   const [where, setWhere] = useState<{
@@ -132,11 +134,12 @@ function DeviceListView() {
   const { data: usersData } = useUsersQuery({
     variables: {
       where: {
-        tenantId: '1691832353955123200',
+        tenantId: user?.tenantId,
       },
       pageSize: 100,
     },
     fetchPolicy: 'network-only',
+    skip: !user?.tenantId,
   });
 
   const { data: customersData } = useCustomersQuery({

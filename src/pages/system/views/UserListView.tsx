@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 
+import { useCurrentuser } from '@/hooks';
 import useDelete from '@/hooks/useDelete';
 import useListPage from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
@@ -25,34 +26,39 @@ import { useDeleteManyUsersMutation, useUsersQuery } from '../hooks';
 function UserListView() {
   const navigate = useNavigate();
   const [deleteManyUsers] = useDeleteManyUsersMutation();
+  const { data: user } = useCurrentuser();
 
   const [users, { loading, pageInfo, sorter, onChange, refetch }] =
-    useListPage<User>(useUsersQuery, {
-      toQuery: (variables, pagination, filter, sorter) => {
-        const _query: any = {};
-        if (variables.filter?.nickname_contains) {
-          _query.q = variables.filter?.nickname_contains;
-        }
-        if (!!sorter) {
-          _query.orderBy =
-            sorter.field + '_' + (sorter.order === 'ascend' ? 'asc' : 'desc');
-        }
-        _query.page = pagination.current;
-        return _query;
+    useListPage<User>(
+      useUsersQuery,
+      {
+        toQuery: (variables, pagination, filter, sorter) => {
+          const _query: any = {};
+          if (variables.filter?.nickname_contains) {
+            _query.q = variables.filter?.nickname_contains;
+          }
+          if (!!sorter) {
+            _query.orderBy =
+              sorter.field + '_' + (sorter.order === 'ascend' ? 'asc' : 'desc');
+          }
+          _query.page = pagination.current;
+          return _query;
+        },
+        toVariables: (query) => {
+          query.where = {};
+          if (query.q) {
+            query.where = { nickname_contains: query.q };
+            delete query.q;
+          }
+          if (query.page) {
+            query.page = parseInt(query.page);
+          }
+          query.where.tenantId = user?.tenantId;
+          return query;
+        },
       },
-      toVariables: (query) => {
-        query.where = {};
-        if (query.q) {
-          query.where = { nickname_contains: query.q };
-          delete query.q;
-        }
-        if (query.page) {
-          query.page = parseInt(query.page);
-        }
-        query.where.tenantId = '1691832353955123200';
-        return query;
-      },
-    });
+      !user?.tenantId,
+    );
 
   const handleSearch = useCallback((text: string) => {
     navigate(`/system/users?q=${text}`, {

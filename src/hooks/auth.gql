@@ -60,5 +60,6 @@ query viewer {
         status
       }
     }
+    tenantId
   }
 }
