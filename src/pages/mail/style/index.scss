@@ -134,7 +134,7 @@
       align-items: center;
       justify-content: center;
       height: 40px;
-      border-top: #f7f7f7 1px solid;
+      border-top: var(--bs-border-color) 1px solid;
 
       .mail-settings {
         color: #5e6278;
@@ -155,8 +155,8 @@
       left: 1px;
     }
     .mailbox-card {
-      background-color: #f0f0f2;
-      border-right: #b0b0b0 1px solid;
+      background-color: var(--bs-secondary-bg);
+      border-right: var(--bs-border-color-translucent) 1px solid;
       border-radius: 0;
 
       // &.has-inbox {
@@ -167,7 +167,7 @@
         min-height: auto;
         padding-top: 1rem;
         padding-bottom: 10px;
-        background-color: #fff;
+        background-color: var(--bs-body-bg);
         border-bottom: #d9d9d9 1px solid;
         border-radius: 0;
       }
@@ -189,9 +189,9 @@
         margin-top: 6px;
         padding-left: 8px;
         font-weight: bold;
-        background-color: #fff;
-        border-top: #d9d9d9 1px solid;
-        border-bottom: #d9d9d9 1px solid;
+        background-color: var(--bs-body-bg);
+        border-top: var(--bs-border-color) 1px solid;
+        border-bottom: var(--bs-border-color) 1px solid;
 
         .box-name {
           flex: 1;
@@ -243,12 +243,12 @@
         overflow-x: hidden;
 
         .os-content {
-          background-color: #fff;
+          background-color: var(--bs-body-bg);
         }
 
         .infinite-scroll-inner {
           min-height: 100%;
-          background-color: #fff;
+          background-color: var(--bs-body-bg);
 
           &:focus-within {
             .email-message.active {
@@ -384,7 +384,7 @@
     .mail-message-details {
       flex: 1;
       height: 100vh;
-      background-color: #fff;
+      background-color: var(--bs-body-bg);
 
       &.mailbox-message-is-empty {
         display: flex;
@@ -448,7 +448,7 @@
 .mail-preferences {
   color: #343434;
   .modal-header {
-    background-color: #fff;
+    background-color: var(--bs-body-bg);
     .nav-link {
       margin-right: 0;
       margin-left: 0;
@@ -554,7 +554,7 @@
         font-weight: 500;
         font-size: 12px;
         line-height: 28px;
-        background-color: #fff;
+        background-color: var(--bs-body-bg);
         border-bottom: 1px solid #e6e6e6;
         .field-folder {
           flex: 1;
@@ -568,7 +568,7 @@
       .settings-mailbox-body {
         height: calc(75vh - 100px - (1.75rem * 2) - 36px - 28px - 23px);
         margin-top: 4px;
-        background-color: #fff;
+        background-color: var(--bs-body-bg);
       }
       .settings-mailbox-footer {
         display: flex;

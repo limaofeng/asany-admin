@@ -6,7 +6,7 @@
   }
 }
 .calendar-sidebar-bg {
-  --aside-workspace-bg-color: #fff;
+  --aside-workspace-bg-color: var(--bs-body-bg);
   background-color: var(--aside-workspace-bg-color);
 
   &.state-new-event {
@@ -172,14 +172,23 @@
   flex-direction: column;
   height: calc(100vh);
   .Calendar {
+    --cl-color-primary: var(--bs-primary);
     --cl-color-error: #969595;
     width: 100%;
     padding-top: 0;
     background: transparent;
     box-shadow: none;
 
+    .Calendar__day {
+      color: var(--bs-heading-color);
+      &.-selected {
+        color: var(--bs-white);
+        font-weight: bold;
+      }
+    }
+
     .Calendar__monthYear {
-      left: 49%;
+      left: 45%;
       flex-direction: row-reverse;
       width: 140px;
 
@@ -209,6 +218,11 @@
           content: '年';
         }
       }
+    }
+
+    .Calendar__yearSelectorAnimationWrapper,
+    .Calendar__monthSelectorAnimationWrapper {
+      bottom: 26px;
     }
 
     .Calendar__weekDays {
@@ -309,6 +323,12 @@
     }
   }
 }
+[data-bs-theme='light'] {
+  --fc-day-selected-bg: #f3f9fe;
+}
+[data-bs-theme='dark'] {
+  --fc-day-selected-bg: #010309;
+}
 .main-calendar {
   #kt_content {
     padding: 30px;
@@ -317,7 +337,9 @@
     }
   }
   .fc-theme-standard {
-    --fc-border-color: #e0e0e0;
+    --fc-border-color: var(--bs-gray-200);
+    --fc-other-month-border-color: var(--bs-gray-300);
+
     .fc-daygrid-day-number,
     .fc-more-popover-misc {
       display: flex;
@@ -354,15 +376,15 @@
       }
       .fc-day-other {
         &.fc-day-nextmonth {
-          border-top: 2px solid #d6d6d6;
+          border-top: 2px solid var(--fc-other-month-border-color);
           &.fc-day-month-divider {
-            border-left: 2px solid #d6d6d6;
+            border-left: 2px solid var(--fc-other-month-border-color);
           }
         }
         &.fc-day-prevmonth {
-          border-bottom: 2px solid #d6d6d6;
+          border-bottom: 2px solid var(--fc-other-month-border-color);
           &.fc-day-month-divider {
-            border-right: 2px solid #d6d6d6;
+            border-right: 2px solid var(--fc-other-month-border-color);
           }
         }
       }
@@ -371,49 +393,49 @@
       }
       .fc-day-today {
         &.fc-day-selected {
-          background-color: #f3f9fe;
+          background-color: var(--fc-day-selected-bg);
         }
         .fc-daygrid-day-solar {
-          color: #fff;
-          background-color: #0095ff;
+          color: var(--bs-white);
+          background-color: var(--bs-success);
         }
       }
       .fc-day-selected {
-        background-color: #f0f0f0;
+        background-color: var(--fc-day-selected-bg);
       }
       .fc-day-sat,
       .fc-day-sun {
         &.fc-day-selected {
-          background-color: #ededed;
+          background-color: var(--fc-day-selected-bg);
         }
-        background-color: #f7f7f7;
+        background-color: var(--bs-light);
         &.fc-day-today {
-          background-color: #f0f6fb;
+          background-color: var(--bs-gray-200);
         }
         .fc-col-header-cell-cushion,
         .fc-daygrid-day-number {
-          color: #7e7f80;
+          color: var(--bs-gray-500);
         }
       }
     }
     .fc-timeGridWeek-view {
       .fc-day-selected {
-        background-color: #f0f0f0;
+        background-color: var(--fc-day-selected-bg);
       }
       .fc-day-today {
         background-color: transparent;
         &.fc-day-selected {
-          background-color: #f3f9fe;
+          background-color: var(--fc-day-selected-bg);
         }
       }
       .fc-day-sat,
       .fc-day-sun {
         &.fc-day-selected {
-          background-color: #ededed;
+          background-color: var(--fc-day-selected-bg);
         }
-        background-color: #f7f7f7;
+        background-color: var(--bs-light);
         &.fc-day-today {
-          background-color: #f0f6fb;
+          background-color: var(--bs-gray-200);
         }
       }
     }

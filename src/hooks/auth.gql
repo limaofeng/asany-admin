@@ -2,15 +2,15 @@ mutation logout {
   logout
 }
 
-# mutation loginByWeiXin($code: String!) {
-#   login(loginType: weixin, authCode: $code) {
-#     uid
-#     name
-#     token
-#     type
-#     authoritys
-#   }
-# }
+mutation loginByWeixin($clientId: String!, $authCode: String) {
+  login(clientId: $clientId, loginType: WeChatPM, authCode: $authCode) {
+    uid
+    name
+    type
+    token
+    authorities
+  }
+}
 
 # mutation loginByDingtalk($code: String!) {
 #   login(loginType: dingtalk, authCode: $code) {

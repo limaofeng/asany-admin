@@ -1,10 +1,10 @@
 import { ApolloError } from '@apollo/client';
-import { apolloClient, tokenHelper, useAppClientId } from '@umijs/max';
+import { apolloClient, tokenHelper } from '@umijs/max';
 
 import type { CurrentUser } from '@/types';
-import { delay, sleep } from '@/utils';
+import { sleep } from '@/utils';
 
-import { LoginByUsernameDocument, LogoutDocument, ViewerDocument } from './api';
+import { LogoutDocument, ViewerDocument } from './api';
 
 export function tokenExists() {
   const token = localStorage.getItem('credentials');
@@ -28,7 +28,7 @@ export async function loadCurrentuser(): Promise<CurrentUser | undefined> {
     return viewer;
   } catch (error) {
     const needLogIn = (error as ApolloError).graphQLErrors.some(
-      (item) => item.extensions.code === '100401',
+      (item) => item.extensions.code === '401001',
     );
     if (needLogIn) {
       localStorage.removeItem('credentials');
@@ -36,28 +36,6 @@ export async function loadCurrentuser(): Promise<CurrentUser | undefined> {
     }
     throw error;
   }
-}
-
-export async function loginWithUsername(username: string, password: string) {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const clientId = useAppClientId();
-  const {
-    data: { login },
-  } = await delay(
-    apolloClient.mutate({
-      mutation: LoginByUsernameDocument,
-      variables: {
-        clientId,
-        username,
-        password,
-      },
-      fetchPolicy: 'no-cache',
-    }),
-    1000,
-  );
-  localStorage.setItem('credentials', login.token);
-  tokenHelper.setToken(login.token);
-  return login;
 }
 
 export async function logout() {
@@ -77,4 +55,5 @@ export async function logout() {
 
 export { default as useCurrentuser } from './useCurrentuser';
 export { default as useEnquire } from './useEnquire';
+export { default as useLogin } from './useLogin';
 export { default as useLogout } from './useLogout';

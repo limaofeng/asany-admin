@@ -5,7 +5,7 @@ import { sleep } from '@asany/sunmao';
 import { useModel } from '@umijs/max';
 import qs from 'query-string';
 
-import { loginWithUsername } from '@/hooks';
+import { useLogin } from '@/hooks';
 import { Button, Form, Input, Modal } from '@/metronic';
 
 function SignInForm() {
@@ -16,6 +16,8 @@ function SignInForm() {
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { loginWithUsername } = useLogin();
 
   useEffect(() => {
     const dataValues = localStorage.getItem('remember');
@@ -55,7 +57,7 @@ function SignInForm() {
         setLoading(false);
       }
     },
-    [refresh],
+    [refresh, loginWithUsername],
   );
 
   return (
