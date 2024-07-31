@@ -226,13 +226,17 @@ function ArticleList(props: ArticleListProps) {
     if (q) {
       query.where.keyword = q;
     }
-    query.where.category = { id: categoryId!, subColumns: true };
+    query.where.category = {
+      id: categoryId || rootCategoryId,
+      subColumns: true,
+    };
     return query;
-  }, [location.search, categoryId]);
+  }, [location.search, categoryId, rootCategoryId]);
 
   const { data, refetch, loading, previousData } = useArticlesQuery({
     variables,
     fetchPolicy: 'cache-and-network',
+    skip: !rootCategoryId,
   });
 
   const pagination = useMemo(() => {

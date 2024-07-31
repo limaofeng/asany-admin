@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Outlet, matchPath, useLocation } from 'react-router-dom';
 
-import { useApp } from '@umijs/max';
+import { useAppModule } from '@umijs/max';
 
 import { MicroApp } from '@/layouts/Demo7';
 import { ArticleCategory } from '@/types';
@@ -13,10 +13,8 @@ import { useArticleCategoriesQuery, useArticleCategoryQuery } from '../hooks';
 function CmsLayout() {
   const location = useLocation();
 
-  const app = useApp();
-  const module = app.modules.find((module) => module.key === 'cms');
-
-  const rootCategorySlug = module?.configuration.rootCategory;
+  const [module] = useAppModule('cms');
+  const rootCategorySlug = module?.values.rootCategory;
 
   const { data: { category: rootCategory } = {} } = useArticleCategoryQuery({
     fetchPolicy: 'cache-and-network',
@@ -30,6 +28,7 @@ function CmsLayout() {
     variables: {
       id: rootCategorySlug,
     },
+    skip: !rootCategorySlug,
   });
 
   const menuKey = useMemo(() => {

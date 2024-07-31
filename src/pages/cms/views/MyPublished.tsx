@@ -1,5 +1,6 @@
 import { useCurrentuser } from '@/hooks';
 import { ContentWrapper } from '@/layouts/components';
+import { ArticleStatus } from '@/types';
 
 import ArticleList from './ArticleList';
 
@@ -13,11 +14,9 @@ function MyDrafts() {
     >
       {user && (
         <ArticleList
-          query={{
-            filter: {
-              createdBy: user.uid,
-              status_in: ['SCHEDULED', 'PUBLISHED'],
-            },
+          where={{
+            createdBy: user.uid,
+            status_in: [ArticleStatus.Scheduled, ArticleStatus.Published],
           }}
         />
       )}
