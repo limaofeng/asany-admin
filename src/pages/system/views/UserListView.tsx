@@ -46,6 +46,9 @@ function UserListView() {
           query.where = { nickname_contains: query.q };
           delete query.q;
         }
+        if (query.page) {
+          query.page = parseInt(query.page);
+        }
         query.where.tenantId = '1691832353955123200';
         return query;
       },
