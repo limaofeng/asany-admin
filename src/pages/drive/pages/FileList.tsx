@@ -1,10 +1,11 @@
 import { useEffect, useMemo } from 'react';
 import { matchPath } from 'react-router';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 import { useModel, useParams } from '@umijs/max';
 
 import { ContentWrapper } from '@/layouts/components';
+import { FileWhereInput } from '@/types';
 
 import ListFiles from '../components/ListFiles';
 import { useCloudDriveLazyQuery } from '../hooks';
@@ -13,6 +14,7 @@ import { extensions } from '../utils';
 function FileList() {
   const { id: _folder } = useParams<{ id: string }>();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   const driveId = useModel('cloud-drive.index', ({ state }) => state.driveId);
 
@@ -30,6 +32,7 @@ function FileList() {
   }, [data?.cloudDrive]);
 
   // console.log('paths', cloudDrive, location.state?.currentFolder);
+  const q = searchParams.get('q');
 
   const folder = useMemo(() => {
     if (location.pathname.startsWith('/drive/mime-types')) {
@@ -52,67 +55,54 @@ function FileList() {
   }, [location.pathname]);
 
   const where = useMemo(() => {
-    if (menuKey === 'image') {
-      return {
-        isDirectory: false,
-        folder: {
-          subfolders: true,
-          id: folder!,
-        },
-        extension_in: extensions.image,
-      };
-    }
-    if (menuKey === 'document') {
-      return {
-        isDirectory: false,
-        folder: {
-          subfolders: true,
-          id: folder!,
-        },
-        extension_in: extensions.document,
-      };
-    }
-    if (menuKey === 'video') {
-      return {
-        isDirectory: false,
-        folder: {
-          subfolders: true,
-          id: folder!,
-        },
-        extension_in: extensions.video,
-      };
-    }
-    if (menuKey === 'audio') {
-      return {
-        isDirectory: false,
-        folder: {
-          subfolders: true,
-          id: folder!,
-        },
-        extension_in: extensions.audio,
-      };
-    }
-    if (menuKey === 'other') {
-      return {
-        isDirectory: false,
-        folder: {
-          subfolders: true,
-          id: folder!,
-        },
-        extension_notIn: [
-          ...extensions.image,
-          ...extensions.audio,
-          ...extensions.video,
-          ...extensions.document,
-        ],
-      };
-    }
-    return {
+    const whereInput: FileWhereInput = {
+      name_contains: q,
+      isDirectory: false,
       folder: {
+        subfolders: true,
         id: folder!,
       },
     };
-  }, [menuKey, folder]);
+    switch (menuKey) {
+      case 'image':
+        return {
+          ...whereInput,
+          extension_in: extensions.image,
+        };
+      case 'document':
+        return {
+          ...whereInput,
+          extension_in: extensions.document,
+        };
+      case 'video':
+        return {
+          ...whereInput,
+          extension_in: extensions.video,
+        };
+      case 'audio':
+        return {
+          ...whereInput,
+          extension_in: extensions.audio,
+        };
+      case 'other':
+        return {
+          ...whereInput,
+          extension_notIn: [
+            ...extensions.image,
+            ...extensions.audio,
+            ...extensions.video,
+            ...extensions.document,
+          ],
+        };
+      default:
+        return {
+          name_contains: q,
+          folder: {
+            id: folder!,
+          },
+        };
+    }
+  }, [menuKey, folder, q]);
 
   const rootFolder = useMemo(() => {
     if (!cloudDrive) {
@@ -141,10 +131,8 @@ function FileList() {
     return { ..._rootFolder, isRootFolder: true, name: '全部文件' } as any;
   }, [cloudDrive, menuKey]);
 
-  console.log('cloudDrive', cloudDrive);
-  console.log('rootFolder', rootFolder);
-  console.log('folder', folder);
-  console.log('where', where);
+  // console.log('location.state', location.state);
+  // console.log('where', where, q);
 
   return (
     <ContentWrapper className="app-drive-main" header={false} footer={false}>
@@ -153,9 +141,9 @@ function FileList() {
           key="list-files"
           folder={folder}
           where={where}
-          orderBy={location.state?.orderBy}
+          // orderBy={location.state?.orderBy}
           rootFolder={rootFolder}
-          currentFolder={location.state?.currentFolder}
+          // currentFolder={location.state?.currentFolder}
         />
       )}
     </ContentWrapper>

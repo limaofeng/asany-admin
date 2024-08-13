@@ -21,7 +21,7 @@ export interface InputProps extends DOMAttributes<HTMLInputElement> {
   placeholder?: string;
   solid?: boolean;
   value?: string | null;
-  defaultValue?: string;
+  defaultValue?: string | null;
   type?: 'text' | 'password';
   autoComplete?: boolean;
   bordered?: boolean;
@@ -84,7 +84,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     if (value === propsValue) {
       return;
     }
-    console.log('>>>>>>>>>', value, propsValue);
+    // console.log('>>>>>>>>>', value, propsValue);
     onChange && onChange({ target: { value } } as any);
   }, [value]);
 
@@ -104,8 +104,12 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   );
 
   useEffect(() => {
-    setValue(propsValue! || props.defaultValue || '');
+    setValue(propsValue! || '');
   }, [propsValue]);
+
+  useEffect(() => {
+    setValue(propsValue! || props.defaultValue || '');
+  }, [props.defaultValue]);
 
   useImperativeHandle(
     ref,
@@ -175,7 +179,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
         },
         getStatusClassNames('form-item', mergedStatus),
       )}
-      defaultValue={props.defaultValue}
+      defaultValue={props.defaultValue as any}
       value={value}
       onChange={handleChange}
       type={type}

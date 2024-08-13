@@ -47,8 +47,6 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
     };
   }, [loading]);
 
-  console.log('ContentWrapper', props);
-
   return (
     <div
       ref={ref}

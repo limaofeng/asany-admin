@@ -24,8 +24,6 @@ function DriveTrash() {
     return data?.cloudDrive;
   }, [data?.cloudDrive]);
 
-  // console.log('paths', cloudDrive, location.state?.currentFolder);
-
   const folder = useMemo(() => {
     return cloudDrive?.recycleBin;
   }, [cloudDrive?.recycleBin]);

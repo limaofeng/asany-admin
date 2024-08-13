@@ -47,10 +47,13 @@ function SignInForm() {
           values.username + '###' + values.password,
         );
         navigate(query.redirect || '/', { replace: true });
-      } catch (e) {
-        console.error(e);
+      } catch (e: any) {
+        const { graphQLErrors } = e;
         await Modal.error({
-          content: '出错了, 请检查错误后，请重试.',
+          content:
+            '出错了: ' + graphQLErrors
+              ? graphQLErrors[0].message
+              : '请检查错误后，请重试.',
           okText: '知道了',
         });
       } finally {

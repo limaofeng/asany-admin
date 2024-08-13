@@ -78,3 +78,7 @@
     width: 100%;
   }
 }
+
+:root {
+  --bs-btn-active-color: var(--bs-primary-active);
+}

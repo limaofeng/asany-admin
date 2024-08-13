@@ -1,4 +1,4 @@
-import { tuple } from '../../forms/Form/util';
+import { tuple } from '../Form/util';
 
 const ProgressTypes = tuple('line', 'circle', 'dashboard');
 export type ProgressType = (typeof ProgressTypes)[number];

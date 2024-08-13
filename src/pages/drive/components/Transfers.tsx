@@ -11,7 +11,7 @@ import { fileSize } from '@/metronic/utils/format';
 import type { DownloadFile, UploadFile } from '@/models/cloud-drive';
 
 function randerFileIcon(file: UploadFile | DownloadFile) {
-  if (['zip'].includes(file.extension!)) {
+  if (file.extension && ['zip'].includes(file.extension!)) {
     return <Icon name="Bootstrap/file-zip-fill" className="svg-icon-2x" />;
   }
   if (file.mimeType.startsWith('image/')) {
@@ -41,7 +41,16 @@ function UploadFileItem(props: UploadFileItemProps) {
 
   const handleOpenFolder = useCallback(() => {
     baseApi.closeTransfers();
-    navigate(`/drive/folders/${file.result!.parentFolder.id}`);
+    const randomParam = new Date().getTime();
+    if (file.result!.parentFolder.isRootFolder) {
+      navigate(`/drive/my-drive`, {
+        state: { r: randomParam },
+      });
+    } else {
+      navigate(`/drive/folders/${file.result!.parentFolder.id}`, {
+        state: { r: randomParam },
+      });
+    }
   }, [baseApi, file.result, history]);
 
   const handleStart = useCallback(() => {
@@ -94,18 +103,21 @@ function UploadFileItem(props: UploadFileItemProps) {
       <div className="file-actions">
         {file.state === 'waiting' && (
           <Button
+            className="btn-light-primary"
             icon={<Icon name="Bootstrap/clock" className="svg-icon-4" />}
           />
         )}
         {file.state === 'uploading' && (
           <Button
             onClick={handlePause}
+            className="btn-light-primary"
             icon={<Icon name="Bootstrap/pause" className="svg-icon-4" />}
           />
         )}
         {file.state === 'paused' && (
           <Button
             onClick={handleStart}
+            className="btn-light-primary"
             icon={
               <Icon name="Bootstrap/arrow-up-short" className="svg-icon-4" />
             }
@@ -114,6 +126,7 @@ function UploadFileItem(props: UploadFileItemProps) {
         {['canceled', 'error'].includes(file.state) && (
           <Button
             onClick={handleRestore}
+            className="btn-light-primary"
             icon={
               <Icon
                 name="Bootstrap/arrow-counterclockwise"
@@ -125,18 +138,21 @@ function UploadFileItem(props: UploadFileItemProps) {
         {file.state === 'completed' && (
           <Button
             onClick={handleOpenFolder}
+            className="btn-light-primary"
             icon={<Icon name="Bootstrap/folder2" className="svg-icon-6" />}
           />
         )}
         {!['completed', 'canceled', 'error'].includes(file.state) && (
           <Button
             onClick={handleCancelUpload}
+            className="btn-light-primary"
             icon={<Icon name="Bootstrap/x" className="svg-icon-4" />}
           />
         )}
         {['completed', 'canceled', 'error'].includes(file.state) && (
           <Button
             onClick={handleDelete}
+            className="btn-light-primary"
             icon={<Icon name="Bootstrap/eraser" className="svg-icon-6" />}
           />
         )}
@@ -241,18 +257,21 @@ function DownloadFileItem(props: DownloadFileItemProps) {
       <div className="file-actions">
         {file.state === 'waiting' && (
           <Button
+            className="btn-light-primary"
             icon={<Icon name="Bootstrap/clock" className="svg-icon-4" />}
           />
         )}
         {file.state === 'downloading' && (
           <Button
             onClick={handlePause}
+            className="btn-light-primary"
             icon={<Icon name="Bootstrap/pause" className="svg-icon-4" />}
           />
         )}
         {file.state === 'paused' && (
           <Button
             onClick={handleStart}
+            className="btn-light-primary"
             icon={
               <Icon name="Bootstrap/arrow-down-short" className="svg-icon-4" />
             }
@@ -261,6 +280,7 @@ function DownloadFileItem(props: DownloadFileItemProps) {
         {['canceled', 'error'].includes(file.state) && (
           <Button
             onClick={handleRestore}
+            className="btn-light-primary"
             icon={
               <Icon
                 name="Bootstrap/arrow-counterclockwise"
@@ -272,18 +292,21 @@ function DownloadFileItem(props: DownloadFileItemProps) {
         {file.state === 'completed' && (
           <Button
             onClick={handleSaveFile}
+            className="btn-light-primary"
             icon={<Icon name="Bootstrap/download" className="svg-icon-6" />}
           />
         )}
         {!['completed', 'canceled', 'error'].includes(file.state) && (
           <Button
             onClick={handleCancelUpload}
+            className="btn-light-primary"
             icon={<Icon name="Bootstrap/x" className="svg-icon-4" />}
           />
         )}
         {['completed', 'canceled', 'error'].includes(file.state) && (
           <Button
             onClick={handleDelete}
+            className="btn-light-primary"
             icon={<Icon name="Bootstrap/eraser" className="svg-icon-6" />}
           />
         )}
@@ -379,7 +402,7 @@ function Transfers() {
         </div>
       </div>
       <Tabs
-        tabBarClassName="border-0"
+        tabBarClassName="border-0 btn-light-primary"
         activeKey={activeKey}
         onChange={handleChange}
         tabPosition="left"

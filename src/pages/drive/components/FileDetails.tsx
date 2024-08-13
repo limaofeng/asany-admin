@@ -21,7 +21,7 @@ type OneFileProps = {
 };
 
 function ViewFileActionLogs() {
-  return <>日志</>;
+  return <div className="pt-5">日志</div>;
 }
 
 type ViewFileDetailsProps = {
@@ -39,10 +39,8 @@ function ViewFileDetails(props: ViewFileDetailsProps) {
   });
 
   useEffect(() => {
-    data?.file && setFile(data?.file);
+    data?.file && setFile(data!.file as any as FileObject);
   }, [data?.file]);
-
-  // console.log('ViewFileDetails', loading, data?.file);
 
   return (
     <BlockUI
@@ -162,7 +160,7 @@ function ViewFileDetails(props: ViewFileDetailsProps) {
 function OneFile(props: OneFileProps) {
   const { file } = props;
   return (
-    <Tabs className="nav-line-tabs-2x">
+    <Tabs type="line-tabs" className="nav-line-tabs-2x">
       <Tabs.TabPane key="file-details" tab="文件详情">
         <OverlayScrollbarsComponent
           className="flex-column-fluid custom-scrollbar"

@@ -82,7 +82,7 @@ function DriveStarred() {
           key="list-files"
           toolbar="starred"
           folder={folder}
-          filter={fileFilter}
+          where={fileFilter}
           orderBy={state?.orderBy}
           rootFolder={rootFolder}
           currentFolder={state?.currentFolder}

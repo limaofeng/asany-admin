@@ -587,6 +587,7 @@ function Table<T>(props: TableProps<T>) {
           )}
           {rowSelection && (
             <Selecto
+              className="table-selecto-selection"
               ref={selecto}
               container={tableBodyContainer.current}
               dragContainer={tableBodyContainer.current!}

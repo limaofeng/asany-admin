@@ -7,7 +7,7 @@ import type { FileObject, FileWhereInput } from '@/types';
 import { useListFilesLazyQuery } from './api';
 
 type QueryCondition = {
-  rootFolder?: string;
+  space?: string;
   where?: FileWhereInput;
   orderBy?: string;
 };
@@ -51,12 +51,12 @@ const useLazyQuery: UseLazyQuery<FileObject, QueryCondition> = function () {
 };
 
 export function useListFiles(
-  rootFolder: string | undefined,
+  space: string | undefined,
   where: FileWhereInput | undefined,
   orderBy: string | undefined,
 ) {
   return useLongListLazyQuery<FileObject, QueryCondition>(useLazyQuery, {
-    rootFolder,
+    space,
     where,
     orderBy,
   });

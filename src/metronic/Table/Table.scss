@@ -18,6 +18,8 @@
   }
 
   table.dataTable.table-hover.table-list-body tr:hover > * {
+    --kt-primary-rgb: var(--bs-primary-rgb);
+    --bs-table-hover-bg: rgba(var(--kt-primary-rgb), 0.1);
     color: var(--bs-table-hover-color);
     --bs-table-accent-bg: var(--bs-table-hover-bg);
   }
@@ -73,9 +75,9 @@ table.dataTable.table-list-body {
   }
 
   tr.table-list-item.selected {
-    --kt-primary-rgb: 220, 253, 253;
-    --bs-table-accent-bg: rgba(var(--kt-primary-rgb), 0.35);
-    --bs-table-hover-color: var(--kt-text-gray-700);
+    --kt-primary-rgb: var(--bs-primary-rgb);
+    --bs-table-accent-bg: rgba(var(--kt-primary-rgb), 0.07);
+    --bs-table-hover-color: var(--bs-text-primary);
 
     & > * {
       color: var(--bs-table-hover-color);
@@ -87,4 +89,12 @@ table.dataTable.table-list-body {
 .table th:first-child,
 .table tr:first-child {
   padding-left: 0.75rem;
+}
+
+.table-selecto-selection {
+  border-color: var(--bs-primary) !important;
+  background: rgba(
+    var(--bs-primary-rgb),
+    0.3
+  ) !important; /* Red Color with half opacity */
 }

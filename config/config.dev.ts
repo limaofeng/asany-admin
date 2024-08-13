@@ -5,6 +5,10 @@ export default defineConfig({
     url: 'https://api.dev.mh-procoffeemachine.com/graphql',
     wsUrl: 'wss://api.dev.mh-procoffeemachine.com/subscriptions',
   },
+  app: {
+    id: 'w5t78l496cmnt404yp7l',
+    loading: false,
+  },
   define: {
     'process.env.NODE_ENV': process.env.NODE_ENV,
     'process.env.WEBSITE_URL': '//localhost:8001',

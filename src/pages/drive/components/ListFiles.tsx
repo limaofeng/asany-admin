@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 import { useModel } from '@umijs/max';
@@ -35,12 +35,12 @@ import NewFolderModal from './NewFolderModal';
 
 import FolderPath from '../components/FolderPath';
 import {
-  useAddStarForFilesMutation,
   useClearFilesInTrashMutation,
   useFolderQuery,
   useListFiles,
   useMoveFilesToTrashMutation,
   useRestoreFilesMutation,
+  useUpdateFilesStarStatusMutation,
 } from '../hooks';
 
 import '../style/ListFiles.scss';
@@ -80,6 +80,9 @@ function ListFiles(props: ListFilesProps) {
 
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const randomParam = (location.state as any)?.r;
+
   const cloudDrive = useModel(
     'cloud-drive.index',
     ({ state }) => state.cloudDrive,
@@ -117,7 +120,7 @@ function ListFiles(props: ListFilesProps) {
       folder: folder,
     },
   });
-  const [starFiles] = useAddStarForFilesMutation();
+  const [updateFilesStarStatus] = useUpdateFilesStarStatusMutation();
   // const [deleteFiles] = useDeleteFilesMutation();
   const [moveToTrash] = useMoveFilesToTrashMutation();
   const [clearTrash] = useClearFilesInTrashMutation();
@@ -148,7 +151,14 @@ function ListFiles(props: ListFilesProps) {
       refetchForObjects,
       refetchWithRemoveForObjects,
     },
-  ] = useListFiles(rootFolder?.id, where, orderBy);
+  ] = useListFiles(rootFolder?.space, where, orderBy);
+
+  useEffect(() => {
+    if (!randomParam) {
+      return;
+    }
+    refetch(1);
+  }, [randomParam]);
 
   const dataSource: DataSource<FileObject> = useMemo(() => {
     return {
@@ -345,15 +355,13 @@ function ListFiles(props: ListFilesProps) {
     [cloudDrive, currentFolderId, upload],
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-  console.log('isDragActive', isDragActive);
+  const { getRootProps, getInputProps /*, isDragActive*/ } = useDropzone({
+    onDrop,
+  });
 
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    role,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    tabIndex,
+    // role,
+    // tabIndex,
     onClick: browseLocalFiles,
     ...rootProps
   } = getRootProps();
@@ -428,7 +436,7 @@ function ListFiles(props: ListFilesProps) {
       return;
     }
     await clearTrash({
-      variables: { folder },
+      variables: { space: rootFolder!.space },
     });
     refetch(1);
     Toast.success('回收站已被清空', 2000, {
@@ -469,10 +477,10 @@ function ListFiles(props: ListFilesProps) {
       : selectedKeys.length + ' 项内容';
 
     if (starred) {
-      const { data: rdata } = await starFiles({
+      const { data: rdata } = await updateFilesStarStatus({
         variables: {
-          ids: selectedKeys,
-          mode: 'REMOVE',
+          files: selectedKeys,
+          starred: false,
         },
       });
       refetchForObjects(rdata?.files as any, (l, r) => l.id === r.id);
@@ -481,10 +489,10 @@ function ListFiles(props: ListFilesProps) {
         progressBar: true,
       });
     } else {
-      const { data: rdata } = await starFiles({
+      const { data: rdata } = await updateFilesStarStatus({
         variables: {
-          ids: selectedKeys,
-          mode: 'ADD',
+          files: selectedKeys,
+          starred: true,
         },
       });
       if (toolbar === 'starred') {
@@ -507,7 +515,7 @@ function ListFiles(props: ListFilesProps) {
     refetchWithRemoveForObjects,
     selectedFile,
     selectedKeys,
-    starFiles,
+    updateFilesStarStatus,
     starred,
     toolbar,
   ]);
@@ -516,6 +524,23 @@ function ListFiles(props: ListFilesProps) {
     temp.current.renameFile = selectedFile;
     forceRender();
   }, [selectedFile]);
+
+  const handleSearch = useCallback((value: string) => {
+    // 获取当前 URL 的查询参数
+    const searchParams = new URLSearchParams(location.search);
+    if (value.trim() === '') {
+      // 如果输入为空字符串，则删除该查询参数
+      searchParams.delete('q');
+    } else {
+      // 更新或添加新的查询参数
+      searchParams.set('q', value);
+    }
+    // 使用对象形式的 navigate
+    navigate({
+      pathname: location.pathname,
+      search: searchParams.toString() || undefined,
+    });
+  }, []);
 
   const row_selection_state = useMemo(() => {
     if (!selectedKeys.length) {
@@ -540,7 +565,7 @@ function ListFiles(props: ListFilesProps) {
               icon={
                 <Icon
                   name="Duotune/arr029"
-                  className="svg-icon-4 svg-icon-success"
+                  className="svg-icon-4 svg-icon-success me-1"
                 />
               }
             >
@@ -555,17 +580,15 @@ function ListFiles(props: ListFilesProps) {
         return (
           <div>
             <Button
-              color="success"
+              color="primary"
               variant={false}
               className="trash-restore"
               onClick={handleRestore}
-              icon={
-                <Icon
-                  name="Duotune/arr029"
-                  className="svg-icon-4 svg-icon-success"
-                />
-              }
             >
+              <Icon
+                name="Duotune/arr029"
+                className="svg-icon-4 svg-icon-success me-1"
+              />
               还原
             </Button>
           </div>
@@ -574,6 +597,16 @@ function ListFiles(props: ListFilesProps) {
     }
     return undefined;
   }, [handleRestore, handleStar, toolbar]);
+
+  const isPreviewFile = useMemo(() => {
+    if (selectedFiles.length) {
+      return true;
+    }
+    // if (currentFolder?.isRootFolder) {
+    //   return false;
+    // }
+    return false;
+  }, [selectedFiles, currentFolder]);
 
   return (
     <Card className="list-files" flush>
@@ -585,6 +618,8 @@ function ListFiles(props: ListFilesProps) {
               solid
               className="rounded-2 w-300px"
               placeholder="搜索 文件 & 文件夹"
+              defaultValue={where?.name_contains}
+              onSearch={handleSearch}
             />
           </Card.Title>
           <Card.Toolbar>
@@ -602,7 +637,10 @@ function ListFiles(props: ListFilesProps) {
                       variant="primary"
                       className="rounded-2 me-3"
                       icon={
-                        <Icon className="svg-icon-2" name="Duotune/fil018" />
+                        <Icon
+                          className="svg-icon-2 me-1"
+                          name="Duotune/fil018"
+                        />
                       }
                       onClick={handleUpload}
                     >
@@ -614,7 +652,10 @@ function ListFiles(props: ListFilesProps) {
                       variant="light-primary"
                       className="rounded-2"
                       icon={
-                        <Icon className="svg-icon-2" name="Duotune/fil013" />
+                        <Icon
+                          className="svg-icon-2 me-1"
+                          name="Duotune/fil013"
+                        />
                       }
                       onClick={handleOpenNewFolderModal}
                     >
@@ -627,7 +668,9 @@ function ListFiles(props: ListFilesProps) {
                 <Button
                   variant="light-primary"
                   className="rounded-2"
-                  icon={<Icon className="svg-icon-2" name="Duotune/arr095" />}
+                  icon={
+                    <Icon className="svg-icon-2 me-1" name="Duotune/arr095" />
+                  }
                 >
                   分享
                 </Button>
@@ -638,7 +681,7 @@ function ListFiles(props: ListFilesProps) {
                   className="rounded-2"
                   icon={
                     <Icon
-                      className="svg-icon-2"
+                      className="svg-icon-2 me-1"
                       style={{ transform: 'rotateZ(90deg)' }}
                       name="Duotune/arr076"
                     />
@@ -652,7 +695,9 @@ function ListFiles(props: ListFilesProps) {
                 <Button
                   variant="light-primary"
                   className="rounded-2"
-                  icon={<Icon className="svg-icon-2" name="Duotune/gen027" />}
+                  icon={
+                    <Icon className="svg-icon-2 me-1" name="Duotune/gen027" />
+                  }
                   onClick={handleDelete}
                 >
                   删除
@@ -663,7 +708,9 @@ function ListFiles(props: ListFilesProps) {
                   as="button"
                   variant="light-primary"
                   className="rounded-2"
-                  icon={<Icon className="svg-icon-2" name="Duotune/gen055" />}
+                  icon={
+                    <Icon className="svg-icon-2 me-1" name="Duotune/gen055" />
+                  }
                   onClick={handleRename}
                 >
                   重命名
@@ -673,7 +720,9 @@ function ListFiles(props: ListFilesProps) {
                 <Button
                   variant="light-primary"
                   className="rounded-2"
-                  icon={<Icon className="svg-icon-2" name="Duotune/arr033" />}
+                  icon={
+                    <Icon className="svg-icon-2 me-1" name="Duotune/arr033" />
+                  }
                 >
                   移动
                 </Button>
@@ -682,7 +731,9 @@ function ListFiles(props: ListFilesProps) {
                 <Button
                   variant="light-primary"
                   className="rounded-2"
-                  icon={<Icon className="svg-icon-2" name="Duotune/abs024" />}
+                  icon={
+                    <Icon className="svg-icon-2 me-1" name="Duotune/abs024" />
+                  }
                   onClick={handleStar}
                 >
                   {starred ? '取消收藏' : '收藏'}
@@ -792,9 +843,11 @@ function ListFiles(props: ListFilesProps) {
             )}
           </BlockUI>
         </div>
-        <div className="file-details-quick-preview pb-7">
-          <FileDetails files={selectedFiles} currentFolder={currentFolder} />
-        </div>
+        {isPreviewFile && (
+          <div className="file-details-quick-preview pb-7">
+            <FileDetails files={selectedFiles} currentFolder={currentFolder} />
+          </div>
+        )}
         <NewFolderModal
           onCancel={handleCloseNewFolderModal}
           visible={temp.current.newFolderVisible}

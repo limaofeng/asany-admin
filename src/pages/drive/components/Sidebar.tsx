@@ -165,6 +165,20 @@ function Sidebar() {
     );
   });
 
+  const { uploadProgressColor, downloadProgressColor } = useMemo(() => {
+    const root = document.documentElement;
+    const primaryColor = getComputedStyle(root)
+      .getPropertyValue('--bs-primary')
+      .trim();
+    const successColor = getComputedStyle(root)
+      .getPropertyValue('--bs-success')
+      .trim();
+    return {
+      uploadProgressColor: primaryColor,
+      downloadProgressColor: successColor,
+    };
+  }, []);
+
   return (
     <AsideWorkspace
       collapsible={false}
@@ -185,17 +199,24 @@ function Sidebar() {
               width={34}
               percent={downloadPercent}
               strokeWidth={6}
-              success={{ strokeColor: '#04c8c8' }}
+              success={{ strokeColor: downloadProgressColor }}
             />
             <CircleProgress
               className="upload-all-progress position-absolute top-50 start-50 translate-middle"
               width={26}
               percent={uploadPercent}
               strokeWidth={7.5}
-              success={{ strokeColor: '#009ef7' }}
+              success={{ strokeColor: uploadProgressColor }}
             />
-            <Pulse size="sm" pause={!downloadPercent && !uploadPercent}>
-              <Icon className="svg-icon-6" name="Duotune/arr032" />
+            <Pulse
+              size="sm"
+              pause={!downloadPercent && !uploadPercent}
+              color="primary"
+            >
+              <Icon
+                className="svg-icon-6 svg-icon-primary"
+                name="Duotune/arr032"
+              />
             </Pulse>
           </div>
         </Popover>
@@ -369,7 +390,7 @@ function Sidebar() {
               已使用&nbsp;{cloudDrive?.quota.usageStr}, &nbsp;共&nbsp;
               {cloudDrive?.quota.sizeStr}
             </span>
-            <a className="fw-bolder fs-7 text-success">扩容</a>
+            <a className="fw-bolder fs-7 text-primary">扩容</a>
           </div>
         </div>
 

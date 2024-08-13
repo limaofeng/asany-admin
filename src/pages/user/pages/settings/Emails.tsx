@@ -124,12 +124,12 @@ function Emails() {
           <Form className="new-email-form my-5">
             <Form.Item shouldUpdate label="添加电子邮件">
               {() => (
-                <>
+                <div className="d-flex align-items-center">
                   <Form.Item noStyle name="email">
                     <Input solid className="w-250px me-4" />
                   </Form.Item>
                   <Button>添加</Button>
-                </>
+                </div>
               )}
             </Form.Item>
           </Form>

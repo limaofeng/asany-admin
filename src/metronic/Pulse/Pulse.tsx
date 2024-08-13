@@ -2,7 +2,7 @@ import React from 'react';
 
 import classnames from 'classnames';
 
-import type { MainColor } from '../../typings';
+import { MainColor } from '../typings';
 
 type PulseProps = {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ function Pulse(props: PulseProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
   return (
     <a
       ref={ref}
-      className={classnames('btn btn-icon btn-light pulse', className, {
+      className={classnames('btn btn-icon pulse', className, {
         [`btn-${size}`]: !!size,
         [`pulse-${color}`]: color,
       })}

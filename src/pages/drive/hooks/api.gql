@@ -16,8 +16,8 @@ mutation createFolder($name: String!, $parentFolder: ID!) {
   }
 }
 
-mutation addStarForFiles($ids: [ID!]!, $mode: UpdateMode) {
-  files: addStarForFiles(ids: $ids, mode: $mode) {
+mutation updateFilesStarStatus($files: [ID!]!, $starred: Boolean!) {
+  files: updateFilesStarStatus(files: $files, starred: $starred) {
     id
     starred
   }
@@ -35,8 +35,10 @@ mutation moveFilesToTrash($ids: [ID!]!) {
   }
 }
 
-mutation clearFilesInTrash($folder: ID!) {
-  clearFilesInTrash(folder: $folder)
+mutation clearFilesInTrash($space: ID!) {
+  clearFilesInTrash(space: $space) {
+    count
+  }
 }
 
 mutation restoreFiles($ids: [ID!]!) {
@@ -115,14 +117,14 @@ query folder($folder: ID!) {
 }
 
 query listFiles(
-  $rootFolder: ID!
+  $space: ID!
   $where: FileWhereInput
   $page: Int = 1
   $pageSize: Int = 30
   $orderBy: OrderBy
 ) {
   listFiles(
-    rootFolder: $rootFolder
+    space: $space
     where: $where
     page: $page
     pageSize: $pageSize

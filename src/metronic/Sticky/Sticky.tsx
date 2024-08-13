@@ -30,9 +30,7 @@ function Sticky(props: StickyProps) {
     };
   }, [isFixed]);
 
-  console.log('Sticky', isFixed);
   const newChildren = useMemo(() => {
-    console.log('Sticky newChildren', isFixed);
     return React.cloneElement(children, {
       ref,
     });

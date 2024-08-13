@@ -105,9 +105,8 @@ export function useLongListLazyQuery<T, P>(
         await sleep(120);
       }
       state.current.page = page;
-      // debugger;
-      // console.log('loadFileObjects 3');
-      console.log('loadFileObjects 3 page', state.current.conditions);
+
+      // console.log('loadFileObjects 3 page', state.current.conditions);
       await refetch(state.current.conditions, state.current.page);
       await sleep(300);
     },
@@ -181,7 +180,7 @@ export function useLongListLazyQuery<T, P>(
         return;
       }
       state.current.page = page;
-      console.log('loadFileObjects 1 page', page);
+      // console.log('loadFileObjects 1 page', page);
       _loadObjects(state.current.conditions, state.current.page);
     },
     [_loadObjects],
@@ -225,7 +224,7 @@ export function useLongListLazyQuery<T, P>(
     state.current.pagination = { ...DEFAULT_PAGINATION };
     state.current.files.length = 0;
     state.current.page = 1;
-    console.log('loadFileObjects 2 page', conditions);
+    // console.log('loadFileObjects 2 page', conditions);
     _loadObjects(state.current.conditions, state.current.page);
   }, [conditions]);
 

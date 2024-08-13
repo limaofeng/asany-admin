@@ -7,11 +7,13 @@
     position: absolute;
     top: 2rem;
     right: 1.25rem;
-    background-color: #f5f8fa;
+    background-color: var(--bs-primary-light);
     border-radius: 1.3rem;
 
     &:hover {
-      background-color: #eff2f5;
+      .svg-icon.svg-icon-primary {
+        color: var(--bs-primary-active);
+      }
     }
 
     .progress-inner {
@@ -195,17 +197,8 @@ $transfers_border_color: #f4f4f4;
           width: 28px;
           height: 28px;
           margin-left: 12px;
-          background-color: #f1faff;
+          // background-color: #f1faff;
           border-radius: 14px;
-
-          &:hover:not(.btn-active) {
-            color: inherit;
-            background-color: #f0faff !important;
-          }
-
-          .svg-icon {
-            color: #009ef7;
-          }
         }
       }
     }
@@ -217,11 +210,11 @@ $transfers_border_color: #f4f4f4;
     .nav-item .nav-link {
       justify-content: center;
       width: 120px;
-      color: #7e8299;
+      color: var(--bs-text-gray-700);
 
       &.active {
-        color: #04c8c8;
-        background-color: #dcfdfd;
+        color: var(--bs-primary);
+        background-color: var(--bs-primary-light);
       }
     }
   }
@@ -254,8 +247,8 @@ $transfers_border_color: #f4f4f4;
   }
 
   .file-action-group {
-    color: #04c8c8;
-    background-color: #dcfdfd;
+    // color: #04c8c8;
+    background-color: var(--bs-primary-light); // #dcfdfd;
     border-radius: 0.475rem;
 
     .btn {
@@ -268,7 +261,7 @@ $transfers_border_color: #f4f4f4;
           right: -0.25rem;
           width: 1px;
           height: 60%;
-          background-color: rgba(4, 200, 200, 0.5);
+          background-color: var(--bs-primary); // rgba(4, 200, 200, 0.5);
           content: '';
         }
       }
@@ -278,11 +271,11 @@ $transfers_border_color: #f4f4f4;
       &:hover:not(.btn-active),
       &:active,
       &:focus {
-        color: #00afaf;
+        color: var(--bs-primary-active);
         background-color: inherit !important;
 
         .svg-icon svg [fill]:not(.permanent):not(g) {
-          fill: #00afaf;
+          fill: var(--bs-primary-active);
         }
       }
     }

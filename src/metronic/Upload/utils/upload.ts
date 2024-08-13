@@ -103,6 +103,7 @@ const MUTATION_UPLOAD = gql`
       etag
       parentFolder {
         id
+        isRootFolder
       }
     }
   }
@@ -136,6 +137,7 @@ export type UploadFileData = {
   url: string;
   parentFolder: {
     id: string;
+    isRootFolder: boolean;
   };
 };
 
