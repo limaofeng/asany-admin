@@ -17,7 +17,9 @@
     }
   }
 
-  table.dataTable.table-hover.table-list-body tr:hover > * {
+  table.dataTable.table-hover.table-list-body
+    tr:hover:not(.dataTables_empty)
+    > * {
     --kt-primary-rgb: var(--bs-primary-rgb);
     --bs-table-hover-bg: rgba(var(--kt-primary-rgb), 0.1);
     color: var(--bs-table-hover-color);

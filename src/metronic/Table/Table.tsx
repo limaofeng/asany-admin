@@ -551,7 +551,7 @@ function Table<T>(props: TableProps<T>) {
               <tbody ref={tableBodyContainer} className="fw-bold text-gray-600">
                 {!dataSource.items.length
                   ? noRowsRenderer && (
-                      <tr>
+                      <tr className="dataTables_empty">
                         <td
                           valign="top"
                           colSpan={columns.length + (rowSelection ? 1 : 0)}
@@ -585,7 +585,7 @@ function Table<T>(props: TableProps<T>) {
               </tbody>
             </BsTable>
           )}
-          {rowSelection && (
+          {rowSelection && !!dataSource.items.length && (
             <Selecto
               className="table-selecto-selection"
               ref={selecto}
@@ -606,7 +606,7 @@ function Table<T>(props: TableProps<T>) {
           )}
         </>,
       )}
-      {pagination && (
+      {pagination && !!pagination.total && (
         <Pagination
           className="py-4"
           {...pagination}
