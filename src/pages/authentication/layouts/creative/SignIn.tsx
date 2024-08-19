@@ -1,13 +1,9 @@
 import { useEffect } from 'react';
 
-type CreativeProps = {
-  title: string;
-  description?: string;
-  children?: React.ReactNode;
-};
+import { SignInLayoutProps } from '../typings';
 
-function Creative(props: CreativeProps) {
-  const { title, children } = props;
+function CreativeSignIn(props: SignInLayoutProps) {
+  const { title, children, logo } = props;
 
   useEffect(() => {
     const theme = document.documentElement.getAttribute('data-bs-theme');
@@ -34,8 +30,8 @@ function Creative(props: CreativeProps) {
           {/*--begin::Aside--*/}
           <div className="d-flex flex-center flex-lg-start flex-column">
             {/*--begin::Logo--*/}
-            <a href="index.html" className="mb-7">
-              <img alt="Logo" src="/assets/media/logos/coffee_machine.svg" />
+            <a className="mb-7">
+              <img alt="Logo" src={logo} />
             </a>
             {/*--end::Logo--*/}
             {/*--begin::Title--*/}
@@ -87,4 +83,4 @@ function Creative(props: CreativeProps) {
   );
 }
 
-export default Creative;
+export default CreativeSignIn;

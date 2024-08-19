@@ -5,17 +5,27 @@ query articleStoreTemplates {
   }
 }
 
-query articles($where: ArticleWhereInput, $page: Int, $pageSize: Int) {
-  articles: articlesConnection(
+query articles(
+  $where: ArticleWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy
+) {
+  result: articlesConnection(
     where: $where
     page: $page
     pageSize: $pageSize
+    orderBy: $orderBy
   ) {
-    total: totalCount
-    current: currentPage
-    totalPage
-    pageSize
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      totalPages
+      total
+      current
+    }
     edges {
+      cursor
       node {
         id
         title

@@ -65,7 +65,16 @@ function useListPage<T, Q = any>(
   const query = useQuery();
 
   const variables = useMemo(() => {
-    return (search?.toVariables && search?.toVariables(query)) || {};
+    const _variables =
+      (search?.toVariables && search?.toVariables(query)) || {};
+    console.log('variables', _variables);
+    if (_variables.page && typeof _variables.page === 'string') {
+      _variables.page = parseInt(_variables.page, 10);
+    }
+    if (_variables.pageSize && typeof _variables.pageSize === 'string') {
+      _variables.pageSize = parseInt(_variables.pageSize, 10);
+    }
+    return _variables;
   }, [query, search]);
 
   const sorter = useMemo<Sorter>(() => {
@@ -94,9 +103,9 @@ function useListPage<T, Q = any>(
     }
     return data?.result.pageInfo || defaultPageInfo;
   }, [
-    data?.result.pageInfo.total,
+    data?.result?.pageInfo.total,
     loading,
-    previousData?.result.pageInfo.total,
+    previousData?.result?.pageInfo.total,
   ]);
 
   const handleChange = useCallback(

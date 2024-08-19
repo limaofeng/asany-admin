@@ -46,7 +46,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.theme-metronic {
+.custom-theme-metronic {
   .resizer {
     &.active > .handle::before,
     .handle:hover::before {
@@ -116,7 +116,7 @@ table.dataTable > tbody > tr.selected > * a:not([class='btn']) {
     margin-left: 0 !important;
     padding-left: 0 !important;
   }
-  .theme-metronic .aside.no-secondary {
+  .custom-theme-metronic .aside.no-secondary {
     width: 70px;
   }
   .app-aside.aside.drawer {

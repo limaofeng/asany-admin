@@ -100,7 +100,7 @@ function InternalLayout(props: LayoutProps) {
       width={width}
       minimize={minimize || menuRender === false}
       data-kt-aside-minimize={minimize || menuRender === false ? 'on' : 'off'}
-      className="theme-metronic"
+      // className="theme-metronic"
     >
       <div className="d-flex flex-column flex-root">
         <ToastContainer />

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 
 import useDelete from '@/hooks/useDelete';
+import useImportExcel from '@/hooks/useImportExcel';
 import useListPage from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
 import {
@@ -22,20 +23,20 @@ import {
   useArticlesQuery,
   useDeleteManyArticlesMutation,
 } from '@/pages/cms/hooks';
-import { Device } from '@/types';
+import { Article, ArticleStatus, DocumentContent } from '@/types';
 
-function DeviceActions({
+function ArticleActions({
   data,
   refetch,
 }: {
-  data: Device;
+  data: Article;
   refetch: () => void;
 }) {
   const [visible, setVisible] = useState(false);
 
   const navigate = useNavigate();
 
-  const [deleteManyDevices] = useDeleteManyArticlesMutation();
+  const [deleteManyArticles] = useDeleteManyArticlesMutation();
 
   const [handleDelete] = useDelete<{ name: string; id: string }>(
     {
@@ -48,7 +49,7 @@ function DeviceActions({
       ),
     },
     async (data) => {
-      await deleteManyDevices({
+      await deleteManyArticles({
         variables: {
           where: {
             id_in: [data?.id],
@@ -61,7 +62,7 @@ function DeviceActions({
 
   const handleClick = useCallback(({ key }: any) => {
     if (key === 'edit') {
-      navigate(`/pim/devices/${data.id}`);
+      navigate(`/pim/articles/${data.id}`);
     } else if (key === 'delete') {
       handleDelete({ name: data.name!, id: data.id });
     }
@@ -72,12 +73,12 @@ function DeviceActions({
       overlay={
         <Menu
           onClick={handleClick}
-          className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold w-125px py-4"
+          className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold w-125px py-2"
         >
           <Menu.Item key="edit" className="px-3">
             编辑
           </Menu.Item>
-          <Menu.Item key="delete" className="px-3">
+          <Menu.Item key="delete" className="actions-delete px-3">
             删除
           </Menu.Item>
         </Menu>
@@ -86,7 +87,7 @@ function DeviceActions({
       onVisibleChange={setVisible}
       visible={visible}
     >
-      <Button variant="light" activeColor="light-primary">
+      <Button variant="clean" activeColor="light-primary">
         操 作
         <Icon className="ms-2 svg-icon-5 m-0" name="Duotune/arr072" />
       </Button>
@@ -123,7 +124,7 @@ function ConformityList() {
     });
   }, [searchParams]);
 
-  const [deleteManyDevices] = useDeleteManyArticlesMutation();
+  const [deleteManyArticles] = useDeleteManyArticlesMutation();
 
   // const { data: usersData } = useUsersQuery({
   //   variables: {
@@ -136,8 +137,8 @@ function ConformityList() {
   //   skip: !user?.tenantId,
   // });
 
-  const [devices, { loading, pageInfo, sorter, refetch, onChange }] =
-    useListPage<Device>(useArticlesQuery as any, {
+  const [articles, { loading, pageInfo, sorter, refetch, onChange }] =
+    useListPage<Article>(useArticlesQuery as any, {
       toQuery: (variables, pagination, where, sorter) => {
         const _query: any = {};
         if (where?.name_contains) {
@@ -206,11 +207,63 @@ function ConformityList() {
     );
   }, [where, onChange, sorter, searchParams.get('page')]);
 
-  // const users = usersData?.result.edges.map((edge) => edge.node) || [];
+  const [excelFileInput, handleImportExcel, handleDownloadTmplate] =
+    useImportExcel({
+      header: 1,
+      fields: {
+        slug: {
+          index: 0,
+          name: 'CMMF CODE',
+          example: 'hc41符合性声明',
+          formatter: (value) => String(value).trim(),
+        },
+        tags: {
+          index: 1,
+          name: 'WMF CODE',
+          example: 'W22L1,YS22ED',
+          formatter: (value) => String(value).trim(),
+        },
+        publishTime: {
+          index: 1,
+          name: '发布时间',
+          example: '2022/8/22 00:00',
+          formatter: (value) => String(value).trim(),
+        },
+        endTime: {
+          index: 2,
+          name: '结束时间',
+          example: '2022/8/31 00:00',
+          formatter: (value) => String(value).trim(),
+        },
+        file: {
+          index: 3,
+          name: '文件位置',
+          example: '3201000159 1873596030 炒锅铲.pdf.pdf',
+          formatter: (value) => String(value).trim(),
+        },
+        remark: {
+          index: 3,
+          name: '备注',
+          example: '',
+          formatter: (value) => String(value).trim(),
+        },
+      },
+      template: {
+        filename: '符合性规范批量上传.xlsx',
+        cols: [
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 20 },
+          { wch: 20 },
+          { wch: 50 },
+          { wch: 30 },
+        ],
+      },
+    });
 
   const handleDeleteInBatch = useCallback(
     (selectedRowKeys: string[]) => async () => {
-      const message = `确定删除选中的, 共 ${selectedRowKeys.length} 个设备吗？`;
+      const message = `确定删除选中的, 共 ${selectedRowKeys.length} 个文件吗？`;
       const result = await Modal.confirm({
         title: '确定删除',
         content: (
@@ -225,14 +278,14 @@ function ConformityList() {
       if (!result.isConfirmed) {
         return;
       }
-      await deleteManyDevices({
+      await deleteManyArticles({
         variables: {
           where: {
             id_in: selectedRowKeys,
           },
         },
       });
-      Toast.success(`设备批量删除成功`, 2000, {
+      Toast.success(`文件批量删除成功`, 2000, {
         placement: 'bottom-left',
         progressBar: true,
       });
@@ -283,8 +336,17 @@ function ConformityList() {
             </div> */}
             <div>
               <Button className="me-4 my-1">新建</Button>
-              <Button className="me-4 my-1">模板数据导入</Button>
-              <Button className="me-4 my-1">符合性声明模板下载</Button>
+              {excelFileInput}
+              <Button className="me-4 my-1" onClick={handleImportExcel}>
+                模板数据导入
+              </Button>
+              <Button
+                variant="light"
+                className="me-4 my-1"
+                onClick={handleDownloadTmplate}
+              >
+                符合性声明模板下载
+              </Button>
             </div>
           </Card.Toolbar>
         </Card.Header>
@@ -297,14 +359,14 @@ function ConformityList() {
                 type: 'checkbox',
                 renderTitle: (size) => (
                   <>
-                    已选中<span className="mx-2">{size}</span>个设备
+                    已选中<span className="mx-2">{size}</span>个
                   </>
                 ),
                 toolbar: (selectedRowKeys: string[]) => {
                   return (
                     <div>
                       <Button
-                        color="success"
+                        color="danger"
                         onClick={handleDeleteInBatch(selectedRowKeys)}
                         variant={false}
                       >
@@ -322,38 +384,74 @@ function ConformityList() {
               )}
               columns={[
                 {
-                  key: 'no',
-                  title: '型号',
-                  sorter: true,
-                  sortOrder: sorter.field === 'no' ? sorter.order : undefined,
-                  width: 260,
-                  render(no, data) {
-                    return (
-                      <Link
-                        to={`/pim/devices/${data.id}`}
-                        className="text-gray-700"
-                      >
-                        {no}
-                      </Link>
-                    );
-                  },
+                  key: 'slug',
+                  title: 'CMMF CODE',
+                  sortOrder: sorter.field === 'slug' ? sorter.order : undefined,
                 },
                 {
-                  key: 'name',
+                  key: 'title',
+                  title: 'WMF CODE',
+                  sortOrder:
+                    sorter.field === 'title' ? sorter.order : undefined,
+                },
+                {
+                  key: 'file',
                   title: '规范文件',
-                  sorter: true,
-                  sortOrder: sorter.field === 'name' ? sorter.order : undefined,
+                  width: 180,
                   render(name, record) {
+                    const document = record.content as DocumentContent;
                     return (
                       <div className="text-gray-700">
-                        {record?.brand?.name} | {name}
+                        {document?.rawUrl}
+                        {document?.url?.startsWith('storage://') && '未上传'}
                       </div>
                     );
                   },
                 },
                 {
-                  key: 'warrantyStatus',
+                  key: 'status',
                   title: '状态',
+                  width: 160,
+                  sorter: true,
+                  render(value, record) {
+                    switch (value) {
+                      case ArticleStatus.Draft:
+                        return (
+                          <span className="badge badge-light-primary">
+                            草稿
+                          </span>
+                        );
+                      case ArticleStatus.Published:
+                        return (
+                          <span className="badge badge-light-success">
+                            已发布
+                          </span>
+                        );
+                      case ArticleStatus.Scheduled:
+                        return (
+                          <>
+                            <span className="badge badge-light-warning">
+                              计划发布时间：{record.publishedAt}
+                            </span>
+                          </>
+                        );
+                      case ArticleStatus.EXPIRED:
+                        return (
+                          <span className="badge badge-light-danger">
+                            已过期
+                          </span>
+                        );
+                      default:
+                        return (
+                          <span className="badge badge-light-dark">未知</span>
+                        );
+                    }
+                  },
+                },
+                {
+                  key: 'expirationAt',
+                  title: '结束时间',
+                  sorter: true,
                   width: 160,
                   render(value) {
                     const warrantyStatusTexts: any = {
@@ -370,25 +468,17 @@ function ConformityList() {
                   },
                 },
                 {
-                  key: 'createdAt',
-                  title: '创建时间',
-                  width: 120,
-                  sorter: true,
-                  sortOrder:
-                    sorter.field === 'createdAt' ? sorter.order : undefined,
-                },
-                {
                   title: '操作',
                   key: 'action',
                   width: 140,
                   render: (_, record: any) => {
-                    return <DeviceActions data={record} refetch={refetch} />;
+                    return <ArticleActions data={record} refetch={refetch} />;
                   },
                 },
               ]}
               pagination={pageInfo}
               onChange={onChange}
-              dataSource={devices}
+              dataSource={articles}
             />
           </BlockUI>
         </Card.Body>
