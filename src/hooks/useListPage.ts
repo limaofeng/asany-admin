@@ -123,6 +123,8 @@ function useListPage<T, Q = any>(
 
   const nodes = data?.result.edges.map((edge) => edge.node) || [];
 
+  console.log('nodes', nodes);
+
   return [
     nodes,
     { loading, pageInfo, sorter, variables, onChange: handleChange, refetch },

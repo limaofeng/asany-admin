@@ -28,9 +28,15 @@ query articles(
       cursor
       node {
         id
+        slug
         title
         image
         summary
+        tags {
+          id
+          slug
+          name
+        }
         authors {
           id
           name
@@ -39,9 +45,17 @@ query articles(
           id
           name
         }
+        content {
+          id
+          ...ArticleContentParts
+        }
         createdBy
         createdAt
+        updatedBy
+        updatedAt
         publishedAt
+        scheduledAt
+        expirationAt
         status
       }
     }
@@ -208,33 +222,38 @@ fragment ArticleParts on Article {
   contentType
   content {
     id
-    ... on TextContent {
-      textType: type
-      text
-    }
-    ... on DocumentContent {
-      url
-      document
-      documentType: type
-      size
-      title
-      description
-    }
-    ... on ImageContent {
-      images {
-        id
-        url
-        title
-        image
-        description
-      }
-    }
-    ... on VideoContent {
+    ...ArticleContentParts
+  }
+}
+
+fragment ArticleContentParts on ArticleContent {
+  ... on TextContent {
+    textType: type
+    text
+  }
+  ... on DocumentContent {
+    url
+    rawUrl: url(raw: true)
+    document
+    documentType: type
+    size
+    title
+    description
+  }
+  ... on ImageContent {
+    images {
       id
       url
       title
-      video
+      image
       description
     }
+  }
+  ... on VideoContent {
+    id
+    url
+    title
+    video
+    description
   }
 }

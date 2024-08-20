@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
+import moment from 'moment';
 
 import useDelete from '@/hooks/useDelete';
 import useImportExcel from '@/hooks/useImportExcel';
 import useListPage from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
 import {
+  Badge,
   BlockUI,
   Button,
   Card,
@@ -24,6 +26,7 @@ import {
   useDeleteManyArticlesMutation,
 } from '@/pages/cms/hooks';
 import { Article, ArticleStatus, DocumentContent } from '@/types';
+import { sleep } from '@/utils';
 
 function ArticleActions({
   data,
@@ -126,17 +129,6 @@ function ConformityList() {
 
   const [deleteManyArticles] = useDeleteManyArticlesMutation();
 
-  // const { data: usersData } = useUsersQuery({
-  //   variables: {
-  //     where: {
-  //       tenantId: user?.tenantId,
-  //     },
-  //     pageSize: 100,
-  //   },
-  //   fetchPolicy: 'network-only',
-  //   skip: !user?.tenantId,
-  // });
-
   const [articles, { loading, pageInfo, sorter, refetch, onChange }] =
     useListPage<Article>(useArticlesQuery as any, {
       toQuery: (variables, pagination, where, sorter) => {
@@ -207,42 +199,108 @@ function ConformityList() {
     );
   }, [where, onChange, sorter, searchParams.get('page')]);
 
+  const importData = useCallback(async (data: any[]) => {
+    console.log('importData', data);
+
+    const statistics: {
+      totalRecords: number;
+      successCount: number;
+      failureCount: number;
+      failedRecords: { record: any; error: any }[];
+      startTime: Date | null;
+      endTime: Date | null;
+    } = {
+      totalRecords: 0, // 总记录数
+      successCount: 0, // 成功数量
+      failureCount: 0, // 失败数量
+      failedRecords: [], // 记录失败的详细信息
+      startTime: null, // 开始时间
+      endTime: null, // 结束时间
+    };
+
+    statistics.totalRecords = data.length;
+
+    const toast = Toast.loading('xxxxx', {
+      placement: 'top-center',
+    });
+
+    statistics.startTime = new Date();
+
+    for (const record of data) {
+      try {
+        // 假设 importRecord 是一个导入记录的函数
+        await sleep(1000);
+        toast.update('asadads-', {});
+        statistics.successCount++;
+      } catch (error) {
+        statistics.failureCount++;
+        statistics.failedRecords.push({ record, error });
+      }
+    }
+
+    statistics.endTime = new Date();
+    console.log('Import Summary:', statistics);
+
+    toast.close();
+
+    Modal.success({
+      title: '操作成功',
+      content: (
+        <div>
+          <p>总记录数: {statistics.totalRecords}</p>
+          <p>成功数量: {statistics.successCount}</p>
+          <p>失败数量: {statistics.failureCount}</p>
+          <p>
+            开始时间:{' '}
+            {moment(statistics.startTime).format('YYYY-MM-DD HH:mm:ss')}
+          </p>
+          <p>
+            结束时间: {moment(statistics.endTime).format('YYYY-MM-DD HH:mm:ss')}
+          </p>
+        </div>
+      ),
+      allowOutsideClick: false,
+    });
+  }, []);
+
   const [excelFileInput, handleImportExcel, handleDownloadTmplate] =
-    useImportExcel({
+    useImportExcel(importData, {
       header: 1,
       fields: {
         slug: {
           index: 0,
           name: 'CMMF CODE',
-          example: 'hc41符合性声明',
+          example: 'W22L1',
           formatter: (value) => String(value).trim(),
         },
         tags: {
           index: 1,
           name: 'WMF CODE',
-          example: 'W22L1,YS22ED',
+          example: 'YS22ED',
           formatter: (value) => String(value).trim(),
         },
-        publishTime: {
-          index: 1,
-          name: '发布时间',
-          example: '2022/8/22 00:00',
-          formatter: (value) => String(value).trim(),
-        },
-        endTime: {
+        scheduledAt: {
           index: 2,
+          name: '发布时间',
+          example: '2024/8/22 0:00',
+          formatter: (value) =>
+            String(value).trim() && moment(value).format('YYYY-MM-DD HH:mm'),
+        },
+        expirationAt: {
+          index: 3,
           name: '结束时间',
-          example: '2022/8/31 00:00',
-          formatter: (value) => String(value).trim(),
+          example: '2024/8/31 0:00',
+          formatter: (value) =>
+            String(value).trim() && moment(value).format('YYYY-MM-DD HH:mm'),
         },
         file: {
-          index: 3,
+          index: 4,
           name: '文件位置',
           example: '3201000159 1873596030 炒锅铲.pdf.pdf',
           formatter: (value) => String(value).trim(),
         },
         remark: {
-          index: 3,
+          index: 5,
           name: '备注',
           example: '',
           formatter: (value) => String(value).trim(),
@@ -251,8 +309,8 @@ function ConformityList() {
       template: {
         filename: '符合性规范批量上传.xlsx',
         cols: [
-          { wch: 10 },
-          { wch: 10 },
+          { wch: 20 },
+          { wch: 20 },
           { wch: 20 },
           { wch: 20 },
           { wch: 50 },
@@ -386,24 +444,31 @@ function ConformityList() {
                 {
                   key: 'slug',
                   title: 'CMMF CODE',
+                  width: 130,
+                  sorter: true,
                   sortOrder: sorter.field === 'slug' ? sorter.order : undefined,
                 },
                 {
                   key: 'title',
                   title: 'WMF CODE',
+                  width: 130,
+                  sorter: true,
                   sortOrder:
                     sorter.field === 'title' ? sorter.order : undefined,
                 },
                 {
                   key: 'file',
                   title: '规范文件',
-                  width: 180,
                   render(name, record) {
                     const document = record.content as DocumentContent;
+                    console.log(document, record);
+                    const reg = new RegExp('^storage://[^/]+/');
                     return (
-                      <div className="text-gray-700">
-                        {document?.rawUrl}
-                        {document?.url?.startsWith('storage://') && '未上传'}
+                      <div>
+                        {(document as any)?.rawUrl?.replace(reg, '')}
+                        {document?.url?.startsWith('storage://') && (
+                          <Badge color="dark">未上传</Badge>
+                        )}
                       </div>
                     );
                   },
@@ -411,36 +476,38 @@ function ConformityList() {
                 {
                   key: 'status',
                   title: '状态',
-                  width: 160,
+                  width: 180,
                   sorter: true,
+                  sortOrder:
+                    sorter.field === 'status' ? sorter.order : undefined,
                   render(value, record) {
                     switch (value) {
                       case ArticleStatus.Draft:
                         return (
-                          <span className="badge badge-light-primary">
+                          <Badge light color="secondary">
                             草稿
-                          </span>
+                          </Badge>
                         );
                       case ArticleStatus.Published:
                         return (
-                          <span className="badge badge-light-success">
+                          <Badge light color="primary">
                             已发布
-                          </span>
+                          </Badge>
                         );
                       case ArticleStatus.Scheduled:
                         return (
                           <>
-                            <span className="badge badge-light-warning">
-                              计划发布时间：{record.publishedAt}
-                            </span>
+                            <Badge light color="info">
+                              将于{' '}
+                              {moment(record.scheduledAt).format(
+                                'YYYY-MM-DD HH:mm',
+                              )}{' '}
+                              发布
+                            </Badge>
                           </>
                         );
-                      case ArticleStatus.EXPIRED:
-                        return (
-                          <span className="badge badge-light-danger">
-                            已过期
-                          </span>
-                        );
+                      case ArticleStatus.Expired:
+                        return <Badge color="dark">已过期</Badge>;
                       default:
                         return (
                           <span className="badge badge-light-dark">未知</span>
@@ -452,17 +519,13 @@ function ConformityList() {
                   key: 'expirationAt',
                   title: '结束时间',
                   sorter: true,
+                  sortOrder:
+                    sorter.field === 'status' ? sorter.order : undefined,
                   width: 160,
                   render(value) {
-                    const warrantyStatusTexts: any = {
-                      INACTIVE: '未激活',
-                      ACTIVE: '激活',
-                      EXPIRED: '已过期',
-                      CANCELED: '已作废',
-                    };
                     return (
                       <div className="text-gray-700">
-                        {warrantyStatusTexts[value]}
+                        {value && moment(value).format('YYYY-MM-DD HH:mm')}
                       </div>
                     );
                   },
@@ -470,7 +533,7 @@ function ConformityList() {
                 {
                   title: '操作',
                   key: 'action',
-                  width: 140,
+                  width: 120,
                   render: (_, record: any) => {
                     return <ArticleActions data={record} refetch={refetch} />;
                   },

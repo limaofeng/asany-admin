@@ -4,6 +4,7 @@ export default defineConfig({
   apollo: {
     url: 'https://api.dev.mh-procoffeemachine.com/graphql',
     wsUrl: 'wss://api.dev.mh-procoffeemachine.com/subscriptions',
+    options: '../config/apollo-options.ts',
   },
   app: {
     id: 'w5t78l496cmnt404yp7l',

@@ -8,7 +8,7 @@ import './style/index.scss';
 export type BadgeProps = {
   tag?: 'span' | 'div';
   color?: Color;
-  lightStyle?: 'primary' | 'success' | 'info' | 'warning' | 'danger' | 'dark';
+  light?: boolean;
   shape?: 'square' | 'circle';
   dot?: boolean;
   size?: 'sm' | 'lg';
@@ -25,10 +25,10 @@ function Badge(props: BadgeProps) {
     count,
     children = count,
     shape = dot ? 'circle' : undefined,
-    lightStyle,
+    light,
     tag = 'span',
   } = props;
-  const color = !props.color && !lightStyle ? 'light' : props.color;
+  const color = !props.color && !light ? 'light' : props.color;
 
   if (count === 0) {
     return <></>;
@@ -41,8 +41,8 @@ function Badge(props: BadgeProps) {
         'badge-square': shape === 'square',
         'badge-circle': shape === 'circle',
         [`badge-${size}`]: !!size,
-        [`badge-${color}`]: !!color,
-        [`badge-light-${lightStyle}`]: !!lightStyle,
+        [`badge-${color}`]: !!color && !light,
+        [`badge-light-${color}`]: !!light && !!color,
       }),
     },
     children,

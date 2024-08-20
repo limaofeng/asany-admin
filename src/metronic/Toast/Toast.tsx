@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { Toast as BsToast } from 'react-bootstrap';
 import type {
+  Id,
+  ToastContent,
   ToastPosition,
   ToastPromiseParams,
   ToastOptions as ToastifyOptions,
@@ -176,6 +178,26 @@ Toast.promise = function <T = unknown>(
     ...toToastifyOptions(overrides),
   }) as any;
 };
+
+function createToastObject(id: Id) {
+  return {
+    update: (content: ToastContent, overrides?: ToastOptions) => {
+      toast.update(id, {
+        render: content,
+        ...toToastifyOptions(overrides),
+      });
+    },
+    close: () => {
+      toast.dismiss(id);
+    },
+  };
+}
+
+Toast.loading = (content: string, overrides?: ToastOptions) => {
+  const toastId = toast.loading(content, toToastifyOptions(overrides));
+  return createToastObject(toastId);
+};
+
 Toast.error = (
   content: string,
   duration?: number,

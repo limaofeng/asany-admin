@@ -196,7 +196,7 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
       <table className="dataTable table table-row-bordered align-middle fw-bolder dataTable no-footer">
         <Colgroup<T> columns={columns} />
         <thead>
-          <tr className="text-start text-gray-400 fw-bolder fs-7 text-uppercase gs-0 table-row-dashed">
+          <tr className="text-start text-gray-600 fw-bolder fs-7 text-uppercase gs-0 table-row-dashed">
             {temp.current.isStats ? (
               <>
                 <TableHeaderColumnCheckbox
@@ -242,6 +242,10 @@ function TableHeader<T>(props: TableHeaderProps<T>) {
                       typeof col.className === 'function'
                         ? col.className('th')
                         : col.className,
+                      {
+                        'text-center': col.align === 'center',
+                        'text-end': col.align === 'right',
+                      },
                     )}
                     onSort={handleSort}
                   />
