@@ -1,3 +1,18 @@
+## [0.4.21](https://github.com/limaofeng/asany-admin/compare/v0.4.20...v0.4.21) (2024-08-26)
+
+### Bug Fixes
+
+- 修复草稿与已发布查询问题 ([4924a97](https://github.com/limaofeng/asany-admin/commit/4924a97c6fda95a8ea5be374a3817d9b54787c2f))
+- 租户 ID 从用户中获取 ([a64074a](https://github.com/limaofeng/asany-admin/commit/a64074a8a423ccc4bc4110c4a828f2d4e211c445))
+- 解决用户列表分页查询问题 ([05b088c](https://github.com/limaofeng/asany-admin/commit/05b088caf7ed7f19b55666e9d26917f6f0fc72d7))
+
+### Features
+
+- optimize file management and fix issues with draft and published queries ([11cb34c](https://github.com/limaofeng/asany-admin/commit/11cb34ce9e9f2e60434a6ef076e9ed39b31ed0b0))
+- optimize file management and fix issues with draft and published queries ([5b8001b](https://github.com/limaofeng/asany-admin/commit/5b8001bdb04de255fd4007c2ff9a04efd0a8b5a8))
+- optimize file management and fix issues with draft and published queries ([60f17e6](https://github.com/limaofeng/asany-admin/commit/60f17e6058d95a30ee20da07e5694234605cd7e8))
+- 文件管理优化 ([d2e08d2](https://github.com/limaofeng/asany-admin/commit/d2e08d2a3dc041b0cd4677a772d1aa81b1b12911))
+
 ## [0.4.20](https://github.com/limaofeng/asany-admin/compare/v0.4.19...v0.4.20) (2024-06-24)
 
 ### Bug Fixes
