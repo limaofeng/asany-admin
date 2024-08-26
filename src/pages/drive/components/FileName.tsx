@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCopyToClipboard } from 'react-use';
 
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 
-import { Button, Input, Symbol, Toast } from '@/metronic';
+import { Button, Input, Symbol, Toast, Tooltip } from '@/metronic';
 import type { InputRef } from '@/metronic/typings';
 import type { FileObject } from '@/types';
 import { delay, sleep } from '@/utils';
@@ -116,6 +117,30 @@ function FileName(props: FileNameProps) {
     );
   }, [data.mimeType]);
 
+  const [copied, setCopied] = useState(false);
+
+  const [, copy] = useCopyToClipboard();
+
+  const timer = useRef<any>();
+
+  const handleCopy = useCallback(
+    (e: any) => {
+      e.stopPropagation();
+      e.preventDefault();
+      copy(data.path);
+      Toast.info('路径 已经复制', 3000, {
+        placement: 'top-center',
+      });
+      timer.current && clearTimeout(timer.current);
+      setCopied(true);
+      timer.current = setTimeout(() => {
+        setCopied(false);
+        timer.current = null;
+      }, 3000);
+    },
+    [data, copy],
+  );
+
   return (
     <div
       onClick={handleBlocking}
@@ -177,17 +202,31 @@ function FileName(props: FileNameProps) {
           />
         </>
       ) : (
-        <a
-          className="text-gray-800 text-ellipsis text-hover-primary no-selecto-drag"
-          onClick={handleClick}
-          href={
-            data.isDirectory
-              ? `/drive/folders/${data.id}`
-              : `/preview/${data.id}`
-          }
-        >
-          {data.name}
-        </a>
+        <>
+          <a
+            className="text-gray-800 text-ellipsis text-hover-primary no-selecto-drag"
+            onClick={handleClick}
+            href={
+              data.isDirectory
+                ? `/drive/folders/${data.id}`
+                : `/preview/${data.id}`
+            }
+          >
+            {data.name}
+          </a>
+          <div style={{ display: 'none' }}>
+            <Tooltip title="点击复制文件路径">
+              <Icon
+                onClick={handleCopy}
+                className={classnames('ms-2 svg-icon-4 cursor-pointer', {
+                  'text-success': !copied,
+                  'text-primary': copied,
+                })}
+                name={`Bootstrap/clipboard${copied ? '-check' : ''}`}
+              />
+            </Tooltip>
+          </div>
+        </>
       )}
     </div>
   );

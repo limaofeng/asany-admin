@@ -19,7 +19,7 @@ function SignIn() {
     layouts[layout],
     {
       title: '欢迎使用',
-      logo: '/assets/media/logos/coffee_machine.svg',
+      logo: '/assets/media/logos/wmf-logo.svg',
     },
     <SignInForm />,
   );

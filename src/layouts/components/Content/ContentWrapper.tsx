@@ -40,10 +40,10 @@ function ContentWrapper(props: ContentWrapperProps, ref: any) {
     if (!loading) {
       return;
     }
-    const layout = document.querySelector('.theme-metronic')!;
-    layout.classList.add('overflow-hidden');
+    const layout = document.querySelector('.custom-theme-metronic');
+    layout && layout.classList.add('overflow-hidden');
     return () => {
-      layout.classList.remove('overflow-hidden');
+      layout && layout.classList.remove('overflow-hidden');
     };
   }, [loading]);
 

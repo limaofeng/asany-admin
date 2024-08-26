@@ -217,7 +217,7 @@ function LayoutWrapper(props: LayoutProps) {
   return (
     <LayoutProvider
       state={{
-        logo: '/assets/media/logos/coffee_machine_1.svg',
+        logo: '/assets/media/logos/wmf-logo.svg',
         menus,
         routes: routes.map((item) => item.route),
         aside: {

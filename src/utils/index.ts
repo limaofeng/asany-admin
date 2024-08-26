@@ -3,6 +3,8 @@ import React, { useEffect, useRef } from 'react';
 import { ApolloError } from '@apollo/client';
 import { isEqual } from 'lodash';
 
+import { SortDirection } from '@/metronic/Table/typings';
+
 import errors from '../errors';
 
 export type ConvolverOptions = {
@@ -179,4 +181,22 @@ export function flattenChildren(
       return [...acc, child];
     }
   }, []);
+}
+
+export function getSortDirection(
+  query: URLSearchParams,
+  field: string,
+  sortKey: string = 'sort',
+): SortDirection | undefined {
+  const sortValue = query.get(sortKey);
+
+  if (sortValue) {
+    const [sortField, sortOrder] = sortValue.split(':');
+
+    if (sortField === field) {
+      return sortOrder === 'desc' ? 'descend' : 'ascend';
+    }
+  }
+
+  return undefined;
 }

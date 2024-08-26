@@ -7,11 +7,7 @@ import { sleep } from '@/utils';
 import { LogoutDocument, ViewerDocument } from './api';
 
 export function tokenExists() {
-  const token = localStorage.getItem('credentials');
-  if (!tokenHelper.withToken() && token) {
-    tokenHelper.setToken(token);
-  }
-  return !!token;
+  return !!tokenHelper.withToken();
 }
 
 export async function loadCurrentuser(): Promise<CurrentUser | undefined> {
@@ -31,7 +27,6 @@ export async function loadCurrentuser(): Promise<CurrentUser | undefined> {
       (item) => item.extensions.code === '401001',
     );
     if (needLogIn) {
-      localStorage.removeItem('credentials');
       tokenHelper.resetToken();
     }
     throw error;

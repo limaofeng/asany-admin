@@ -114,7 +114,10 @@ const Footer = React.forwardRef((props: FooterProps, ref: any) => {
           </Tooltip>
         </div>
       ))}
-      <div className="d-flex align-items-center mb-2">
+      <div
+        style={{ display: 'none' }}
+        className="d-flex align-items-center mb-2"
+      >
         <div className="btn btn-icon btn-active-color-primary btn-color-gray-400 btn-active-light">
           <Popover
             placement="top-start"

@@ -352,11 +352,13 @@ function Table<T>(props: TableProps<T>) {
       state.current.sorter = sorter;
       tableOnChange &&
         tableOnChange(
-          {
-            ...props.pagination!,
-            current: state.current.page,
-            pageSize: state.current.pageSize,
-          },
+          props.pagination
+            ? {
+                ...props.pagination!,
+                current: state.current.page!,
+                pageSize: state.current.pageSize!,
+              }
+            : undefined,
           null,
           sorter,
           { action: 'sort' },

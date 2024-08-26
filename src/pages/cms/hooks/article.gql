@@ -21,6 +21,7 @@ query articles(
       hasNextPage
       hasPreviousPage
       totalPages
+      pageSize
       total
       current
     }
@@ -176,8 +177,10 @@ mutation deleteArticle($id: ID!) {
   deleteArticle(id: $id)
 }
 
-mutation deleteManyArticles($ids: [ID]!) {
-  deleteManyArticles(ids: $ids)
+mutation deleteManyArticles($where: ArticleWhereInput!) {
+  result: deleteManyArticles(where: $where) {
+    count
+  }
 }
 
 query article($id: ID!) {

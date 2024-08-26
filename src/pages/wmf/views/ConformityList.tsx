@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
@@ -6,7 +6,10 @@ import moment from 'moment';
 
 import useDelete from '@/hooks/useDelete';
 import useImportExcel from '@/hooks/useImportExcel';
-import useListPage from '@/hooks/useListPage';
+import useListPage, {
+  queryToVariables,
+  variablesToQuery,
+} from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
 import {
   Badge,
@@ -22,22 +25,27 @@ import {
   Toast,
 } from '@/metronic';
 import {
+  useArticlesLazyQuery,
   useArticlesQuery,
+  useCreateArticleMutation,
   useDeleteManyArticlesMutation,
+  useUpdateArticleMutation,
 } from '@/pages/cms/hooks';
 import { Article, ArticleStatus, DocumentContent } from '@/types';
-import { sleep } from '@/utils';
+import { getSortDirection } from '@/utils';
+
+import ConformityDrawer from '../components/ConformityDrawer';
 
 function ArticleActions({
   data,
+  onEdit,
   refetch,
 }: {
   data: Article;
+  onEdit: (data: Article) => void;
   refetch: () => void;
 }) {
   const [visible, setVisible] = useState(false);
-
-  const navigate = useNavigate();
 
   const [deleteManyArticles] = useDeleteManyArticlesMutation();
 
@@ -65,9 +73,9 @@ function ArticleActions({
 
   const handleClick = useCallback(({ key }: any) => {
     if (key === 'edit') {
-      navigate(`/pim/articles/${data.id}`);
+      onEdit(data);
     } else if (key === 'delete') {
-      handleDelete({ name: data.name!, id: data.id });
+      handleDelete({ name: data.title!, id: data.id });
     }
   }, []);
 
@@ -99,181 +107,257 @@ function ArticleActions({
 }
 
 function ConformityList() {
-  // const { data: user } = useCurrentuser();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const [where, setWhere] = useState<{
-    name_contains?: string;
-    customer?: string;
-    customerStore?: string;
-    createdBy?: string;
-  }>({});
-
-  useEffect(() => {
-    setWhere((where) => {
-      if (searchParams.get('name_contains')) {
-        where.name_contains = searchParams.get('name_contains')!;
-      }
-      if (searchParams.get('customer')) {
-        where.customer = searchParams.get('customer')!;
-      }
-      if (searchParams.get('customerStore')) {
-        where.customerStore = searchParams.get('customerStore')!;
-      }
-      if (searchParams.get('createdBy')) {
-        where.createdBy = searchParams.get('createdBy')!;
-      }
-      return where;
-    });
-  }, [searchParams]);
-
-  const [deleteManyArticles] = useDeleteManyArticlesMutation();
-
-  const [articles, { loading, pageInfo, sorter, refetch, onChange }] =
-    useListPage<Article>(useArticlesQuery as any, {
-      toQuery: (variables, pagination, where, sorter) => {
-        const _query: any = {};
-        if (where?.name_contains) {
-          _query.q = where?.name_contains;
-        }
-        if (where?.customer) {
-          _query.customer = where.customer;
-        }
-        if (where?.customerStore) {
-          _query.customerStore = where.customerStore;
-        }
-        if (where?.createdBy) {
-          _query.createdBy = where.createdBy;
-        }
-        if (!!sorter) {
-          _query.orderBy =
-            sorter.field + '_' + (sorter.order === 'ascend' ? 'asc' : 'desc');
-        }
-        _query.page = pagination.current;
-        return _query;
-      },
-      toVariables: (query) => {
-        query.where = {};
-        if (query.q) {
-          query.where['name_contains'] = query.q;
-          delete query.q;
-        }
-        if (query.customer) {
-          query.where['customer'] = query.customer;
-          delete query.customer;
-        }
-        if (query.customerStore) {
-          query.where['customerStore'] = query.customerStore;
-          delete query.customerStore;
-        }
-        if (query.createdBy) {
-          query.where['createdBy'] = query.createdBy;
-          delete query.createdBy;
-        }
-        return query;
-      },
-    });
-
-  // const setWhereCreatedBy = useCallback((value: string) => {
-  //   setWhere((where) => ({
-  //     ...where,
-  //     createdBy: !value ? undefined : value,
-  //   }));
-  // }, []);
-
-  const handleSearch = useCallback(
-    (value: string) => {
-      setWhere((where) => ({
-        ...where,
-        name_contains: value,
-      }));
-    },
-    [onChange, sorter],
+  const searchForm = useMemo(
+    () =>
+      queryToVariables(searchParams, [
+        {
+          source: 'q',
+          target: 'keywords',
+        },
+      ]),
+    [searchParams.get('q')],
   );
 
-  useEffect(() => {
-    onChange(
-      { current: searchParams.get('page') || 1, pageSize: 10 },
-      where,
-      sorter,
-    );
-  }, [where, onChange, sorter, searchParams.get('page')]);
+  useState<{
+    keywords: string;
+  }>({
+    keywords: searchParams.get('q') || '',
+  });
 
-  const importData = useCallback(async (data: any[]) => {
-    console.log('importData', data);
+  const variables = useMemo(() => {
+    return queryToVariables(searchParams, [
+      {
+        source: 'q',
+        target: 'where.name_contains',
+      },
+      {
+        source: 'sex',
+        target: 'where.sex',
+      },
+      {
+        source: 'page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'per_page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'sort',
+        target: 'orderBy',
+        transform: (value) => {
+          const [field, order] = value.split(':');
+          return `${field}_${order}`;
+        },
+      },
+    ]);
+  }, [searchParams.toString()]);
 
-    const statistics: {
-      totalRecords: number;
-      successCount: number;
-      failureCount: number;
-      failedRecords: { record: any; error: any }[];
-      startTime: Date | null;
-      endTime: Date | null;
-    } = {
-      totalRecords: 0, // 总记录数
-      successCount: 0, // 成功数量
-      failureCount: 0, // 失败数量
-      failedRecords: [], // 记录失败的详细信息
-      startTime: null, // 开始时间
-      endTime: null, // 结束时间
-    };
+  const [loadArticles] = useArticlesLazyQuery({ fetchPolicy: 'network-only' });
+  const [createArticle] = useCreateArticleMutation();
+  const [updateArticle] = useUpdateArticleMutation();
+  const [deleteManyArticles] = useDeleteManyArticlesMutation();
 
-    statistics.totalRecords = data.length;
+  const [articles, { loading, pageInfo, refetch }] = useListPage(
+    useArticlesQuery,
+    {
+      variables,
+    },
+  );
 
-    const toast = Toast.loading('xxxxx', {
-      placement: 'top-center',
-    });
+  const handleTableChange = useCallback(
+    (pagination: any, filters: any, sorter: any) => {
+      const querystring = variablesToQuery(
+        { searchForm, pagination, filters, sorter },
+        [
+          {
+            source: 'searchForm.keywords',
+            target: 'q',
+            skip: (value) => !value,
+          },
+          {
+            source: 'pagination.current',
+            target: 'page',
+            skip: (value) => value === 1,
+          },
+          {
+            source: 'pagination.pageSize',
+            target: 'per_page',
+            skip: (value) => value === 15,
+          },
+          {
+            source: 'sorter.field',
+            target: 'sort',
+            transform: (value) =>
+              `${value}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
+          },
+        ],
+      );
+      navigate(location.pathname + '?' + querystring, {
+        replace: true,
+      });
+    },
+    [searchForm],
+  );
 
-    statistics.startTime = new Date();
-
-    for (const record of data) {
-      try {
-        // 假设 importRecord 是一个导入记录的函数
-        await sleep(1000);
-        toast.update('asadads-', {});
-        statistics.successCount++;
-      } catch (error) {
-        statistics.failureCount++;
-        statistics.failedRecords.push({ record, error });
-      }
-    }
-
-    statistics.endTime = new Date();
-    console.log('Import Summary:', statistics);
-
-    toast.close();
-
-    Modal.success({
-      title: '操作成功',
-      content: (
-        <div>
-          <p>总记录数: {statistics.totalRecords}</p>
-          <p>成功数量: {statistics.successCount}</p>
-          <p>失败数量: {statistics.failureCount}</p>
-          <p>
-            开始时间:{' '}
-            {moment(statistics.startTime).format('YYYY-MM-DD HH:mm:ss')}
-          </p>
-          <p>
-            结束时间: {moment(statistics.endTime).format('YYYY-MM-DD HH:mm:ss')}
-          </p>
-        </div>
-      ),
-      allowOutsideClick: false,
+  const handleSearch = useCallback((value: string) => {
+    navigate(location.pathname + (!!value ? '?q=' + value : ''), {
+      replace: true,
     });
   }, []);
+
+  const importData = useCallback(
+    async (data: any[]) => {
+      // console.log('importData', data);
+
+      const statistics: {
+        totalRecords: number;
+        insertCount: number;
+        updateCount: number;
+        failureCount: number;
+        failedRecords: { record: any; error: any }[];
+        startTime: Date | null;
+        endTime: Date | null;
+      } = {
+        totalRecords: 0, // 总记录数
+        insertCount: 0, // 插入数量
+        updateCount: 0, // 更新数量
+        failureCount: 0, // 失败数量
+        failedRecords: [], // 记录失败的详细信息
+        startTime: null, // 开始时间
+        endTime: null, // 结束时间
+      };
+
+      statistics.totalRecords = data.length;
+
+      const toast = Toast.loading('开始导入文件', {
+        placement: 'top-center',
+      });
+
+      statistics.startTime = new Date();
+
+      let currentCount = 0;
+      for (const record of data) {
+        currentCount++;
+        try {
+          // 假设 importRecord 是一个导入记录的函数
+          const { data } = await loadArticles({
+            variables: {
+              where: {
+                title: record.title,
+              },
+            },
+          });
+
+          const inputData = {
+            title: record.title,
+            summary: record.summary,
+            tags: !!record.tag ? [record.tag] : [],
+            scheduledAt: record.scheduledAt,
+            expirationAt: record.expirationAt,
+            category: '1386',
+            content: {
+              type: 'PDF',
+              url: 'storage://ZovzE2fU/' + record.file,
+            },
+          };
+
+          if (data?.result?.pageInfo.total === 1) {
+            toast.update(
+              `更新 ${record.title} - ${currentCount}/${statistics.totalRecords}`,
+              {
+                icon: 'loading',
+              },
+            );
+            const { errors } = await updateArticle({
+              variables: {
+                id: data.result.edges[0].node.id,
+                input: inputData,
+              },
+            });
+            if (!!errors?.length) {
+              throw new Error(errors[0].message);
+            }
+            statistics.updateCount++;
+          } else if (data?.result?.pageInfo.total === 0) {
+            toast.update(
+              `新增 ${record.title} - ${currentCount}/${statistics.totalRecords}`,
+              {
+                icon: 'loading',
+              },
+            );
+            const { errors } = await createArticle({
+              variables: {
+                input: inputData,
+              },
+            });
+            if (!!errors?.length) {
+              throw new Error(errors[0].message);
+            }
+            statistics.insertCount++;
+          } else {
+            statistics.failureCount++;
+          }
+        } catch (error) {
+          toast.update(
+            `失败 ${record.title} - ${currentCount}/${statistics.totalRecords}`,
+            {
+              icon: 'error',
+            },
+          );
+          statistics.failureCount++;
+          statistics.failedRecords.push({ record, error });
+        }
+      }
+
+      statistics.endTime = new Date();
+      console.log('Import Summary:', statistics);
+
+      toast.close();
+
+      refetch();
+
+      Modal.success({
+        title: '操作成功',
+        width: 600,
+        content: (
+          <div>
+            <p>
+              导入完成, 共 {statistics.totalRecords} 条记录, 成功{' '}
+              {statistics.insertCount} 条, 更新 {statistics.updateCount} 条,
+              失败 {statistics.failureCount} 条
+            </p>
+            <p>
+              耗时:{' '}
+              {moment(statistics.endTime).diff(statistics.startTime, 'seconds')}{' '}
+              秒
+            </p>
+            <p>总记录数: {statistics.totalRecords}</p>
+            <p>插入数量: {statistics.insertCount}</p>
+            <p>更新数量: {statistics.updateCount}</p>
+            <p>失败数量: {statistics.failureCount}</p>
+          </div>
+        ),
+        allowOutsideClick: false,
+      });
+    },
+    [refetch],
+  );
 
   const [excelFileInput, handleImportExcel, handleDownloadTmplate] =
     useImportExcel(importData, {
       header: 1,
       fields: {
-        slug: {
+        title: {
           index: 0,
           name: 'CMMF CODE',
           example: 'W22L1',
           formatter: (value) => String(value).trim(),
         },
-        tags: {
+        tag: {
           index: 1,
           name: 'WMF CODE',
           example: 'YS22ED',
@@ -299,7 +383,7 @@ function ConformityList() {
           example: '3201000159 1873596030 炒锅铲.pdf.pdf',
           formatter: (value) => String(value).trim(),
         },
-        remark: {
+        summary: {
           index: 5,
           name: '备注',
           example: '',
@@ -343,13 +427,66 @@ function ConformityList() {
           },
         },
       });
+      refetch();
       Toast.success(`文件批量删除成功`, 2000, {
         placement: 'bottom-left',
         progressBar: true,
       });
     },
-    [],
+    [refetch],
   );
+
+  const [state, setState] = useState<{ data?: Article; visible: boolean }>({
+    visible: false,
+  });
+
+  const handleCloseDrawer = useCallback(() => {
+    setState((prevState) => ({ ...prevState, visible: false }));
+  }, []);
+
+  const handleSuccess = useCallback(
+    (_data: Article) => {
+      setState((prevState) => ({
+        ...prevState,
+        route: _data,
+      }));
+      refetch();
+    },
+    [setState],
+  );
+
+  const handleDeleteSuccess = useCallback(
+    (_data: Article) => {
+      setState((prevState) => {
+        if (prevState.data?.id !== _data.id) {
+          return prevState;
+        }
+        return {
+          ...prevState,
+          visible: false,
+          menu: undefined,
+        };
+      });
+      refetch();
+    },
+    [setState],
+  );
+
+  const handleNew = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      visible: true,
+      data: {} as any,
+    }));
+  }, []);
+
+  const handleEdit = useCallback((e: any) => {
+    setState((prevState) => ({
+      ...prevState,
+      visible: true,
+      data: e,
+    }));
+  }, []);
 
   return (
     <ContentWrapper
@@ -357,43 +494,29 @@ function ConformityList() {
         title: '符合性申明管理',
       }}
     >
+      <ConformityDrawer
+        data={state.data}
+        onClose={handleCloseDrawer}
+        onSuccess={handleSuccess}
+        onDeleteSuccess={handleDeleteSuccess}
+        visible={state.visible}
+      />
       <Card className="mb-5 mb-xl-10">
         <Card.Header className="pt-8">
           <Card.Title className="flex-column">
             <Input.Search
               solid
-              value={where?.name_contains}
+              defaultValue={searchForm.keywords}
               className="w-250px"
               placeholder="关键词搜索"
               onSearch={handleSearch}
             />
           </Card.Title>
           <Card.Toolbar>
-            {/* <div className="me-4 my-1">
-              <Select2
-                solid
-                size="sm"
-                className="w-150px"
-                onChange={(value) => setWhereCreatedBy(value as string)}
-                matcher={(params, data) => {
-                  if (!params.term || params.term === '') {
-                    return data;
-                  }
-                  if (data.text.includes(params.term)) {
-                    return data;
-                  }
-                  return null;
-                }}
-                placeholder="创建人"
-                value={where?.createdBy}
-                options={users.map((user) => ({
-                  label: user.name!,
-                  value: user.id!,
-                }))}
-              />
-            </div> */}
             <div>
-              <Button className="me-4 my-1">新建</Button>
+              <Button onClick={handleNew} className="me-4 my-1">
+                新建
+              </Button>
               {excelFileInput}
               <Button className="me-4 my-1" onClick={handleImportExcel}>
                 模板数据导入
@@ -442,32 +565,33 @@ function ConformityList() {
               )}
               columns={[
                 {
-                  key: 'slug',
+                  key: 'title',
                   title: 'CMMF CODE',
                   width: 130,
                   sorter: true,
-                  sortOrder: sorter.field === 'slug' ? sorter.order : undefined,
+                  sortOrder: getSortDirection(searchParams, 'title'),
                 },
                 {
-                  key: 'title',
+                  key: 'tags',
                   title: 'WMF CODE',
                   width: 130,
-                  sorter: true,
-                  sortOrder:
-                    sorter.field === 'title' ? sorter.order : undefined,
+                  render(_, record) {
+                    return !!record!.tags.length && record!.tags[0].name;
+                  },
                 },
                 {
-                  key: 'file',
+                  key: 'content',
                   title: '规范文件',
-                  render(name, record) {
+                  render(_, record) {
                     const document = record.content as DocumentContent;
-                    console.log(document, record);
                     const reg = new RegExp('^storage://[^/]+/');
                     return (
                       <div>
                         {(document as any)?.rawUrl?.replace(reg, '')}
                         {document?.url?.startsWith('storage://') && (
-                          <Badge color="dark">未上传</Badge>
+                          <Badge className="ms-2" color="dark">
+                            未上传
+                          </Badge>
                         )}
                       </div>
                     );
@@ -476,10 +600,9 @@ function ConformityList() {
                 {
                   key: 'status',
                   title: '状态',
-                  width: 180,
+                  width: 200,
                   sorter: true,
-                  sortOrder:
-                    sorter.field === 'status' ? sorter.order : undefined,
+                  sortOrder: getSortDirection(searchParams, 'status'),
                   render(value, record) {
                     switch (value) {
                       case ArticleStatus.Draft:
@@ -519,8 +642,7 @@ function ConformityList() {
                   key: 'expirationAt',
                   title: '结束时间',
                   sorter: true,
-                  sortOrder:
-                    sorter.field === 'status' ? sorter.order : undefined,
+                  sortOrder: getSortDirection(searchParams, 'expirationAt'),
                   width: 160,
                   render(value) {
                     return (
@@ -535,12 +657,18 @@ function ConformityList() {
                   key: 'action',
                   width: 120,
                   render: (_, record: any) => {
-                    return <ArticleActions data={record} refetch={refetch} />;
+                    return (
+                      <ArticleActions
+                        data={record}
+                        refetch={refetch}
+                        onEdit={handleEdit}
+                      />
+                    );
                   },
                 },
               ]}
               pagination={pageInfo}
-              onChange={onChange}
+              onChange={handleTableChange}
               dataSource={articles}
             />
           </BlockUI>

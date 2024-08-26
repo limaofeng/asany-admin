@@ -1,16 +1,12 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import {
+  ApolloError,
   OperationVariables,
   QueryHookOptions,
   QueryResult,
 } from '@apollo/client';
-import { useNavigate } from '@umijs/max';
-import qs from 'query-string';
 
-import useQuery from '@/hooks/useQuery';
-import { PaginationProps } from '@/metronic/Table/Pagination';
-import { Sorter } from '@/metronic/typings';
 import { PageInfo } from '@/types';
 
 export type ResultEdge<T> = {
@@ -24,111 +20,145 @@ export type ResultQuery<T> = {
   };
 };
 
-const defaultPageInfo: PageInfo = {
-  total: 0,
-  current: 1,
-  pageSize: 10,
-  totalPages: 0,
-  hasNextPage: false,
-  hasPreviousPage: false,
-};
-
-type SearchOptions = {
-  toQuery?: (
-    variables: any,
-    pagination: PaginationProps,
-    filters: { [key: string]: any } | undefined,
-    sorter: Sorter,
-  ) => any;
-  toVariables?: (query: { [key: string]: any }) => {
-    [key: string]: any;
-  };
-};
-
-function useListPage<T, Q = any>(
-  useDataQuery: (baseOptions?: QueryHookOptions<Q, OperationVariables>) => any,
-  search?: SearchOptions,
-  skip?: boolean,
+function useListPage<TData, TVariables extends OperationVariables>(
+  // @ts-ignore
+  useDataQuery: (
+    baseOptions?: QueryHookOptions<TData, TVariables>,
+  ) => QueryResult<TData, TVariables>,
+  // @ts-ignore
+  baseOptions?: QueryHookOptions<TData, TVariables>,
 ): [
-  T[],
+  // @ts-ignore
+  NonNullable<NonNullable<TData['result']>['edges']>[number]['node'][],
   {
     loading: boolean;
-    pageInfo: PageInfo;
-    sorter: Sorter;
+    pageInfo?: PageInfo;
+    error?: ApolloError;
     refetch: () => void;
-    variables: { [key: string]: any };
-    onChange: (pagination: any, where: any, sorter: any) => void;
+    variables: TVariables;
   },
 ] {
-  const navigate = useNavigate();
+  // @ts-ignore
+  type NodeType = NonNullable<
+    // @ts-ignore
+    NonNullable<TData['result']>['edges']
+  >[number]['node'][];
 
-  const query = useQuery();
-
-  const variables = useMemo(() => {
-    const _variables =
-      (search?.toVariables && search?.toVariables(query)) || {};
-    console.log('variables', _variables);
-    if (_variables.page && typeof _variables.page === 'string') {
-      _variables.page = parseInt(_variables.page, 10);
-    }
-    if (_variables.pageSize && typeof _variables.pageSize === 'string') {
-      _variables.pageSize = parseInt(_variables.pageSize, 10);
-    }
-    return _variables;
-  }, [query, search]);
-
-  const sorter = useMemo<Sorter>(() => {
-    if (!variables.orderBy) {
-      return {
-        order: 'descend',
-        field: 'createdAt',
-      };
-    }
-    const [field, order] = variables.orderBy.split('_');
-    return {
-      order: order === 'desc' ? 'descend' : 'ascend',
-      field,
-    };
-  }, [variables.orderBy]);
-
-  const { data, loading, previousData, refetch } = useDataQuery({
-    fetchPolicy: 'cache-and-network',
-    variables,
-    skip: skip,
-  }) as QueryResult<ResultQuery<T>, OperationVariables>;
+  const { data, loading, previousData, refetch, error } = useDataQuery({
+    fetchPolicy: 'network-only',
+    ...baseOptions,
+  }) as QueryResult<TData & ResultQuery<NodeType>, any>;
 
   const pageInfo = useMemo(() => {
     if (loading) {
-      return previousData?.result.pageInfo || defaultPageInfo;
+      return previousData?.result.pageInfo;
     }
-    return data?.result.pageInfo || defaultPageInfo;
+    return data?.result.pageInfo;
   }, [
     data?.result?.pageInfo.total,
     loading,
     previousData?.result?.pageInfo.total,
   ]);
 
-  const handleChange = useCallback(
-    (_pagination: any, _where: any, _sorter: any) => {
-      const query =
-        (search?.toQuery &&
-          search.toQuery(variables, _pagination, _where, _sorter)) ||
-        '';
-      navigate(location.pathname + '?' + qs.stringify(query), {
-        replace: true,
-      });
-    },
-    [history, location.pathname, variables.filter?.name_contains],
-  );
-
   const nodes = data?.result.edges.map((edge) => edge.node) || [];
 
-  console.log('nodes', nodes);
-
   return [
-    nodes,
-    { loading, pageInfo, sorter, variables, onChange: handleChange, refetch },
+    nodes as any[],
+    {
+      loading,
+      pageInfo,
+      error,
+      variables: {} as any,
+      refetch,
+    },
   ];
+}
+
+type FieldMapping<S, T> = {
+  source: string;
+  target?: string;
+  transform?: (value: S) => T;
+  skip?: (value: S) => boolean;
+};
+
+function getNestedValue(obj: any, path: string): any {
+  return path
+    .split('.')
+    .reduce(
+      (acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined),
+      obj,
+    );
+}
+
+// Helper function to set a nested property in an object
+function setNestedProperty(obj: Record<string, any>, path: string, value: any) {
+  const keys = path.split('.');
+  let current = obj;
+
+  while (keys.length > 1) {
+    const key = keys.shift();
+    if (!current[key!]) {
+      current[key!] = {};
+    }
+    current = current[key!];
+  }
+
+  current[keys[0]] = value;
+}
+
+/**
+ * 将 Variables 对象转换为 URL 查询参数
+ * @param variables - Variables 对象
+ * @param config - Variables 键名和查询参数的映射关系以及可选的转换逻辑
+ * @returns URL 查询字符串，例如 "?name=John&age=30"
+ */
+export function variablesToQuery(
+  variables: Record<string, any>,
+  mappings: FieldMapping<any, string>[],
+): string {
+  const queryParts = mappings.map(({ source, target, transform, skip }) => {
+    const value = getNestedValue(variables, source);
+    if (value === undefined || value === null) {
+      return ''; // 忽略 undefined 或 null 的值
+    }
+    if (skip && skip(value)) {
+      return ''; // 忽略满足 skip 条件的值
+    }
+    const encodedValue = transform ? transform(value) : String(value);
+    return `${encodeURIComponent(target || source)}=${encodeURIComponent(
+      encodedValue,
+    )}`;
+  });
+  // 过滤掉空字符串并连接为最终的查询字符串
+  return queryParts.filter((part) => part).join('&');
+}
+
+export function queryToVariables(
+  query: URLSearchParams,
+  mappings: FieldMapping<string, any>[],
+): Record<string, any> {
+  const variables: Record<string, any> = {};
+
+  mappings.forEach(({ source, target, transform, skip }) => {
+    const value = query.get(source);
+
+    if (!value || value.trim() === '') {
+      return;
+    }
+    const transformedValue = transform ? transform(value) : value;
+
+    if (skip && skip(transformedValue)) {
+      return;
+    }
+
+    if (target) {
+      setNestedProperty(variables, target, transformedValue);
+    } else {
+      variables[source] = transformedValue;
+    }
+  });
+
+  return variables;
 }
 
 export default useListPage;

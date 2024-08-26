@@ -10,8 +10,8 @@ export default defineConfig({
     '@asany/umi-plugin-app',
   ],
   apollo: {
-    url: 'https://api.mh-procoffeemachine.com/graphql',
-    wsUrl: 'wss://api.mh-procoffeemachine.com/subscriptions',
+    url: 'https://api.asany.cn/graphql',
+    wsUrl: 'wss://api.asany.cn/subscriptions',
   },
   app: {
     id: 'jdc7t953mea633v9mzkc',
@@ -20,12 +20,11 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': process.env.NODE_ENV,
     'process.env.WEBSITE_URL': '//localhost:8001',
-    'process.env.STORAGE_URL': 'https://storage-api.mh-procoffeemachine.com',
-    'process.env.SHORT_DOMAIN_NAME': 'https://s.mh-procoffeemachine.com',
-    'process.env.MOBILE_URL': '//wxb.app.mh-procoffeemachine.com',
-    'process.env.OPEN_IM_API_URL': 'https://im.mh-procoffeemachine.com/api/',
-    'process.env.OPEN_IM_WS_URL':
-      'wss://im.mh-procoffeemachine.com/msg_gateway/',
+    'process.env.STORAGE_URL': 'https://storage-api.asany.cn',
+    'process.env.SHORT_DOMAIN_NAME': 'https://s.asany.cn',
+    'process.env.MOBILE_URL': '//wxb.app.asany.cn',
+    'process.env.OPEN_IM_API_URL': 'https://im.asany.cn/api/',
+    'process.env.OPEN_IM_WS_URL': 'wss://im.asany.cn/msg_gateway/',
   },
   styles: [
     '/assets/plugins/custom/datatables/datatables.bundle.css',
