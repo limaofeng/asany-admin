@@ -24,14 +24,14 @@ jobs:
         uses: bahmutov/npm-install@v1
         env:
           CI: true
-          GRAPHQL_SCHEMA_URL: https://api.mh-procoffeemachine.com/graphql
+          GRAPHQL_SCHEMA_URL: https://api.asany.cn/graphql
           NODE_OPTIONS: --max_old_space_size=4096
           
       - name: Build
         run: npm run gql-gen && npm run build
         env:
           CI: true
-          GRAPHQL_SCHEMA_URL: https://api.mh-procoffeemachine.com/graphql
+          GRAPHQL_SCHEMA_URL: https://api.asany.cn/graphql
           NODE_OPTIONS: --max_old_space_size=4096
 
       - name: Log in to Docker Hub
