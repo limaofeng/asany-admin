@@ -12,6 +12,7 @@ export default defineConfig({
   apollo: {
     url: 'https://api.asany.cn/graphql',
     wsUrl: 'wss://api.asany.cn/subscriptions',
+    options: '../config/apollo-options.ts',
   },
   app: {
     id: 'w5t78l496cmnt404yp7l',
