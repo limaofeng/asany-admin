@@ -14,7 +14,7 @@ export default defineConfig({
     wsUrl: 'wss://api.asany.cn/subscriptions',
   },
   app: {
-    id: 'jdc7t953mea633v9mzkc',
+    id: 'w5t78l496cmnt404yp7l',
     loading: false,
   },
   define: {
