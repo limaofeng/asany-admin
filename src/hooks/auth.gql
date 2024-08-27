@@ -63,3 +63,19 @@ query viewer {
     tenantId
   }
 }
+
+query currentTenant($clientId: ID!) {
+  currentTenant(clientId: $clientId) {
+    id
+    domain
+    licence {
+      id
+    }
+    modules {
+      id
+      key
+      name
+      values
+    }
+  }
+}

@@ -2,8 +2,8 @@ import { defineConfig } from '@umijs/max';
 
 export default defineConfig({
   apollo: {
-    url: 'https://api.dev.asany.cn/graphql',
-    wsUrl: 'wss://api.dev.asany.cn/subscriptions',
+    url: 'https://api.asany.cn/graphql',
+    wsUrl: 'wss://api.asany.cn/subscriptions',
     options: '../config/apollo-options.ts',
   },
   app: {
