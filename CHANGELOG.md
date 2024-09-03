@@ -1,3 +1,10 @@
+## [0.4.25](https://github.com/limaofeng/asany-admin/compare/v0.4.24...v0.4.25) (2024-09-03)
+
+### Features
+
+- add useCurrentTenant hook and related changes ([524f8db](https://github.com/limaofeng/asany-admin/commit/524f8dbd9b9b74ecdd615dbdb743f3b8fbe146b6))
+- 添加 useCurrentTenant ([8f56ce6](https://github.com/limaofeng/asany-admin/commit/8f56ce6b0a187b351ae8fdb0c50cf79476985873))
+
 ## [0.4.24](https://github.com/limaofeng/asany-admin/compare/v0.4.23...v0.4.24) (2024-08-26)
 
 ## [0.4.23](https://github.com/limaofeng/asany-admin/compare/v0.4.22...v0.4.23) (2024-08-26)
