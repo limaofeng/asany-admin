@@ -4,18 +4,28 @@ import LoadingComponent from '@/components/PageLoading';
 import dynamic from '@/utils/dynamic';
 
 @library({
-  name: 'project',
+  name: 'CRM',
   description: '',
   namespace: 'cn.asany.ui.admin.crm',
 })
 class Crm {
   @component({
-    name: 'CrmSidebar',
-    title: '项目侧边栏',
-    tags: ['客户关系管理/侧边栏'],
+    name: 'CRMSidebar',
+    title: '客户管理侧边栏',
+    tags: ['客户管理/侧边栏'],
   })
-  ProjectSidebar = dynamic({
+  CrmSidebar = dynamic({
     loader: () => import('./components/CrmSidebar'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    name: 'CustomerListView',
+    title: '客户管理',
+    tags: ['客户管理/客户管理'],
+  })
+  CustomerListView = dynamic({
+    loader: () => import('./views/CustomerListView'),
     loading: LoadingComponent,
   });
 

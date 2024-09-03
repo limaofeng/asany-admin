@@ -8,12 +8,11 @@ import type { Moment } from 'moment';
 import moment from 'moment';
 
 import { Button, Card, Form, Input, Upload } from '@/metronic';
-import type { Article } from '@/types';
+import { ArticleStatus, type Article } from '@/types';
 
 import PublishDatePicker from './PublishDatePicker';
 
-import useDelete from '../../../hooks/useDelete';
-import { useDeleteArticleMutation } from '../hooks';
+import useArticleDelete from '../hooks/useArticleDelete';
 
 type ArticleFormSidebarProps = {
   baseUrl: string;
@@ -22,11 +21,11 @@ type ArticleFormSidebarProps = {
   categoryTreeData: { value: string; title: string }[];
 };
 
-function renderStateText(status: 'PUBLISHED' | 'SCHEDULED' | 'INACTIVE') {
-  if (status === 'PUBLISHED') {
+function renderStateText(status: ArticleStatus) {
+  if (status === ArticleStatus.Published) {
     return '已发布';
   }
-  if (status === 'SCHEDULED') {
+  if (status === ArticleStatus.Scheduled) {
     return '计划中';
   }
   return '已失效';
@@ -77,30 +76,11 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
     [publishedAt],
   );
 
-  const [deleteArticle] = useDeleteArticleMutation();
-
-  const [onDelete] = useDelete(
-    {
-      title: '你确定要删除这篇文章吗？',
-      content: (
-        <>
-          您即将删除“<strong>{article?.title}</strong>
-          ”。删除操作不可逆转，请谨慎操作，您确定删除吗？
-        </>
-      ),
-    },
-    async () => {
-      await deleteArticle({ variables: { id: article!.id! } });
-    },
-  );
-
-  const handleDelete = useCallback(async () => {
-    if (await onDelete()) {
-      navigate(`${baseUrl}/cms/categories/${article!.category!.id}/articles`, {
-        replace: true,
-      });
-    }
-  }, [onDelete, baseUrl, article]);
+  const { delete: handleDelete } = useArticleDelete(() => {
+    navigate(`${baseUrl}/cms/categories/${article!.category!.id}/articles`, {
+      replace: true,
+    });
+  });
 
   return (
     <div className="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7">
@@ -109,9 +89,9 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
           {!!article?.status && article?.status !== 'DRAFT' && (
             <div
               className={classnames('ribbon-label', {
-                'bg-primary': article?.status === 'PUBLISHED',
-                'bg-success': article?.status === 'SCHEDULED',
-                'bg-danger': article?.status === 'INACTIVE',
+                'bg-primary': article?.status === ArticleStatus.Published,
+                'bg-success': article?.status === ArticleStatus.Scheduled,
+                'bg-danger': article?.status === ArticleStatus.Expired,
               })}
             >
               {renderStateText(article.status)}
@@ -174,7 +154,7 @@ function ArticleFormSidebar(props: ArticleFormSidebarProps) {
         <Card flush className="py-4">
           <Card.Body>
             <Button
-              onClick={handleDelete}
+              onClick={() => handleDelete(article)}
               full
               className="mb-3"
               variant="light-danger"

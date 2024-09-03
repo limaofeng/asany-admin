@@ -2,23 +2,23 @@ import { useEffect, useMemo } from 'react';
 
 import TagsInput from '@asany/tags-input';
 
-import useAppModule from '@/hooks/useAppModule';
 import { Button, Col, DatePicker, Drawer, Form, Input, Row } from '@/metronic';
 import type { FormInstance } from '@/metronic/Form';
-import useArticleDelete from '@/pages/cms/hooks/useArticleDelete';
-import useArticleSubmit from '@/pages/cms/hooks/useArticleSubmit';
-import type { Article } from '@/types';
+import type { Ticket } from '@/types';
 
-type ConformityFormProps = {
+import useTicketDelete from '../hooks/useTicketDelete';
+import useTicketSubmit from '../hooks/useTicketSubmit';
+
+type TicketFormProps = {
   visible?: boolean;
   form: FormInstance;
-  data: Article;
+  data: Ticket;
   submitting: boolean;
   submit: () => void;
   onDeleteSuccess: (data: any) => void;
 };
 
-function ConformityForm(props: ConformityFormProps) {
+function TicketForm(props: TicketFormProps) {
   const { form } = props;
 
   useEffect(() => {
@@ -29,11 +29,6 @@ function ConformityForm(props: ConformityFormProps) {
     }
     form.setFieldsValue({
       ...values,
-      tags: (values.tags || []).map((tag: any) => tag.name),
-      content: (values.content as any)?.rawUrl
-        .replace('storage://', '')
-        .split('/')
-        .pop(),
     });
   }, [form, props.data]);
 
@@ -128,29 +123,21 @@ function ConformityForm(props: ConformityFormProps) {
   );
 }
 
-type ConformityDrawerProps = {
-  data?: Article;
+type TicketDrawerProps = {
+  data?: Ticket;
   visible: boolean;
   onClose: () => void;
-  onSuccess: (data: Article) => void;
-  onDeleteSuccess: (data: Article) => void;
+  onSuccess: (data: Ticket) => void;
+  onDeleteSuccess: (data: Ticket) => void;
 };
 
-function ConformityDrawer(props: ConformityDrawerProps) {
+function TicketDrawer(props: TicketDrawerProps) {
   const { data, visible, onClose, onSuccess, onDeleteSuccess } = props;
 
-  const [module] = useAppModule('drive');
-  const spaceId = module?.values.space;
-
-  const [submit, { form, submitting }] = useArticleSubmit(data!, {
+  const [submit, { form, submitting }] = useTicketSubmit(data!, {
     transform(data) {
       return {
         ...data,
-        content: {
-          type: 'PDF',
-          url: `storage://${spaceId}/${data.content}`,
-        },
-        category: 'conformity',
       };
     },
     onSubmitted: onSuccess,
@@ -165,9 +152,7 @@ function ConformityDrawer(props: ConformityDrawerProps) {
     };
   }, [data]);
 
-  const { delete: handleDelete } = useArticleDelete(() =>
-    onDeleteSuccess(data!),
-  );
+  const { delete: handleDelete } = useTicketDelete(onDeleteSuccess);
 
   return (
     <Drawer
@@ -206,7 +191,7 @@ function ConformityDrawer(props: ConformityDrawerProps) {
       }
     >
       {data && (
-        <ConformityForm
+        <TicketForm
           submitting={submitting}
           data={defaultData}
           form={form}
@@ -218,4 +203,4 @@ function ConformityDrawer(props: ConformityDrawerProps) {
   );
 }
 
-export default ConformityDrawer;
+export default TicketDrawer;

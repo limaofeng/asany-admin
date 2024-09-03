@@ -6,9 +6,7 @@ import ArticleList from './ArticleList';
 function MyDrafts() {
   const { data: user } = useCurrentuser();
   return (
-    <ArticleList
-      where={{ createdBy: user?.uid, status: ArticleStatus.Draft }}
-    />
+    <ArticleList where={{ createdBy: user?.id, status: ArticleStatus.Draft }} />
   );
 }
 

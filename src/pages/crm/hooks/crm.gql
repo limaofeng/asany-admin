@@ -1,6 +1,17 @@
-query customers {
-  customersConnection {
+query customers(
+  $where: CustomerWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy
+) {
+  result: customersConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
     pageInfo {
+      total
       totalPages
       current
       pageSize
@@ -12,5 +23,121 @@ query customers {
       }
       cursor
     }
+  }
+}
+
+mutation createCustomer($input: CustomerCreateInput!) {
+  result: createCustomer(input: $input) {
+    id
+    name
+  }
+}
+
+mutation updateCustomer($id: ID!, $input: CustomerUpdateInput!) {
+  result: updateCustomer(id: $id, input: $input) {
+    id
+    name
+  }
+}
+
+mutation deleteManyCustomers($where: CustomerWhereInput!) {
+  result: deleteManyCustomers(where: $where) {
+    count
+  }
+}
+
+query customerStores(
+  $where: CustomerStoreWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy
+) {
+  result: customerStoresConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    pageInfo {
+      total
+      totalPages
+      current
+      pageSize
+    }
+    edges {
+      node {
+        id
+        name
+      }
+      cursor
+    }
+  }
+}
+
+mutation createCustomerStore($input: CustomerStoreCreateInput!) {
+  result: createCustomerStore(input: $input) {
+    id
+    name
+  }
+}
+
+mutation updateCustomerStore($id: ID!, $input: CustomerStoreUpdateInput!) {
+  result: updateCustomerStore(id: $id, input: $input) {
+    id
+    name
+  }
+}
+
+mutation deleteManyCustomerStores($where: CustomerStoreWhereInput!) {
+  result: deleteManyCustomerStores(where: $where) {
+    count
+  }
+}
+
+query tickets(
+  $where: TicketWhereInput
+  $page: Int
+  $pageSize: Int
+  $orderBy: OrderBy
+) {
+  result: ticketsConnection(
+    where: $where
+    page: $page
+    pageSize: $pageSize
+    orderBy: $orderBy
+  ) {
+    pageInfo {
+      total
+      totalPages
+      current
+      pageSize
+    }
+    edges {
+      node {
+        id
+        title
+      }
+      cursor
+    }
+  }
+}
+
+mutation createTicket($input: TicketCreateInput!) {
+  result: createTicket(input: $input) {
+    id
+    title
+  }
+}
+
+mutation updateTicket($id: ID!, $input: TicketUpdateInput!) {
+  result: updateTicket(id: $id, input: $input) {
+    id
+    title
+  }
+}
+
+mutation deleteManyTickets($where: TicketWhereInput!) {
+  result: deleteManyTickets(where: $where) {
+    count
   }
 }

@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import { Outlet, matchPath, useLocation } from 'react-router-dom';
 
-import { useAppModule } from '@umijs/max';
-
+import useAppModule from '@/hooks/useAppModule';
 import { MicroApp } from '@/layouts/Demo7';
 import { ArticleCategory } from '@/types';
 
@@ -21,6 +20,7 @@ function CmsLayout() {
     variables: {
       id: rootCategorySlug,
     },
+    skip: !rootCategorySlug,
   });
 
   const { data = { categories: [] }, loading } = useArticleCategoriesQuery({

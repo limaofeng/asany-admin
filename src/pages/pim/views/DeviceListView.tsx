@@ -1,11 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 
 import { useCurrentuser } from '@/hooks';
 import useDelete from '@/hooks/useDelete';
-import useListPage from '@/hooks/useListPage';
+import useListPage, {
+  queryToVariables,
+  variablesToQuery,
+} from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
 import {
   BlockUI,
@@ -15,13 +18,12 @@ import {
   Empty,
   Input,
   Menu,
-  Modal,
   Select2,
   Table,
-  Toast,
 } from '@/metronic';
 import { useUsersQuery } from '@/pages/system/hooks';
 import { Device } from '@/types';
+import { getSortDirection } from '@/utils';
 
 import {
   useCustomerStoresQuery,
@@ -32,38 +34,14 @@ import {
 
 function DeviceActions({
   data,
-  refetch,
+  delete: handleDelete,
 }: {
   data: Device;
-  refetch: () => void;
+  delete: (data: any) => void;
 }) {
   const [visible, setVisible] = useState(false);
 
   const navigate = useNavigate();
-
-  const [deleteManyDevices] = useDeleteManyDevicesMutation();
-
-  const [handleDelete] = useDelete<{ name: string; id: string }>(
-    {
-      title: '你确定要删除吗？',
-      content: (data) => (
-        <>
-          您即将删除“<strong>{data.name}</strong>
-          ”。删除操作不可逆转，请谨慎操作，您确定删除吗？
-        </>
-      ),
-    },
-    async (data) => {
-      await deleteManyDevices({
-        variables: {
-          where: {
-            id_in: [data?.id],
-          },
-        },
-      });
-      refetch();
-    },
-  );
 
   const handleClick = useCallback(({ key }: any) => {
     if (key === 'edit') {
@@ -103,6 +81,18 @@ function DeviceActions({
 function DeviceListView() {
   const { data: user } = useCurrentuser();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const searchForm = useMemo(
+    () =>
+      queryToVariables(searchParams, [
+        {
+          source: 'q',
+          target: 'keywords',
+        },
+      ]),
+    [searchParams.get('q')],
+  );
 
   const [where, setWhere] = useState<{
     name_contains?: string;
@@ -129,8 +119,6 @@ function DeviceListView() {
     });
   }, [searchParams]);
 
-  const [deleteManyDevices] = useDeleteManyDevicesMutation();
-
   const { data: usersData } = useUsersQuery({
     variables: {
       where: {
@@ -146,61 +134,85 @@ function DeviceListView() {
     fetchPolicy: 'network-only',
   });
 
-  const [devices, { loading, pageInfo, sorter, refetch, onChange }] =
-    useListPage<Device>(useDevicesQuery as any, {
-      toQuery: (variables, pagination, where, sorter) => {
-        const _query: any = {};
-        if (where?.name_contains) {
-          _query.q = where?.name_contains;
-        }
-        if (where?.customer) {
-          _query.customer = where.customer;
-        }
-        if (where?.customerStore) {
-          _query.customerStore = where.customerStore;
-        }
-        if (where?.createdBy) {
-          _query.createdBy = where.createdBy;
-        }
-        if (!!sorter) {
-          _query.orderBy =
-            sorter.field + '_' + (sorter.order === 'ascend' ? 'asc' : 'desc');
-        }
-        _query.page = pagination.current;
-        return _query;
-      },
-      toVariables: (query) => {
-        query.where = {};
-        if (query.q) {
-          query.where['name_contains'] = query.q;
-          delete query.q;
-        }
-        if (query.customer) {
-          query.where['customer'] = query.customer;
-          delete query.customer;
-        }
-        if (query.customerStore) {
-          query.where['customerStore'] = query.customerStore;
-          delete query.customerStore;
-        }
-        if (query.createdBy) {
-          query.where['createdBy'] = query.createdBy;
-          delete query.createdBy;
-        }
-        return query;
-      },
-    });
-
-  const setCustomerId = useCallback(
-    (value: string) => {
-      setWhere((where) => ({
-        ...where,
-        customerStore: undefined,
-        customer: value,
-      }));
+  const handleTableChange = useCallback(
+    (pagination: any, filters: any, sorter: any) => {
+      const querystring = variablesToQuery(
+        { searchForm, pagination, filters, sorter },
+        [
+          {
+            source: 'searchForm.keywords',
+            target: 'q',
+            skip: (value) => !value,
+          },
+          {
+            source: 'pagination.current',
+            target: 'page',
+            skip: (value) => value === 1,
+          },
+          {
+            source: 'pagination.pageSize',
+            target: 'per_page',
+            skip: (value) => value === 15,
+          },
+          {
+            source: 'sorter.field',
+            target: 'sort',
+            transform: (value) =>
+              `${value}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
+          },
+        ],
+      );
+      navigate(location.pathname + '?' + querystring, {
+        replace: true,
+      });
     },
-    [onChange, sorter],
+    [searchForm],
   );
+
+  const variables = useMemo(() => {
+    return queryToVariables(searchParams, [
+      {
+        source: 'q',
+        target: 'where.name_contains',
+      },
+      {
+        source: 'sex',
+        target: 'where.sex',
+      },
+      {
+        source: 'page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'per_page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'sort',
+        target: 'orderBy',
+        transform: (value) => {
+          const [field, order] = value.split(':');
+          return `${field}_${order}`;
+        },
+      },
+    ]);
+  }, [searchParams.toString()]);
+
+  const [devices, { loading, pageInfo, refetch }] = useListPage(
+    useDevicesQuery,
+    {
+      variables,
+      fetchPolicy: 'network-only',
+    },
+  );
+
+  const setCustomerId = useCallback((value: string) => {
+    setWhere((where) => ({
+      ...where,
+      customerStore: undefined,
+      customer: value,
+    }));
+  }, []);
 
   const setWhereCreatedBy = useCallback((value: string) => {
     setWhere((where) => ({
@@ -216,23 +228,11 @@ function DeviceListView() {
     }));
   }, []);
 
-  const handleSearch = useCallback(
-    (value: string) => {
-      setWhere((where) => ({
-        ...where,
-        name_contains: value,
-      }));
-    },
-    [onChange, sorter],
-  );
-
-  useEffect(() => {
-    onChange(
-      { current: searchParams.get('page') || 1, pageSize: 10 },
-      where,
-      sorter,
-    );
-  }, [where, onChange, sorter, searchParams.get('page')]);
+  const handleSearch = useCallback((value: string) => {
+    navigate(location.pathname + (!!value ? '?q=' + value : ''), {
+      replace: true,
+    });
+  }, []);
 
   const { data: customerStoresData } = useCustomerStoresQuery({
     fetchPolicy: 'network-only',
@@ -249,34 +249,40 @@ function DeviceListView() {
 
   const users = usersData?.result.edges.map((edge) => edge.node) || [];
 
+  const { delete: handleDelete, deleteMany: handleDeleteMany } = useDelete(
+    useDeleteManyDevicesMutation,
+    {
+      onDeleted() {
+        refetch();
+      },
+      dialog: {
+        title: '你确定要删除吗？',
+        content: (data, info) => {
+          let message;
+          if (info.batch) {
+            const keys = data as any as string[];
+            message = `确定删除选中的, 共 ${keys.length} 个设备吗？`;
+          } else {
+            message = (
+              <>
+                您即将删除“<strong>{data.name}</strong>
+              </>
+            );
+          }
+          return (
+            <>
+              <p className="tip-confirm">{message}</p>
+              <p>删除的操作不可逆,请谨慎操作</p>
+            </>
+          );
+        },
+      },
+    },
+  );
+
   const handleDeleteInBatch = useCallback(
     (selectedRowKeys: string[]) => async () => {
-      const message = `确定删除选中的, 共 ${selectedRowKeys.length} 个设备吗？`;
-      const result = await Modal.confirm({
-        title: '确定删除',
-        content: (
-          <>
-            <p className="tip-confirm">{message}</p>
-            <p>删除的操作不可逆,请谨慎操作</p>
-          </>
-        ),
-        okClassName: 'btn-danger',
-        okText: '删除',
-      });
-      if (!result.isConfirmed) {
-        return;
-      }
-      await deleteManyDevices({
-        variables: {
-          where: {
-            id_in: selectedRowKeys,
-          },
-        },
-      });
-      Toast.success(`设备批量删除成功`, 2000, {
-        placement: 'bottom-left',
-        progressBar: true,
-      });
+      handleDeleteMany(selectedRowKeys);
     },
     [],
   );
@@ -292,7 +298,7 @@ function DeviceListView() {
           <Card.Title className="flex-column">
             <Input.Search
               solid
-              value={where?.name_contains}
+              value={searchForm.keywords}
               className="w-250px"
               placeholder="搜索设备"
               onSearch={handleSearch}
@@ -361,6 +367,7 @@ function DeviceListView() {
                 })}
               />
             </div>
+            <Button className="me-4 my-1">导出数据</Button>
           </Card.Toolbar>
         </Card.Header>
         <Card.Body>
@@ -397,15 +404,15 @@ function DeviceListView() {
               )}
               columns={[
                 {
-                  key: 'no',
+                  key: 'sn',
                   title: '资产编号',
                   sorter: true,
-                  sortOrder: sorter.field === 'no' ? sorter.order : undefined,
+                  sortOrder: getSortDirection(searchParams, 'no'),
                   width: 260,
                   render(no, data) {
                     return (
                       <Link
-                        to={`/pim/devices/${data.id}`}
+                        to={`/pim/devices/${data?.id}`}
                         className="text-gray-700"
                       >
                         {no}
@@ -417,7 +424,7 @@ function DeviceListView() {
                   key: 'name',
                   title: '设备名称',
                   sorter: true,
-                  sortOrder: sorter.field === 'name' ? sorter.order : undefined,
+                  sortOrder: getSortDirection(searchParams, 'name'),
                   render(name, record) {
                     return (
                       <div className="text-gray-700">
@@ -465,20 +472,21 @@ function DeviceListView() {
                   title: '创建时间',
                   width: 120,
                   sorter: true,
-                  sortOrder:
-                    sorter.field === 'createdAt' ? sorter.order : undefined,
+                  sortOrder: getSortDirection(searchParams, 'createdAt'),
                 },
                 {
                   title: '操作',
                   key: 'action',
                   width: 140,
                   render: (_, record: any) => {
-                    return <DeviceActions data={record} refetch={refetch} />;
+                    return (
+                      <DeviceActions data={record} delete={handleDelete} />
+                    );
                   },
                 },
               ]}
               pagination={pageInfo}
-              onChange={onChange}
+              onChange={handleTableChange}
               dataSource={devices}
             />
           </BlockUI>

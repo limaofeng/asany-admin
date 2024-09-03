@@ -1,9 +1,12 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 
-import useDelete from '@/hooks/useDelete';
-import useListPage from '@/hooks/useListPage';
+import useListPage, {
+  queryToVariables,
+  variablesToQuery,
+} from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
 import {
   BlockUI,
@@ -15,9 +18,11 @@ import {
   Table,
 } from '@/metronic';
 import { Brand } from '@/types';
+import { getSortDirection } from '@/utils';
 
 import { BrandModal } from '../components/BrandModal';
-import { useBrandsQuery, useDeleteManyBrandsMutation } from '../hooks';
+import { useBrandsQuery } from '../hooks';
+import useDeleteBrand from '../hooks/useBrandDelete';
 
 function BrandActions({
   data,
@@ -30,29 +35,7 @@ function BrandActions({
 }) {
   const [visible, setVisible] = useState(false);
 
-  const [deleteManyBrands] = useDeleteManyBrandsMutation();
-
-  const [handleDelete] = useDelete<{ name: string; id: string }>(
-    {
-      title: '你确定要删除吗？',
-      content: (data) => (
-        <>
-          您即将删除“<strong>{data.name}</strong>
-          ”。删除操作不可逆转，请谨慎操作，您确定删除吗？
-        </>
-      ),
-    },
-    async (data) => {
-      await deleteManyBrands({
-        variables: {
-          where: {
-            id_in: [data?.id],
-          },
-        },
-      });
-      refetch();
-    },
-  );
+  const { delete: handleDelete } = useDeleteBrand(() => refetch());
 
   const handleClick = useCallback(
     ({ key }: any) => {
@@ -92,43 +75,103 @@ function BrandActions({
   );
 }
 
-function DeviceListView() {
+function BrandListView() {
   const [state, setState] = useState<{
     visible: boolean;
     data?: Brand;
   }>({
     visible: false,
   });
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-  const [brands, { loading, pageInfo, sorter, onChange, refetch }] =
-    useListPage<Brand>(useBrandsQuery as any, {
-      toQuery: (variables, pagination, filter, sorter) => {
-        const _query: any = {};
-        if (variables.filter?.name_contains) {
-          _query.q = variables.filter?.name_contains;
-        }
-        if (!!sorter) {
-          _query.orderBy =
-            sorter.field + '_' + (sorter.order === 'ascend' ? 'asc' : 'desc');
-        }
-        _query.page = pagination.current;
-        return _query;
-      },
-      toVariables: (query) => {
-        if (query.q) {
-          query.filter = { name_contains: query.q };
-          delete query.q;
-        }
-        return query;
-      },
-    });
+  const searchForm = useMemo(
+    () =>
+      queryToVariables(searchParams, [
+        {
+          source: 'q',
+          target: 'keywords',
+        },
+      ]),
+    [searchParams.get('q')],
+  );
 
-  // const handleDeleteInBatch = useCallback(
-  //   (ids: string[]) => async () => {
-  //     console.log('ids', ids);
-  //   },
-  //   [],
-  // );
+  const handleTableChange = useCallback(
+    (pagination: any, filters: any, sorter: any) => {
+      const querystring = variablesToQuery(
+        { searchForm, pagination, filters, sorter },
+        [
+          {
+            source: 'searchForm.keywords',
+            target: 'q',
+            skip: (value) => !value,
+          },
+          {
+            source: 'pagination.current',
+            target: 'page',
+            skip: (value) => value === 1,
+          },
+          {
+            source: 'pagination.pageSize',
+            target: 'per_page',
+            skip: (value) => value === 15,
+          },
+          {
+            source: 'sorter.field',
+            target: 'sort',
+            transform: (value) =>
+              `${value}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
+          },
+        ],
+      );
+      navigate(location.pathname + '?' + querystring, {
+        replace: true,
+      });
+    },
+    [searchForm],
+  );
+
+  const variables = useMemo(() => {
+    return queryToVariables(searchParams, [
+      {
+        source: 'q',
+        target: 'where.name_contains',
+      },
+      {
+        source: 'sex',
+        target: 'where.sex',
+      },
+      {
+        source: 'page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'per_page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'sort',
+        target: 'orderBy',
+        transform: (value) => {
+          const [field, order] = value.split(':');
+          return `${field}_${order}`;
+        },
+      },
+    ]);
+  }, [searchParams.toString()]);
+
+  const [brands, { loading, pageInfo, refetch }] = useListPage(useBrandsQuery, {
+    variables,
+  });
+
+  const { deleteMany: handleDeleteMany } = useDeleteBrand(() => refetch());
+
+  const handleDeleteInBatch = useCallback(
+    (ids: string[]) => async () => {
+      handleDeleteMany(ids);
+    },
+    [],
+  );
 
   return (
     <ContentWrapper
@@ -142,7 +185,7 @@ function DeviceListView() {
         refetch={refetch}
         data={state.data}
       />
-      {!pageInfo.total && !loading ? (
+      {!pageInfo?.total && !loading ? (
         <Card className="mb-5 mb-xl-10">
           <Empty
             title="还没有品牌"
@@ -185,19 +228,19 @@ function DeviceListView() {
                         已选中<span className="mx-2">{size}</span>个品牌
                       </>
                     ),
-                    // toolbar: (selectedRowKeys: string[]) => {
-                    //   return (
-                    //     <div>
-                    //       <Button
-                    //         color="success"
-                    //         onClick={handleDeleteInBatch(selectedRowKeys)}
-                    //         variant={false}
-                    //       >
-                    //         批量删除
-                    //       </Button>
-                    //     </div>
-                    //   );
-                    // },
+                    toolbar: (selectedRowKeys: string[]) => {
+                      return (
+                        <div>
+                          <Button
+                            color="success"
+                            onClick={handleDeleteInBatch(selectedRowKeys)}
+                            variant={false}
+                          >
+                            批量删除
+                          </Button>
+                        </div>
+                      );
+                    },
                   }}
                   noRowsRenderer={() => (
                     <Empty
@@ -210,8 +253,7 @@ function DeviceListView() {
                       key: 'id',
                       title: '编码',
                       sorter: true,
-                      sortOrder:
-                        sorter.field === 'id' ? sorter.order : undefined,
+                      sortOrder: getSortDirection(searchParams, 'id'),
                       width: 120,
                     },
                     {
@@ -219,8 +261,7 @@ function DeviceListView() {
                       title: '品牌名称',
                       sorter: true,
                       width: 180,
-                      sortOrder:
-                        sorter.field === 'name' ? sorter.order : undefined,
+                      sortOrder: getSortDirection(searchParams, 'name'),
                     },
                     {
                       key: 'description',
@@ -252,7 +293,7 @@ function DeviceListView() {
                     },
                   ]}
                   pagination={pageInfo}
-                  onChange={onChange}
+                  onChange={handleTableChange}
                   dataSource={brands}
                 />
               </BlockUI>
@@ -264,4 +305,4 @@ function DeviceListView() {
   );
 }
 
-export default DeviceListView;
+export default BrandListView;

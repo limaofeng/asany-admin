@@ -1,10 +1,10 @@
 import useDelete from '@/hooks/useDelete';
 
-import { useDeleteManyArticlesMutation } from './api';
+import { useDeleteManyBrandsMutation } from './api';
 
-function useArticleDelete(success?: () => void) {
+function useBrandDelete(success?: () => void) {
   const { delete: handleDelete, deleteMany: handleDeleteMany } = useDelete(
-    useDeleteManyArticlesMutation,
+    useDeleteManyBrandsMutation,
     {
       onDeleted: () => {
         success && success();
@@ -15,11 +15,11 @@ function useArticleDelete(success?: () => void) {
           let message;
           if (info.batch) {
             const keys = data as any as string[];
-            message = `确定删除选中的, 共 ${keys.length} 篇文章吗？`;
+            message = `确定删除选中的, 共 ${keys.length} 个品牌吗？`;
           } else {
             message = (
               <>
-                您即将删除“<strong>{data.title}</strong>
+                您即将删除“<strong>{data.name}</strong>
               </>
             );
           }
@@ -37,4 +37,4 @@ function useArticleDelete(success?: () => void) {
   return { delete: handleDelete, deleteMany: handleDeleteMany };
 }
 
-export default useArticleDelete;
+export default useBrandDelete;

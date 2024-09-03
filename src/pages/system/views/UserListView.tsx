@@ -1,11 +1,13 @@
-import { useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useCallback, useMemo } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 
 import { useCurrentuser } from '@/hooks';
-import useDelete from '@/hooks/useDelete';
-import useListPage from '@/hooks/useListPage';
+import useListPage, {
+  queryToVariables,
+  variablesToQuery,
+} from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
 import {
   BlockUI,
@@ -20,78 +22,111 @@ import {
 } from '@/metronic';
 import { SelectEvent } from '@/metronic/Menu/typings';
 import { User } from '@/types';
+import { getSortDirection } from '@/utils';
 
-import { useDeleteManyUsersMutation, useUsersQuery } from '../hooks';
+import { useUsersQuery } from '../hooks';
+import useUserDelete from '../hooks/useUserDelete';
 
 function UserListView() {
   const navigate = useNavigate();
-  const [deleteManyUsers] = useDeleteManyUsersMutation();
+  const [searchParams] = useSearchParams();
   const { data: user } = useCurrentuser();
 
-  const [users, { loading, pageInfo, sorter, onChange, refetch }] =
-    useListPage<User>(
-      useUsersQuery,
-      {
-        toQuery: (variables, pagination, filter, sorter) => {
-          const _query: any = {};
-          if (variables.filter?.nickname_contains) {
-            _query.q = variables.filter?.nickname_contains;
-          }
-          if (!!sorter) {
-            _query.orderBy =
-              sorter.field + '_' + (sorter.order === 'ascend' ? 'asc' : 'desc');
-          }
-          _query.page = pagination.current;
-          return _query;
+  const searchForm = useMemo(
+    () =>
+      queryToVariables(searchParams, [
+        {
+          source: 'q',
+          target: 'keywords',
         },
-        toVariables: (query) => {
-          query.where = {};
-          if (query.q) {
-            query.where = { nickname_contains: query.q };
-            delete query.q;
-          }
-          if (query.page) {
-            query.page = parseInt(query.page);
-          }
-          query.where.tenantId = user?.tenantId;
-          return query;
+      ]),
+    [searchParams.get('q')],
+  );
+
+  const variables = useMemo(() => {
+    const newVariables = queryToVariables(searchParams, [
+      {
+        source: 'q',
+        target: 'where.name_contains',
+      },
+      {
+        source: 'sex',
+        target: 'where.sex',
+      },
+      {
+        source: 'page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'per_page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'sort',
+        target: 'orderBy',
+        transform: (value) => {
+          const [field, order] = value.split(':');
+          return `${field}_${order}`;
         },
       },
-      !user?.tenantId,
-    );
+    ]);
+    newVariables.where = newVariables.where || {};
+    newVariables.where.tenantId = user?.tenantId;
+    return newVariables;
+  }, [searchParams.toString(), user?.tenantId]);
 
-  const handleSearch = useCallback((text: string) => {
-    navigate(`/system/users?q=${text}`, {
+  const [users, { loading, pageInfo, refetch }] = useListPage(useUsersQuery, {
+    variables,
+    skip: !user?.tenantId,
+  });
+
+  const handleTableChange = useCallback(
+    (pagination: any, filters: any, sorter: any) => {
+      const querystring = variablesToQuery(
+        { searchForm, pagination, filters, sorter },
+        [
+          {
+            source: 'searchForm.keywords',
+            target: 'q',
+            skip: (value) => !value,
+          },
+          {
+            source: 'pagination.current',
+            target: 'page',
+            skip: (value) => value === 1,
+          },
+          {
+            source: 'pagination.pageSize',
+            target: 'per_page',
+            skip: (value) => value === 15,
+          },
+          {
+            source: 'sorter.field',
+            target: 'sort',
+            transform: (value) =>
+              `${value}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
+          },
+        ],
+      );
+      navigate(location.pathname + '?' + querystring, {
+        replace: true,
+      });
+    },
+    [searchForm],
+  );
+
+  const { delete: handleDelete, deleteMany: handleDeleteMany } =
+    useUserDelete(refetch);
+
+  const handleSearch = useCallback((value: string) => {
+    navigate(location.pathname + (!!value ? '?q=' + value : ''), {
       replace: true,
     });
   }, []);
 
-  const [handleDelete] = useDelete<{ name: string; ids: string[] }>(
-    {
-      title: '你确定要删除吗？',
-      content: (data) => (
-        <>
-          您即将删除“<strong>{data.name}</strong>
-          ”。删除操作不可逆转，请谨慎操作，您确定删除吗？
-        </>
-      ),
-    },
-    async (data) => {
-      await deleteManyUsers({
-        variables: {
-          where: { id_in: data?.ids },
-        },
-      });
-      refetch();
-    },
-  );
-
   const handleDeleteInBatch = useCallback(
     (ids: string[]) => () => {
-      handleDelete({
-        name: '选中的用户',
-        ids,
-      });
+      handleDeleteMany(ids);
     },
     [],
   );
@@ -101,10 +136,7 @@ function UserListView() {
       if (e.key === 'edit') {
         navigate(`/system/users/${data.id}`);
       } else if (e.key === 'delete') {
-        handleDelete({
-          name: data.name!,
-          ids: [data.id!],
-        });
+        handleDelete(data as any);
       }
     },
     [handleDelete],
@@ -138,37 +170,10 @@ function UserListView() {
                 新建用户
               </Button>
             </div>
-            {/* <div className="me-4 my-1">
-          <Select
-            solid
-            size="sm"
-            className="w-125px"
-            options={[
-              { label: '全部时间', value: 'all' },
-              { label: '今年', value: 'thisyear' },
-              { label: '这个月', value: 'thismonth' },
-              { label: '最近一个月', value: 'lastmonth' },
-              { label: '最近90天', value: 'last90days' },
-            ]}
-          />
-        </div>
-        <div className="me-4 my-1">
-          <Select
-            solid
-            size="sm"
-            className="w-125px"
-            options={[
-              { label: '全部状态', value: 'all' },
-              { label: '草稿', value: 'DRAFT' },
-              { label: '已发布', value: 'PUBLISHED' },
-              { label: '等待发布', value: 'SCHEDULED' },
-            ]}
-          />
-        </div> */}
           </Card.Toolbar>
         </Card.Header>
         <Card.Body>
-          {!pageInfo.total && !loading ? (
+          {!pageInfo?.total && !loading ? (
             <Card className="mb-5 mb-xl-10">
               <Empty
                 title="还没有用户"
@@ -198,7 +203,7 @@ function UserListView() {
                       return (
                         <div>
                           <Button
-                            color="success"
+                            color="danger"
                             onClick={handleDeleteInBatch(selectedRowKeys)}
                             variant={false}
                           >
@@ -218,8 +223,7 @@ function UserListView() {
                     {
                       key: 'name',
                       title: '名称',
-                      sortOrder:
-                        sorter.field === 'name' ? sorter.order : undefined,
+                      sortOrder: getSortDirection(searchParams, 'name'),
                       render: (value, record) => (
                         <div className="d-flex py-2 align-items-center">
                           <Symbol.Avatar src={record.avatar} />
@@ -232,8 +236,7 @@ function UserListView() {
                       title: '账户',
                       sorter: true,
                       width: 120,
-                      sortOrder:
-                        sorter.field === 'username' ? sorter.order : undefined,
+                      sortOrder: getSortDirection(searchParams, 'username'),
                     },
                     {
                       key: 'email',
@@ -267,7 +270,7 @@ function UserListView() {
                               overlay={
                                 <Menu
                                   onClick={handleItemClick(record)}
-                                  className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold w-125px py-4"
+                                  className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold w-125px py-2"
                                 >
                                   <Menu.Item key="edit" className="px-3">
                                     编辑
@@ -283,7 +286,7 @@ function UserListView() {
                               placement="bottomRight"
                             >
                               <Button
-                                variant="light"
+                                variant="clean"
                                 activeColor="light-primary"
                               >
                                 操 作
@@ -299,7 +302,7 @@ function UserListView() {
                     },
                   ]}
                   pagination={pageInfo}
-                  onChange={onChange}
+                  onChange={handleTableChange}
                   dataSource={users}
                 />
               </BlockUI>

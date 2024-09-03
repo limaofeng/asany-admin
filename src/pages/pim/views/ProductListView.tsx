@@ -1,10 +1,12 @@
-import { useCallback, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useCallback, useMemo, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 
-import useDelete from '@/hooks/useDelete';
-import useListPage from '@/hooks/useListPage';
+import useListPage, {
+  queryToVariables,
+  variablesToQuery,
+} from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
 import {
   BlockUI,
@@ -17,8 +19,10 @@ import {
   Table,
 } from '@/metronic';
 import { Product } from '@/types';
+import { getSortDirection } from '@/utils';
 
-import { useDeleteProductMutation, useProductsQuery } from '../hooks';
+import { useProductsQuery } from '../hooks';
+import useProductDelete from '../hooks/useProductDelete';
 
 const baseUrl = '/pim';
 
@@ -35,27 +39,7 @@ function ProductActions({
 
   const navigate = useNavigate();
 
-  const [deleteProduct] = useDeleteProductMutation();
-
-  const [handleDelete] = useDelete<{ name: string; id: string }>(
-    {
-      title: '你确定要删除吗？',
-      content: (data) => (
-        <>
-          您即将删除“<strong>{data.name}</strong>
-          ”。删除操作不可逆转，请谨慎操作，您确定删除吗？
-        </>
-      ),
-    },
-    async (data) => {
-      await deleteProduct({
-        variables: {
-          id: data?.id,
-        },
-      });
-      refetch();
-    },
-  );
+  const { delete: handleDelete } = useProductDelete(() => refetch());
 
   const handleClick = useCallback(({ key }: any) => {
     if (key === 'edit') {
@@ -93,37 +77,100 @@ function ProductActions({
 }
 
 function ProductListView() {
-  const [products, { loading, pageInfo, sorter, onChange, refetch }] =
-    useListPage<Product>(useProductsQuery as any, {
-      toQuery: (variables, pagination, filter, sorter) => {
-        const _query: any = {};
-        if (variables.filter?.name_contains) {
-          _query.q = variables.filter?.name_contains;
-        }
-        if (!!sorter) {
-          _query.orderBy =
-            sorter.field + '_' + (sorter.order === 'ascend' ? 'asc' : 'desc');
-        }
-        _query.page = pagination.current;
-        return _query;
-      },
-      toVariables: (query) => {
-        if (query.q) {
-          query.filter = { name_contains: query.q };
-          delete query.q;
-        }
-        return query;
-      },
-    });
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-  // const handleDeleteInBatch = useCallback(
-  //   (ids: string[]) => async () => {
-  //     console.log('ids', ids);
-  //     // await deleteDevices({ variables: { ids } });
-  //     // refetch();
-  //   },
-  //   [],
-  // );
+  const searchForm = useMemo(
+    () =>
+      queryToVariables(searchParams, [
+        {
+          source: 'q',
+          target: 'keywords',
+        },
+      ]),
+    [searchParams.get('q')],
+  );
+
+  const handleTableChange = useCallback(
+    (pagination: any, filters: any, sorter: any) => {
+      const querystring = variablesToQuery(
+        { searchForm, pagination, filters, sorter },
+        [
+          {
+            source: 'searchForm.keywords',
+            target: 'q',
+            skip: (value) => !value,
+          },
+          {
+            source: 'pagination.current',
+            target: 'page',
+            skip: (value) => value === 1,
+          },
+          {
+            source: 'pagination.pageSize',
+            target: 'per_page',
+            skip: (value) => value === 15,
+          },
+          {
+            source: 'sorter.field',
+            target: 'sort',
+            transform: (value) =>
+              `${value}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
+          },
+        ],
+      );
+      navigate(location.pathname + '?' + querystring, {
+        replace: true,
+      });
+    },
+    [searchForm],
+  );
+
+  const variables = useMemo(() => {
+    return queryToVariables(searchParams, [
+      {
+        source: 'q',
+        target: 'where.name_contains',
+      },
+      {
+        source: 'sex',
+        target: 'where.sex',
+      },
+      {
+        source: 'page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'per_page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'sort',
+        target: 'orderBy',
+        transform: (value) => {
+          const [field, order] = value.split(':');
+          return `${field}_${order}`;
+        },
+      },
+    ]);
+  }, [searchParams.toString()]);
+
+  const [products, { loading, pageInfo, refetch }] = useListPage(
+    useProductsQuery,
+    {
+      variables,
+      fetchPolicy: 'network-only',
+    },
+  );
+
+  const { deleteMany: handleDeleteMany } = useProductDelete(() => refetch());
+
+  const handleDeleteInBatch = useCallback(
+    (ids: string[]) => async () => {
+      handleDeleteMany(ids);
+    },
+    [],
+  );
 
   return (
     <ContentWrapper
@@ -183,7 +230,7 @@ function ProductListView() {
           </Card.Toolbar>
         </Card.Header>
         <Card.Body>
-          {!pageInfo.total && !loading ? (
+          {!pageInfo?.total && !loading ? (
             <Card className="mb-5 mb-xl-10">
               <Empty
                 title="还没有产品"
@@ -209,19 +256,19 @@ function ProductListView() {
                         已选中<span className="mx-2">{size}</span>个产品
                       </>
                     ),
-                    // toolbar: (selectedRowKeys: string[]) => {
-                    //   return (
-                    //     <div>
-                    //       <Button
-                    //         color="success"
-                    //         onClick={handleDeleteInBatch(selectedRowKeys)}
-                    //         variant={false}
-                    //       >
-                    //         批量删除
-                    //       </Button>
-                    //     </div>
-                    //   );
-                    // },
+                    toolbar: (selectedRowKeys: string[]) => {
+                      return (
+                        <div>
+                          <Button
+                            color="danger"
+                            onClick={handleDeleteInBatch(selectedRowKeys)}
+                            variant={false}
+                          >
+                            批量删除
+                          </Button>
+                        </div>
+                      );
+                    },
                   }}
                   noRowsRenderer={() => (
                     <Empty
@@ -234,8 +281,7 @@ function ProductListView() {
                       key: 'id',
                       title: 'ID',
                       sorter: true,
-                      sortOrder:
-                        sorter.field === 'id' ? sorter.order : undefined,
+                      sortOrder: getSortDirection(searchParams, 'id'),
                       width: 80,
                     },
                     {
@@ -248,8 +294,7 @@ function ProductListView() {
                       key: 'name',
                       title: '产品名称',
                       sorter: true,
-                      sortOrder:
-                        sorter.field === 'name' ? sorter.order : undefined,
+                      sortOrder: getSortDirection(searchParams, 'name'),
                     },
                     {
                       key: 'createdAt',
@@ -272,7 +317,7 @@ function ProductListView() {
                     },
                   ]}
                   pagination={pageInfo}
-                  onChange={onChange}
+                  onChange={handleTableChange}
                   dataSource={products}
                 />
               </BlockUI>

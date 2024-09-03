@@ -118,7 +118,7 @@ function useChat() {
   const cveList = useModel('open-im.cve', ({ state }) => state.cves);
   const selfID = useModel(
     '@@initialState',
-    ({ initialState: state }) => state?.currentUser?.uid,
+    ({ initialState: state }) => state?.currentUser?.id,
   );
 
   const getGroupInfo = useModel(

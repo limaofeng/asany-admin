@@ -1,11 +1,33 @@
 import { useCallback, useRef } from 'react';
 
+import {
+  MutationHookOptions,
+  MutationTuple,
+  OperationVariables,
+} from '@apollo/client';
+
 import { Modal, Toast } from '@/metronic';
 import { delay } from '@/utils';
 
-type DeleteOptions<T> = {
-  title?: string | React.ReactNode | ((data: T) => string | React.ReactNode);
-  content?: string | React.ReactNode | ((data: T) => string | React.ReactNode);
+type DialogOptions<T> = {
+  title?:
+    | string
+    | React.ReactNode
+    | ((
+        data: T,
+        info: {
+          batch: boolean;
+        },
+      ) => string | React.ReactNode);
+  content?:
+    | string
+    | React.ReactNode
+    | ((
+        data: T,
+        info: {
+          batch: boolean;
+        },
+      ) => string | React.ReactNode);
   width?: string;
 };
 
@@ -15,18 +37,64 @@ function fillTemplate(template: string, data: any) {
   });
 }
 
-function useDelete<T = any>(
-  options: DeleteOptions<T>,
-  execute: (data?: T) => Promise<void>,
-) {
+type DeleteEntity = {
+  id: string;
+  [key: string]: any;
+};
+
+type DeleteOptions<TData, TVariables, DE = any> = {
+  onDeleted?: (data: TData) => void;
+  mutation?: MutationHookOptions<TData, TVariables>;
+  dialog?: DialogOptions<DE>;
+};
+
+function useDelete<TData, TVariables extends OperationVariables>(
+  useDeleteMany: (
+    baseOptions?: MutationHookOptions<TData, TVariables>,
+  ) => MutationTuple<TData, TVariables>,
+  // @ts-ignore
+  baseOptions?: DeleteOptions<TData, TVariables, DeleteEntity>,
+): {
+  delete: (
+    data: DeleteEntity,
+    options?: DeleteOptions<TData, TVariables, DeleteEntity>,
+  ) => Promise<TData>;
+  deleteMany: (
+    ids: string[],
+    options?: DeleteOptions<TData, TVariables, string[]>,
+  ) => Promise<TData>;
+} {
+  const [deleteMany] = useDeleteMany({
+    fetchPolicy: 'network-only',
+    ...(baseOptions?.mutation || {}),
+  });
+
   const deleting = useRef(false);
 
-  const onDelete = useCallback(
-    async (data?: T) => {
-      const { width } = options;
-      let { title, content } = options;
+  const handleDeleteExecute = useCallback(
+    async (data: any, options?: DeleteOptions<TData, TVariables, any>) => {
+      const dialogOptions = options?.dialog || baseOptions?.dialog || {};
+      const mutationOptions = options?.mutation || baseOptions?.mutation || {};
+      const onDeleted = options?.onDeleted || baseOptions?.onDeleted;
 
-      if (data) {
+      const { width } = dialogOptions;
+      let { title, content } = dialogOptions;
+
+      let isBatch = false;
+
+      if (Array.isArray(data)) {
+        isBatch = true;
+        if (typeof title === 'function') {
+          title = title(data as any, {
+            batch: true,
+          });
+        }
+        if (typeof content === 'function') {
+          content = content(data as any, {
+            batch: true,
+          });
+        }
+      } else if (data) {
         if (typeof title === 'string') {
           title = fillTemplate(title, data);
         }
@@ -34,15 +102,31 @@ function useDelete<T = any>(
           content = fillTemplate(content, data);
         }
         if (typeof title === 'function') {
-          title = title(data);
+          title = title(data, {
+            batch: false,
+          });
         }
         if (typeof content === 'function') {
-          content = content(data);
+          content = content(data, {
+            batch: false,
+          });
         }
       }
 
+      const execute = async () => {
+        await deleteMany({
+          fetchPolicy: 'network-only',
+          ...mutationOptions,
+          variables: {
+            where: {
+              id_in: isBatch ? data : [data?.id],
+            },
+          },
+        } as any);
+      };
+
       const result = await Modal.confirm({
-        ...options,
+        ...dialogOptions,
         title: title as any,
         content: content as any,
         width,
@@ -64,8 +148,8 @@ function useDelete<T = any>(
               'align-middle',
             );
             okButton.appendChild(spinner);
-            const _result = await delay(execute(data), 350);
-            console.log(_result);
+            const _result = await delay(execute(), 350);
+            onDeleted && onDeleted(_result);
           } finally {
             deleting.current = false;
           }
@@ -80,10 +164,30 @@ function useDelete<T = any>(
       });
       return true;
     },
-    [execute, options],
+    [],
   );
 
-  return [onDelete];
+  const handleDelete = useCallback(
+    async (
+      data: any,
+      options?: DeleteOptions<TData, TVariables, DeleteEntity>,
+    ) => {
+      return handleDeleteExecute(data, options);
+    },
+    [baseOptions, deleteMany],
+  );
+
+  const handleDeleteMany = useCallback(
+    (ids: string[], options?: DeleteOptions<TData, TVariables, string[]>) => {
+      return handleDeleteExecute(ids, options);
+    },
+    [],
+  );
+
+  return {
+    delete: handleDelete as any,
+    deleteMany: handleDeleteMany as any,
+  };
 }
 
 export default useDelete;

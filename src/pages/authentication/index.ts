@@ -10,11 +10,11 @@ import dynamic from '@/utils/dynamic';
 })
 class Authentication {
   @component({
-    name: 'AsideLayoutSignIn',
+    name: 'SignIn',
     title: '登陆',
     tags: ['身份认证'],
   })
-  AsideLayoutSignIn = dynamic({
+  SignIn = dynamic({
     loader: () => import('./sign-in/SignIn'),
     loading: LoadingComponent,
   });

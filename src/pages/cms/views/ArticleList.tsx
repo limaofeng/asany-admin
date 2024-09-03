@@ -1,18 +1,21 @@
 import { useCallback, useMemo, useState } from 'react';
 import {
   Link,
-  useLocation,
   useNavigate,
   useOutletContext,
   useParams,
+  useSearchParams,
 } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 import classnames from 'classnames';
 import jquery from 'jquery';
 import moment from 'moment';
-import qs from 'query-string';
 
+import useListPage, {
+  queryToVariables,
+  variablesToQuery,
+} from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
 import {
   Badge,
@@ -25,16 +28,12 @@ import {
   Symbol,
   Table,
 } from '@/metronic';
-import type { Article, ArticleWhereInput } from '@/types';
+import type { Article } from '@/types';
 
-import useDelete from '../../../hooks/useDelete';
 import ArticleBreadcrumb from '../article/ArticleBreadcrumb';
 import type { IArticle } from '../article/typings';
-import {
-  useArticlesQuery,
-  useDeleteArticleMutation,
-  useDeleteManyArticlesMutation,
-} from '../hooks';
+import { useArticlesQuery } from '../hooks';
+import useArticleDelete from '../hooks/useArticleDelete';
 import { ArticleOutletContextParams } from '../typings';
 
 import '../style/article-list.scss';
@@ -53,84 +52,11 @@ type ArticleActionsProps = {
   refetch: () => void;
 };
 
-type DeleteManyProps = {
-  selectedRows: Article[];
-  refetch: () => void;
-};
-
 (window as any)._MoreshowOrhide = function (dom: any) {
   jquery(dom).parent().siblings().show();
   jquery(dom).parent().remove();
   return false;
 };
-
-function DeleteMany(props: DeleteManyProps) {
-  const { selectedRows, refetch } = props;
-
-  const [deleteManyArticles] = useDeleteManyArticlesMutation();
-
-  const [onDelete] = useDelete(
-    {
-      title: (
-        <>
-          你确定要删除这
-          {selectedRows.length > 1 && (
-            <>
-              “<strong>{selectedRows.length}</strong>“`
-            </>
-          )}
-          篇文章吗？
-        </>
-      ),
-      content:
-        selectedRows.length > 1 ? (
-          `您即将删除以下文章:<ul className="py-2">${selectedRows
-            .map(
-              (item, index) =>
-                `<li ${
-                  index >= 4 ? 'style="display: none !important;"' : ''
-                } className="d-flex align-items-center text-gray-800 mb-1 fs-6"><span className="bullet bullet-dot me-2"></span><strong>${
-                  item.title
-                }</strong></li>`,
-            )
-            .join('')}
-              <li ${
-                selectedRows.length <= 4
-                  ? 'style="display: none !important;"'
-                  : ''
-              } className="d-flex align-items-center text-gray-800 fs-6"><a href="javascript:void(0)" onClick="_MoreshowOrhide(this)">更多</a></li></ul> `
-        ) : (
-          <>
-            您即将删除“<strong>{selectedRows[0].title}</strong>”。
-            <br />
-            删除操作不可逆转，请谨慎操作，您确定删除吗？
-          </>
-        ),
-    },
-    async () => {
-      await deleteManyArticles({
-        variables: { ids: selectedRows.map((item) => item.id!) },
-      });
-    },
-  );
-
-  const handleDelete = useCallback(async () => {
-    await onDelete();
-    await refetch();
-  }, [onDelete, refetch]);
-
-  return (
-    <Button
-      color="danger"
-      onClick={handleDelete}
-      variant={false}
-      size="sm"
-      className="px-4 py-2"
-    >
-      批量删除
-    </Button>
-  );
-}
 
 function ArticleActions(props: ArticleActionsProps) {
   const { data, refetch, baseUrl } = props;
@@ -138,37 +64,19 @@ function ArticleActions(props: ArticleActionsProps) {
 
   const navigate = useNavigate();
 
-  const [deleteArticle] = useDeleteArticleMutation();
+  const { delete: handleDelete } = useArticleDelete(() => refetch());
 
-  const [onDelete] = useDelete(
-    {
-      title: '你确定要删除这篇文章吗？',
-      content: (
-        <>
-          您即将删除“<strong>{data.title}</strong>
-          ”。删除操作不可逆转，请谨慎操作，您确定删除吗？
-        </>
-      ),
+  const handleClick = useCallback(
+    ({ key }: any) => {
+      if (key === 'edit') {
+        navigate(`${baseUrl}/articles/${data.id}`);
+      } else if (key === 'delete') {
+        setVisible(false);
+        handleDelete(data as any);
+      }
     },
-    async () => {
-      await deleteArticle({ variables: { id: data.id! } });
-    },
+    [handleDelete, data],
   );
-
-  const handleDelete = useCallback(async () => {
-    await onDelete();
-    await refetch();
-  }, [onDelete, refetch]);
-
-  const handleClick = useCallback(({ key }: any) => {
-    if (key === 'edit') {
-      navigate(`${baseUrl}/articles/${data.id}`);
-    } else if (key === 'delete') {
-      setVisible(false);
-      handleDelete();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <Dropdown
@@ -200,94 +108,153 @@ function ArticleActions(props: ArticleActionsProps) {
   );
 }
 
-type ArticleListProps = {
-  where?: ArticleWhereInput;
-};
-
-function ArticleList(props: ArticleListProps) {
+function ArticleList() {
   const { cid: categoryId } = useParams<{ cid: string }>();
 
   const { rootCategoryId, categories, baseUrl } =
     useOutletContext<ArticleOutletContextParams>();
 
-  const localtion = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const searchForm = useMemo(
+    () =>
+      queryToVariables(searchParams, [
+        {
+          source: 'q',
+          target: 'keywords',
+        },
+      ]),
+    [searchParams.get('q')],
+  );
+
+  useState<{
+    keywords: string;
+  }>({
+    keywords: searchParams.get('q') || '',
+  });
 
   const variables = useMemo(() => {
-    const { q, ...query } = qs.parse(localtion.search) as unknown as {
-      where: ArticleWhereInput;
-      q: string;
-    };
-    if (!query.where) {
-      query.where = { ...props.where };
-    } else {
-      query.where = { ...query.where, ...props.where };
-    }
-    if (q) {
-      query.where.keyword = q;
-    }
-    query.where.category = {
+    const newVariables = queryToVariables(searchParams, [
+      {
+        source: 'q',
+        target: 'where.name_contains',
+      },
+      {
+        source: 'sex',
+        target: 'where.sex',
+      },
+      {
+        source: 'page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'per_page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'sort',
+        target: 'orderBy',
+        transform: (value) => {
+          const [field, order] = value.split(':');
+          return `${field}_${order}`;
+        },
+      },
+    ]);
+    newVariables.where = newVariables.where || {};
+    newVariables.where.category = {
       id: categoryId || rootCategoryId,
       subColumns: true,
     };
-    return query;
-  }, [location.search, categoryId, rootCategoryId]);
+    return newVariables;
+  }, [searchParams.toString(), categoryId, rootCategoryId]);
 
-  const { data, refetch, loading, previousData } = useArticlesQuery({
-    variables,
-    fetchPolicy: 'cache-and-network',
-    skip: !rootCategoryId,
-  });
+  const [articles, { loading, pageInfo, refetch }] = useListPage(
+    useArticlesQuery,
+    {
+      variables,
+      fetchPolicy: 'network-only',
+      skip: !rootCategoryId,
+    },
+  );
 
-  const pagination = useMemo(() => {
-    if (loading) {
-      return previousData?.articles || { edges: [], total: 0, current: 1 };
-    }
-    return data?.articles || { edges: [], total: 0, current: 1 };
-  }, [data?.articles, loading, previousData?.articles]);
-
-  const articles = useMemo(() => {
-    return pagination.edges.map((item) => item.node as Article);
-  }, [pagination.edges]);
-
-  const handleSearch = useCallback((value: any) => {
-    const query = qs.parse(location.search);
-    query.q = value;
-    navigate(location.pathname + '?' + qs.stringify(query), { replace: true });
-  }, []);
-
-  const handleChange = useCallback(
-    (_pagination: any, _filters: any, _sorter: any) => {
-      const _query: any = {};
-      if (variables.where?.keyword) {
-        _query.q = variables.where?.keyword;
-      }
-      if (!!_sorter) {
-        _query.orderBy =
-          _sorter.field + '_' + (_sorter.order === 'ascend' ? 'asc' : 'desc');
-      }
-      _query.page = _pagination.current;
-      navigate(location.pathname + '?' + qs.stringify(_query), {
+  const handleTableChange = useCallback(
+    (pagination: any, filters: any, sorter: any) => {
+      const querystring = variablesToQuery(
+        { searchForm, pagination, filters, sorter },
+        [
+          {
+            source: 'searchForm.keywords',
+            target: 'q',
+            skip: (value) => !value,
+          },
+          {
+            source: 'pagination.current',
+            target: 'page',
+            skip: (value) => value === 1,
+          },
+          {
+            source: 'pagination.pageSize',
+            target: 'per_page',
+            skip: (value) => value === 15,
+          },
+          {
+            source: 'sorter.field',
+            target: 'sort',
+            transform: (value) =>
+              `${value}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
+          },
+        ],
+      );
+      navigate(location.pathname + '?' + querystring, {
         replace: true,
       });
     },
-    [variables.where?.keyword],
+    [searchForm],
   );
 
-  const [selectedRows, setSelectedRows] = useState<Article[]>([]);
+  const { deleteMany: handleDeleteMany } = useArticleDelete(() => refetch());
 
-  const handleSelectedRows = useCallback(
-    (_: any, _selectedRows: Article[]) => {
-      setSelectedRows(_selectedRows);
+  const handleDeleteInBatch = useCallback(
+    (selectedRowKeys: string[], selectedRows: Article[]) => async () => {
+      await handleDeleteMany(selectedRowKeys, {
+        dialog: {
+          title: '你确定要删除吗？',
+          content:
+            selectedRows.length > 1 ? (
+              `您即将删除以下文章:<ul className="py-2">${selectedRows
+                .map(
+                  (item, index) =>
+                    `<li ${
+                      index >= 4 ? 'style="display: none !important;"' : ''
+                    } className="d-flex align-items-center text-gray-800 mb-1 fs-6"><span className="bullet bullet-dot me-2"></span><strong>${
+                      item.title
+                    }</strong></li>`,
+                )
+                .join('')}
+                <li ${
+                  selectedRows.length <= 4
+                    ? 'style="display: none !important;"'
+                    : ''
+                } className="d-flex align-items-center text-gray-800 fs-6"><a href="javascript:void(0)" onClick="_MoreshowOrhide(this)">更多</a></li></ul> `
+            ) : (
+              <>
+                您即将删除“<strong>{selectedRows[0].title}</strong>”。
+                <br />
+                删除操作不可逆转，请谨慎操作，您确定删除吗？
+              </>
+            ),
+        },
+      });
     },
-    [setSelectedRows],
+    [handleDeleteMany],
   );
 
-  const tableToolbar = useMemo(() => {
-    return (selectedRowKeys: string[], _selectedRows: Article[]) => {
-      return <DeleteMany selectedRows={_selectedRows} refetch={refetch} />;
-    };
-  }, [refetch]);
+  const handleSearch = useCallback((value: string) => {
+    navigate(location.pathname + (!!value ? '?q=' + value : ''), {
+      replace: true,
+    });
+  }, []);
 
   return (
     <ContentWrapper
@@ -394,7 +361,7 @@ function ArticleList(props: ArticleListProps) {
             </Card.Toolbar>
           </Card.Header>
           <Card.Body className="pt-0">
-            {!pagination.total ? (
+            {!pageInfo?.total ? (
               <Empty
                 title="新增文章"
                 description="该栏目还是空的，没有任何文章"
@@ -421,18 +388,33 @@ function ArticleList(props: ArticleListProps) {
                 rowKey="id"
                 rowSelection={{
                   type: 'checkbox',
-                  onChange: handleSelectedRows,
-                  selectedRowKeys: (selectedRows || []).map((item) => item.id),
                   renderTitle: (size) => (
                     <>
                       已选中<span className="mx-2">{size}</span>篇文章
                     </>
                   ),
-                  toolbar: tableToolbar,
+                  toolbar: (selectedRowKeys, selectedRows) => {
+                    return (
+                      <div>
+                        <Button
+                          color="danger"
+                          onClick={handleDeleteInBatch(
+                            selectedRowKeys,
+                            selectedRows,
+                          )}
+                          variant={false}
+                          size="sm"
+                          className="px-4 py-2"
+                        >
+                          批量删除
+                        </Button>
+                      </div>
+                    );
+                  },
                 }}
-                pagination={pagination}
+                pagination={pageInfo}
                 dataSource={articles}
-                onChange={handleChange}
+                onChange={handleTableChange}
                 rowHeight={136}
                 columns={[
                   {
@@ -527,7 +509,7 @@ function ArticleList(props: ArticleListProps) {
                     width: 120,
                     render: (value) => {
                       return (
-                        <Badge lightStyle={status[value].lightStyle}>
+                        <Badge light color={status[value].lightStyle}>
                           {status[value].title}
                         </Badge>
                       );

@@ -33,7 +33,7 @@ function ChatContent(props: ChatContentProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const { merID, msgList, loadMore, hasMore, curCve, loading } = props;
   const [mutilSelect, setMutilSelect] = useState(false);
-  const selfID = useCurrentuser().data?.uid;
+  const selfID = useCurrentuser().data?.id;
 
   const tipList = Object.values(tipsTypes);
 

@@ -24,7 +24,7 @@ function CveItem(props: CveItemProps) {
 
   const curUid = useModel(
     '@@initialState',
-    (state) => state.initialState?.currentUser?.uid,
+    (state) => state.initialState?.currentUser?.id,
   );
 
   const parseLatestMsg = (lmsg: string): React.ReactNode => {

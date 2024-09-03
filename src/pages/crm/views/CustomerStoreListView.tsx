@@ -4,8 +4,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Icon from '@asany/icons';
 import moment from 'moment';
 
-import useAppModule from '@/hooks/useAppModule';
-import useDelete from '@/hooks/useDelete';
 import useImportExcel from '@/hooks/useImportExcel';
 import useListPage, {
   queryToVariables,
@@ -13,7 +11,6 @@ import useListPage, {
 } from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
 import {
-  Badge,
   BlockUI,
   Button,
   Card,
@@ -25,34 +22,36 @@ import {
   Table,
   Toast,
 } from '@/metronic';
-import {
-  useArticlesLazyQuery,
-  useArticlesQuery,
-  useCreateArticleMutation,
-  useDeleteManyArticlesMutation,
-  useUpdateArticleMutation,
-} from '@/pages/cms/hooks';
-import { Article, ArticleStatus, DocumentContent } from '@/types';
+import { Customer } from '@/types';
 import { getSortDirection } from '@/utils';
 
-import ConformityDrawer from '../components/ConformityDrawer';
+import CustomerDrawer from '../components/CustomerDrawer';
+import {
+  useCreateCustomerMutation,
+  useCustomersLazyQuery,
+  useCustomersQuery,
+  useUpdateCustomerMutation,
+} from '../hooks/index';
+import useCustomerDelete from '../hooks/useCustomerDelete';
 
-function ArticleActions({
+function CustomerActions({
   data,
-  delete: handleDelete,
   onEdit,
+  refetch,
 }: {
-  data: Article;
-  onEdit: (data: Article) => void;
-  delete: (data: any) => void;
+  data: Customer;
+  onEdit: (data: Customer) => void;
+  refetch: () => void;
 }) {
   const [visible, setVisible] = useState(false);
+
+  const { delete: handleDelete } = useCustomerDelete(refetch);
 
   const handleClick = useCallback(({ key }: any) => {
     if (key === 'edit') {
       onEdit(data);
     } else if (key === 'delete') {
-      handleDelete({ name: data.title!, id: data.id });
+      handleDelete({ name: data.name!, id: data.id });
     }
   }, []);
 
@@ -83,12 +82,9 @@ function ArticleActions({
   );
 }
 
-function ConformityList() {
+function CustomerListView() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-
-  const [module] = useAppModule('drive');
-  const spaceId = module?.values.space;
 
   const searchForm = useMemo(
     () =>
@@ -136,12 +132,14 @@ function ConformityList() {
     ]);
   }, [searchParams.toString()]);
 
-  const [loadArticles] = useArticlesLazyQuery({ fetchPolicy: 'network-only' });
-  const [createArticle] = useCreateArticleMutation();
-  const [updateArticle] = useUpdateArticleMutation();
+  const [loadCustomers] = useCustomersLazyQuery({
+    fetchPolicy: 'network-only',
+  });
+  const [createCustomer] = useCreateCustomerMutation();
+  const [updateCustomer] = useUpdateCustomerMutation();
 
   const [articles, { loading, pageInfo, refetch }] = useListPage(
-    useArticlesQuery,
+    useCustomersQuery,
     {
       variables,
     },
@@ -182,6 +180,8 @@ function ConformityList() {
     [searchForm],
   );
 
+  const { deleteMany: handleDeleteMany } = useCustomerDelete(refetch);
+
   const handleSearch = useCallback((value: string) => {
     navigate(location.pathname + (!!value ? '?q=' + value : ''), {
       replace: true,
@@ -212,7 +212,7 @@ function ConformityList() {
 
       statistics.totalRecords = data.length;
 
-      const toast = Toast.loading('开始导入文件', {
+      const toast = Toast.loading('开始导入客户', {
         placement: 'top-center',
       });
 
@@ -223,7 +223,7 @@ function ConformityList() {
         currentCount++;
         try {
           // 假设 importRecord 是一个导入记录的函数
-          const { data } = await loadArticles({
+          const { data } = await loadCustomers({
             variables: {
               where: {
                 title: record.title,
@@ -240,7 +240,7 @@ function ConformityList() {
             category: 'conformity',
             content: {
               type: 'PDF',
-              url: `storage://${spaceId}/` + record.file,
+              url: 'storage://ZovzE2fU/' + record.file,
             },
           };
 
@@ -251,7 +251,7 @@ function ConformityList() {
                 icon: 'loading',
               },
             );
-            const { errors } = await updateArticle({
+            const { errors } = await updateCustomer({
               variables: {
                 id: data.result.edges[0].node.id,
                 input: inputData,
@@ -268,7 +268,7 @@ function ConformityList() {
                 icon: 'loading',
               },
             );
-            const { errors } = await createArticle({
+            const { errors } = await createCustomer({
               variables: {
                 input: inputData,
               },
@@ -323,7 +323,7 @@ function ConformityList() {
         allowOutsideClick: false,
       });
     },
-    [refetch, spaceId],
+    [refetch],
   );
 
   const [excelFileInput, handleImportExcel, handleDownloadTmplate] =
@@ -358,7 +358,7 @@ function ConformityList() {
         },
         file: {
           index: 4,
-          name: '文件位置',
+          name: '客户位置',
           example: '3201000159 1873596030 炒锅铲.pdf.pdf',
           formatter: (value) => String(value).trim(),
         },
@@ -382,41 +382,14 @@ function ConformityList() {
       },
     });
 
-  const { delete: deleteConformity, deleteMany: deleteManyConformity } =
-    useDelete(useDeleteManyArticlesMutation, {
-      onDeleted: () => refetch(),
-      dialog: {
-        title: '你确定要删除吗？',
-        content: (data, info) => {
-          let message;
-          if (info.batch) {
-            const keys = data as any as string[];
-            message = `确定删除选中的, 共 ${keys.length} 个文件吗？`;
-          } else {
-            message = (
-              <>
-                您即将删除“<strong>{data.name}</strong>
-              </>
-            );
-          }
-          return (
-            <>
-              <p className="tip-confirm">{message}</p>
-              <p>删除的操作不可逆,请谨慎操作</p>
-            </>
-          );
-        },
-      },
-    });
-
   const handleDeleteInBatch = useCallback(
     (selectedRowKeys: string[]) => async () => {
-      deleteManyConformity(selectedRowKeys);
+      await handleDeleteMany(selectedRowKeys);
     },
-    [deleteManyConformity],
+    [handleDeleteMany],
   );
 
-  const [state, setState] = useState<{ data?: Article; visible: boolean }>({
+  const [state, setState] = useState<{ data?: Customer; visible: boolean }>({
     visible: false,
   });
 
@@ -425,7 +398,7 @@ function ConformityList() {
   }, []);
 
   const handleSuccess = useCallback(
-    (_data: Article) => {
+    (_data: Customer) => {
       setState((prevState) => ({
         ...prevState,
         route: _data,
@@ -436,7 +409,7 @@ function ConformityList() {
   );
 
   const handleDeleteSuccess = useCallback(
-    (_data: Article) => {
+    (_data: Customer) => {
       setState((prevState) => {
         if (prevState.data?.id !== _data.id) {
           return prevState;
@@ -471,10 +444,10 @@ function ConformityList() {
   return (
     <ContentWrapper
       header={{
-        title: '符合性申明管理',
+        title: '客户管理',
       }}
     >
-      <ConformityDrawer
+      <CustomerDrawer
         data={state.data}
         onClose={handleCloseDrawer}
         onSuccess={handleSuccess}
@@ -555,68 +528,10 @@ function ConformityList() {
                   key: 'tags',
                   title: 'WMF CODE',
                   width: 130,
-                  render(_, record) {
-                    return !!record!.tags.length && record!.tags[0].name;
-                  },
                 },
                 {
                   key: 'content',
-                  title: '规范文件',
-                  render(_, record) {
-                    const document = record.content as DocumentContent;
-                    const reg = new RegExp('^storage://[^/]+/');
-                    return (
-                      <div>
-                        {(document as any)?.rawUrl?.replace(reg, '')}
-                        {document?.url?.startsWith('storage://') && (
-                          <Badge className="ms-2" color="dark">
-                            未上传
-                          </Badge>
-                        )}
-                      </div>
-                    );
-                  },
-                },
-                {
-                  key: 'status',
-                  title: '状态',
-                  width: 200,
-                  sorter: true,
-                  sortOrder: getSortDirection(searchParams, 'status'),
-                  render(value, record) {
-                    switch (value) {
-                      case ArticleStatus.Draft:
-                        return (
-                          <Badge light color="secondary">
-                            草稿
-                          </Badge>
-                        );
-                      case ArticleStatus.Published:
-                        return (
-                          <Badge light color="primary">
-                            已发布
-                          </Badge>
-                        );
-                      case ArticleStatus.Scheduled:
-                        return (
-                          <>
-                            <Badge light color="info">
-                              将于{' '}
-                              {moment(record.scheduledAt).format(
-                                'YYYY-MM-DD HH:mm',
-                              )}{' '}
-                              发布
-                            </Badge>
-                          </>
-                        );
-                      case ArticleStatus.Expired:
-                        return <Badge color="dark">已过期</Badge>;
-                      default:
-                        return (
-                          <span className="badge badge-light-dark">未知</span>
-                        );
-                    }
-                  },
+                  title: '规范客户',
                 },
                 {
                   key: 'expirationAt',
@@ -638,9 +553,9 @@ function ConformityList() {
                   width: 120,
                   render: (_, record: any) => {
                     return (
-                      <ArticleActions
+                      <CustomerActions
                         data={record}
-                        delete={deleteConformity}
+                        refetch={refetch}
                         onEdit={handleEdit}
                       />
                     );
@@ -658,4 +573,4 @@ function ConformityList() {
   );
 }
 
-export default ConformityList;
+export default CustomerListView;

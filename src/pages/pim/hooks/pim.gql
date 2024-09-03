@@ -246,6 +246,12 @@ query products(
   }
 }
 
+mutation deleteManyProducts($where: ProductWhereInput) {
+  result: deleteManyProducts(where: $where) {
+    count
+  }
+}
+
 mutation deleteManyShortLinks($where: ShortLinkWhereInput) {
   result: deleteManyShortLinks(where: $where) {
     count

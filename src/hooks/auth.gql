@@ -4,7 +4,7 @@ mutation logout {
 
 mutation loginByWeixin($clientId: String!, $authCode: String) {
   login(clientId: $clientId, loginType: WeChatPM, authCode: $authCode) {
-    uid
+    id
     name
     type
     token
@@ -14,7 +14,7 @@ mutation loginByWeixin($clientId: String!, $authCode: String) {
 
 # mutation loginByDingtalk($code: String!) {
 #   login(loginType: dingtalk, authCode: $code) {
-#     uid
+#     id
 #     name
 #     token
 #     type
@@ -28,7 +28,7 @@ mutation loginByUsername(
   $password: String
 ) {
   login(clientId: $clientId, username: $username, password: $password) {
-    uid
+    id
     name
     type
     token
@@ -38,7 +38,7 @@ mutation loginByUsername(
 
 query viewer {
   viewer {
-    uid
+    id
     type
     name
     title
