@@ -115,7 +115,6 @@ query tickets(
     edges {
       node {
         id
-        title
       }
       cursor
     }
@@ -125,19 +124,17 @@ query tickets(
 mutation createTicket($input: TicketCreateInput!) {
   result: createTicket(input: $input) {
     id
-    title
   }
 }
 
 mutation updateTicket($id: ID!, $input: TicketUpdateInput!) {
   result: updateTicket(id: $id, input: $input) {
     id
-    title
   }
 }
 
-mutation deleteManyTickets($where: TicketWhereInput!) {
-  result: deleteManyTickets(where: $where) {
-    count
-  }
-}
+# mutation deleteManyTickets($where: TicketWhereInput!) {
+#   result: deleteManyTickets(where: $where) {
+#     count
+#   }
+# }
