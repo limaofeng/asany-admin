@@ -1,10 +1,12 @@
 import useDelete from '@/hooks/useDelete';
 
-import { useDeleteManyTicketsMutation } from './api';
+// import { useDeleteManyTicketsMutation } from './api';
+
+function useDeleteManyTicketsMutation() {}
 
 function useTicketDelete(success?: () => void) {
   const { delete: handleDelete, deleteMany: handleDeleteMany } = useDelete(
-    useDeleteManyTicketsMutation,
+    useDeleteManyTicketsMutation as any,
     {
       onDeleted: () => {
         success && success();
