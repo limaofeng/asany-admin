@@ -111,11 +111,17 @@ function ConformityList() {
     return queryToVariables(searchParams, [
       {
         source: 'q',
-        target: 'where.name_contains',
-      },
-      {
-        source: 'sex',
-        target: 'where.sex',
+        target: 'where.OR',
+        transform: (value) => {
+          return [
+            {
+              tags: [value],
+            },
+            {
+              title: value,
+            },
+          ];
+        },
       },
       {
         source: 'page',
