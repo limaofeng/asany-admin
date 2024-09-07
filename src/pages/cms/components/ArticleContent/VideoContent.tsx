@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { APP_CONFIG } from '@umijs/max';
+
 import { Input, Modal, SignleUpload, VideoPlayer } from '@/metronic';
 import { VideoContent as IVideoContent } from '@/types';
 
@@ -15,9 +17,9 @@ const parseUrl = (value?: VideoContentData) => {
     return value.url;
   }
   if (typeof value?.video === 'string') {
-    return process.env.STORAGE_URL + `/preview/${value.video}`;
+    return APP_CONFIG.STORAGE_URL + `/preview/${value.video}`;
   } else if (typeof value?.video === 'object') {
-    return process.env.STORAGE_URL + `/preview/${value.video.id}`;
+    return APP_CONFIG.STORAGE_URL + `/preview/${value.video.id}`;
   }
   return '';
 };

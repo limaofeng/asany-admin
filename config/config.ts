@@ -10,22 +10,19 @@ export default defineConfig({
     '@asany/umi-plugin-app',
   ],
   apollo: {
-    url: 'https://api.asany.cn/graphql',
-    wsUrl: 'wss://api.asany.cn/subscriptions',
     options: '../config/apollo-options.ts',
   },
   app: {
-    id: 'w5t78l496cmnt404yp7l',
     loading: false,
   },
   define: {
     'process.env.NODE_ENV': process.env.NODE_ENV,
-    'process.env.WEBSITE_URL': '//localhost:8001',
-    'process.env.STORAGE_URL': 'https://storage-api.asany.cn',
-    'process.env.SHORT_DOMAIN_NAME': 'https://s.asany.cn',
-    'process.env.MOBILE_URL': '//wxb.app.asany.cn',
-    'process.env.OPEN_IM_API_URL': 'https://im.asany.cn/api/',
-    'process.env.OPEN_IM_WS_URL': 'wss://im.asany.cn/msg_gateway/',
+    'process.env.WEBSITE_URL': process.env.WEBSITE_URL,
+    'process.env.MOBILE_URL': process.env.MOBILE_URL,
+    'process.env.SHORT_DOMAIN_NAME': process.env.SHORT_DOMAIN_NAME,
+    'process.env.STORAGE_URL': process.env.STORAGE_URL,
+    'process.env.OPEN_IM_API_URL': process.env.OPEN_IM_API_URL,
+    'process.env.OPEN_IM_WS_URL': process.env.OPEN_IM_WS_URL,
   },
   styles: [
     '/assets/plugins/custom/datatables/datatables.bundle.css',

@@ -12,6 +12,7 @@
 /.mfsu
 .swc
 .eslintcache
+.env
 
 # tmp
 graphql/index.schema.json

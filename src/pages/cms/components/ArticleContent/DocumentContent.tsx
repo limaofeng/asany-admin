@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { APP_CONFIG } from '@umijs/max';
 import mime from 'mime-types';
 
 import { DocumentViewer, Input, Modal, SignleUpload } from '@/metronic';
@@ -17,7 +18,7 @@ const parseUrl = (value?: DocumentContentData) => {
     return value.url;
   }
   if (typeof value?.document === 'string') {
-    return process.env.STORAGE_URL + `/preview/${value.document}`;
+    return APP_CONFIG.STORAGE_URL + `/preview/${value.document}`;
   } else if (typeof value?.document === 'object') {
     return URL.createObjectURL(value.document.id);
   }

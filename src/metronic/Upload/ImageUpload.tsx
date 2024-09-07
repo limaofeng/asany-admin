@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import type { Accept } from 'react-dropzone';
 import { useDropzone } from 'react-dropzone';
 
+import { APP_CONFIG } from '@umijs/max';
 import classnames from 'classnames';
 import mime from 'mime-types';
 
@@ -79,7 +80,7 @@ function ImageUpload(props: ImageUploadProps) {
       state.current.imageCropperModalVisible = false;
 
       const data = await loadImage(
-        process.env.STORAGE_URL + `/preview/${fileData.id}`,
+        APP_CONFIG.STORAGE_URL + `/preview/${fileData.id}`,
       );
       state.current.preview = data;
 
@@ -147,7 +148,7 @@ function ImageUpload(props: ImageUploadProps) {
       return;
     }
     state.current.value = props.value;
-    loadImage(process.env.STORAGE_URL + `/preview/${props.value}`).then(
+    loadImage(APP_CONFIG.STORAGE_URL + `/preview/${props.value}`).then(
       (data) => {
         state.current.preview = data;
         forceRender();

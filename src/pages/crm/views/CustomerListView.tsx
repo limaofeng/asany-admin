@@ -518,34 +518,33 @@ function CustomerListView() {
               )}
               columns={[
                 {
-                  key: 'title',
-                  title: 'CMMF CODE',
+                  key: 'name',
+                  title: '名称',
                   width: 130,
                   sorter: true,
-                  sortOrder: getSortDirection(searchParams, 'title'),
+                  sortOrder: getSortDirection(searchParams, 'name'),
                 },
                 {
-                  key: 'tags',
-                  title: 'WMF CODE',
+                  key: 'contact.name',
+                  title: '联系人',
+                },
+                {
+                  key: 'ticketStrategy',
+                  title: '工单策略',
                   width: 130,
-                },
-                {
-                  key: 'content',
-                  title: '规范客户',
-                },
-                {
-                  key: 'expirationAt',
-                  title: '结束时间',
-                  sorter: true,
-                  sortOrder: getSortDirection(searchParams, 'expirationAt'),
-                  width: 160,
-                  render(value) {
-                    return (
-                      <div className="text-gray-700">
-                        {value && moment(value).format('YYYY-MM-DD HH:mm')}
-                      </div>
-                    );
+                  render: (value) => {
+                    const ticketStrategyMap: any = {
+                      NONE: '不处理',
+                      AUTO: '自动分配',
+                      ASSIGN: '客户分配',
+                    };
+                    return ticketStrategyMap[value];
                   },
+                },
+                {
+                  key: 'ticketCount',
+                  title: '是否启用管理功能',
+                  width: 130,
                 },
                 {
                   title: '操作',

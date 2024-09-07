@@ -66,6 +66,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
     style,
     readOnly,
     value: propsValue,
+    defaultValue,
     ...otherProps
   } = props;
 
@@ -74,7 +75,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   const state = useRef({
     isFirst: true,
   });
-  const [value, setValue] = useState(propsValue || props.defaultValue || '');
+  const [value, setValue] = useState(propsValue || defaultValue || '');
 
   useEffect(() => {
     if (state.current.isFirst) {
@@ -108,8 +109,8 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
   }, [propsValue]);
 
   useEffect(() => {
-    setValue(propsValue! || props.defaultValue || '');
-  }, [props.defaultValue]);
+    setValue(propsValue! || defaultValue || '');
+  }, [defaultValue]);
 
   useImperativeHandle(
     ref,
@@ -179,8 +180,7 @@ function Input(props: InputProps, ref: React.ForwardedRef<InputRef | null>) {
         },
         getStatusClassNames('form-item', mergedStatus),
       )}
-      defaultValue={props.defaultValue as any}
-      value={value}
+      value={value || ''}
       onChange={handleChange}
       type={type}
       autoComplete={autoComplete ? 'off' : 'on'}

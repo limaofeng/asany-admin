@@ -14,8 +14,6 @@ type CurrentTenant = {
 export default function useCurrentTenantModel() {
   const [tenant, setTenant] = useState<CurrentTenant>();
 
-  console.log('useCurrentTenantModel', tenant);
-
   const [loadCurrentTenant, { loading, error }] = useCurrentTenantLazyQuery();
 
   const reload = useCallback(async (clientId: string) => {

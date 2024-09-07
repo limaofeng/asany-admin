@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 
+import { APP_CONFIG } from '@umijs/max';
+
 import { Button, Card, Checkbox, Form, Input, Select2 } from '@/metronic';
 import type { ArticleCategory } from '@/types';
 
@@ -10,7 +12,7 @@ type AdvancedProps = {
 function Advanced(props: AdvancedProps) {
   const handleDesignPage = useCallback(() => {
     window.open(
-      process.env.WEBSITE_URL +
+      APP_CONFIG.WEBSITE_URL +
         '/designer?id=' +
         props.category?.page?.component?.id,
       '_blank',

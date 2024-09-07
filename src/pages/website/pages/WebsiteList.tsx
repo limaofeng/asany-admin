@@ -54,7 +54,7 @@ import './WebsiteList.scss';
 //       } else if (event.key === 'delete') {
 //         handleDelete(data);
 //       } else if (event.key === 'preview') {
-//         onShowQRCode(location.protocol + process.env.MOBILE_URL + '/lps/' + data.id);
+//         onShowQRCode(location.protocol + APP_CONFIG.MOBILE_URL + '/lps/' + data.id);
 //       }
 //     },
 //     [data, handleDelete, history, onShowQRCode],

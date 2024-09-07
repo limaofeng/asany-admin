@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useReducer, useRef } from 'react';
 
 import { gql, useMutation } from '@apollo/client';
+import { APP_CONFIG } from '@umijs/max';
 import CryptoJs from 'crypto-js';
 import encHex from 'crypto-js/enc-hex';
 import { debounce } from 'lodash';
@@ -264,7 +265,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
         const uploadResult = data.upload;
         return {
           ...uploadResult,
-          url: process.env.STORAGE_URL + '/preview/' + uploadResult.id,
+          url: APP_CONFIG.STORAGE_URL + '/preview/' + uploadResult.id,
         };
       } catch (e) {
         if (
@@ -398,7 +399,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       const uploadResult = xdata!.upload;
       state.current.data = {
         ...uploadResult,
-        url: process.env.STORAGE_URL + '/preview/' + uploadResult.id,
+        url: APP_CONFIG.STORAGE_URL + '/preview/' + uploadResult.id,
       };
       state.current.state = 'completed';
 
@@ -444,7 +445,7 @@ export const useUpload = (options: UploadOptions): UseUploadResult => {
       const uploadResult = _upload;
       state.current.data = {
         ...uploadResult,
-        url: process.env.STORAGE_URL + '/preview/' + uploadResult.id,
+        url: APP_CONFIG.STORAGE_URL + '/preview/' + uploadResult.id,
       };
       state.current.state = 'completed';
 

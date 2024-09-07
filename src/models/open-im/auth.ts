@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useState } from 'react';
 
-import { useModel } from '@umijs/max';
+import { APP_CONFIG, useModel } from '@umijs/max';
 import { getSDK } from 'open-im-sdk-wasm';
 import { CbEvents } from 'open-im-sdk-wasm/lib/constant';
 import type { FullUserItem } from 'open-im-sdk-wasm/lib/types/entity';
@@ -122,11 +122,11 @@ export default function useChatModel() {
     }
 
     const config: InitAndLoginConfig = {
-      userID: currentUser.uid, // 用户ID
+      userID: currentUser.id, // 用户ID
       token: currentUser.imToken, // 用户token
       platformID: 5, // 平台号
-      apiAddr: process.env.OPEN_IM_API_URL!, //
-      wsAddr: process.env.OPEN_IM_WS_URL!, // jssdk server ws地址
+      apiAddr: APP_CONFIG.OPEN_IM_API_URL!, //
+      wsAddr: APP_CONFIG.OPEN_IM_WS_URL!, // jssdk server ws地址
     };
 
     IMSDK.login(config)

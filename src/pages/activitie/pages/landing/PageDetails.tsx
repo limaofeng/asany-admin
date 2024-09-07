@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { APP_CONFIG } from '@umijs/max';
+
 import { ContentWrapper } from '@/layouts/components';
 import {
   BlockUI,
@@ -240,7 +242,7 @@ function PageDetails() {
                         return (
                           <iframe
                             src={
-                              process.env.MOBILE_URL +
+                              APP_CONFIG.MOBILE_URL +
                               `/lps/0?&poster=${_poster}&stores=${_stores?.join(
                                 ',',
                               )}`

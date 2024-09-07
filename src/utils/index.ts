@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
 import { ApolloError } from '@apollo/client';
+import { APP_CONFIG } from '@umijs/max';
 import { isEqual } from 'lodash';
 
 import { SortDirection } from '@/metronic/Table/typings';
@@ -153,7 +154,7 @@ export function getFileUrlById(
   },
 ) {
   const protocol = options?.protocol ? location.protocol : '';
-  return id && protocol + process.env.STORAGE_URL + `/preview/${id}`;
+  return id && protocol + APP_CONFIG.STORAGE_URL + `/preview/${id}`;
 }
 
 export function getFileThumbnailUrlById(
@@ -166,7 +167,7 @@ export function getFileThumbnailUrlById(
   const protocol = options?.protocol ? location.protocol : '';
   return (
     id &&
-    protocol + process.env.STORAGE_URL + `/thumbnail/${id}?size=${options.size}`
+    protocol + APP_CONFIG.STORAGE_URL + `/thumbnail/${id}?size=${options.size}`
   );
 }
 

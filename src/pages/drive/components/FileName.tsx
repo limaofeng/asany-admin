@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCopyToClipboard } from 'react-use';
 
 import Icon from '@asany/icons';
+import { APP_CONFIG } from '@umijs/max';
 import classnames from 'classnames';
 
 import { Button, Input, Symbol, Toast, Tooltip } from '@/metronic';
@@ -157,7 +158,7 @@ function FileName(props: FileNameProps) {
                 className="svg-icon-2x svg-icon-primary"
               />
             }
-            src={process.env.STORAGE_URL + `/thumbnail/${data.id}?size=120x120`}
+            src={APP_CONFIG.STORAGE_URL + `/thumbnail/${data.id}?size=120x120`}
           />
         ) : (
           <Icon

@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { NavigateFunction } from 'react-router';
 
 import { Icon } from '@asany/icons';
-import { Link, useLocation, useNavigate } from '@umijs/max';
+import { APP_CONFIG, Link, useLocation, useNavigate } from '@umijs/max';
 import qs from 'query-string';
 
 import Controls from '@/components/Controls';
@@ -325,7 +325,7 @@ function PosterList() {
                           <div className="d-flex w-30px justify-content-center">
                             <img
                               src={
-                                process.env.STORAGE_URL + `/preview/${file.id}`
+                                APP_CONFIG.STORAGE_URL + `/preview/${file.id}`
                               }
                               className="h-30px w-20px"
                             />

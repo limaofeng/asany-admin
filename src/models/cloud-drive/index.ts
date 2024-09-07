@@ -9,6 +9,7 @@ import {
 
 import EventEmitter from 'events';
 
+import { APP_CONFIG } from '@umijs/max';
 import saveAs from 'file-saver';
 
 import { useUpload } from '@/metronic/hooks';
@@ -35,8 +36,6 @@ const EVENT_NAME_OF_DOWNLOADFILE_CHANGE = 'DOWNLOADFILE_CHANGE';
 
 const EVENT_NAME_OF_UPLOADFILE_DATA_RELOADED = 'UPLOADFILE_DATA_RELOADED';
 const EVENT_NAME_OF_DOWNLOADFILE_DATA_RELOADED = 'DOWNLOADFILE_DATA_RELOADED';
-
-const FILEOBJECT_DOWNLOAD_URL = process.env.STORAGE_URL + '/download';
 
 export * from './typings';
 
@@ -388,6 +387,8 @@ export default function useCloudDriveModel() {
       const fileId = file?.id;
 
       await updateDownloadFile(fileId!, { downloadState: 'downloading' });
+
+      const FILEOBJECT_DOWNLOAD_URL = APP_CONFIG.STORAGE_URL + '/download';
 
       try {
         const url =

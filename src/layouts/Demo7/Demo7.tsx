@@ -9,6 +9,7 @@ import { InspectParams, Inspector } from 'react-dev-inspector';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
+import { useBlock } from '@asany/sunmao';
 import {
   history,
   useApp,
@@ -27,7 +28,11 @@ import Aside from './components/Aside';
 import buildMenuRender from './components/utils';
 import getLayoutRenderConfig from './utils';
 
-import { LayoutProvider, useLayoutSelector } from '../LayoutContext';
+import {
+  LayoutProvider,
+  useLayoutDispatch,
+  useLayoutSelector,
+} from '../LayoutContext';
 
 import './style.scss';
 
@@ -118,22 +123,51 @@ function InternalLayout(props: LayoutProps) {
   );
 }
 
+const defaultBlockProps = {
+  logo: '/assets/media/logos/demo7.svg',
+};
+
 function LayoutInner(props: LayoutInnerProps) {
   const { children, pure, activeKey, onSelect, menuRender, ...otherProps } =
     props;
-  if (pure) {
-    return children as any;
-  }
+
+  const dispatch = useLayoutDispatch();
+
+  const { props: blockProps, Provider } = useBlock<any, any>({
+    key: 'layout',
+    title: '布局 7',
+    icon: '',
+    props: defaultBlockProps,
+    customizer: {
+      fields: [
+        {
+          name: 'logo',
+          label: 'Logo',
+          type: 'String',
+        },
+      ],
+    },
+  });
+
+  useEffect(() => {
+    dispatch({ type: 'CHANGE_LOGO', payload: blockProps.logo });
+  }, [blockProps.logo]);
 
   return (
-    <InternalLayout
-      {...otherProps}
-      activeKey={activeKey}
-      onSelect={onSelect}
-      menuRender={menuRender}
-    >
-      {children}
-    </InternalLayout>
+    <Provider>
+      {!!pure ? (
+        children
+      ) : (
+        <InternalLayout
+          {...otherProps}
+          activeKey={activeKey}
+          onSelect={onSelect}
+          menuRender={menuRender}
+        >
+          {children}
+        </InternalLayout>
+      )}
+    </Provider>
   );
 }
 
@@ -217,7 +251,7 @@ function LayoutWrapper(props: LayoutProps) {
   return (
     <LayoutProvider
       state={{
-        logo: '/assets/media/logos/wmf-logo.svg',
+        logo: defaultBlockProps.logo,
         menus,
         routes: routes.map((item) => item.route),
         aside: {

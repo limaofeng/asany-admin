@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { APP_CONFIG } from '@umijs/max';
 import { QRCodeCanvas } from 'qrcode.react';
 import qs from 'query-string';
 
@@ -100,7 +101,7 @@ function DeviceQrCodeListView() {
     const links =
       data?.result.map((item) => ({
         ...item,
-        qrcode: process.env.SHORT_DOMAIN_NAME + '/s/' + item.code,
+        qrcode: APP_CONFIG.SHORT_DOMAIN_NAME + '/s/' + item.code,
       })) || [];
     generateQRCodeLabel(links);
     Toast.success(`二维码批量删除成功`, 2000, {
@@ -221,7 +222,7 @@ function DeviceQrCodeListView() {
       generateQRCodeLabel(
         selectedRows.map((item) => ({
           ...item,
-          qrcode: process.env.SHORT_DOMAIN_NAME + '/s/' + item.code,
+          qrcode: APP_CONFIG.SHORT_DOMAIN_NAME + '/s/' + item.code,
         })),
       );
     },
@@ -418,14 +419,14 @@ function DeviceQrCodeListView() {
                       width: 180,
                       render(_, record) {
                         const qrcode =
-                          process.env.SHORT_DOMAIN_NAME + '/s/' + record.code;
+                          APP_CONFIG.SHORT_DOMAIN_NAME + '/s/' + record.code;
                         return (
                           <QRCodeCanvas
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               handleOpenQRCode(
-                                process.env.SHORT_DOMAIN_NAME +
+                                APP_CONFIG.SHORT_DOMAIN_NAME +
                                   '/s/' +
                                   record.code,
                               );

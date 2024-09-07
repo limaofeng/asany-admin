@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 
@@ -295,7 +295,7 @@ function DeviceListView() {
     >
       <Card className="mb-5 mb-xl-10">
         <Card.Header className="pt-8">
-          <Card.Title className="flex-column">
+          <Card.Title className="flex-row">
             <Input.Search
               solid
               value={searchForm.keywords}
@@ -303,7 +303,9 @@ function DeviceListView() {
               placeholder="搜索设备"
               onSearch={handleSearch}
             />
+            <Button variant={false}>更多筛选条件</Button>
           </Card.Title>
+
           <Card.Toolbar>
             <div className="me-4 my-1">
               <Select2
@@ -405,18 +407,19 @@ function DeviceListView() {
               columns={[
                 {
                   key: 'sn',
-                  title: '资产编号',
+                  title: '序列号',
                   sorter: true,
-                  sortOrder: getSortDirection(searchParams, 'no'),
+                  sortOrder: getSortDirection(searchParams, 'sn'),
                   width: 260,
                   render(no, data) {
                     return (
-                      <Link
-                        to={`/pim/devices/${data?.id}`}
-                        className="text-gray-700"
+                      <span
+                        onClick={() => {
+                          navigate(`/pim/devices/${data.id}`);
+                        }}
                       >
                         {no}
-                      </Link>
+                      </span>
                     );
                   },
                 },
@@ -427,7 +430,7 @@ function DeviceListView() {
                   sortOrder: getSortDirection(searchParams, 'name'),
                   render(name, record) {
                     return (
-                      <div className="text-gray-700">
+                      <div>
                         {record?.brand?.name} | {name}
                       </div>
                     );
@@ -444,11 +447,7 @@ function DeviceListView() {
                       EXPIRED: '已过期',
                       CANCELED: '已作废',
                     };
-                    return (
-                      <div className="text-gray-700">
-                        {warrantyStatusTexts[value]}
-                      </div>
-                    );
+                    return <div>{warrantyStatusTexts[value]}</div>;
                   },
                 },
                 {
@@ -456,7 +455,7 @@ function DeviceListView() {
                   title: '所属客户',
                   width: 120,
                   render(value) {
-                    return <div className="text-gray-700">{value}</div>;
+                    return <div>{value}</div>;
                   },
                 },
                 {
@@ -464,7 +463,7 @@ function DeviceListView() {
                   title: '所属门店',
                   width: 120,
                   render(value) {
-                    return <div className="text-gray-700">{value}</div>;
+                    return <div>{value}</div>;
                   },
                 },
                 {

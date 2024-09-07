@@ -1,6 +1,7 @@
 import { useCallback, useReducer, useRef } from 'react';
 
 import Sortable, { ISortableItem, dragPreview } from '@asany/sortable';
+import { APP_CONFIG } from '@umijs/max';
 import classnames from 'classnames';
 
 import { Button, Input, Modal, SignleUpload, Symbol } from '@/metronic';
@@ -22,9 +23,9 @@ const parseUrl = (value?: ProductImageData) => {
     return value.url;
   }
   if (typeof value?.image === 'object') {
-    return process.env.STORAGE_URL + `/preview/${value.image.id}`;
+    return APP_CONFIG.STORAGE_URL + `/preview/${value.image.id}`;
   } else if (typeof value?.image === 'string') {
-    return process.env.STORAGE_URL + `/preview/${value.image}`;
+    return APP_CONFIG.STORAGE_URL + `/preview/${value.image}`;
   }
   return '';
 };

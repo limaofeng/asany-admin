@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { NavigateFunction, useLocation, useNavigate } from 'react-router';
 
 import { Icon } from '@asany/icons';
-import { Link } from '@umijs/max';
+import { APP_CONFIG, Link } from '@umijs/max';
 import qs from 'query-string';
 
 import { Controls } from '@/components';
@@ -330,9 +330,7 @@ function StoreList() {
                       render(file) {
                         return file ? (
                           <img
-                            src={
-                              process.env.STORAGE_URL + `/preview/${file.id}`
-                            }
+                            src={APP_CONFIG.STORAGE_URL + `/preview/${file.id}`}
                             className="h-30px w-30px"
                           />
                         ) : (

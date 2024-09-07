@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from 'react';
 
+import { APP_CONFIG } from '@umijs/max';
 import type { Dictionary } from 'lodash';
 import { clone, isEqual, uniq, zipObject } from 'lodash';
 
@@ -203,7 +204,7 @@ export function networkSpeed(
 
 export function loadImage(url: string): Promise<string | null> {
   return new Promise((resolve, reject) => {
-    if (url.startsWith(process.env.STORAGE_URL!)) {
+    if (url.startsWith(APP_CONFIG.STORAGE_URL!)) {
       const request = new XMLHttpRequest();
       request.responseType = 'blob';
       request.open('get', url, true);

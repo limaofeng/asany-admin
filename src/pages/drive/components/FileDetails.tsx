@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import Icon from '@asany/icons';
-import { Link } from '@umijs/max';
+import { APP_CONFIG, Link } from '@umijs/max';
 import classnames from 'classnames';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
@@ -51,7 +51,7 @@ function ViewFileDetails(props: ViewFileDetailsProps) {
       {!file.isDirectory && (
         <div className="file-preview mb-6">
           <Symbol
-            src={process.env.STORAGE_URL + `/thumbnail/${file.id}?size=120x120`}
+            src={APP_CONFIG.STORAGE_URL + `/thumbnail/${file.id}?size=120x120`}
           />
         </div>
       )}

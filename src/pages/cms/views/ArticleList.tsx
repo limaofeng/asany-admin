@@ -493,7 +493,7 @@ function ArticleList() {
                               <Symbol
                                 className="article-image"
                                 src={
-                                  process.env.STORAGE_URL +
+                                  APP_CONFIG.STORAGE_URL +
                                   `/preview/${record.image?.id}`
                                 }
                               />

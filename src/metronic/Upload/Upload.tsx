@@ -8,6 +8,7 @@ import React, {
 import { useDropzone } from 'react-dropzone';
 
 import { Icon } from '@asany/icons';
+import { APP_CONFIG } from '@umijs/max';
 import classnames from 'classnames';
 
 import ImageUpload from './ImageUpload';
@@ -49,7 +50,7 @@ export function PreviewComponent(props: PreviewComponentProps) {
       {status === 'completed' && uploadFile.mimeType.startsWith('audio/') && (
         <CirclePlayer
           size={22}
-          src={process.env.STORAGE_URL + `/preview/${uploadFile.id}`}
+          src={APP_CONFIG.STORAGE_URL + `/preview/${uploadFile.id}`}
         />
       )}
       {status === 'error' && (
@@ -136,7 +137,7 @@ function Upload(props: UploadProps) {
       const fileData = await upload(acceptedFiles[0]);
       state.current.value = fileData.id;
       state.current.uploadFile = fileData;
-      // state.current.preview = process.env.STORAGE_URL + `/preview/${fileData.id}`;
+      // state.current.preview = APP_CONFIG.STORAGE_URL + `/preview/${fileData.id}`;
       forceRender();
       onChange && onChange(fileData.id, fileData);
     },

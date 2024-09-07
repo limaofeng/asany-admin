@@ -20,6 +20,10 @@ query customers(
       node {
         id
         name
+        ticketStrategy
+        contactInfo {
+          name
+        }
       }
       cursor
     }

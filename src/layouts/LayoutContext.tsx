@@ -29,7 +29,12 @@ export type LayoutState = {
 };
 
 type LayoutAction = {
-  type: 'ASIDE_MINIMIZE' | 'ASIDE_WIDTH' | 'ASIDE_COLLAPSIBLE' | 'ASIDE_DRAWER';
+  type:
+    | 'ASIDE_MINIMIZE'
+    | 'ASIDE_WIDTH'
+    | 'ASIDE_COLLAPSIBLE'
+    | 'ASIDE_DRAWER'
+    | 'CHANGE_LOGO';
   payload?: any;
 };
 
@@ -75,6 +80,9 @@ const reducer = (state: LayoutState, action?: LayoutAction) => {
   }
   if (action.type === 'ASIDE_DRAWER') {
     return { ...state, aside: { ...state.aside, drawer: action.payload } };
+  }
+  if (action.type === 'CHANGE_LOGO') {
+    return { ...state, logo: action.payload };
   }
   return state;
 };

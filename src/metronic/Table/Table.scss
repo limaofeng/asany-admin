@@ -1,4 +1,11 @@
 .dataTables_wrapper {
+  table.dataTable > tbody > tr.selected > * a:not([class='btn']):hover {
+    background-color: var(--bs-primary) !important;
+    .svg-icon {
+      color: #fff;
+    }
+  }
+
   .table.dataTable > thead > tr > th:not(.sorting_disabled) {
     padding: 0;
   }

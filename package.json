@@ -84,8 +84,8 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@asany/umi-plugin-apollo": "^0.5.0",
-    "@asany/umi-plugin-app": "^0.5.1",
+    "@asany/umi-plugin-apollo": "^0.5.7",
+    "@asany/umi-plugin-app": "^0.5.4",
     "@ckeditor/ckeditor5-dev-utils": "^39.6.3",
     "@commitlint/cli": "^19.0.1",
     "@commitlint/config-conventional": "^19.0.0",

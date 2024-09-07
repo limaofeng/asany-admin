@@ -49,8 +49,6 @@ function useListPage<TData, TVariables extends OperationVariables>(
     ...baseOptions,
   }) as QueryResult<TData & ResultQuery<NodeType>, any>;
 
-  console.log('=====>', data, baseOptions);
-
   const pageInfo = useMemo(() => {
     if (loading) {
       return previousData?.result.pageInfo;

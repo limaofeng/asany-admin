@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 
 import { Icon } from '@asany/icons';
-import { Link, useLocation, useNavigate } from '@umijs/max';
+import { APP_CONFIG, Link, useLocation, useNavigate } from '@umijs/max';
 import { QRCodeCanvas } from 'qrcode.react';
 import qs from 'query-string';
 
@@ -79,7 +79,7 @@ function Actions({
         handleDelete(data);
       } else if (event.key === 'preview') {
         onShowQRCode(
-          location.protocol + process.env.MOBILE_URL + '/lps/' + data.id,
+          location.protocol + APP_CONFIG.MOBILE_URL + '/lps/' + data.id,
         );
       }
     },
@@ -387,7 +387,7 @@ function PageList() {
                           <div className="d-flex w-30px justify-content-center">
                             <img
                               src={
-                                process.env.STORAGE_URL +
+                                APP_CONFIG.STORAGE_URL +
                                 `/preview/${poster.background.id}`
                               }
                               className="h-30px w-20px"

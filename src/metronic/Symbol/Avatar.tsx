@@ -1,5 +1,6 @@
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 
+import { APP_CONFIG } from '@umijs/max';
 import classnames from 'classnames';
 import styled from 'styled-components';
 
@@ -120,7 +121,7 @@ function Avatar(props: AvatarProps, ref: any) {
 
   const url = useMemo(() => {
     if (!!src && typeof src === 'object' && src.hasOwnProperty('id')) {
-      return process.env.STORAGE_URL + `/preview/${(src as any).id}`;
+      return APP_CONFIG.STORAGE_URL + `/preview/${(src as any).id}`;
     }
     if (typeof src !== 'string') {
       return src;

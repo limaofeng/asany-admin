@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useReducer, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 
+import { APP_CONFIG } from '@umijs/max';
+
 import type { UploadFileData } from './utils/upload';
 import { useUpload } from './utils/upload';
 
@@ -51,7 +53,7 @@ function UploadAvatar(props: UploadAvatarProps) {
     if (!value) {
       return null;
     }
-    return process.env.STORAGE_URL + `/preview/${value}`;
+    return APP_CONFIG.STORAGE_URL + `/preview/${value}`;
   }, [value]);
 
   return (
