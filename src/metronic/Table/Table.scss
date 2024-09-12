@@ -1,4 +1,8 @@
 .dataTables_wrapper {
+  .table.dataTable {
+    table-layout: fixed;
+  }
+
   table.dataTable > tbody > tr.selected > * a:not([class='btn']):hover {
     background-color: var(--bs-primary) !important;
     .svg-icon {

@@ -395,7 +395,7 @@ function Table<T>(props: TableProps<T>) {
     return newColumns.map((col) => ({
       ...col,
       key: col.key || col.dataIndex,
-      width: colgroups.get(col.key || col.dataIndex!),
+      width: colgroups.get(col.key || col.dataIndex!) || col.width,
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newColumns, Array.from(colgroups.values()).join(',')]);

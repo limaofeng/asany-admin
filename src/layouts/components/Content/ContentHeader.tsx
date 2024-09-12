@@ -45,7 +45,7 @@ const Toolbar = React.memo(function Toolbar(props: ToolbarProps) {
       <div className="d-flex align-items-center ms-3">
         <ThemeModeSwitcher toggleBtnClass="flex-center bg-body btn-color-gray-600 btn-active-color-primary h-40px" />
       </div>
-      <div className="d-flex align-items-center ms-3">
+      <div style={{ display: 'none' }} className="align-items-center ms-3">
         <Button
           variant={false}
           color="gray-600"

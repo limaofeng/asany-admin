@@ -35,6 +35,7 @@ function UserNewView() {
       console.log('usernameUniqueValidator', rule, value, signal);
       const { data } = await findUserByUsername({
         variables: {
+          tenantId: user?.tenantId,
           username: value,
         },
         fetchPolicy: 'network-only',
