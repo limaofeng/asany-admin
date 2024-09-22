@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[8665],{8665:function(s,e,t){t.r(e);var u=t(86074);function i(){return(0,u.jsx)("div",{children:(0,u.jsx)("h1",{children:"CustomerTicketListView"})})}e.default=i}}]);

@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[8125],{8125:function(a,e,s){s.r(e);var t=s(73588),n=s(86074);function u(){return(0,n.jsx)(t.vs,{header:{title:"\u6982\u89C8"},children:(0,n.jsx)("div",{children:"CustomerDashboardView"})})}e.default=u}}]);
