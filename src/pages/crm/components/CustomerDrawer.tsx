@@ -1,8 +1,15 @@
 import { useEffect, useMemo } from 'react';
 
-import TagsInput from '@asany/tags-input';
-
-import { Button, Col, DatePicker, Drawer, Form, Input, Row } from '@/metronic';
+import {
+  Button,
+  Col,
+  Drawer,
+  Form,
+  Input,
+  Row,
+  Select2,
+  Switch,
+} from '@/metronic';
 import type { FormInstance } from '@/metronic/Form';
 import type { Customer } from '@/types';
 
@@ -17,6 +24,21 @@ type CustomerFormProps = {
   submit: () => void;
   onDeleteSuccess: (data: any) => void;
 };
+
+const TicketStrategyOptions = [
+  {
+    label: '不处理',
+    value: 'NONE',
+  },
+  {
+    label: '自动分配',
+    value: 'AUTO',
+  },
+  {
+    label: '客户分配',
+    value: 'ASSIGN',
+  },
+];
 
 function CustomerForm(props: CustomerFormProps) {
   const { form } = props;
@@ -40,8 +62,8 @@ function CustomerForm(props: CustomerFormProps) {
             name="title"
             className="d-flex flex-column mb-7"
             required
-            label="CMMF CODE"
-            rules={[{ required: true, message: 'CMMF CODE不能为空' }]}
+            label="客户名称"
+            rules={[{ required: true, message: '请输入客户名称' }]}
           >
             <Input solid />
           </Form.Item>
@@ -53,28 +75,10 @@ function CustomerForm(props: CustomerFormProps) {
             name="tags"
             className="d-flex flex-column mb-7"
             required
-            label="WMF CODE"
+            label="服务单处理策略"
+            rules={[{ required: true, message: '请选择服务单处理策略' }]}
           >
-            <TagsInput className="form-control form-control-solid" />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={6}>
-          <Form.Item
-            name="content"
-            className="d-flex flex-column mb-7"
-            required
-            label="文件路径"
-            rules={[{ required: true, message: '文件路径不能为空' }]}
-          >
-            <Input.TextArea
-              solid
-              autoSize={{
-                minRows: 2,
-                maxRows: 2,
-              }}
-            />
+            <Select2 solid className="w-100" options={TicketStrategyOptions} />
           </Form.Item>
         </Col>
       </Row>
@@ -83,39 +87,10 @@ function CustomerForm(props: CustomerFormProps) {
           <Form.Item
             name="scheduledAt"
             className="d-flex flex-column mb-7"
-            label="发布时间"
-            rules={[{ required: true, message: '发布时间不能为空' }]}
+            label="开启管理端功能"
+            valuePropName="checked"
           >
-            <DatePicker solid className="w-100" />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={6}>
-          <Form.Item
-            name="expirationAt"
-            className="d-flex flex-column mb-7"
-            label="过期时间"
-            rules={[{ required: true, message: '过期时间不能为空' }]}
-          >
-            <DatePicker solid className="w-100" />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={6}>
-          <Form.Item
-            className="d-flex flex-column mb-7"
-            name="summary"
-            label="备注"
-          >
-            <Input.TextArea
-              solid
-              autoSize={{
-                minRows: 4,
-                maxRows: 6,
-              }}
-            />
+            <Switch />
           </Form.Item>
         </Col>
       </Row>
@@ -152,7 +127,9 @@ function CustomerDrawer(props: CustomerDrawerProps) {
     };
   }, [data]);
 
-  const { delete: handleDelete } = useCustomerDelete(onDeleteSuccess);
+  const { delete: handleDelete } = useCustomerDelete(() =>
+    onDeleteSuccess(data!),
+  );
 
   return (
     <Drawer

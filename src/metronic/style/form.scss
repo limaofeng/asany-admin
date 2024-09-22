@@ -118,6 +118,12 @@
   }
 }
 
+.form-select.select2-selection {
+  min-height: 32px;
+  padding: 4px 11px;
+  border-radius: 6px;
+}
+
 .form-control {
   &-borderless {
     background-color: transparent;

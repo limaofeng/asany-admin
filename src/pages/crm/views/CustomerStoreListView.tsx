@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
 import moment from 'moment';
@@ -22,30 +22,31 @@ import {
   Table,
   Toast,
 } from '@/metronic';
-import { Customer } from '@/types';
+import { CustomerStore } from '@/types';
 import { getSortDirection } from '@/utils';
 
-import CustomerDrawer from '../components/CustomerDrawer';
+import useExcel from '@/hooks/useExcel';
+import CustomerStoreDrawer from '../components/CustomerStoreDrawer';
 import {
-  useCreateCustomerMutation,
-  useCustomersLazyQuery,
-  useCustomersQuery,
-  useUpdateCustomerMutation,
+  useCreateCustomerStoreMutation,
+  useCustomerStoresLazyQuery,
+  useCustomerStoresQuery,
+  useUpdateCustomerStoreMutation,
 } from '../hooks/index';
-import useCustomerDelete from '../hooks/useCustomerDelete';
+import useCustomerStoreDelete from '../hooks/useCustomerStoreDelete';
 
-function CustomerActions({
+function CustomerStoreActions({
   data,
   onEdit,
   refetch,
 }: {
-  data: Customer;
-  onEdit: (data: Customer) => void;
+  data: CustomerStore;
+  onEdit: (data: CustomerStore) => void;
   refetch: () => void;
 }) {
   const [visible, setVisible] = useState(false);
 
-  const { delete: handleDelete } = useCustomerDelete(refetch);
+  const { delete: handleDelete } = useCustomerStoreDelete(refetch);
 
   const handleClick = useCallback(({ key }: any) => {
     if (key === 'edit') {
@@ -82,8 +83,9 @@ function CustomerActions({
   );
 }
 
-function CustomerListView() {
+function CustomerStoreListView() {
   const navigate = useNavigate();
+  const params = useParams();
   const [searchParams] = useSearchParams();
 
   const searchForm = useMemo(
@@ -104,7 +106,7 @@ function CustomerListView() {
   });
 
   const variables = useMemo(() => {
-    return queryToVariables(searchParams, [
+    const newVars = queryToVariables(searchParams, [
       {
         source: 'q',
         target: 'where.name_contains',
@@ -130,18 +132,22 @@ function CustomerListView() {
         },
       },
     ]);
-  }, [searchParams.toString()]);
+    newVars.where = newVars.where || {};
+    newVars.where.customer = params.id;
+    return newVars;
+  }, [searchParams.toString(), params.id]);
 
-  const [loadCustomers] = useCustomersLazyQuery({
+  const [loadCustomerStores] = useCustomerStoresLazyQuery({
     fetchPolicy: 'network-only',
   });
-  const [createCustomer] = useCreateCustomerMutation();
-  const [updateCustomer] = useUpdateCustomerMutation();
+  const [createCustomerStore] = useCreateCustomerStoreMutation();
+  const [updateCustomerStore] = useUpdateCustomerStoreMutation();
 
-  const [articles, { loading, pageInfo, refetch }] = useListPage(
-    useCustomersQuery,
+  const [stores, { loading, pageInfo, refetch }] = useListPage(
+    useCustomerStoresQuery,
     {
       variables,
+      skip: !params.id,
     },
   );
 
@@ -180,7 +186,7 @@ function CustomerListView() {
     [searchForm],
   );
 
-  const { deleteMany: handleDeleteMany } = useCustomerDelete(refetch);
+  const { deleteMany: handleDeleteMany } = useCustomerStoreDelete(refetch);
 
   const handleSearch = useCallback((value: string) => {
     navigate(location.pathname + (!!value ? '?q=' + value : ''), {
@@ -223,7 +229,7 @@ function CustomerListView() {
         currentCount++;
         try {
           // 假设 importRecord 是一个导入记录的函数
-          const { data } = await loadCustomers({
+          const { data } = await loadCustomerStores({
             variables: {
               where: {
                 title: record.title,
@@ -251,7 +257,7 @@ function CustomerListView() {
                 icon: 'loading',
               },
             );
-            const { errors } = await updateCustomer({
+            const { errors } = await updateCustomerStore({
               variables: {
                 id: data.result.edges[0].node.id,
                 input: inputData,
@@ -268,7 +274,7 @@ function CustomerListView() {
                 icon: 'loading',
               },
             );
-            const { errors } = await createCustomer({
+            const { errors } = await createCustomerStore({
               variables: {
                 input: inputData,
               },
@@ -382,6 +388,8 @@ function CustomerListView() {
       },
     });
 
+  const excel = useExcel();
+
   const handleDeleteInBatch = useCallback(
     (selectedRowKeys: string[]) => async () => {
       await handleDeleteMany(selectedRowKeys);
@@ -389,7 +397,10 @@ function CustomerListView() {
     [handleDeleteMany],
   );
 
-  const [state, setState] = useState<{ data?: Customer; visible: boolean }>({
+  const [state, setState] = useState<{
+    data?: CustomerStore;
+    visible: boolean;
+  }>({
     visible: false,
   });
 
@@ -398,7 +409,7 @@ function CustomerListView() {
   }, []);
 
   const handleSuccess = useCallback(
-    (_data: Customer) => {
+    (_data: CustomerStore) => {
       setState((prevState) => ({
         ...prevState,
         route: _data,
@@ -409,7 +420,7 @@ function CustomerListView() {
   );
 
   const handleDeleteSuccess = useCallback(
-    (_data: Customer) => {
+    (_data: CustomerStore) => {
       setState((prevState) => {
         if (prevState.data?.id !== _data.id) {
           return prevState;
@@ -444,10 +455,10 @@ function CustomerListView() {
   return (
     <ContentWrapper
       header={{
-        title: '客户管理',
+        title: '门店管理',
       }}
     >
-      <CustomerDrawer
+      <CustomerStoreDrawer
         data={state.data}
         onClose={handleCloseDrawer}
         onSuccess={handleSuccess}
@@ -471,15 +482,12 @@ function CustomerListView() {
                 新建
               </Button>
               {excelFileInput}
-              <Button className="me-4 my-1" onClick={handleImportExcel}>
-                模板数据导入
-              </Button>
               <Button
-                variant="light"
                 className="me-4 my-1"
-                onClick={handleDownloadTmplate}
+                variant="light"
+                onClick={() => excel.export()}
               >
-                符合性声明模板下载
+                导出 Excel
               </Button>
             </div>
           </Card.Toolbar>
@@ -518,32 +526,33 @@ function CustomerListView() {
               )}
               columns={[
                 {
-                  key: 'title',
-                  title: 'CMMF CODE',
+                  key: 'no',
+                  title: '编号',
                   width: 130,
                   sorter: true,
-                  sortOrder: getSortDirection(searchParams, 'title'),
+                  sortOrder: getSortDirection(searchParams, 'no'),
                 },
                 {
-                  key: 'tags',
-                  title: 'WMF CODE',
-                  width: 130,
-                },
-                {
-                  key: 'content',
-                  title: '规范客户',
-                },
-                {
-                  key: 'expirationAt',
-                  title: '结束时间',
+                  key: 'name',
+                  title: '名称',
+                  width: 150,
                   sorter: true,
-                  sortOrder: getSortDirection(searchParams, 'expirationAt'),
-                  width: 160,
-                  render(value) {
-                    return (
-                      <div className="text-gray-700">
-                        {value && moment(value).format('YYYY-MM-DD HH:mm')}
-                      </div>
+                  sortOrder: getSortDirection(searchParams, 'name'),
+                },
+                {
+                  key: 'address.fullAddress',
+                  title: '地址',
+                },
+                {
+                  key: 'deviceCount',
+                  title: '设备数',
+                  sorter: true,
+                  width: 80,
+                  render: (value: any) => {
+                    return value === 0 ? (
+                      <span className="badge badge-light">无设备</span>
+                    ) : (
+                      <span className="badge badge-primary">{value} 台</span>
                     );
                   },
                 },
@@ -553,7 +562,7 @@ function CustomerListView() {
                   width: 120,
                   render: (_, record: any) => {
                     return (
-                      <CustomerActions
+                      <CustomerStoreActions
                         data={record}
                         refetch={refetch}
                         onEdit={handleEdit}
@@ -564,7 +573,7 @@ function CustomerListView() {
               ]}
               pagination={pageInfo}
               onChange={handleTableChange}
-              dataSource={articles}
+              dataSource={stores}
             />
           </BlockUI>
         </Card.Body>
@@ -573,4 +582,4 @@ function CustomerListView() {
   );
 }
 
-export default CustomerListView;
+export default CustomerStoreListView;

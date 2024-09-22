@@ -116,9 +116,11 @@ function Select(props: SelectProps) {
         {...selectProps}
         ref={ref}
         className={classnames(
-          'form-select form-select-transparent',
+          'form-select',
+
           selectClassName,
           {
+            'form-select-transparent': !solid,
             [`form-select-${size}`]: !!size,
             'form-select-solid': solid,
           },

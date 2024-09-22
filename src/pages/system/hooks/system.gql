@@ -46,7 +46,7 @@ mutation updateUser($id: ID!, $input: UserUpdateInput!) {
 }
 
 query findUserByUsername($tenantId: ID, $username: String) {
-  result: users(where: { tenantId: $tenantId,  username: $username }, first: 1) {
+  result: users(where: { tenantId: $tenantId, username: $username }, first: 1) {
     id
     name
   }

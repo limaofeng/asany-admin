@@ -22,8 +22,8 @@ type AvatarLableProps = {
 };
 
 const AvatarLable = styled.div<AvatarLableProps>`
-  --kt-symbol-label-color: ${(props) => props.color};
-  --kt-symbol-label-bg: ${(props) => props.backgroundColor};
+  --bs-symbol-label-color: ${(props) => props.color};
+  --bs-symbol-label-bg: ${(props) => props.backgroundColor};
 `;
 
 function isChinese(word: string) {

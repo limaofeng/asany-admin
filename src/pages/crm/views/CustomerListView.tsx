@@ -62,6 +62,13 @@ function CustomerActions({
           onClick={handleClick}
           className="menu-sub menu-sub-dropdown menu-gray-600 menu-state-bg-light-primary fw-bold w-125px py-2"
         >
+          <Menu.Item
+            url={`/crm/customers/${data.id}/information`}
+            key="manage"
+            className="px-3"
+          >
+            管理
+          </Menu.Item>
           <Menu.Item key="edit" className="px-3">
             编辑
           </Menu.Item>
@@ -520,13 +527,8 @@ function CustomerListView() {
                 {
                   key: 'name',
                   title: '名称',
-                  width: 130,
                   sorter: true,
                   sortOrder: getSortDirection(searchParams, 'name'),
-                },
-                {
-                  key: 'contact.name',
-                  title: '联系人',
                 },
                 {
                   key: 'ticketStrategy',
