@@ -46,6 +46,7 @@ function genEmptyMeta(): Meta {
     touched: false,
     validating: false,
     name: [],
+    validated: false,
   };
 }
 
@@ -76,7 +77,7 @@ function FormItem<Values = any>(
   const mergedValidateTrigger =
     validateTrigger !== undefined ? validateTrigger : contextValidateTrigger;
 
-  const hasName = hasValidName(name);
+  const hasName = !dependencies && hasValidName(name);
 
   const prefixCls = customizePrefixCls || 'asany-form';
 

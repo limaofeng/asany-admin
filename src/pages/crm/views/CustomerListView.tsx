@@ -2,9 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
-import moment from 'moment';
 
-import useImportExcel from '@/hooks/useImportExcel';
 import useListPage, {
   queryToVariables,
   variablesToQuery,
@@ -18,20 +16,13 @@ import {
   Empty,
   Input,
   Menu,
-  Modal,
   Table,
-  Toast,
 } from '@/metronic';
 import { Customer } from '@/types';
 import { getSortDirection } from '@/utils';
 
 import CustomerDrawer from '../components/CustomerDrawer';
-import {
-  useCreateCustomerMutation,
-  useCustomersLazyQuery,
-  useCustomersQuery,
-  useUpdateCustomerMutation,
-} from '../hooks/index';
+import { useCustomersQuery } from '../hooks/index';
 import useCustomerDelete from '../hooks/useCustomerDelete';
 
 function CustomerActions({
@@ -139,12 +130,6 @@ function CustomerListView() {
     ]);
   }, [searchParams.toString()]);
 
-  const [loadCustomers] = useCustomersLazyQuery({
-    fetchPolicy: 'network-only',
-  });
-  const [createCustomer] = useCreateCustomerMutation();
-  const [updateCustomer] = useUpdateCustomerMutation();
-
   const [articles, { loading, pageInfo, refetch }] = useListPage(
     useCustomersQuery,
     {
@@ -194,200 +179,6 @@ function CustomerListView() {
       replace: true,
     });
   }, []);
-
-  const importData = useCallback(
-    async (data: any[]) => {
-      // console.log('importData', data);
-
-      const statistics: {
-        totalRecords: number;
-        insertCount: number;
-        updateCount: number;
-        failureCount: number;
-        failedRecords: { record: any; error: any }[];
-        startTime: Date | null;
-        endTime: Date | null;
-      } = {
-        totalRecords: 0, // 总记录数
-        insertCount: 0, // 插入数量
-        updateCount: 0, // 更新数量
-        failureCount: 0, // 失败数量
-        failedRecords: [], // 记录失败的详细信息
-        startTime: null, // 开始时间
-        endTime: null, // 结束时间
-      };
-
-      statistics.totalRecords = data.length;
-
-      const toast = Toast.loading('开始导入客户', {
-        placement: 'top-center',
-      });
-
-      statistics.startTime = new Date();
-
-      let currentCount = 0;
-      for (const record of data) {
-        currentCount++;
-        try {
-          // 假设 importRecord 是一个导入记录的函数
-          const { data } = await loadCustomers({
-            variables: {
-              where: {
-                title: record.title,
-              },
-            },
-          });
-
-          const inputData = {
-            title: record.title,
-            summary: record.summary,
-            tags: !!record.tag ? [record.tag] : [],
-            scheduledAt: record.scheduledAt,
-            expirationAt: record.expirationAt,
-            category: 'conformity',
-            content: {
-              type: 'PDF',
-              url: 'storage://ZovzE2fU/' + record.file,
-            },
-          };
-
-          if (data?.result?.pageInfo.total === 1) {
-            toast.update(
-              `更新 ${record.title} - ${currentCount}/${statistics.totalRecords}`,
-              {
-                icon: 'loading',
-              },
-            );
-            const { errors } = await updateCustomer({
-              variables: {
-                id: data.result.edges[0].node.id,
-                input: inputData,
-              },
-            });
-            if (!!errors?.length) {
-              throw new Error(errors[0].message);
-            }
-            statistics.updateCount++;
-          } else if (data?.result?.pageInfo.total === 0) {
-            toast.update(
-              `新增 ${record.title} - ${currentCount}/${statistics.totalRecords}`,
-              {
-                icon: 'loading',
-              },
-            );
-            const { errors } = await createCustomer({
-              variables: {
-                input: inputData,
-              },
-            });
-            if (!!errors?.length) {
-              throw new Error(errors[0].message);
-            }
-            statistics.insertCount++;
-          } else {
-            statistics.failureCount++;
-          }
-        } catch (error) {
-          toast.update(
-            `失败 ${record.title} - ${currentCount}/${statistics.totalRecords}`,
-            {
-              icon: 'error',
-            },
-          );
-          statistics.failureCount++;
-          statistics.failedRecords.push({ record, error });
-        }
-      }
-
-      statistics.endTime = new Date();
-      console.log('Import Summary:', statistics);
-
-      toast.close();
-
-      refetch();
-
-      Modal.success({
-        title: '操作成功',
-        width: 600,
-        content: (
-          <div>
-            <p>
-              导入完成, 共 {statistics.totalRecords} 条记录, 成功{' '}
-              {statistics.insertCount} 条, 更新 {statistics.updateCount} 条,
-              失败 {statistics.failureCount} 条
-            </p>
-            <p>
-              耗时:{' '}
-              {moment(statistics.endTime).diff(statistics.startTime, 'seconds')}{' '}
-              秒
-            </p>
-            <p>总记录数: {statistics.totalRecords}</p>
-            <p>插入数量: {statistics.insertCount}</p>
-            <p>更新数量: {statistics.updateCount}</p>
-            <p>失败数量: {statistics.failureCount}</p>
-          </div>
-        ),
-        allowOutsideClick: false,
-      });
-    },
-    [refetch],
-  );
-
-  const [excelFileInput, handleImportExcel, handleDownloadTmplate] =
-    useImportExcel(importData, {
-      header: 1,
-      fields: {
-        title: {
-          index: 0,
-          name: 'CMMF CODE',
-          example: 'W22L1',
-          formatter: (value) => String(value).trim(),
-        },
-        tag: {
-          index: 1,
-          name: 'WMF CODE',
-          example: 'YS22ED',
-          formatter: (value) => String(value).trim(),
-        },
-        scheduledAt: {
-          index: 2,
-          name: '发布时间',
-          example: '2024/8/22 0:00',
-          formatter: (value) =>
-            String(value).trim() && moment(value).format('YYYY-MM-DD HH:mm'),
-        },
-        expirationAt: {
-          index: 3,
-          name: '结束时间',
-          example: '2024/8/31 0:00',
-          formatter: (value) =>
-            String(value).trim() && moment(value).format('YYYY-MM-DD HH:mm'),
-        },
-        file: {
-          index: 4,
-          name: '客户位置',
-          example: '3201000159 1873596030 炒锅铲.pdf.pdf',
-          formatter: (value) => String(value).trim(),
-        },
-        summary: {
-          index: 5,
-          name: '备注',
-          example: '',
-          formatter: (value) => String(value).trim(),
-        },
-      },
-      template: {
-        filename: '符合性规范批量上传.xlsx',
-        cols: [
-          { wch: 20 },
-          { wch: 20 },
-          { wch: 20 },
-          { wch: 20 },
-          { wch: 50 },
-          { wch: 30 },
-        ],
-      },
-    });
 
   const handleDeleteInBatch = useCallback(
     (selectedRowKeys: string[]) => async () => {
@@ -477,17 +268,6 @@ function CustomerListView() {
               <Button onClick={handleNew} className="me-4 my-1">
                 新建
               </Button>
-              {excelFileInput}
-              <Button className="me-4 my-1" onClick={handleImportExcel}>
-                模板数据导入
-              </Button>
-              <Button
-                variant="light"
-                className="me-4 my-1"
-                onClick={handleDownloadTmplate}
-              >
-                符合性声明模板下载
-              </Button>
             </div>
           </Card.Toolbar>
         </Card.Header>
@@ -531,6 +311,14 @@ function CustomerListView() {
                   sortOrder: getSortDirection(searchParams, 'name'),
                 },
                 {
+                  key: 'contactInfo',
+                  title: '地址',
+                  width: 180,
+                  render: (value) => {
+                    return value?.address?.fullAddress;
+                  },
+                },
+                {
                   key: 'ticketStrategy',
                   title: '工单策略',
                   width: 130,
@@ -542,11 +330,6 @@ function CustomerListView() {
                     };
                     return ticketStrategyMap[value];
                   },
-                },
-                {
-                  key: 'ticketCount',
-                  title: '是否启用管理功能',
-                  width: 130,
                 },
                 {
                   title: '操作',

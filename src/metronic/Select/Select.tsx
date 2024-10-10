@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import classnames from 'classnames';
 import $ from 'jquery';
@@ -21,6 +21,9 @@ type SelectProps = {
   size?: 'sm' | 'lg';
   multiple?: boolean;
   options?: OptionData[];
+  labelProp?: string;
+  valueProp?: string;
+  childrenProp?: string;
   selectClassName?: string;
   dropdownClassName?: string;
   matcher?: (
@@ -36,7 +39,7 @@ type SelectProps = {
 
 function Select(props: SelectProps) {
   const {
-    width,
+    width = 'resolve',
     value,
     solid,
     size,
@@ -49,9 +52,13 @@ function Select(props: SelectProps) {
     onChange,
     onSelect,
     options,
+    labelProp = 'label',
+    valueProp = 'value',
     ...selectProps
   } = props;
   const ref = useRef<HTMLSelectElement>(null);
+
+  const [visible, setVisible] = useState(false);
 
   const handleSelect = useCallback((e: any) => {
     const params = e.params;
@@ -83,6 +90,7 @@ function Select(props: SelectProps) {
         minimumResultsForSearch: matcher ? 10 : Infinity,
         closeOnSelect: multiple ? false : undefined,
         width: width as any,
+        dropdownAutoWidth: true,
         dropdownCssClass: classnames(
           'form-select-dropdown-container',
           dropdownClassName,
@@ -90,13 +98,14 @@ function Select(props: SelectProps) {
       })
       .on('select2:select', handleSelect)
       .on('select2:unselect', handleSelect);
+
     const select2 = instance.data('select2') as any;
     return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       ref.current && select2.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dropdownClassName]);
+  }, [dropdownClassName, placeholder, visible]);
 
   useEffect(() => {
     // console.log('multiple', multiple, value);
@@ -110,25 +119,34 @@ function Select(props: SelectProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, options]);
 
+  useEffect(() => {
+    const selector = $(ref.current!);
+    const timer = setInterval(function () {
+      const visible = selector.is(':visible');
+      setVisible(visible);
+      if (visible) {
+        clearInterval(timer);
+      }
+    }, 120);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   return (
     <div className={classnames('form-select-wrapper', className)}>
       <select
         {...selectProps}
         ref={ref}
-        className={classnames(
-          'form-select',
-
-          selectClassName,
-          {
-            'form-select-transparent': !solid,
-            [`form-select-${size}`]: !!size,
-            'form-select-solid': solid,
-          },
-        )}
+        className={classnames('form-select', selectClassName, {
+          'form-select-transparent': !solid,
+          [`form-select-${size}`]: !!size,
+          'form-select-solid': solid,
+        })}
       >
         {options?.map((item) => (
-          <option key={item.value} value={item.value}>
-            {item.label}
+          <option key={item[valueProp]} value={item[valueProp]}>
+            {item[labelProp]}
           </option>
         ))}
       </select>

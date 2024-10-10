@@ -2,9 +2,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
-import moment from 'moment';
 
-import useImportExcel from '@/hooks/useImportExcel';
+import useExcel from '@/hooks/useExcel';
 import useListPage, {
   queryToVariables,
   variablesToQuery,
@@ -18,20 +17,15 @@ import {
   Empty,
   Input,
   Menu,
-  Modal,
   Table,
-  Toast,
 } from '@/metronic';
 import { CustomerStore } from '@/types';
 import { getSortDirection } from '@/utils';
 
-import useExcel from '@/hooks/useExcel';
 import CustomerStoreDrawer from '../components/CustomerStoreDrawer';
 import {
-  useCreateCustomerStoreMutation,
   useCustomerStoresLazyQuery,
   useCustomerStoresQuery,
-  useUpdateCustomerStoreMutation,
 } from '../hooks/index';
 import useCustomerStoreDelete from '../hooks/useCustomerStoreDelete';
 
@@ -140,8 +134,6 @@ function CustomerStoreListView() {
   const [loadCustomerStores] = useCustomerStoresLazyQuery({
     fetchPolicy: 'network-only',
   });
-  const [createCustomerStore] = useCreateCustomerStoreMutation();
-  const [updateCustomerStore] = useUpdateCustomerStoreMutation();
 
   const [stores, { loading, pageInfo, refetch }] = useListPage(
     useCustomerStoresQuery,
@@ -194,201 +186,80 @@ function CustomerStoreListView() {
     });
   }, []);
 
-  const importData = useCallback(
-    async (data: any[]) => {
-      // console.log('importData', data);
-
-      const statistics: {
-        totalRecords: number;
-        insertCount: number;
-        updateCount: number;
-        failureCount: number;
-        failedRecords: { record: any; error: any }[];
-        startTime: Date | null;
-        endTime: Date | null;
-      } = {
-        totalRecords: 0, // 总记录数
-        insertCount: 0, // 插入数量
-        updateCount: 0, // 更新数量
-        failureCount: 0, // 失败数量
-        failedRecords: [], // 记录失败的详细信息
-        startTime: null, // 开始时间
-        endTime: null, // 结束时间
-      };
-
-      statistics.totalRecords = data.length;
-
-      const toast = Toast.loading('开始导入客户', {
-        placement: 'top-center',
-      });
-
-      statistics.startTime = new Date();
-
-      let currentCount = 0;
-      for (const record of data) {
-        currentCount++;
-        try {
-          // 假设 importRecord 是一个导入记录的函数
-          const { data } = await loadCustomerStores({
-            variables: {
-              where: {
-                title: record.title,
-              },
-            },
-          });
-
-          const inputData = {
-            title: record.title,
-            summary: record.summary,
-            tags: !!record.tag ? [record.tag] : [],
-            scheduledAt: record.scheduledAt,
-            expirationAt: record.expirationAt,
-            category: 'conformity',
-            content: {
-              type: 'PDF',
-              url: 'storage://ZovzE2fU/' + record.file,
-            },
-          };
-
-          if (data?.result?.pageInfo.total === 1) {
-            toast.update(
-              `更新 ${record.title} - ${currentCount}/${statistics.totalRecords}`,
-              {
-                icon: 'loading',
-              },
-            );
-            const { errors } = await updateCustomerStore({
-              variables: {
-                id: data.result.edges[0].node.id,
-                input: inputData,
-              },
-            });
-            if (!!errors?.length) {
-              throw new Error(errors[0].message);
-            }
-            statistics.updateCount++;
-          } else if (data?.result?.pageInfo.total === 0) {
-            toast.update(
-              `新增 ${record.title} - ${currentCount}/${statistics.totalRecords}`,
-              {
-                icon: 'loading',
-              },
-            );
-            const { errors } = await createCustomerStore({
-              variables: {
-                input: inputData,
-              },
-            });
-            if (!!errors?.length) {
-              throw new Error(errors[0].message);
-            }
-            statistics.insertCount++;
-          } else {
-            statistics.failureCount++;
-          }
-        } catch (error) {
-          toast.update(
-            `失败 ${record.title} - ${currentCount}/${statistics.totalRecords}`,
-            {
-              icon: 'error',
-            },
-          );
-          statistics.failureCount++;
-          statistics.failedRecords.push({ record, error });
-        }
-      }
-
-      statistics.endTime = new Date();
-      console.log('Import Summary:', statistics);
-
-      toast.close();
-
-      refetch();
-
-      Modal.success({
-        title: '操作成功',
-        width: 600,
-        content: (
-          <div>
-            <p>
-              导入完成, 共 {statistics.totalRecords} 条记录, 成功{' '}
-              {statistics.insertCount} 条, 更新 {statistics.updateCount} 条,
-              失败 {statistics.failureCount} 条
-            </p>
-            <p>
-              耗时:{' '}
-              {moment(statistics.endTime).diff(statistics.startTime, 'seconds')}{' '}
-              秒
-            </p>
-            <p>总记录数: {statistics.totalRecords}</p>
-            <p>插入数量: {statistics.insertCount}</p>
-            <p>更新数量: {statistics.updateCount}</p>
-            <p>失败数量: {statistics.failureCount}</p>
-          </div>
-        ),
-        allowOutsideClick: false,
-      });
+  const excel = useExcel({
+    fields: [
+      {
+        key: 'no',
+        title: '门店编号',
+        type: 'string',
+      },
+      {
+        key: 'name',
+        title: '门店名称',
+        type: 'string',
+      },
+      {
+        key: 'openingDate',
+        title: '开业时间',
+        type: 'date',
+      },
+      {
+        key: 'phone',
+        title: '门店电话',
+        type: 'string',
+      },
+      {
+        key: 'address',
+        title: '门店地址',
+        type: 'string',
+      },
+      {
+        key: 'contactInfo.name',
+        title: '联系人姓名',
+        type: 'string',
+      },
+      {
+        key: 'contactInfo.phone',
+        title: '联系人电话',
+        type: 'string',
+      },
+      {
+        key: 'contactInfo.email',
+        title: '联系人邮箱',
+        type: 'string',
+      },
+    ],
+    export: {
+      filename: '门店列表.xlsx',
+      columns: [
+        { key: 'no', style: { wch: 10 } },
+        { key: 'name', style: { wch: 20 } },
+        { key: 'openingDate', style: { wch: 20 } },
+        { key: 'phone', style: { wch: 20 } },
+        {
+          key: 'address',
+          style: { wch: 60 },
+          dataIndex: 'address.fullAddress',
+          render: (_, { address }) =>
+            address && address.fullAddress + ' ' + address.detailedAddress,
+        },
+        { key: 'contactInfo.name', style: { wch: 20 } },
+        { key: 'contactInfo.phone', style: { wch: 20 } },
+        { key: 'contactInfo.email', style: { wch: 20 } },
+        { key: 'deviceCount', title: '设备数', style: { wch: 10 } },
+      ],
+      async dataSource() {
+        const { data } = await loadCustomerStores({
+          variables: {
+            ...variables,
+            page: 1,
+            pageSize: (pageInfo?.total || 10000) + 100,
+          },
+        });
+        return data!.result.edges.map((edge: any) => edge.node);
+      },
     },
-    [refetch],
-  );
-
-  const [excelFileInput, handleImportExcel, handleDownloadTmplate] =
-    useImportExcel(importData, {
-      header: 1,
-      fields: {
-        title: {
-          index: 0,
-          name: 'CMMF CODE',
-          example: 'W22L1',
-          formatter: (value) => String(value).trim(),
-        },
-        tag: {
-          index: 1,
-          name: 'WMF CODE',
-          example: 'YS22ED',
-          formatter: (value) => String(value).trim(),
-        },
-        scheduledAt: {
-          index: 2,
-          name: '发布时间',
-          example: '2024/8/22 0:00',
-          formatter: (value) =>
-            String(value).trim() && moment(value).format('YYYY-MM-DD HH:mm'),
-        },
-        expirationAt: {
-          index: 3,
-          name: '结束时间',
-          example: '2024/8/31 0:00',
-          formatter: (value) =>
-            String(value).trim() && moment(value).format('YYYY-MM-DD HH:mm'),
-        },
-        file: {
-          index: 4,
-          name: '客户位置',
-          example: '3201000159 1873596030 炒锅铲.pdf.pdf',
-          formatter: (value) => String(value).trim(),
-        },
-        summary: {
-          index: 5,
-          name: '备注',
-          example: '',
-          formatter: (value) => String(value).trim(),
-        },
-      },
-      template: {
-        filename: '符合性规范批量上传.xlsx',
-        cols: [
-          { wch: 20 },
-          { wch: 20 },
-          { wch: 20 },
-          { wch: 20 },
-          { wch: 50 },
-          { wch: 30 },
-        ],
-      },
-    });
-
-  const excel = useExcel();
+  });
 
   const handleDeleteInBatch = useCallback(
     (selectedRowKeys: string[]) => async () => {
@@ -412,7 +283,7 @@ function CustomerStoreListView() {
     (_data: CustomerStore) => {
       setState((prevState) => ({
         ...prevState,
-        route: _data,
+        data: _data,
       }));
       refetch();
     },
@@ -440,9 +311,9 @@ function CustomerStoreListView() {
     setState((prevState) => ({
       ...prevState,
       visible: true,
-      data: {} as any,
+      data: { customer: params.id } as any,
     }));
-  }, []);
+  }, [params.id]);
 
   const handleEdit = useCallback((e: any) => {
     setState((prevState) => ({
@@ -481,7 +352,6 @@ function CustomerStoreListView() {
               <Button onClick={handleNew} className="me-4 my-1">
                 新建
               </Button>
-              {excelFileInput}
               <Button
                 className="me-4 my-1"
                 variant="light"
@@ -540,13 +410,17 @@ function CustomerStoreListView() {
                   sortOrder: getSortDirection(searchParams, 'name'),
                 },
                 {
-                  key: 'address.fullAddress',
+                  key: 'address',
                   title: '地址',
+                  render: (address) => {
+                    return (
+                      address?.fullAddress + ' ' + address?.detailedAddress
+                    );
+                  },
                 },
                 {
                   key: 'deviceCount',
                   title: '设备数',
-                  sorter: true,
                   width: 80,
                   render: (value: any) => {
                     return value === 0 ? (

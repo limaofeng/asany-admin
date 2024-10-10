@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import {
   ApolloError,
+  ApolloQueryResult,
   OperationVariables,
   QueryHookOptions,
   QueryResult,
@@ -34,7 +35,7 @@ function useListPage<TData, TVariables extends OperationVariables>(
     loading: boolean;
     pageInfo?: PageInfo;
     error?: ApolloError;
-    refetch: () => void;
+    refetch: (variables?: Partial<any>) => Promise<ApolloQueryResult<TData>>;
     variables: TVariables;
   },
 ] {
@@ -60,7 +61,15 @@ function useListPage<TData, TVariables extends OperationVariables>(
     previousData?.result?.pageInfo.total,
   ]);
 
-  const nodes = data?.result.edges.map((edge) => edge.node) || [];
+  const nodes = useMemo(() => {
+    if (data?.result) {
+      return data.result.edges.map((edge) => edge.node);
+    }
+    if (loading && previousData?.result) {
+      return previousData.result.edges.map((edge) => edge.node);
+    }
+    return [];
+  }, [loading, data?.result, previousData?.result]);
 
   return [
     nodes as any[],
@@ -136,8 +145,9 @@ export function variablesToQuery(
 export function queryToVariables(
   query: URLSearchParams,
   mappings: FieldMapping<string, any>[],
+  initialVariables: Record<string, any> = {},
 ): Record<string, any> {
-  const variables: Record<string, any> = {};
+  const variables: Record<string, any> = initialVariables;
 
   mappings.forEach(({ source, target, transform, skip }) => {
     const value = query.get(source);

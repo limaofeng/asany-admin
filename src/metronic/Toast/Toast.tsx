@@ -179,7 +179,12 @@ Toast.promise = function <T = unknown>(
   }) as any;
 };
 
-function createToastObject(id: Id) {
+export type ToastObject = {
+  update: (content: ToastContent, overrides?: ToastOptions) => void;
+  close: () => void;
+};
+
+function createToastObject(id: Id): ToastObject {
   return {
     update: (content: ToastContent, overrides?: ToastOptions) => {
       toast.update(id, {

@@ -23,6 +23,20 @@ query customers(
         ticketStrategy
         contactInfo {
           name
+          address {
+            province
+            provinceName
+            city
+            cityName
+            district
+            districtName
+            street
+            streetName
+            detailedAddress
+            fullAddress(excludeDetailed: true)
+          }
+          phone
+          email
         }
       }
       cursor
@@ -70,28 +84,7 @@ query customerStores(
     }
     edges {
       node {
-        id
-        no
-        name
-        openingDate(format: "yyyy-MM-dd")
-        deviceCount
-        phone
-        contactInfo {
-          name
-          phone
-        }
-        address {
-          province
-          provinceName
-          city
-          cityName
-          district
-          districtName
-          street
-          streetName
-          detailedAddress
-          fullAddress(excludeDetailed: true)
-        }
+        ...CustomerStoreParts
       }
       cursor
     }
@@ -100,15 +93,13 @@ query customerStores(
 
 mutation createCustomerStore($input: CustomerStoreCreateInput!) {
   result: createCustomerStore(input: $input) {
-    id
-    name
+    ...CustomerStoreParts
   }
 }
 
 mutation updateCustomerStore($id: ID!, $input: CustomerStoreUpdateInput!) {
   result: updateCustomerStore(id: $id, input: $input) {
-    id
-    name
+    ...CustomerStoreParts
   }
 }
 
@@ -138,9 +129,26 @@ query tickets(
     }
     edges {
       node {
-        id
+        ...TicketParts
       }
       cursor
+    }
+  }
+}
+
+query ticket($id: ID!) {
+  result: ticket(id: $id) {
+    ...TicketParts
+    attachments
+    statusHistory {
+      id
+      status
+      loggedBy {
+        id
+        name
+      }
+      logTime(format: "yyyy-MM-dd HH:mm")
+      note
     }
   }
 }
@@ -157,6 +165,12 @@ mutation updateTicket($id: ID!, $input: TicketUpdateInput!) {
   }
 }
 
+mutation deleteManyTickets($where: TicketWhereInput!) {
+  result: deleteManyTickets(where: $where) {
+    count
+  }
+}
+
 query customer($id: ID!) {
   result: customer(id: $id) {
     id
@@ -164,6 +178,20 @@ query customer($id: ID!) {
     ticketStrategy
     contactInfo {
       name
+      address {
+        province
+        provinceName
+        city
+        cityName
+        district
+        districtName
+        street
+        streetName
+        detailedAddress
+        fullAddress(excludeDetailed: true)
+      }
+      phone
+      email
     }
   }
 }
@@ -173,3 +201,84 @@ query customer($id: ID!) {
 #     count
 #   }
 # }
+
+fragment TicketParts on Ticket {
+  id
+  no
+  description
+  device: target {
+    id
+    ... on Device {
+      id
+      sn
+      name
+      warrantyStatus
+      warrantyStartDate(format: "yyyy-MM-dd")
+      brand {
+        id
+        name
+      }
+      product {
+        id
+        name
+      }
+    }
+  }
+  customer {
+    id
+    name
+  }
+  store {
+    id
+    no
+    name
+    address {
+      fullAddress
+    }
+    phone
+    openingDate(format: "yyyy-MM-dd")
+  }
+  createdAt(format: "yyyy-MM-dd HH:mm:ss")
+  status
+  contactInfo {
+    name
+    phone
+    email
+    address {
+      fullAddress
+    }
+  }
+  assignee {
+    id
+    name
+    phone {
+      number
+    }
+  }
+  completedAt(format: "yyyy-MM-dd HH:mm")
+}
+
+fragment CustomerStoreParts on CustomerStore {
+  id
+  no
+  name
+  openingDate(format: "yyyy-MM-dd")
+  deviceCount
+  phone
+  contactInfo {
+    name
+    phone
+  }
+  address {
+    province
+    provinceName
+    city
+    cityName
+    district
+    districtName
+    street
+    streetName
+    detailedAddress
+    fullAddress(excludeDetailed: true)
+  }
+}

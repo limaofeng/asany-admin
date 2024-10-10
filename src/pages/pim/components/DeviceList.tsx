@@ -1,10 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Icon from '@asany/icons';
+import { Form } from 'antd';
+import moment from 'moment';
 
+import { AdvancedSearch } from '@/components';
 import { useCurrentuser } from '@/hooks';
 import useDelete from '@/hooks/useDelete';
+import useExcel from '@/hooks/useExcel';
 import useListPage, {
   queryToVariables,
   variablesToQuery,
@@ -13,21 +17,27 @@ import {
   BlockUI,
   Button,
   Card,
+  Col,
   Dropdown,
   Empty,
   Input,
   Menu,
+  Radio,
+  Row,
   Select2,
   Table,
 } from '@/metronic';
+import DateRangePicker from '@/metronic/DatePicker/DateRangePicker';
+import { TableColumn } from '@/metronic/Table/typings';
 import { useUsersQuery } from '@/pages/system/hooks';
-import { Device } from '@/types';
+import { Device, DeviceWhereInput, PageInfo } from '@/types';
 import { getSortDirection } from '@/utils';
 
 import {
   useCustomerStoresQuery,
   useCustomersQuery,
   useDeleteManyDevicesMutation,
+  useDevicesLazyQuery,
   useDevicesQuery,
 } from '../hooks';
 
@@ -78,16 +88,18 @@ function DeviceActions({
 }
 
 export enum ColumnName {
-  sn,
-  name,
-  warrantyStatus,
-  customer,
-  customerStore,
-  createdAt,
+  sn = 'sn',
+  name = 'name',
+  warrantyStatus = 'warrantyStatus',
+  customer = 'store.customer.name',
+  customerStore = 'store.name',
+  createdAt = 'createdAt',
+  action = 'action',
 }
 
 type DeviceListProps = {
   columns: ColumnName[];
+  where: DeviceWhereInput;
 };
 
 function DeviceList(props: DeviceListProps) {
@@ -102,34 +114,35 @@ function DeviceList(props: DeviceListProps) {
           source: 'q',
           target: 'keywords',
         },
+        {
+          source: 'customer',
+          target: 'customer',
+        },
+        {
+          source: 'stores',
+          target: 'customerStore_in',
+          transform: (value) => value.split(','),
+        },
+        {
+          source: 'created_by',
+          target: 'createdBy_in',
+          transform: (value) => value.split(','),
+        },
+        {
+          source: 'warranty_status',
+          target: 'warrantyStatus',
+        },
+        {
+          source: 'created_at_range',
+          target: 'createdAt_range',
+          transform: (value) => {
+            const [start, end] = value.split('~');
+            return [moment(start), moment(end)];
+          },
+        },
       ]),
-    [searchParams.get('q')],
+    [searchParams.toString()],
   );
-
-  const [where, setWhere] = useState<{
-    name_contains?: string;
-    customer?: string;
-    customerStore?: string;
-    createdBy?: string;
-  }>({});
-
-  useEffect(() => {
-    setWhere((where) => {
-      if (searchParams.get('name_contains')) {
-        where.name_contains = searchParams.get('name_contains')!;
-      }
-      if (searchParams.get('customer')) {
-        where.customer = searchParams.get('customer')!;
-      }
-      if (searchParams.get('customerStore')) {
-        where.customerStore = searchParams.get('customerStore')!;
-      }
-      if (searchParams.get('createdBy')) {
-        where.createdBy = searchParams.get('createdBy')!;
-      }
-      return where;
-    });
-  }, [searchParams]);
 
   const { data: usersData } = useUsersQuery({
     variables: {
@@ -142,73 +155,134 @@ function DeviceList(props: DeviceListProps) {
     skip: !user?.tenantId,
   });
 
-  const { data: customersData } = useCustomersQuery({
-    fetchPolicy: 'network-only',
-  });
-
-  const handleTableChange = useCallback(
-    (pagination: any, filters: any, sorter: any) => {
-      const querystring = variablesToQuery(
-        { searchForm, pagination, filters, sorter },
-        [
-          {
-            source: 'searchForm.keywords',
-            target: 'q',
-            skip: (value) => !value,
-          },
-          {
-            source: 'pagination.current',
-            target: 'page',
-            skip: (value) => value === 1,
-          },
-          {
-            source: 'pagination.pageSize',
-            target: 'per_page',
-            skip: (value) => value === 15,
-          },
-          {
-            source: 'sorter.field',
-            target: 'sort',
-            transform: (value) =>
-              `${value}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
-          },
-        ],
-      );
+  const handleSearch = useCallback(
+    (searchForm: any, pagination: any, sorter: any) => {
+      console.log('handleSearch', searchForm, pagination, sorter);
+      const querystring = variablesToQuery({ searchForm, pagination, sorter }, [
+        {
+          source: 'searchForm.keywords',
+          target: 'q',
+          skip: (value) => !value,
+        },
+        {
+          source: 'searchForm.customer',
+          target: 'customer',
+          skip: (value) => !value,
+        },
+        {
+          source: 'searchForm.customerStore_in',
+          target: 'stores',
+          transform: (value) => value?.join(','),
+          skip: (value) => !value || !value.length,
+        },
+        {
+          source: 'searchForm.createdBy_in',
+          target: 'created_by',
+          transform: (value) => value?.join(','),
+          skip: (value) => !value || !value.length,
+        },
+        {
+          source: 'searchForm.warrantyStatus',
+          target: 'warranty_status',
+          transform: (value) => value,
+          skip: (value) => !value || value === 'ALL',
+        },
+        {
+          source: 'searchForm.createdAt_range',
+          target: 'created_at_range',
+          transform: (value) =>
+            value[0].format('YYYY-MM-DD') + '~' + value[1].format('YYYY-MM-DD'),
+          skip: (value) => !value,
+        },
+        {
+          source: 'pagination.current',
+          target: 'page',
+          skip: (value) => value === 1,
+        },
+        {
+          source: 'pagination.pageSize',
+          target: 'per_page',
+          skip: (value) => value === 15,
+        },
+        {
+          source: 'sorter.field',
+          target: 'sort',
+          transform: (value) =>
+            `${value}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
+        },
+      ]);
       navigate(location.pathname + '?' + querystring, {
         replace: true,
       });
     },
-    [searchForm],
+    [],
   );
 
   const variables = useMemo(() => {
-    return queryToVariables(searchParams, [
-      {
-        source: 'q',
-        target: 'where.name_contains',
-      },
-      {
-        source: 'sex',
-        target: 'where.sex',
-      },
-      {
-        source: 'page',
-        transform: (value) => parseInt(value),
-      },
-      {
-        source: 'per_page',
-        transform: (value) => parseInt(value),
-      },
-      {
-        source: 'sort',
-        target: 'orderBy',
-        transform: (value) => {
-          const [field, order] = value.split(':');
-          return `${field}_${order}`;
+    return queryToVariables(
+      searchParams,
+      [
+        {
+          source: 'q',
+          target: 'where.name_contains',
         },
-      },
-    ]);
-  }, [searchParams.toString()]);
+        {
+          source: 'customer',
+          target: 'where.customer',
+        },
+        {
+          source: 'stores',
+          target: 'where.customerStore_in',
+          transform: (value) => value.split(','),
+        },
+        {
+          source: 'created_by',
+          target: 'where.createdBy_in',
+          transform: (value) => value.split(','),
+        },
+        {
+          source: 'warranty_status',
+          target: 'where.warrantyStatus',
+        },
+        {
+          source: 'created_at_range',
+          target: 'where.createdAt_range',
+          transform: (value) => {
+            const [start, end] = value.split('~');
+            return { start: moment(start), end: moment(end) };
+          },
+        },
+        {
+          source: 'page',
+          transform: (value) => parseInt(value),
+        },
+        {
+          source: 'per_page',
+          transform: (value) => parseInt(value),
+        },
+        {
+          source: 'sort',
+          target: 'orderBy',
+          transform: (value) => {
+            const [field, order] = value.split(':');
+            return `${field}_${order}`;
+          },
+        },
+      ],
+      { where: { ...props.where } },
+    );
+  }, [searchParams.toString(), props.where]);
+
+  const handleTableChange = useCallback(
+    (pagination: any, _: any, sorter: any) => {
+      handleSearch(searchForm, pagination, sorter);
+    },
+    [searchForm],
+  );
+
+  const [loadDevices] = useDevicesLazyQuery({
+    fetchPolicy: 'network-only',
+  });
 
   const [devices, { loading, pageInfo, refetch }] = useListPage(
     useDevicesQuery,
@@ -218,40 +292,125 @@ function DeviceList(props: DeviceListProps) {
     },
   );
 
-  const setCustomerId = useCallback((value: string) => {
-    setWhere((where) => ({
-      ...where,
-      customerStore: undefined,
-      customer: value,
-    }));
+  const handleKeywordSearch = useCallback((value: string) => {
+    handleSearch({ keywords: value }, {}, {});
   }, []);
 
-  const setWhereCreatedBy = useCallback((value: string) => {
-    setWhere((where) => ({
-      ...where,
-      createdBy: !value ? undefined : value,
-    }));
+  const handleAdvancedSearch = useCallback((values: any) => {
+    handleSearch(values, {}, {});
   }, []);
 
-  const setCustomerStoreId = useCallback((value: string) => {
-    setWhere((where) => ({
-      ...where,
-      customerStore: value,
-    }));
-  }, []);
+  const [customerId, setCustomerId] = useState(variables.where?.customer);
 
-  const handleSearch = useCallback((value: string) => {
-    navigate(location.pathname + (!!value ? '?q=' + value : ''), {
-      replace: true,
-    });
-  }, []);
-
-  const { data: customerStoresData } = useCustomerStoresQuery({
+  const { data: customersData } = useCustomersQuery({
     fetchPolicy: 'network-only',
-    skip: !where?.customer,
-    variables: {
-      where: {
-        customer: where?.customer,
+    skip: !!props.where?.customer,
+  });
+
+  const { data: customerStoresData, loading: customerStoresLoading } =
+    useCustomerStoresQuery({
+      fetchPolicy: 'network-only',
+      skip: !customerId,
+      variables: {
+        where: {
+          customer: customerId || variables.where?.customer,
+        },
+      },
+    });
+
+  const excel = useExcel({
+    fields: [
+      {
+        key: 'sn',
+        title: '序列号',
+        type: 'string',
+      },
+      {
+        key: 'brand.name',
+        title: '品牌',
+        type: 'string',
+      },
+      {
+        key: 'product.name',
+        title: '产品名称',
+        type: 'string',
+      },
+      {
+        key: 'name',
+        title: '设备名称',
+        type: 'string',
+      },
+      {
+        key: 'warrantyStatus',
+        title: '保固状态',
+        type: 'string',
+      },
+      {
+        key: 'warrantyStartDate',
+        title: '保固开始时间',
+        type: 'date',
+      },
+      {
+        key: 'warrantyEndDate',
+        title: '保固结束时间',
+        type: 'date',
+      },
+      {
+        key: 'store.no',
+        title: '所属门店店号',
+        type: 'string',
+      },
+      {
+        key: 'store.name',
+        title: '所属门店名称',
+        type: 'string',
+      },
+      {
+        key: 'store.address.fullAddress',
+        title: '所属门店地址',
+        type: 'string',
+      },
+      {
+        key: 'store.phone',
+        title: '所属门店电话',
+        type: 'string',
+      },
+    ],
+    export: {
+      filename: '设备列表.xlsx',
+      columns: [
+        { key: 'sn', style: { wch: 20 } },
+        { key: 'brand.name', style: { wch: 10 } },
+        { key: 'product.name', style: { wch: 10 } },
+        { key: 'name', style: { wch: 16 } },
+        { key: 'warrantyStatus', style: { wch: 10 } },
+        { key: 'warrantyStartDate', style: { wch: 16 } },
+        { key: 'warrantyEndDate', style: { wch: 16 } },
+        { key: 'store.no', style: { wch: 10 } },
+        { key: 'store.name', style: { wch: 10 } },
+        { key: 'store.address.fullAddress', style: { wch: 40 } },
+        { key: 'store.phone', style: { wch: 20 } },
+      ],
+      async dataSource(toast) {
+        const allDevices = [];
+        let pageInfo: PageInfo = { hasNextPage: false } as any;
+        let page = 1;
+        do {
+          const { data } = await loadDevices({
+            variables: {
+              ...variables,
+              page,
+              pageSize: 100,
+            },
+          });
+          pageInfo = data!.result.pageInfo as any;
+          allDevices.push(...data!.result.edges.map((edge) => edge.node));
+          toast.update(
+            `已下载 ${allDevices.length}/${data!.result.pageInfo.total} 条数据`,
+          );
+          page++;
+        } while (pageInfo.hasNextPage);
+        return allDevices;
       },
     },
   });
@@ -299,84 +458,238 @@ function DeviceList(props: DeviceListProps) {
     [],
   );
 
+  const { keywords, ...advancedSearchValues } = searchForm;
+
+  const columns = (
+    [
+      {
+        key: 'sn',
+        title: '序列号',
+        sorter: true,
+        sortOrder: getSortDirection(searchParams, 'sn'),
+        width: 260,
+        render(no, data) {
+          return (
+            <span
+              onClick={() => {
+                navigate(`/pim/devices/${data.id}`);
+              }}
+            >
+              {no}
+            </span>
+          );
+        },
+      },
+      {
+        key: 'name',
+        title: '设备名称',
+        sorter: true,
+        sortOrder: getSortDirection(searchParams, 'name'),
+        render(name, record) {
+          return (
+            <div>
+              {record?.brand?.name} | {name}
+            </div>
+          );
+        },
+      },
+      {
+        key: 'warrantyStatus',
+        title: '保修状态',
+        width: 80,
+        render(value) {
+          const warrantyStatusTexts: any = {
+            INACTIVE: '未激活',
+            ACTIVE: '激活',
+            EXPIRED: '已过期',
+            CANCELED: '已作废',
+          };
+          return <div>{warrantyStatusTexts[value]}</div>;
+        },
+      },
+      {
+        key: 'store.customer.name',
+        title: '所属客户',
+        width: 120,
+        render(value) {
+          return <div>{value}</div>;
+        },
+      },
+      {
+        key: 'store.name',
+        title: '所属门店',
+        width: 120,
+        render(value) {
+          return <div>{value}</div>;
+        },
+      },
+      {
+        key: 'createdAt',
+        title: '创建时间',
+        width: 120,
+        sorter: true,
+        sortOrder: getSortDirection(searchParams, 'createdAt'),
+      },
+      {
+        title: '操作',
+        key: 'action',
+        width: 140,
+        render: (_, record: any) => {
+          return <DeviceActions data={record} delete={handleDelete} />;
+        },
+      },
+    ] as TableColumn<any>[]
+  )
+    .filter((column) => props.columns.includes(column.key as ColumnName))
+    .sort((a, b) => {
+      return (
+        props.columns.indexOf(a.key as ColumnName) -
+        props.columns.indexOf(b.key as ColumnName)
+      );
+    });
+
   return (
     <Card className="mb-5 mb-xl-10">
       <Card.Header className="pt-8">
         <Card.Title className="flex-row">
           <Input.Search
             solid
-            value={searchForm.keywords}
+            value={keywords}
             className="w-250px"
             placeholder="搜索设备"
-            onSearch={handleSearch}
+            onSearch={handleKeywordSearch}
           />
-          <Button variant={false}>更多筛选条件</Button>
+          <AdvancedSearch
+            values={advancedSearchValues}
+            onSearch={handleAdvancedSearch}
+          >
+            {!props.where?.customer && (
+              <Row gutter={8} className="mb-8">
+                <Col xxl={7}>
+                  <label className="fs-6 form-label fw-bold text-dark">
+                    客户
+                  </label>
+                  <Form.Item noStyle name="customer">
+                    <Select2
+                      solid
+                      matcher={(params, data) => {
+                        if (!params.term || params.term === '') {
+                          return data;
+                        }
+                        if (data.text.includes(params.term)) {
+                          return data;
+                        }
+                        return null;
+                      }}
+                      onChange={(value) => {
+                        setCustomerId(value as any);
+                      }}
+                      placeholder="全部客户"
+                      options={customers.map((customer) => ({
+                        label: customer.name!,
+                        value: customer.id,
+                      }))}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            )}
+            <Row gutter={8} className="mb-8">
+              <Col xxl={7}>
+                <label className="fs-6 form-label fw-bold text-dark">
+                  门店
+                </label>
+                <Form.Item dependencies={['customer']} noStyle>
+                  {(form) => {
+                    const customer = form.getFieldValue('customer');
+                    let placeholder = customer ? '全部门店' : '请先选择客户';
+                    return (
+                      <Form.Item noStyle name="customerStore_in">
+                        <Select2
+                          solid
+                          multiple
+                          placeholder={
+                            customerStoresLoading ? '加载中...' : placeholder
+                          }
+                          options={stores.map((item) => {
+                            return {
+                              label: item.name,
+                              value: item.id,
+                            };
+                          })}
+                        />
+                      </Form.Item>
+                    );
+                  }}
+                </Form.Item>
+              </Col>
+              <Col xxl={5}>
+                <label className="fs-6 form-label fw-bold text-dark">
+                  保修状态
+                </label>
+                <Form.Item noStyle name="warrantyStatus" initialValue="ALL">
+                  <Radio.Group>
+                    <Radio.Button value="ALL">全部</Radio.Button>
+                    <Radio.Button value="ACTIVE">在保</Radio.Button>
+                    <Radio.Button value="EXPIRED">已过期</Radio.Button>
+                  </Radio.Group>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={8} className="mb-8">
+              <Col xxl={7}>
+                <label className="fs-6 form-label fw-bold text-dark">
+                  创建人
+                </label>
+                <Form.Item noStyle name="createdBy_in">
+                  <Select2
+                    solid
+                    multiple
+                    matcher={(params, data) => {
+                      if (!params.term || params.term === '') {
+                        return data;
+                      }
+                      const user = users.find(
+                        (user) => user.id === (data as any).id,
+                      );
+                      if (
+                        user?.nickname?.includes(params.term) ||
+                        user?.username?.includes(params.term) ||
+                        user?.phone?.number?.includes(params.term)
+                      ) {
+                        return data;
+                      }
+                      return null;
+                    }}
+                    placeholder="创建人"
+                    labelProp="name"
+                    valueProp="id"
+                    options={users}
+                  />
+                </Form.Item>
+              </Col>
+              <Col xxl={5}>
+                <label className="fs-6 form-label fw-bold text-dark">
+                  创建时间
+                </label>
+                <Form.Item noStyle name="createdAt_range">
+                  <DateRangePicker solid />
+                </Form.Item>
+              </Col>
+            </Row>
+          </AdvancedSearch>
         </Card.Title>
 
         <Card.Toolbar>
-          <div className="me-4 my-1">
-            <Select2
-              solid
-              size="sm"
-              className="w-150px"
-              onChange={(value) => setWhereCreatedBy(value as string)}
-              matcher={(params, data) => {
-                if (!params.term || params.term === '') {
-                  return data;
-                }
-                if (data.text.includes(params.term)) {
-                  return data;
-                }
-                return null;
-              }}
-              placeholder="创建人"
-              value={where?.createdBy}
-              options={users.map((user) => ({
-                label: user.name!,
-                value: user.id!,
-              }))}
-            />
-          </div>
-          <div className="me-4 my-1">
-            <Select2
-              solid
-              size="sm"
-              className="w-150px"
-              onChange={(value) => setCustomerId(value as string)}
-              matcher={(params, data) => {
-                if (!params.term || params.term === '') {
-                  return data;
-                }
-                if (data.text.includes(params.term)) {
-                  return data;
-                }
-                return null;
-              }}
-              placeholder="全部客户"
-              value={where?.customer}
-              options={customers.map((customer) => ({
-                label: customer.name!,
-                value: customer.id,
-              }))}
-            />
-          </div>
-          <div className="me-4 my-1">
-            <Select2
-              solid
-              size="sm"
-              className="w-250px"
-              placeholder="全部门店"
-              value={where?.customerStore}
-              onChange={(value) => setCustomerStoreId(value as string)}
-              options={stores.map((item) => {
-                return {
-                  label: item.name,
-                  value: item.id,
-                };
-              })}
-            />
-          </div>
-          <Button className="me-4 my-1">导出数据</Button>
+          <div className="me-4 my-1"></div>
+          <div className="me-4 my-1"></div>
+          <Button
+            variant="light"
+            className="me-4 my-1"
+            onClick={() => excel.export()}
+          >
+            导出数据
+          </Button>
         </Card.Toolbar>
       </Card.Header>
       <Card.Body>
@@ -411,84 +724,7 @@ function DeviceList(props: DeviceListProps) {
                 image="/assets/media/illustrations/sigma-1/5.png"
               />
             )}
-            columns={[
-              {
-                key: 'sn',
-                title: '序列号',
-                sorter: true,
-                sortOrder: getSortDirection(searchParams, 'sn'),
-                width: 260,
-                render(no, data) {
-                  return (
-                    <span
-                      onClick={() => {
-                        navigate(`/pim/devices/${data.id}`);
-                      }}
-                    >
-                      {no}
-                    </span>
-                  );
-                },
-              },
-              {
-                key: 'name',
-                title: '设备名称',
-                sorter: true,
-                sortOrder: getSortDirection(searchParams, 'name'),
-                render(name, record) {
-                  return (
-                    <div>
-                      {record?.brand?.name} | {name}
-                    </div>
-                  );
-                },
-              },
-              {
-                key: 'warrantyStatus',
-                title: '保修状态',
-                width: 80,
-                render(value) {
-                  const warrantyStatusTexts: any = {
-                    INACTIVE: '未激活',
-                    ACTIVE: '激活',
-                    EXPIRED: '已过期',
-                    CANCELED: '已作废',
-                  };
-                  return <div>{warrantyStatusTexts[value]}</div>;
-                },
-              },
-              {
-                key: 'owner.customer.name',
-                title: '所属客户',
-                width: 120,
-                render(value) {
-                  return <div>{value}</div>;
-                },
-              },
-              {
-                key: 'owner.name',
-                title: '所属门店',
-                width: 120,
-                render(value) {
-                  return <div>{value}</div>;
-                },
-              },
-              {
-                key: 'createdAt',
-                title: '创建时间',
-                width: 120,
-                sorter: true,
-                sortOrder: getSortDirection(searchParams, 'createdAt'),
-              },
-              {
-                title: '操作',
-                key: 'action',
-                width: 140,
-                render: (_, record: any) => {
-                  return <DeviceActions data={record} delete={handleDelete} />;
-                },
-              },
-            ]}
+            columns={columns}
             pagination={pageInfo}
             onChange={handleTableChange}
             dataSource={devices}

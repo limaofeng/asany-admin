@@ -82,6 +82,7 @@ function useCustomerSubmit(
           setConfirmLoading(false);
         } catch (e) {
           setConfirmLoading(false);
+          console.error(e);
         }
       };
     } else {

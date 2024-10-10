@@ -25,33 +25,20 @@ type CustomerStoreFormProps = {
   onDeleteSuccess: (data: any) => void;
 };
 
-const TicketStrategyOptions = [
-  {
-    label: '不处理',
-    value: 'NONE',
-  },
-  {
-    label: '自动分配',
-    value: 'AUTO',
-  },
-  {
-    label: '客户分配',
-    value: 'ASSIGN',
-  },
-];
-
 function CustomerStoreForm(props: CustomerStoreFormProps) {
   const { form } = props;
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const values = props.data;
+    const { address: { ...address } = {}, ...values } = props.data;
     if (!values.id) {
       form.resetFields();
     }
+    delete address.fullAddress;
     form.setFieldsValue({
       ...values,
-      detailedAddress: values.address?.detailedAddress,
+      address,
+      detailedAddress: address?.detailedAddress,
     });
   }, [form, props.data]);
 
@@ -184,11 +171,25 @@ type CustomerStoreDrawerProps = {
 function CustomerStoreDrawer(props: CustomerStoreDrawerProps) {
   const { data, visible, onClose, onSuccess, onDeleteSuccess } = props;
 
+  const customerId = data?.customer;
+
   const [submit, { form, submitting }] = useCustomerStoreSubmit(data!, {
-    transform(data) {
-      return {
+    transform({ detailedAddress, address, ...data }, type) {
+      delete address.__typename;
+
+      const values = {
         ...data,
+        address: {
+          ...address,
+          detailedAddress,
+        },
       };
+
+      if (type === 'create') {
+        values.customer = customerId;
+      }
+
+      return values;
     },
     onSubmitted: onSuccess,
   });
@@ -202,8 +203,8 @@ function CustomerStoreDrawer(props: CustomerStoreDrawerProps) {
     };
   }, [data]);
 
-  const { delete: handleDelete } = useCustomerStoreDelete(() =>
-    onDeleteSuccess(data!),
+  const { delete: handleDelete } = useCustomerStoreDelete((data) =>
+    onDeleteSuccess(data),
   );
 
   return (

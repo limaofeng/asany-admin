@@ -337,8 +337,7 @@ function DeviceDetailsView() {
                         >
                           <Select2
                             solid
-                            className="w-150px"
-                            selectClassName="w-150px"
+                            placeholder="请选择门店"
                             matcher={(params, data) => {
                               if (!params.term || params.term === '') {
                                 return data;

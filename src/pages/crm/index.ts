@@ -108,6 +108,26 @@ class Crm {
     loader: () => import('./views/Dashboard'),
     loading: LoadingComponent,
   });
+
+  @component({
+    name: 'TicketListView',
+    title: '服务单管理',
+    tags: ['服务单管理/服务单列表'],
+  })
+  TicketListView = dynamic({
+    loader: () => import('./views/TicketListView'),
+    loading: LoadingComponent,
+  });
+
+  @component({
+    name: 'TicketDetailsView',
+    title: '服务单详情',
+    tags: ['服务单管理/服务单详情'],
+  })
+  TicketDetailsView = dynamic({
+    loader: () => import('./views/TicketDetailsView'),
+    loading: LoadingComponent,
+  });
 }
 
 export default new Crm();

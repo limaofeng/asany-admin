@@ -46,6 +46,7 @@ query devices(
       pageSize
       total
       current
+      hasNextPage
     }
     edges {
       node {
@@ -61,10 +62,24 @@ query devices(
           id
           name
         }
-        owner {
+        product {
           id
           name
+        }
+        store: owner {
+          id
           ... on CustomerStore {
+            no
+            name
+            address {
+              province
+              city
+              district
+              street
+              detailedAddress
+              fullAddress(excludeDetailed: false)
+            }
+            phone
             customer {
               id
               name
@@ -72,6 +87,7 @@ query devices(
           }
         }
         warrantyStatus
+        warrantyStartDate(format: "yyyy-MM-dd")
         warrantyEndDate(format: "yyyy-MM-dd")
         address {
           province
@@ -411,7 +427,7 @@ query customers($where: CustomerWhereInput, $limit: Int = 1000) {
   }
 }
 
-query customerStores($where: CustomerStoreWhereInput, $limit: Int = 1000) {
+query customerStores($where: CustomerStoreWhereInput, $limit: Int = 2000) {
   result: customerStores(where: $where, limit: $limit) {
     id
     name

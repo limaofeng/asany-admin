@@ -289,7 +289,7 @@ function AreaPicker(props: AreaPickerProps) {
   );
 
   const handleSelect = useCallback(
-    (keys: string[], writed) => {
+    (keys: string[], writed?: boolean) => {
       loadTabs(keys, writed);
     },
     [loadTabs],
@@ -315,7 +315,7 @@ function AreaPicker(props: AreaPickerProps) {
     }
     loadTabs(value, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [waiting, value.join('-')]);
+  }, [areas.length, waiting, value.join('-')]);
 
   const selectedKeys = useMemo(() => {
     return selectedItems.map((item) => item.code);
@@ -344,7 +344,7 @@ function AreaPicker(props: AreaPickerProps) {
       }
     >
       <div
-        placeholder={
+        data-placeholder={
           !selectedItems.length && loading ? '加载数据中...' : placeholder
         }
         className={classnames('area-picker form-control', className, {

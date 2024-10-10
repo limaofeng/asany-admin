@@ -8,6 +8,7 @@ import './style/index.scss';
 export type BadgeProps = {
   tag?: 'span' | 'div';
   color?: Color;
+  // variant
   light?: boolean;
   shape?: 'square' | 'circle';
   dot?: boolean;

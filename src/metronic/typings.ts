@@ -19,3 +19,5 @@ export type MainColor =
   | 'dark';
 
 export type { Placement } from './Dropdown/Dropdown';
+
+export type { ToastObject } from '@/metronic/Toast/Toast';

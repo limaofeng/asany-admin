@@ -12,11 +12,11 @@
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   appearance: none;
 
-  &[placeholder]:empty:before {
+  &[data-placeholder]:empty:before {
     color: #a1a5b7 !important;
     font-size: 13px !important;
     background-color: transparent;
-    content: attr(placeholder);
+    content: attr(data-placeholder);
   }
 }
 .area-picker-overlay {

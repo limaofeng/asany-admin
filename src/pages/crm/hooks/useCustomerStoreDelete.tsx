@@ -2,12 +2,12 @@ import useDelete from '@/hooks/useDelete';
 
 import { useDeleteManyCustomerStoresMutation } from './api';
 
-function useCustomerStoreDelete(success?: () => void) {
+function useCustomerStoreDelete(success?: (data: any) => void) {
   const { delete: handleDelete, deleteMany: handleDeleteMany } = useDelete(
     useDeleteManyCustomerStoresMutation,
     {
-      onDeleted: () => {
-        success && success();
+      onDeleted: (data) => {
+        success && success(data);
       },
       dialog: {
         title: '你确定要删除吗？',

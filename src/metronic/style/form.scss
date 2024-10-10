@@ -4,6 +4,11 @@
   }
 }
 
+.nav-group {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
 .asany-form-extra {
   min-height: 17px;
   margin: 4px 0 2px;
@@ -124,6 +129,13 @@
   border-radius: 6px;
 }
 
+.form-select-wrapper {
+  .select2.select2-container--bootstrap5
+    .select2-selection--multiple:not(.form-select-sm):not(.form-select-lg) {
+    min-height: 32px;
+  }
+}
+
 .form-control {
   &-borderless {
     background-color: transparent;
@@ -205,4 +217,8 @@
   .form-label {
     font-size: 1rem;
   }
+}
+
+.form-control.form-control-solid.area-picker {
+  box-shadow: none;
 }

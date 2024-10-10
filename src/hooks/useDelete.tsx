@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 
 import {
+  ApolloError,
   MutationHookOptions,
   MutationTuple,
   OperationVariables,
@@ -43,7 +44,7 @@ type DeleteEntity = {
 };
 
 type DeleteOptions<TData, TVariables, DE = any> = {
-  onDeleted?: (data: TData) => void;
+  onDeleted?: (data: any, result: TData) => void;
   mutation?: MutationHookOptions<TData, TVariables>;
   dialog?: DialogOptions<DE>;
 };
@@ -70,6 +71,7 @@ function useDelete<TData, TVariables extends OperationVariables>(
   });
 
   const deleting = useRef(false);
+  const error = useRef<ApolloError | null>(null);
 
   const handleDeleteExecute = useCallback(
     async (data: any, options?: DeleteOptions<TData, TVariables, any>) => {
@@ -137,6 +139,7 @@ function useDelete<TData, TVariables extends OperationVariables>(
         },
         preConfirm: async () => {
           deleting.current = true;
+          error.current = null;
           try {
             const okButton = document.querySelector('.swal2-confirm')!;
             okButton.textContent = '删除中...';
@@ -149,12 +152,21 @@ function useDelete<TData, TVariables extends OperationVariables>(
             );
             okButton.appendChild(spinner);
             const _result = await delay(execute(), 350);
-            onDeleted && onDeleted(_result);
+            onDeleted && onDeleted(data, _result);
+          } catch (e: any) {
+            error.current = e;
           } finally {
             deleting.current = false;
           }
         },
       });
+      if (error.current) {
+        Toast.error('删除失败:' + error.current.message, 2000, {
+          placement: 'top-center',
+          progressBar: true,
+        });
+        return false;
+      }
       if (!result.isConfirmed) {
         return false;
       }
@@ -168,10 +180,7 @@ function useDelete<TData, TVariables extends OperationVariables>(
   );
 
   const handleDelete = useCallback(
-    async (
-      data: any,
-      options?: DeleteOptions<TData, TVariables, DeleteEntity>,
-    ) => {
+    (data: any, options?: DeleteOptions<TData, TVariables, DeleteEntity>) => {
       return handleDeleteExecute(data, options);
     },
     [baseOptions, deleteMany],

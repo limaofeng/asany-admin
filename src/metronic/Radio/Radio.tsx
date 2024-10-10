@@ -21,6 +21,7 @@ export interface RadioProps {
   className?: string;
   inputClassName?: string;
   onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function Radio(props: RadioProps) {
@@ -82,6 +83,26 @@ function Radio(props: RadioProps) {
   );
 }
 
+type RadioButtonProps = RadioProps;
+
+function RadioButton(props: RadioButtonProps) {
+  return (
+    <label>
+      <input
+        type="radio"
+        className="btn-check"
+        // TODO：这里是不对的 onClick={props.onClick}
+        value={props.value}
+        checked={props.checked}
+        onChange={props.onChange}
+      />
+      <span className="btn btn-sm btn-color-muted btn-active btn-active-primary fw-bold px-4">
+        {props.children}
+      </span>
+    </label>
+  );
+}
+
 interface RadioGroupProps {
   solid?: boolean;
   value?: string;
@@ -89,6 +110,7 @@ interface RadioGroupProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   options?: { label: string; value: string }[];
   children?: React.ReactNode;
+  optionType?: 'button' | 'default';
   className?: string;
 }
 
@@ -104,9 +126,21 @@ function RadioGroup(props: RadioGroupProps) {
   } = props;
 
   const [value, setValue] = useState(defaultValue);
+  const [optionType, setOptionType] = useState(props.optionType || 'default');
 
   const handleClick = useCallback(
     (e: any) => {
+      if (onChange) {
+        onChange(e);
+      } else {
+        setValue(e.target.value);
+      }
+    },
+    [onChange],
+  );
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       if (onChange) {
         onChange(e);
       } else {
@@ -139,11 +173,15 @@ function RadioGroup(props: RadioGroupProps) {
         </Radio>
       ));
     }
+
     return unpack(children).map((item: React.ReactElement<RadioProps>) => {
       if (!React.isValidElement(item)) {
         return item;
       }
-      if (item.type !== Radio) {
+      if (item.type === RadioButton) {
+        setOptionType('button');
+      }
+      if (item.type !== Radio && item.type !== RadioButton) {
         return item;
       }
       return React.cloneElement(item, {
@@ -151,14 +189,27 @@ function RadioGroup(props: RadioGroupProps) {
         size,
         solid,
         checked: value === item.props.value,
+        onChange: handleChange,
       });
     });
   }, [children, handleClick, options, size, solid, value]);
 
   return (
-    <div className={classnames('form-radio-group', className)}>{radios}</div>
+    <div
+      className={classnames(
+        {
+          'form-radio-group': optionType === 'default',
+          'nav-group nav-group-fluid': optionType === 'button',
+        },
+        className,
+      )}
+    >
+      {radios}
+    </div>
   );
 }
+
+Radio.Button = RadioButton;
 
 Radio.Group = RadioGroup;
 

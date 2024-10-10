@@ -4,19 +4,16 @@ import { FetchResult, InternalRefetchQueriesInclude } from '@apollo/client';
 
 import { Form, Toast } from '@/metronic';
 import type { FormInstance } from '@/metronic/Form';
-import type { CustomerStore } from '@/types';
+import type { User } from '@/types';
 import { delay } from '@/utils';
 
-import {
-  useCreateCustomerStoreMutation,
-  useUpdateCustomerStoreMutation,
-} from './api';
+import { useCreateUserMutation, useUpdateUserMutation } from './api';
 
-function useCustomerStoreSubmit(
-  data: CustomerStore,
+function useUserSubmit(
+  data: User,
   options?: {
-    onSubmitted?: (data: any, type: 'create' | 'update') => void;
-    transform?: (data: any, type: 'create' | 'update') => any;
+    onSubmitted?: (data: any) => void;
+    transform?: (data: any) => any;
     refetchQueries?:
       | ((result: FetchResult<any>) => InternalRefetchQueriesInclude)
       | InternalRefetchQueriesInclude;
@@ -40,14 +37,14 @@ function useCustomerStoreSubmit(
   const {
     messages,
     onSubmitted = () => {},
-    transform = (values: any) => values,
+    transform = (x: any) => x,
   } = options || {};
 
-  const [createCustomerStore] = useCreateCustomerStoreMutation({
+  const [createUser] = useCreateUserMutation({
     fetchPolicy: 'no-cache',
     refetchQueries: options?.refetchQueries,
   });
-  const [updateCustomerStore] = useUpdateCustomerStoreMutation({
+  const [updateUser] = useUpdateUserMutation({
     fetchPolicy: 'no-cache',
     refetchQueries: options?.refetchQueries,
   });
@@ -57,10 +54,10 @@ function useCustomerStoreSubmit(
       return async () => {
         setConfirmLoading(true);
         try {
-          const input = transform(await form.validateFields(), 'update');
+          const input = transform(await form.validateFields());
           const { data: rdata } = await Toast.promise(
             delay(
-              updateCustomerStore({
+              updateUser({
                 variables: { id: data.id, input: { ...input } },
               }),
               350,
@@ -81,7 +78,7 @@ function useCustomerStoreSubmit(
               placement: 'top-center',
             },
           );
-          onSubmitted(rdata.result, 'update');
+          onSubmitted(rdata.updateUser);
           setConfirmLoading(false);
         } catch (e) {
           setConfirmLoading(false);
@@ -91,10 +88,10 @@ function useCustomerStoreSubmit(
       return async () => {
         setConfirmLoading(true);
         try {
-          const input = transform(await form.validateFields(), 'create');
+          const input = transform(await form.validateFields());
           const { data: rdata } = await Toast.promise(
             delay(
-              createCustomerStore({
+              createUser({
                 variables: {
                   input: { ...input },
                 },
@@ -113,23 +110,16 @@ function useCustomerStoreSubmit(
               placement: 'top-center',
             },
           );
-          onSubmitted(rdata.result, 'create');
+          onSubmitted(rdata.createUser);
           setConfirmLoading(false);
         } catch (e) {
           setConfirmLoading(false);
         }
       };
     }
-  }, [
-    createCustomerStore,
-    data?.id,
-    form,
-    onSubmitted,
-    updateCustomerStore,
-    transform,
-  ]);
+  }, [createUser, data?.id, form, onSubmitted, updateUser]);
 
   return [handleSubmit, { form, submitting: confirmLoading }];
 }
 
-export default useCustomerStoreSubmit;
+export default useUserSubmit;
