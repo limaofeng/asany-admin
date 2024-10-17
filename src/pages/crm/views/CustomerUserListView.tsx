@@ -55,11 +55,12 @@ function CustomerUserListView() {
     setState((prevState) => ({
       ...prevState,
       data: {
+        ...prevState.data,
         tenantId: user?.tenantId,
         organization: {
           id: 'c_101',
         },
-      },
+      } as User,
       visible: true,
     }));
   }, []);
