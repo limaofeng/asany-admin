@@ -78,7 +78,7 @@ function useUserSubmit(
               placement: 'top-center',
             },
           );
-          onSubmitted(rdata.updateUser);
+          onSubmitted(rdata.result);
           setConfirmLoading(false);
         } catch (e) {
           setConfirmLoading(false);
@@ -110,7 +110,7 @@ function useUserSubmit(
               placement: 'top-center',
             },
           );
-          onSubmitted(rdata.createUser);
+          onSubmitted(rdata.result);
           setConfirmLoading(false);
         } catch (e) {
           setConfirmLoading(false);

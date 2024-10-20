@@ -282,3 +282,15 @@ fragment CustomerStoreParts on CustomerStore {
     fullAddress(excludeDetailed: true)
   }
 }
+
+query org($code: ID!) {
+  organization(id: $code) {
+    id
+  }
+}
+
+mutation createOrg($input: OrganizationCreateInput!) {
+  organization: createOrganization(input: $input) {
+    id
+  }
+}

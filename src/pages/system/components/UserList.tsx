@@ -88,7 +88,6 @@ function UserList(props: UserListProps, _ref: React.Ref<UserListRef>) {
 
   const [users, { loading, pageInfo, refetch }] = useListPage(useUsersQuery, {
     variables,
-    skip: !props.where?.tenantId,
   });
 
   useImperativeHandle(_ref, () => ({
@@ -191,7 +190,9 @@ function UserList(props: UserListProps, _ref: React.Ref<UserListRef>) {
               description="马上添加一个用户吧！"
               image="/assets/media/illustrations/sigma-1/4.png"
             >
-              <Button variant="primary">添加用户</Button>
+              <Button variant="primary" onClick={props.onAdd}>
+                添加用户
+              </Button>
             </Empty>
           </Card>
         ) : (

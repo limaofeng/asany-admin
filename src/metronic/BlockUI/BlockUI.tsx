@@ -3,9 +3,10 @@ import classnames from 'classnames';
 type BlockUIProps = {
   loading?: boolean;
   className?: string;
-  message?: string;
+  message?: string | React.ReactNode;
   children: React.ReactNode;
   overlayClassName?: string;
+  indicator?: false | React.ReactNode;
   zIndex?: number;
 };
 
@@ -17,6 +18,7 @@ function BlockUI(props: BlockUIProps) {
     loading,
     message,
     zIndex = 1,
+    indicator = <span className="spinner-border text-primary" />,
   } = props;
 
   return (
@@ -32,12 +34,16 @@ function BlockUI(props: BlockUIProps) {
           className={classnames('blockui-overlay', overlayClassName)}
         >
           {message ? (
-            <div className="blockui-message">
-              <span className="spinner-border text-primary" />
+            <div
+              className={classnames({
+                'blockui-message': typeof message === 'string',
+              })}
+            >
+              {indicator}
               {message}
             </div>
           ) : (
-            <span className="spinner-border text-primary" />
+            indicator
           )}
         </div>
       )}

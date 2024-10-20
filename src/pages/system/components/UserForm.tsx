@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import { useCurrentuser } from '@/hooks';
-import { Col, Form, Input, Row, Select, Separator, Upload } from '@/metronic';
+import { Col, Form, Input, Row, Separator, Upload } from '@/metronic';
 import type { FormInstance } from '@/metronic/Form';
 import { useAjaxValidator } from '@/metronic/hooks';
 import type { User } from '@/types';
@@ -25,7 +25,6 @@ function UserForm(props: UserFormProps) {
 
   const usernameUniqueValidator = useAjaxValidator(
     async (rule, value, signal) => {
-      console.log('usernameUniqueValidator', rule, value, signal);
       const { data } = await findUserByUsername({
         variables: {
           tenantId: user?.tenantId,
@@ -43,13 +42,12 @@ function UserForm(props: UserFormProps) {
   );
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const values = props.data;
-    if (!values.id) {
-      form.resetFields();
-    }
+    form.resetFields();
     form.setFieldsValue({
       ...values,
+      phone: values.phone?.number || '',
+      email: values.email?.address || '',
     });
   }, [form, props.data]);
 
@@ -57,7 +55,7 @@ function UserForm(props: UserFormProps) {
     <Form form={form} className="form d-flex flex-column">
       <Row className="mt-5">
         <Col span={6}>
-          <Form.Item
+          {/* <Form.Item
             className="mb-5"
             name="userType"
             label="用户类型"
@@ -75,7 +73,7 @@ function UserForm(props: UserFormProps) {
                 },
               ]}
             />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             className="mb-5"
             name="nickname"

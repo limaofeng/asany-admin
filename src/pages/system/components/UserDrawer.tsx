@@ -10,6 +10,8 @@ import useUserSubmit from '../hooks/useUserSubmit';
 
 type UserDrawerProps = {
   data?: User;
+  defaultOrg?: string;
+  defaultRole?: string;
   visible: boolean;
   onClose: () => void;
   onSuccess: (data: User) => void;
@@ -17,11 +19,24 @@ type UserDrawerProps = {
 };
 
 function UserDrawer(props: UserDrawerProps) {
-  const { data, visible, onClose, onSuccess, onDeleteSuccess } = props;
+  const {
+    data,
+    visible,
+    onClose,
+    onSuccess,
+    onDeleteSuccess,
+    defaultRole,
+    defaultOrg,
+  } = props;
 
   const [submit, { form, submitting }] = useUserSubmit(data!, {
     transform(data) {
       return {
+        organization: {
+          id: defaultOrg,
+          role: defaultRole,
+        },
+        userType: 'USER',
         ...data,
       };
     },
