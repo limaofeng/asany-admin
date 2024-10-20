@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[8440],{48440:function(t,e,s){s.r(e);var u=s(86074);function n(){return(0,u.jsx)("div",{children:(0,u.jsx)("h1",{children:"CustomerUserListView"})})}e.default=n}}]);
