@@ -1,3 +1,9 @@
+## [0.4.30](https://github.com/limaofeng/asany-admin/compare/v0.4.29...v0.4.30) (2024-10-21)
+
+### Features
+
+- Add useExcel hook, CustomerUserListView, CustomerTicketListView, CustomerDashboardView, CustomerInformationView, CustomerDeviceListView - Add useExcel hook to handle exporting data - Create CustomerUserListView component - Create CustomerTicketListView component - Create CustomerDashboardView component - Create CustomerInformationView component - Create CustomerDeviceListView component ([dda4f3c](https://github.com/limaofeng/asany-admin/commit/dda4f3c44fc84125a480f5b40442056288634d62))
+
 ## [0.4.29](https://github.com/limaofeng/asany-admin/compare/v0.4.28...v0.4.29) (2024-09-12)
 
 ## [0.4.28](https://github.com/limaofeng/asany-admin/compare/v0.4.27...v0.4.28) (2024-09-07)
