@@ -140,6 +140,15 @@ query ticket($id: ID!) {
   result: ticket(id: $id) {
     ...TicketParts
     attachments
+    assignee {
+      id
+      name
+      phone {
+        number
+      }
+    }
+    completedAt(format: "yyyy-MM-dd HH:mm")
+    suspendedAt(format: "yyyy-MM-dd HH:mm")
     statusHistory {
       id
       status
