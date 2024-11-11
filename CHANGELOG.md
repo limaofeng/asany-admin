@@ -1,3 +1,5 @@
+## [0.4.32](https://github.com/limaofeng/asany-admin/compare/v0.4.31...v0.4.32) (2024-11-11)
+
 ## [0.4.31](https://github.com/limaofeng/asany-admin/compare/v0.4.30...v0.4.31) (2024-10-24)
 
 ## [0.4.30](https://github.com/limaofeng/asany-admin/compare/v0.4.29...v0.4.30) (2024-10-21)
