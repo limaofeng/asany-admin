@@ -117,7 +117,7 @@ function useArticleSubmit(
         }
       };
     }
-  }, [createArticle, data?.id, form, onSubmitted, updateArticle]);
+  }, [createArticle, data?.id, form, onSubmitted, updateArticle, transform]);
 
   return [handleSubmit, { form, submitting: confirmLoading }];
 }
