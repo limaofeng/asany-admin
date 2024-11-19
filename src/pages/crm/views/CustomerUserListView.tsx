@@ -127,7 +127,7 @@ function CustomerUserListView() {
             </p>
           </Card.Body>
           <Card.Footer>
-            <Button onClick={handleCreateOrg}>为改客户开启登录功能</Button>
+            <Button onClick={handleCreateOrg}>为该客户开启登录功能</Button>
           </Card.Footer>
         </Card>
       }
