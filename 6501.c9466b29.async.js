@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[6501],{56501:function(f,n,e){e.r(n);var t=e(73588),s=e(86074);function u(){return(0,s.jsx)(t.vs,{header:{title:"\u7F16\u8F91\u4E2A\u4EBA\u8D44\u6599"},footer:!1,children:"Notifications"})}n.default=u}}]);

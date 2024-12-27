@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[1090],{17958:function(a,n,e){e.r(n);var u=e(73588),t=e(57802),s=e(85893);function c(){return(0,s.jsx)(u.vs,{header:{title:"\u8BBE\u5907\u5217\u8868"},children:(0,s.jsx)(t.Z,{columns:[t.$.sn,t.$.name,t.$.customer,t.$.customerStore,t.$.warrantyStatus,t.$.createdAt,t.$.action],where:{}})})}n.default=c}}]);
