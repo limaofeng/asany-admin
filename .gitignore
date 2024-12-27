@@ -22,3 +22,6 @@ src/pages/**/*/hooks.ts
 src/pages/*/hooks.ts
 src/pages/*/hooks/api.ts
 src/pages/document.ejs
+
+# build
+public/geo/*

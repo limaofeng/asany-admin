@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import type { RouteComponentProps } from 'react-router';
-import { matchPath } from 'react-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Outlet, matchPath, useLocation, useParams } from 'react-router';
 
 import { MicroApp } from '@/layouts/Demo7';
 import { BlockUI, Menu, Symbol } from '@/metronic';
@@ -9,18 +8,9 @@ import { useModuleQuery } from '../hooks/api';
 
 import '../style/index.scss';
 
-type ModuleViewProps = RouteComponentProps<{ id: string }> & {
-  children: React.ReactNode;
-};
-
-function ModuleView(props: ModuleViewProps) {
-  const {
-    children,
-    location,
-    match: {
-      params: { id },
-    },
-  } = props;
+function ModuleView() {
+  const location = useLocation();
+  const { id } = useParams();
 
   const { data = {}, loading } = useModuleQuery({
     variables: { id },
@@ -30,13 +20,15 @@ function ModuleView(props: ModuleViewProps) {
   const module = data.module;
 
   const menuKey = useMemo(() => {
-    const match = matchPath<{ id: string; feat: string }>(location.pathname, {
-      path: '/modules/:id/:feat',
-      exact: false,
-      strict: true,
-    });
+    const match = matchPath(
+      {
+        path: '/modules/:id/:feat',
+        end: false,
+      },
+      location.pathname,
+    );
     if (match) {
-      return match.params.feat;
+      return match.params.feat || '';
     }
     return '';
   }, [location.pathname]);
@@ -157,13 +149,12 @@ function ModuleView(props: ModuleViewProps) {
             >
               <MicroApp.Sidebar.Toggle className="start-0" />
             </div>
-            {React.Children.map(children, (o: any) => {
-              o.props.location.state = {
+            <Outlet
+              context={{
                 module,
                 baseUrl: '/modules/' + id,
-              };
-              return o;
-            })}
+              }}
+            />
           </div>
         </>
       )}

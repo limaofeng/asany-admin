@@ -1,0 +1,54 @@
+:root {
+  --models_empty_image_connect_line_color: #bac2db;
+  --models_empty_image_icon-green-bg-color: #e6fffa;
+  --models_empty_image_icon-green-color: #2c7a7b;
+  --models_empty_image_icon-purple-bg-color: #f2f1ff;
+  --models_empty_image_icon-purple-color: #6246ea;
+}
+
+[data-bs-theme='light'] {
+  --models_empty_image_connect_line_color: #bac2db;
+  --models_empty_image_icon-green-bg-color: #e6fffa;
+  --models_empty_image_icon-green-color: #2c7a7b;
+  --models_empty_image_icon-purple-bg-color: #f2f1ff;
+  --models_empty_image_icon-purple-color: #6246ea;
+}
+
+[data-bs-theme='dark'] {
+  --models_empty_image_connect_line_color: #4d515e;
+  --models_empty_image_icon-green-bg-color: #15393a;
+  --models_empty_image_icon-green-color: #e6fffa;
+  --models_empty_image_icon-purple-bg-color: #3a298b;
+  --models_empty_image_icon-purple-color: #f2f1ff;
+}
+
+.models_empty_image_svg {
+  &__bg {
+    fill: var(--bs-body-bg);
+  }
+  &__header {
+    fill: var(--bs-text-gray-900);
+  }
+  &__border {
+    fill: var(--bs-root-card-border-color);
+  }
+  &__font_color {
+    fill: var(--bs-text-gray-800);
+  }
+  &__icon_green_bg {
+    fill: var(--models_empty_image_icon-green-bg-color);
+  }
+  &__icon_green {
+    fill: var(--models_empty_image_icon-green-color);
+  }
+  &__icon_purple_bg {
+    fill: var(--models_empty_image_icon-purple-bg-color);
+  }
+  &__icon_purple {
+    fill: var(--models_empty_image_icon-purple-color);
+  }
+}
+
+.models_empty_image_connect_line {
+  fill: var(--models_empty_image_connect_line_color);
+}

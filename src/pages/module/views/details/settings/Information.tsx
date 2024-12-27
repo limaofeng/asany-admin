@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 
 import classnames from 'classnames';
 
@@ -21,6 +21,7 @@ import {
   useModulesLazyQuery,
   useUpdateModuleMutation,
 } from '@/pages/module/hooks';
+import { ModuleViewOutletProps } from '@/pages/module/type';
 import type { Module } from '@/types';
 
 type DeleteModuleConfirmModalProps = {
@@ -108,9 +109,7 @@ function DeleteModuleConfirmModal(props: DeleteModuleConfirmModalProps) {
 function Information() {
   const form = Form.useForm();
 
-  const location = useLocation();
-
-  const { module } = location.state;
+  const { module } = useOutletContext<ModuleViewOutletProps>();
 
   const [deleteModuleConfirmModalVisible, setDeleteModuleConfirmModalVisible] =
     useState(false);

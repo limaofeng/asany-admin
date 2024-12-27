@@ -1,18 +1,12 @@
 import { useCallback } from 'react';
-import type { RouteComponentProps } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { FlowEditor } from '../components';
 import { useProcessModelQuery } from '../hooks';
 
-type FlowDesignProps = RouteComponentProps<{ id: string }>;
-
-function FlowDesign(props: FlowDesignProps) {
-  const {
-    match: {
-      params: { id },
-    },
-    history,
-  } = props;
+function FlowDesign() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const { data, loading } = useProcessModelQuery({
     variables: {
@@ -22,8 +16,8 @@ function FlowDesign(props: FlowDesignProps) {
   });
 
   const handleBack = useCallback(() => {
-    history.goBack();
-  }, [history]);
+    navigate(-1);
+  }, [navigate]);
 
   return (
     <FlowEditor

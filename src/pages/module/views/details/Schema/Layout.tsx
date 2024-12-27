@@ -1,6 +1,11 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import type { RouteComponentProps } from 'react-router';
-import { matchPath } from 'react-router';
+import { useCallback, useMemo, useState } from 'react';
+import {
+  Outlet,
+  matchPath,
+  useLocation,
+  useNavigate,
+  useOutletContext,
+} from 'react-router';
 
 import { Icon } from '@asany/icons';
 import { Link } from '@umijs/max';
@@ -10,24 +15,18 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import SecondarySidebar from '@/components/SecondarySidebar';
 import { Button, Menu } from '@/metronic';
 import { useSchemaQuery } from '@/pages/module/hooks';
-import type { Model, Module } from '@/types';
+import { ModuleViewOutletProps } from '@/pages/module/type';
+import type { Model } from '@/types';
 
 import ModelModal from './components/ModelModal';
 
 import './style/Layout.scss';
 
-type ModuleSchemaProps = RouteComponentProps<
-  { mid?: string },
-  any,
-  { module: Module; baseUrl: string }
-> & {
-  children: React.ReactNode;
-};
+function ModuleSchema() {
+  const location = useLocation();
+  const navigate = useNavigate();
 
-function ModuleSchema(props: ModuleSchemaProps) {
-  const { location, history, children } = props;
-
-  const { module, baseUrl = '' } = location.state;
+  const { module, baseUrl } = useOutletContext<ModuleViewOutletProps>();
 
   const [visibleModelModal, setVisibleModelModal] = useState(false);
 
@@ -64,19 +63,21 @@ function ModuleSchema(props: ModuleSchemaProps) {
   );
 
   const menuKey = useMemo(() => {
-    let match = matchPath<{ mid: string }>(location.pathname, {
-      path: `${baseUrl}/schema/models/:mid`,
-      exact: true,
-      strict: true,
-    });
+    let match = matchPath(
+      {
+        path: `${baseUrl}/schema/models/:mid`,
+      },
+      location.pathname,
+    );
     if (match) {
       return 'model_' + match.params.mid;
     }
-    match = matchPath<{ mid: string }>(location.pathname, {
-      path: `${baseUrl}/schema/models`,
-      exact: true,
-      strict: true,
-    });
+    match = matchPath(
+      {
+        path: `${baseUrl}/schema/models`,
+      },
+      location.pathname,
+    );
     if (match) {
       return 'model_overview';
     }
@@ -159,7 +160,12 @@ function ModuleSchema(props: ModuleSchemaProps) {
         visible={visibleModelModal}
         onClose={handleCloseModelModal}
       />
-      {children}
+      <Outlet
+        context={{
+          module,
+          baseUrl,
+        }}
+      />
     </>
   );
 }

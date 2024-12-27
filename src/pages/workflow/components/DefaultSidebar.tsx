@@ -54,34 +54,34 @@ function DefaultSidebar() {
           </Menu.Item>
           <Menu.Separator className="my-1" />
           <Menu.Section contentClassName="pb-0">文件办理</Menu.Section>
-          <Menu.Item bullet url="/workflow/my/upcoming" key="upcoming">
+          <Menu.Item bullet url="/workflow/upcoming" key="upcoming">
             待办文件
           </Menu.Item>
-          <Menu.Item bullet url="/workflow/my/unread" key="unread">
+          <Menu.Item bullet url="/workflow/unread" key="unread">
             待阅文件
           </Menu.Item>
-          <Menu.Item bullet url="/workflow/my/done" key="done">
+          <Menu.Item bullet url="/workflow/done" key="done">
             已办文件
           </Menu.Item>
-          <Menu.Item bullet url="/workflow/my/readed" key="read">
+          <Menu.Item bullet url="/workflow/readed" key="read">
             已阅文件
           </Menu.Item>
-          <Menu.Item bullet url="/workflow/my/tasks" key="mytask">
+          <Menu.Item bullet url="/workflow/tasks" key="mytask">
             我的文件
           </Menu.Item>
-          <Menu.Item bullet url="/workflow/my/follow" key="follow">
+          <Menu.Item bullet url="/workflow/follow" key="follow">
             关注文件
           </Menu.Item>
-          <Menu.Item bullet url="/workflow/my/revoke" key="revoke">
+          <Menu.Item bullet url="/workflow/revoke" key="revoke">
             我退回的文件
           </Menu.Item>
-          <Menu.Item bullet url="/workflow/my/drafts" key="draft">
+          <Menu.Item bullet url="/workflow/drafts" key="draft">
             草稿箱
           </Menu.Item>
           <Menu.Separator className="my-1" />
           <Menu.Section contentClassName="pb-0">设计</Menu.Section>
-          <Menu.Item bullet url="/workflow/my/models" key="workflow_models">
-            我的模型
+          <Menu.Item bullet url="/workflow/models" key="workflow_models">
+            模型
           </Menu.Item>
           <Menu.Separator className="my-1" />
           <Menu.Section contentClassName="pb-0">设置</Menu.Section>

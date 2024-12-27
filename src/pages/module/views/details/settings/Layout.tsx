@@ -1,6 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
-import type { RouteComponentProps } from 'react-router';
-import { matchPath } from 'react-router';
+import {
+  Outlet,
+  matchPath,
+  useLocation,
+  useOutletContext,
+} from 'react-router-dom';
 
 import { Link } from '@umijs/max';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
@@ -8,15 +12,7 @@ import styled from 'styled-components';
 
 import SecondarySidebar from '@/components/SecondarySidebar';
 import { Menu } from '@/metronic';
-import type { Module } from '@/types';
-
-type ModuleSchemaProps = RouteComponentProps<
-  { mid?: string },
-  any,
-  { module: Module; baseUrl: string }
-> & {
-  children: React.ReactNode;
-};
+import { ModuleViewOutletProps } from '@/pages/module/type';
 
 type SecondaryLayoutProps = {
   width: number;
@@ -27,17 +23,19 @@ const SecondaryLayout = styled.div<SecondaryLayoutProps>`
     `calc(var(--root-aside-width) + ${props.width}px)`};
 `;
 
-function ModuleSchema(props: ModuleSchemaProps) {
-  const { location, children } = props;
+function ModuleSchema() {
+  const location = useLocation();
 
-  const { baseUrl } = location.state;
+  const { module, baseUrl } = useOutletContext<ModuleViewOutletProps>();
 
   const menuKey = useMemo(() => {
-    const match = matchPath<{ mid: string }>(location.pathname, {
-      path: `${baseUrl}/settings/:mid`,
-      exact: true,
-      strict: true,
-    });
+    const match = matchPath(
+      {
+        path: `${baseUrl}/settings/:mid`,
+        end: false,
+      },
+      location.pathname,
+    );
     if (match) {
       return match.params.mid;
     }
@@ -104,7 +102,12 @@ function ModuleSchema(props: ModuleSchemaProps) {
           </OverlayScrollbarsComponent>
         </div>
       </SecondarySidebar>
-      {children}
+      <Outlet
+        context={{
+          module,
+          baseUrl,
+        }}
+      />
     </SecondaryLayout>
   );
 }

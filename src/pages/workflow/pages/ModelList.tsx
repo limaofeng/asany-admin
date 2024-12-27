@@ -1,11 +1,14 @@
 import { useCallback, useMemo } from 'react';
-import { NavigateFunction } from 'react-router-dom';
+import { NavigateFunction, useSearchParams } from 'react-router-dom';
 
 import { Icon } from '@asany/icons';
-import { Link, useLocation, useNavigate } from '@umijs/max';
-import qs from 'query-string';
+import { Link, useNavigate } from '@umijs/max';
 
 import Controls from '@/components/Controls';
+import useListPage, {
+  queryToVariables,
+  variablesToQuery,
+} from '@/hooks/useListPage';
 import { ContentWrapper } from '@/layouts/components';
 import {
   Button,
@@ -21,18 +24,15 @@ import {
 import type { Sorter } from '@/metronic/typings';
 import type { ProcessModel } from '@/types';
 
-import {
-  ProcessModelsDocument,
-  useDeleteProcessModelMutation,
-  useProcessModelsQuery,
-} from '../hooks';
+import { useProcessModelsQuery } from '../hooks';
+import useProcessModelDelete from '../hooks/useProcessModelDelete';
 
 type ActionsProps = {
   navigate: NavigateFunction;
   baseUrl: string;
   data: ProcessModel;
   onDesign: (id: string) => void;
-  onDelete: (id: string) => Promise<boolean>;
+  onDelete: (data: ProcessModel) => Promise<any>;
 };
 
 function Actions({
@@ -60,7 +60,7 @@ function Actions({
       if (!result.isConfirmed) {
         return;
       }
-      await onDelete(_data.id);
+      await onDelete(_data as ProcessModel);
       Toast.success(`活动 “${_data.name}” 删除成功`, 2000, {
         placement: 'bottom-left',
         progressBar: true,
@@ -114,9 +114,55 @@ function Actions({
 
 function ModelList() {
   const navigate = useNavigate();
-  const location = useLocation();
-
+  const [searchParams] = useSearchParams();
   const baseUrl = location.pathname;
+
+  const searchForm = useMemo(
+    () =>
+      queryToVariables(searchParams, [
+        {
+          source: 'q',
+          target: 'keywords',
+        },
+      ]),
+    [searchParams.get('q')],
+  );
+
+  const variables = useMemo(() => {
+    return queryToVariables(searchParams, [
+      {
+        source: 'q',
+        target: 'where.name_contains',
+      },
+      {
+        source: 'sex',
+        target: 'where.sex',
+      },
+      {
+        source: 'page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'per_page',
+        transform: (value) => parseInt(value),
+      },
+      {
+        source: 'sort',
+        target: 'orderBy',
+        transform: (value) => {
+          const [field, order] = value.split(':');
+          return `${field}_${order}`;
+        },
+      },
+    ]);
+  }, [searchParams.toString()]);
+
+  const [data, { loading, pageInfo, refetch }] = useListPage(
+    useProcessModelsQuery,
+    {
+      variables,
+    },
+  );
 
   const handleDesign = useCallback(
     (id: string) => {
@@ -124,14 +170,6 @@ function ModelList() {
     },
     [history],
   );
-
-  const variables = useMemo(() => {
-    const { q, ...query } = (location as any).query;
-    if (q) {
-      query.filter = { user: 'self', name_contains: q };
-    }
-    return query;
-  }, [location]);
 
   const sorter = useMemo<Sorter>(() => {
     if (!variables.orderBy) {
@@ -147,105 +185,55 @@ function ModelList() {
     };
   }, [variables.orderBy]);
 
-  const [deleteProcessModel] = useDeleteProcessModelMutation({
-    refetchQueries: [
-      {
-        query: ProcessModelsDocument,
-        variables: {
-          filter: { user: 'self' },
-        },
-      },
-    ],
-  });
-  const { data, loading, previousData } = useProcessModelsQuery({
-    fetchPolicy: 'cache-and-network',
-    variables,
-  });
-
-  const total = useMemo(() => {
-    if (loading) {
-      return previousData?.total.totalCount || 0;
-    }
-    return data?.total.totalCount || 0;
-  }, [data?.total.totalCount, loading, previousData?.total]);
-  const pagination = useMemo(() => {
-    if (loading) {
-      return previousData?.processModels || { total: 0, current: 1 };
-    }
-    return data?.processModels || { total: 0, current: 1 };
-  }, [data?.processModels, loading, previousData?.processModels]);
-  const pages = useMemo(() => {
-    if (loading) {
-      return (previousData?.processModels?.edges || []).map(
-        (item) => item.node,
+  const handleTableChange = useCallback(
+    (pagination: any, filters: any, sorter: any) => {
+      const querystring = variablesToQuery(
+        { searchForm, pagination, filters, sorter },
+        [
+          {
+            source: 'searchForm.keywords',
+            target: 'q',
+            skip: (value) => !value,
+          },
+          {
+            source: 'pagination.current',
+            target: 'page',
+            skip: (value) => value === 1,
+          },
+          {
+            source: 'pagination.pageSize',
+            target: 'per_page',
+            skip: (value) => value === 15,
+          },
+          {
+            source: 'sorter.field',
+            target: 'sort',
+            transform: (value) =>
+              `${value}:${sorter.order === 'ascend' ? 'asc' : 'desc'}`,
+          },
+        ],
       );
-    }
-    return (data?.processModels?.edges || []).map((item) => item.node);
-  }, [data?.processModels, loading, previousData?.processModels]);
-
-  const handleSearch = useCallback(
-    (text: string) => {
-      navigate(location.pathname + '?' + qs.stringify({ q: text }), {
+      navigate(location.pathname + '?' + querystring, {
         replace: true,
       });
     },
-    [navigate, location.pathname],
+    [searchForm],
   );
 
-  const handleChange = useCallback(
-    (_pagination: any, _filters: any, _sorter: any) => {
-      const _query: any = {};
-      if (variables.filter?.name_contains) {
-        _query.q = variables.filter?.name_contains;
-      }
-      if (!!_sorter) {
-        _query.orderBy =
-          _sorter.field + '_' + (_sorter.order === 'ascend' ? 'asc' : 'desc');
-      }
-      _query.page = _pagination.current;
-      navigate(location.pathname + '?' + qs.stringify(_query), {
-        replace: true,
-      });
-    },
-    [history, location.pathname, variables.filter?.name_contains],
-  );
+  const handleSearch = useCallback((value: string) => {
+    navigate(location.pathname + (!!value ? '?q=' + value : ''), {
+      replace: true,
+    });
+  }, []);
 
-  const handleDelete = useCallback(
-    async (...ids: string[]) => {
-      const { data: dresult } = await deleteProcessModel({
-        variables: {
-          ids,
-        },
-      });
-      return dresult?.deleteProcessModel || false;
-    },
-    [deleteProcessModel],
-  );
+  const { deleteMany: handleDeleteMany, delete: handleDelete } =
+    useProcessModelDelete(refetch);
 
   const handleDeleteInBatch = useCallback(
     (selectedRowKeys: string[]) => async () => {
-      const message = `确定删除选中的, 共 ${selectedRowKeys.length} 个活动吗？`;
-      const result = await Modal.confirm({
-        title: '确定删除',
-        content: (
-          <>
-            <p className="tip-confirm">{message}</p>
-            <p>删除的操作不可逆,请谨慎操作</p>
-          </>
-        ),
-        okClassName: 'btn-danger',
-        okText: '删除',
-      });
-      if (!result.isConfirmed) {
-        return;
-      }
-      await handleDelete(...selectedRowKeys);
-      Toast.success(`活动批量删除成功`, 2000, {
-        placement: 'bottom-left',
-        progressBar: true,
-      });
+      await handleDeleteMany(selectedRowKeys);
     },
-    [handleDelete],
+    [handleDeleteMany],
   );
 
   const tableToolbar = useMemo(() => {
@@ -268,7 +256,7 @@ function ModelList() {
     <ContentWrapper loading={loading} footer={false}>
       <div className="d-flex flex-wrap flex-stack pb-7">
         <div className="d-flex flex-wrap align-items-center">
-          <h3 className="fw-bolder me-5">流程模型 ({total})</h3>
+          <h3 className="fw-bolder me-5">流程模型 ({pageInfo?.total})</h3>
           <Input.Search
             onSearch={handleSearch}
             defaultValue={variables.filter?.name_contains}
@@ -289,7 +277,7 @@ function ModelList() {
           </div>
         </Controls>
       </div>
-      {!total && !loading ? (
+      {!pageInfo?.total && !loading ? (
         <Card className="mb-5 mb-xl-10">
           <Empty
             title="还没有活动"
@@ -360,9 +348,9 @@ function ModelList() {
                     },
                   },
                 ]}
-                pagination={pagination}
-                onChange={handleChange}
-                dataSource={pages}
+                pagination={pageInfo}
+                onChange={handleTableChange}
+                dataSource={data}
               />
             </Card.Body>
           </Card>

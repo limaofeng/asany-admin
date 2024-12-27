@@ -85,11 +85,14 @@
     }
 
     .homemade-button {
+      --bs-bg-rgb-color: var(--bs-body-bg-rgb);
+      background-color: var(--bs-body-bg) !important;
+      box-shadow: var(--bs-box-shadow-sm) !important;
       display: inline-block;
       flex-shrink: 0;
-      color: currentColor;
+      color: var(--bs-text-gray-700);
       line-height: 1;
-      fill: #ffffff;
+      border-radius: 12px;
     }
 
     &.collapsed {

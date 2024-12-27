@@ -1,8 +1,11 @@
-import { MicroApp } from '@/layouts/Demo7';
-import { BlockUI, Menu, Symbol } from '@/metronic';
-import { useSelectedRoutes } from '@umijs/max';
 import { useMemo } from 'react';
 import { Outlet, useLocation } from 'react-router';
+
+import { useSelectedRoutes } from '@umijs/max';
+
+import { MicroApp } from '@/layouts/Demo7';
+import { BlockUI, Menu, Symbol } from '@/metronic';
+
 import { useCustomerQuery } from '../hooks';
 
 const MenuKeyMappings = [
@@ -44,9 +47,7 @@ function CustomerView() {
   const menuKey = useMemo(() => {
     const key =
       MenuKeyMappings.find((mapping) => {
-        if (location.pathname.endsWith(mapping.path)) {
-          return true;
-        }
+        return location.pathname.endsWith(mapping.path);
       })?.key || 'unknown';
     return {
       key,

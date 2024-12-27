@@ -2,11 +2,11 @@
   height: 100vh;
 
   #kt_header {
-    background-color: var(--kt-card-bg);
+    background-color: var(--bs-card-bg);
   }
 
   #kt_content {
-    background-color: var(--kt-card-bg);
+    background-color: var(--bs-card-bg);
   }
 
   #kt_content_container {
@@ -40,20 +40,20 @@
               font-weight: 500;
               font-size: 13px;
               padding: 8px 16px;
-              color: var(--kt-text-gray-700);
+              color: var(--bs-text-gray-700);
               border-bottom: none;
-              --background-color: var(--kt-dark-light);
+              --background-color: var(--bs-dark-light);
               transition: none;
               transition: background-color 0.2s ease-in-out 0s,
                 color 0.2s ease-in-out 0s;
 
               &.active {
-                color: var(--kt-primary);
-                --background-color: var(--kt-primary-light);
+                color: var(--bs-primary);
+                --background-color: var(--bs-primary-light);
 
                 &::after,
                 &:hover::after {
-                  background-color: var(--kt-primary);
+                  background-color: var(--bs-primary);
                 }
               }
 
@@ -61,7 +61,7 @@
                 background-color: var(--background-color);
 
                 &::after {
-                  background-color: var(--kt-text-gray-700);
+                  background-color: var(--bs-text-gray-700);
                 }
               }
 
@@ -90,7 +90,7 @@
 
         .system-fields {
           .model-field .field-item-wrapper {
-            background-color: var(--kt-light);
+            background-color: var(--bs-light);
 
             .field-item-drag-handle {
               opacity: 0;
@@ -98,17 +98,23 @@
             }
 
             .field-item-type {
-              background-color: rgba(var(--kt-dark-rgb), 0.08);
+              background-color: rgba(var(--bs-dark-rgb), 0.08);
 
               .svg-icon {
-                color: rgba(var(--kt-dark-rgb), 0.75) !important;
+                color: rgba(var(--bs-dark-rgb), 0.75) !important;
+
+                svg {
+                  &:focus {
+                    outline: none;
+                  }
+                }
               }
             }
 
             .field-item-content__labels {
               .badge {
-                color: var(--kt-info-inverse) !important;
-                background-color: rgba(var(--kt-dark-rgb), 0.45) !important;
+                color: var(--bs-info-inverse) !important;
+                background-color: rgba(var(--bs-dark-rgb), 0.45) !important;
               }
             }
 
@@ -152,7 +158,7 @@
 
     .model-field-types {
       width: 278px;
-      background-color: var(--kt-light);
+      background-color: var(--bs-light);
 
       &-container {
         box-sizing: border-box;
@@ -184,7 +190,7 @@
             font-size: 12px;
             line-height: 16px;
             font-weight: 500;
-            color: var(--kt-secondary-inverse); // rgb(98, 110, 153);
+            color: var(--bs-secondary-inverse); // rgb(98, 110, 153);
           }
 
           &-content {
@@ -198,9 +204,8 @@
           .model-field-type {
             box-sizing: border-box;
             min-width: 0px;
-            background-color: var(--kt-card-bg);
+            background-color: var(--bs-card-bg);
             border-radius: 4px;
-            // box-shadow: var(--kt-card-box-shadow);
             box-shadow: rgb(0 0 0 / 8%) 0px 2px 6px;
             border: 1px solid var(--bs-card-border-color); // rgb(240, 242, 247);
             padding: 12px 10px;
@@ -265,9 +270,101 @@
 .model-field-modal {
   .form-item__disabled {
     .form-item-explain {
-      opacity: var(--kt-form-check-label-disabled-opacity);
+      opacity: var(--bs-btn-disabled-opacity);
     }
   }
+}
+
+$colors: (
+  'light': (
+    'multi_line_color': rgb(39, 103, 73),
+    'multi_line_bg': rgb(234, 253, 239),
+    'rich_text_color': rgb(44, 122, 123),
+    'rich_text_bg': rgb(230, 255, 250),
+    'number_color': rgb(192, 86, 33),
+    'number_bg': rgb(255, 250, 240),
+    'float_color': rgb(151, 90, 22),
+    'float_bg': rgb(255, 255, 235),
+    'bool_color': rgb(184, 50, 128),
+    'bool_bg': rgb(255, 245, 247),
+    'date_color': rgb(43, 108, 176),
+    'date_bg': rgb(235, 248, 255),
+    'json_color': rgb(197, 48, 48),
+    'json_bg': rgb(255, 245, 245),
+    'asset_color': rgb(107, 70, 193),
+    'asset_bg': rgb(250, 245, 255),
+    'color_color': rgb(160, 93, 49),
+    'color_bg': rgb(250, 243, 243),
+    'map_color': rgb(76, 81, 191),
+    'map_bg': rgb(235, 244, 255),
+    'dropdown_color': rgb(72, 108, 43),
+    'dropdown_bg': rgb(242, 249, 236),
+    'basic_color': rgb(245, 72, 127),
+    'basic_bg': rgb(255, 239, 244),
+    'reference_color': rgb(98, 70, 234),
+    'reference_bg': rgb(242, 241, 255),
+  ),
+  'dark': (
+    'multi_line_color': rgb(234, 253, 239),
+    'multi_line_bg': rgb(19, 43, 13),
+    // 更调暗
+    'rich_text_color': rgb(230, 255, 250),
+    'rich_text_bg': rgb(24, 72, 73),
+    // 更调暗
+    'number_color': rgb(255, 250, 240),
+    'number_bg': rgb(132, 26, 13),
+    // 更调暗
+    'float_color': rgb(255, 255, 235),
+    'float_bg': rgb(91, 30, 2),
+    // 更调暗
+    'bool_color': rgb(255, 245, 247),
+    'bool_bg': rgb(124, 10, 88),
+    // 更调暗
+    'date_color': rgb(235, 248, 255),
+    'date_bg': rgb(0, 48, 116),
+    // 更调暗
+    'json_color': rgb(255, 245, 245),
+    'json_bg': rgb(137, 10, 10),
+    // 更调暗
+    'asset_color': rgb(250, 245, 255),
+    'asset_bg': rgb(47, 10, 133),
+    // 更调暗
+    'color_color': rgb(250, 243, 243),
+    'color_bg': rgb(100, 33, 0),
+    // 更调暗
+    'map_color': rgb(235, 244, 255),
+    'map_bg': rgb(16, 21, 131),
+    // 更调暗
+    'dropdown_color': rgb(242, 249, 236),
+    'dropdown_bg': rgb(32, 48, 3),
+    // 更调暗
+    'basic_color': rgb(255, 239, 244),
+    'basic_bg': rgb(185, 12, 67),
+    // 更调暗
+    'reference_color': rgb(242, 241, 255),
+    'reference_bg': rgb(38, 10, 174),
+    // 更调暗
+  ),
+);
+
+@mixin theme-colors($theme) {
+  $current-color: map-get($colors, $theme);
+
+  @each $key, $value in $current-color {
+    --msm-field-#{$key}: #{$value};
+  }
+}
+
+:root {
+  @include theme-colors('light');
+}
+
+[data-bs-theme='light'] {
+  @include theme-colors('light');
+}
+
+[data-bs-theme='dark'] {
+  @include theme-colors('dark');
 }
 
 .model-field-type__single_line_text,
@@ -275,118 +372,121 @@
 .model-field-type__markdown,
 .model-field-type__slug {
   .svg-icon {
-    color: rgb(39, 103, 73) !important;
+    color: var(--msm-field-multi_line_color) !important;
   }
 
-  background-color: rgb(234, 253, 239);
+  background-color: var(--msm-field-multi_line_bg);
 }
 
 .model-field-type__rich_text {
   .svg-icon {
-    color: rgb(44, 122, 123) !important;
+    color: var(--msm-field-rich_text_color) !important;
   }
 
-  background-color: rgb(230, 255, 250);
+  background-color: var(--msm-field-rich_text_bg);
 }
 
 .model-field-type__number {
   .svg-icon {
-    color: rgb(192, 86, 33) !important;
+    color: var(--msm-field-number_color) !important;
   }
 
-  background-color: rgb(255, 250, 240);
+  background-color: var(--msm-field-number_bg);
 }
 
 .model-field-type__float {
   .svg-icon {
-    color: rgb(151, 90, 22) !important;
+    color: var(--msm-field-float_color) !important;
   }
 
-  background-color: rgb(255, 255, 235);
+  background-color: var(--msm-field-float_bg);
 }
 
 .model-field-type__bool {
   .svg-icon {
-    color: rgb(184, 50, 128) !important;
+    color: var(--msm-field-bool_color) !important;
   }
 
-  background-color: rgb(255, 245, 247);
+  background-color: var(--msm-field-bool_bg);
 }
 
 .model-field-type__date,
 .model-field-type__date_time {
   .svg-icon {
-    color: rgb(43, 108, 176) !important;
+    color: var(--msm-field-date_color) !important;
   }
 
-  background-color: rgb(235, 248, 255);
+  background-color: var(--msm-field-date_bg);
 }
 
 .model-field-type__json {
   .svg-icon {
-    color: rgb(197, 48, 48) !important;
+    color: var(--msm-field-json_color) !important;
   }
 
-  background-color: rgb(255, 245, 245);
+  background-color: var(--msm-field-json_bg);
 }
 
 .model-field-type__asset {
   .svg-icon {
-    color: rgb(107, 70, 193) !important;
+    color: var(--msm-field-asset_color) !important;
   }
 
-  background-color: rgb(250, 245, 255);
+  background-color: var(--msm-field-asset_bg);
 }
 
 .model-field-type__color {
   .svg-icon {
-    color: rgb(160, 93, 49) !important;
+    color: var(--msm-field-color_color) !important;
   }
 
-  background-color: rgb(250, 243, 243);
+  background-color: var(--msm-field-color_bg);
 }
 
 .model-field-type__map {
   .svg-icon {
-    color: rgb(76, 81, 191) !important;
+    color: var(--msm-field-map_color) !important;
   }
 
-  background-color: rgb(235, 244, 255);
+  background-color: var(--msm-field-map_bg);
 }
 
 .model-field-type__dropdown {
   .svg-icon {
-    color: rgb(72, 108, 43) !important;
+    color: var(--msm-field-dropdown_color) !important;
   }
 
-  background-color: rgb(242, 249, 236);
+  background-color: var(--msm-field-dropdown_bg);
 }
 
 .model-field-type__basic,
 .model-field-type__modular {
   .svg-icon {
-    color: rgb(245, 72, 127) !important;
+    color: var(--msm-field-basic_color) !important;
   }
 
-  background-color: rgb(255, 239, 244);
+  background-color: var(--msm-field-basic_bg);
 }
 
 .model-field-type__reference {
   .svg-icon {
-    color: rgb(98, 70, 234) !important;
+    color: var(--msm-field-reference_color) !important;
   }
 
-  background-color: rgb(242, 241, 255);
+  background-color: var(--msm-field-reference_bg);
 }
 
 .model-field {
+  --bs-card-box-shadow: var(--bs-root-card-box-shadow);
+  --bs-card-border-color: var(--bs-root-card-border-color);
   position: relative;
   box-sizing: border-box;
   min-width: 0px;
-  background-color: var(--kt-card-bg);
+  background-color: var(--bs-card-bg);
   border-radius: 4px;
-  box-shadow: rgb(0 0 0 / 8%) 0px 2px 6px;
-  border: 1px solid rgb(240, 242, 247);
+  // box-shadow: rgb(0 0 0 / 8%) 0px 2px 6px;
+  box-shadow: var(--bs-box-shadow-sm) !important;
+  border: 1px solid var(--bs-card-border-color);
   margin-bottom: 12px;
 
   &:last-child {
@@ -581,6 +681,12 @@
         .model-field-type-icon {
           width: 24px;
           height: 24px;
+
+          svg {
+            &:focus {
+              outline: none;
+            }
+          }
         }
       }
 

@@ -77,6 +77,9 @@ function ArticleSidebar(props: ArticleSidebarProps) {
   }, [categories.map((item) => item.id).join(',')]);
 
   const selectedKey = useMemo(() => {
+    if (!menuKey) {
+      return 'unknown';
+    }
     switch (menuKey.key) {
       case 'category':
         return menuKey.params.cid;
@@ -84,8 +87,6 @@ function ArticleSidebar(props: ArticleSidebarProps) {
         return menuKey.key;
     }
   }, [menuKey]);
-
-  console.log('selectedKey', selectedKey, menuKey);
 
   return (
     <AsideWorkspace>

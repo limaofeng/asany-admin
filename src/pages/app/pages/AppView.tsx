@@ -21,7 +21,11 @@ function AppView() {
       {app && (
         <>
           <MicroApp.Sidebar>
-            <AppSidebar app={app as any} location={location as any} />
+            <AppSidebar
+              categories={[]}
+              app={app as any}
+              location={location as any}
+            />
           </MicroApp.Sidebar>
           <Outlet
             context={{

@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import type { RouteComponentProps } from 'react-router';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 
 import { Icon } from '@asany/icons';
 import classnames from 'classnames';
@@ -15,7 +15,8 @@ import {
   Tabs,
   Toast,
 } from '@/metronic';
-import type { Model, Module } from '@/types';
+import { ModuleViewOutletProps } from '@/pages/module/type';
+import type { Model } from '@/types';
 import { delay } from '@/utils';
 
 import ModelFieldsManagement from './components/ModelFieldsManagement';
@@ -25,20 +26,12 @@ import { useDeleteModelMutation, useModelQuery } from '../../../hooks';
 
 import './style/ModelView.scss';
 
-type ModelViewProps = RouteComponentProps<
-  { mid: string },
-  any,
-  { module: Module; baseUrl: string }
->;
+function ModelView() {
+  const navigate = useNavigate();
 
-function ModelView(props: ModelViewProps) {
-  const {
-    match: { params },
-    location,
-    history,
-  } = props;
+  const params = useParams();
 
-  const { module, baseUrl } = location.state;
+  const { module, baseUrl } = useOutletContext<ModuleViewOutletProps>();
 
   const { data, loading } = useModelQuery({
     variables: { id: params.mid },
@@ -99,7 +92,7 @@ function ModelView(props: ModelViewProps) {
           console.log(_result);
         } catch (e: any) {
           Toast.error(e.message, 2000, {
-            placement: 'bottom-end',
+            placement: 'bottom-right',
             progressBar: true,
           });
         } finally {
@@ -111,7 +104,7 @@ function ModelView(props: ModelViewProps) {
       return;
     }
     Toast.success(`实体 “${_model.name}” 已删除`, 2000, {
-      placement: 'bottom-end',
+      placement: 'bottom-right',
       progressBar: true,
     });
     navigate(baseUrl);
@@ -200,7 +193,7 @@ function ModelView(props: ModelViewProps) {
       loading={loading}
       footer={false}
     >
-      <Card bodyClassName="px-0">
+      <Card className="border-0" bodyClassName="px-0">
         <Tabs contentContainer={false} type="line-tabs">
           <Tabs.TabPane key="fields" tab="字段">
             {model && <ModelFieldsManagement model={model as Model} />}

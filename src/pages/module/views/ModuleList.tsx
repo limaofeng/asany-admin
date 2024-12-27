@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Icon } from '@asany/icons';
 import { Link } from '@umijs/max';
@@ -13,6 +14,7 @@ import { useModulesQuery } from '../hooks';
 import '../style/ModuleList.scss';
 
 function ModuleList() {
+  const navigate = useNavigate();
   const [visibleNewModule, setVisibleNewModule] = useState(false);
 
   const { data, loading, previousData, refetch } = useModulesQuery({

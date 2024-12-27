@@ -4,20 +4,20 @@ query processModels(
   $pageSize: Int
   $orderBy: OrderBy
 ) {
-  total: processModels(pageSize: 1, where: { user: "self" }) {
-    totalCount
-  }
-  processModels(
+  result: processModels(
     where: $where
     page: $page
     pageSize: $pageSize
     orderBy: $orderBy
   ) {
-    totalPage
-    pageSize
-    current: currentPage
-    total: totalCount
+    pageInfo {
+      total
+      totalPages
+      current
+      pageSize
+    }
     edges {
+      cursor
       node {
         ...ProcessModelPart
       }

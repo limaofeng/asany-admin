@@ -209,7 +209,7 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
           console.log(_result);
         } catch (e: any) {
           Toast.error(e.message, 2000, {
-            placement: 'bottom-end',
+            placement: 'bottom-right',
             progressBar: true,
           });
         } finally {
@@ -221,7 +221,7 @@ function ModelFieldsManagement(props: ModelFieldsManagementProps) {
       return;
     }
     Toast.success(`字段 “${field.name}” 已删除`, 2000, {
-      placement: 'bottom-end',
+      placement: 'bottom-right',
       progressBar: true,
     });
   }, []);

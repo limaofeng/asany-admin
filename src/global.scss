@@ -78,6 +78,14 @@ ol {
   left: -100px;
 }
 
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
 // Compatible with IE11
 @media screen /* and(-ms-high-contrast: active), (-ms-high-contrast: none) */ {
   body .asany-web > .ant-layout {
