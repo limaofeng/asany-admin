@@ -57,14 +57,13 @@ query modelView($id: ID!) {
   view: modelView(id: $id) {
     id
     name
-    # TODO: xxx
-    # component {
-    #   id
-    #   template
-    #   blocks {
-    #     key
-    #     props
-    #   }
-    # }
+    component {
+      id
+      template
+      blocks {
+        key
+        props
+      }
+    }
   }
 }

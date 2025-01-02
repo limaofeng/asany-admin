@@ -90,7 +90,7 @@
   },
   "devDependencies": {
     "@asany/umi-plugin-apollo": "^0.5.7",
-    "@asany/umi-plugin-app": "^0.5.6",
+    "@asany/umi-plugin-app": "^0.5.11",
     "@ckeditor/ckeditor5-dev-utils": "^39.6.3",
     "@commitlint/cli": "^19.0.1",
     "@commitlint/config-conventional": "^19.0.0",
@@ -120,7 +120,7 @@
     "@types/throttle-debounce": "^5.0.2",
     "conventional-changelog-cli": "^4.1.0",
     "eslint-plugin-import": "^2.29.1",
-    "husky": "^8.0.3",
+    "husky": "8.0.3",
     "lint-staged": "^13.2.0",
     "prettier": "^2.8.7",
     "prettier-plugin-organize-imports": "^3.2.2",

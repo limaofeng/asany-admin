@@ -15,14 +15,25 @@ import Sortable, { dragPreview } from '@asany/sortable';
 import { useBlock } from '@asany/sunmao';
 import classnames from 'classnames';
 
-import { AdvancedSearch, Controls, Filter } from '@/components';
-import { Button, Card, Checkbox, Input, Popover, Table } from '@/metronic';
+import {
+  BlockUI,
+  Button,
+  Card,
+  Checkbox,
+  Col,
+  Form,
+  Input,
+  Radio,
+  Row,
+  Table,
+} from '@/metronic';
 import type { TableColumn } from '@/metronic/Table/typings';
 import { useModelWithEndpointsLazyQuery } from '@/pages/module/hooks';
 import type { ModelField } from '@/types';
 
 import useConnection from '../hooks/useConnection';
 
+import { AdvancedSearch } from '@/components';
 import '../style/DefaultListView.scss';
 
 type DefaultListViewTableColumn = TableColumn<any> & {
@@ -284,9 +295,77 @@ function DefaultListView() {
 
   console.log('columns', allColumns, columns, data);
 
+  const keywords = '';
+
+  const handleKeywordSearch = useCallback((value: string) => {
+    console.log('search', value);
+  }, []);
+
   return (
     <Provider>
-      <AdvancedSearch />
+      <Card className="mb-5 mb-xl-10">
+        <Card.Header className="pt-8">
+          <Card.Title className="flex-row">
+            <Input.Search
+              solid
+              defaultValue={keywords}
+              className="w-250px"
+              placeholder="关键词搜索"
+              onSearch={handleKeywordSearch}
+            />
+            <AdvancedSearch values={{}} onSearch={(vs) => {}}>
+              <Row gutter={8} className="mb-8">
+                <Col xxl={7}>
+                  <label className="fs-6 form-label fw-bold text-dark">
+                    门店
+                  </label>
+                  <Form.Item noStyle name="status" initialValue="ALL">
+                    <Radio.Group>
+                      <Radio.Button value="ALL">全部</Radio.Button>
+                      <Radio.Button value="NEW">新建</Radio.Button>
+                      <Radio.Button value="IN_PROGRESS">处理中</Radio.Button>
+                      <Radio.Button value="SUSPENDED">暂停</Radio.Button>
+                      <Radio.Button value="RESOLVED">已解决</Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </AdvancedSearch>
+          </Card.Title>
+          <Card.Toolbar>
+            <div>
+              <Button
+                className="me-4 my-1"
+                variant="light"
+                // onClick={() => excel.export()}
+              >
+                导出 Excel
+              </Button>
+            </div>
+          </Card.Toolbar>
+        </Card.Header>
+        <Card.Body>
+          <BlockUI overlayClassName="bg-white bg-opacity-25" loading={loading}>
+            <Table
+              columns={columns}
+              rowKey="id"
+              rowSelection={{
+                type: 'checkbox',
+                renderTitle: (size) => (
+                  <>
+                    已选中<span className="mx-2">{size}</span>个活动
+                  </>
+                ),
+                toolbar: tableToolbar,
+              }}
+              dataSource={[]}
+              noRowsRenderer={() => <div>没有数据</div>}
+            />
+          </BlockUI>
+        </Card.Body>
+      </Card>
+
+      {/* 
       <div className="d-flex flex-wrap pb-7">
         <div className="d-flex flex-row-fluid flex-wrap align-items-center">
           <h3 className="fw-bolder me-5">
@@ -325,9 +404,6 @@ function DefaultListView() {
         </Popover>
       </div>
       <Card flush bodyClassName="pt-3">
-        {/* <div className="d-flex">
-          <div className="flex-row-fluid">x</div>
-        </div> */}
         {!!columns.length && (
           <Table
             columns={columns}
@@ -345,7 +421,7 @@ function DefaultListView() {
             noRowsRenderer={() => <div>没有数据</div>}
           />
         )}
-      </Card>
+      </Card> */}
     </Provider>
   );
 }

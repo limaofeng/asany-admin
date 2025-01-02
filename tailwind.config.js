@@ -4,8 +4,7 @@ module.exports = {
     './src/components/**/*.tsx',
     './src/layouts/**/*.tsx',
   ],
-  purge: ['./src/**/*.tsx'],
-  darkMode: false,
+  content: ['./src/**/*.tsx'],
   corePlugins: {
     preflight: false,
   },

@@ -1,27 +1,17 @@
 import React from 'react';
-import type { RouteComponentProps } from 'react-router';
+import { useParams } from 'react-router';
 
 import { SketchProvider, useReactComponent } from '@asany/sunmao';
 
 import { PageContent } from '@/layouts/components';
 import { useModelViewQuery } from '@/pages/module/hooks';
-import type { Component, Module } from '@/types';
-
-type ContentViewProps = RouteComponentProps<
-  { mid?: string; vid?: string },
-  any,
-  { module: Module; baseUrl: string }
-> & {
-  children: React.ReactNode;
-};
+import type { Component } from '@/types';
 
 type ViewLoaderProps = {
   component: Component;
 };
 
 function ViewLoader(props: ViewLoaderProps) {
-  // const sketch = useSketch();
-
   const component = useReactComponent(
     props.component?.template || '',
     props.component?.blocks,
@@ -84,18 +74,18 @@ function ViewLoader(props: ViewLoaderProps) {
   );
 }
 
-function ContentView(props: ContentViewProps) {
-  const { vid: id } = props.match.params;
+function ContentView() {
+  const params = useParams();
 
   const { data, loading } = useModelViewQuery({
     variables: {
-      id,
+      id: params.id,
     },
   });
 
   const view = data?.view;
 
-  console.log('DefaultListView', data, id);
+  console.log('ContentView', view);
 
   return (
     <PageContent className="pages-module-content-model-view" loading={loading}>
