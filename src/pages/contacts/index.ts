@@ -24,7 +24,23 @@ class Contacts {
     tags: ['通讯录'],
   })
   MainContacts = dynamic({
-    loader: () => import('./pages/MainContacts'),
+    loader: () => import('./views/MainContacts'),
+    loading: LoadingComponent,
+  });
+  @component({
+    title: '联系人列表',
+    tags: ['通讯录'],
+  })
+  ContactList = dynamic({
+    loader: () => import('./views/ContactList'),
+    loading: LoadingComponent,
+  });
+  @component({
+    title: '无联系人',
+    tags: ['通讯录'],
+  })
+  NoContact = dynamic({
+    loader: () => import('./components/NoContacts'),
     loading: LoadingComponent,
   });
   @component({
@@ -32,7 +48,15 @@ class Contacts {
     tags: ['通讯录'],
   })
   ViewContact = dynamic({
-    loader: () => import('./pages/ViewContact'),
+    loader: () => import('./views/ViewContact'),
+    loading: LoadingComponent,
+  });
+  @component({
+    title: '组织信息',
+    tags: ['通讯录'],
+  })
+  OrgInfo = dynamic({
+    loader: () => import('./views/OrgInfo'),
     loading: LoadingComponent,
   });
 }

@@ -2,13 +2,13 @@ import type {
   BlackUserItem,
   FriendApplicationItem,
   FriendUserItem,
+  GetGroupMemberParams,
   GroupApplicationItem,
   GroupItem,
   GroupMemberItem,
   MemberMapType,
   TotalUserStruct,
-} from 'open-im-sdk-wasm/lib/types/entity';
-import type { GetGroupMemberParams } from 'open-im-sdk-wasm/lib/types/params';
+} from '@openim/wasm-client-sdk';
 
 import { IMSDK } from '@/models/open-im/auth';
 

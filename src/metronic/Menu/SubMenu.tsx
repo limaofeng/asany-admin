@@ -30,6 +30,7 @@ interface SubMenuProps {
   className?: string;
   titleClassName?: string;
   linkClassName?: string;
+  iconClassName?: string;
   bodyClassName?: string;
   offset?: [number, number];
   bullet?: boolean | BulletProps;
@@ -85,6 +86,7 @@ function SubMenu(props: SubMenuProps) {
     className,
     bodyClassName,
     titleClassName,
+    iconClassName,
   } = props as any;
   const { icon, title, children, offset } = props;
   const itemRef = useRef<HTMLDivElement>(null);
@@ -168,7 +170,7 @@ function SubMenu(props: SubMenuProps) {
       data-kt-menu-offset={offset ? offset.join(',') : undefined}
     >
       {icon ? (
-        <span className="menu-icon">
+        <span className={classnames('menu-icon', iconClassName)}>
           {typeof icon === 'string' ? (
             <Icon className="svg-icon-4" name={icon} />
           ) : (

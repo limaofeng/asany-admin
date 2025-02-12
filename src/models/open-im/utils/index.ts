@@ -1,9 +1,10 @@
-import axios from 'axios';
 import {
   ConversationItem,
   MessageItem,
-} from 'open-im-sdk-wasm/lib/types/entity';
-import { MessageType, SessionType } from 'open-im-sdk-wasm/lib/types/enum';
+  MessageType,
+  SessionType,
+} from '@openim/wasm-client-sdk';
+import axios from 'axios';
 
 export const isSingleCve = (cve: ConversationItem) => {
   return cve.userID !== '' && cve.groupID === '';

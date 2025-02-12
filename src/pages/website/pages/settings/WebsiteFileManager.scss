@@ -1,7 +1,7 @@
 .website-filemanager {
   .list-files.card {
     border-radius: var(--bs-card-border-radius);
-    box-shadow: var(--kt-card-box-shadow);
+    box-shadow: var(--bs-card-box-shadow);
 
     & > .card-body {
       height: calc(100% - 30px);

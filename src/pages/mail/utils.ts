@@ -1,13 +1,17 @@
 import { parseEmailTag } from '@asany/tags-input';
 
+import { Color } from '@/metronic';
+
 type DEFAULT_MAILBOXE_TYPE = {
   id: string;
   name: string;
   icon: string;
-  badge: string;
+  badge?: Color;
 };
 
-export const DEFAULT_MAILBOXES = {
+export const DEFAULT_MAILBOXES: {
+  [key: string]: DEFAULT_MAILBOXE_TYPE;
+} = {
   INBOX: {
     id: 'INBOX',
     name: '收件箱',

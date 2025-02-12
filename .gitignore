@@ -13,6 +13,7 @@
 .swc
 .eslintcache
 .env
+.vscode
 
 # tmp
 graphql/index.schema.json

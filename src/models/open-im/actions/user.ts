@@ -1,7 +1,4 @@
-import type {
-  FullUserItem,
-  PartialUserInfo,
-} from 'open-im-sdk-wasm/lib/types/entity';
+import type { PartialUserInfo, PublicUserItem } from '@openim/wasm-client-sdk';
 import type { Dispatch } from 'redux';
 
 import { IMSDK } from '../auth';
@@ -16,7 +13,7 @@ import {
 export const setSelfInfo = (value: PartialUserInfo): UserActionTypes => {
   return {
     type: SET_SELF_INFO,
-    payload: value as unknown as FullUserItem,
+    payload: value as unknown as PublicUserItem,
   };
 };
 

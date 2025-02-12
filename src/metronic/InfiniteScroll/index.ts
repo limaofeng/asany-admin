@@ -1,4 +1,4 @@
-export { default } from './InfiniteScroll';
+export { default as InfiniteScroll } from './InfiniteScroll';
 export type {
   InfiniteScrollRef,
   RowRendererParams,

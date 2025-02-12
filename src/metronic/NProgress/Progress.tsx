@@ -5,6 +5,8 @@ import { useNProgress } from '@tanem/react-nprogress';
 import Bar from './Bar';
 import Container from './Container';
 
+import './Progress.scss';
+
 const Progress: React.FC<{
   isAnimating: boolean;
   position: 'top' | 'bottom';

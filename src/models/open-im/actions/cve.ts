@@ -1,4 +1,4 @@
-import type { ConversationItem } from 'open-im-sdk-wasm/lib/types/entity';
+import type { ConversationItem } from '@openim/wasm-client-sdk';
 
 import { IMSDK } from '../auth';
 import type { CveActionTypes } from '../types/cve';

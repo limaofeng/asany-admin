@@ -2,12 +2,12 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 
 import { Icon } from '@asany/icons';
 import { Resizer } from '@asany/sunmao';
-import classnames from 'classnames';
 import {
   ConversationItem,
   MessageItem,
-} from 'open-im-sdk-wasm/lib/types/entity';
-import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
+  MessageType,
+} from '@openim/wasm-client-sdk';
+import classnames from 'classnames';
 
 import { Badge, Button, Card, Symbol, Tooltip } from '@/metronic';
 import { isSingleCve } from '@/models/open-im/utils';

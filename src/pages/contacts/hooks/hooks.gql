@@ -1,56 +1,49 @@
-query books {
-  books: contactBooks {
+query myContacts {
+  result: myContacts {
     id
     name
-    type
-    namespaces {
+    groups {
       id
       name
+      namespace
     }
   }
 }
 
-query book($id: ID!) {
-  book: contactBook(id: $id) {
+query orgContacts {
+  result: orgContacts {
     id
     name
-    type
     namespaces {
       id
       name
     }
-    # groups(namespace: $namespace) {
-    #   id
-    #   name
-    #   namespace
-    #   path
-    #   index
-    #   parentId
-    # }
+    groups {
+      id
+      name
+      namespace
+    }
   }
 }
 
-query contacts($where: ContactWhereInput, $page: Int = 1) {
-  contacts(where: $where, page: $page) {
-    currentPage
-    pageSize
-    totalPage
-    totalCount
-    edges {
-      cursor
-      node {
-        id
-        name
-        title
-        sex
-        avatar
-        email {
-          ...EmailParts
-        }
-        phone {
-          ...PhoneParts
-        }
-      }
+# """
+# 通过 ID 查询通讯录
+# """
+query contacts($id: ID!, $group: ID!) {
+  result: contacts(id: $id) {
+    id
+    name
+    group(groupId: $group) {
+      id
+      name
+      namespace
+    }
+    contacts(groupId: $group) {
+      id
+      name
+      title
+      sex
+      avatar
     }
   }
 }

@@ -6,7 +6,7 @@ import type {
   GroupItem,
   GroupMemberItem,
   MemberMapType,
-} from 'open-im-sdk-wasm/lib/types/entity';
+} from '@openim/wasm-client-sdk';
 
 export type ContactState = {
   friendList: FriendUserItem[];

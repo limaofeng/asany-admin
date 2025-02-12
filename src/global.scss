@@ -41,7 +41,7 @@ body {
   font-size: var(--bs-body-font-size) !important;
   font-family: var(--bs-body-font-family);
   font-variant: tabular-nums;
-  background-color: var(--kt-page-bg);
+  background-color: var(--bs-page-bg);
   font-feature-settings: 'tnum';
   -webkit-font-smoothing: antialiased;
 }
@@ -50,7 +50,7 @@ body {
   .resizer {
     &.active > .handle::before,
     .handle:hover::before {
-      background: var(--kt-primary);
+      background: var(--bs-primary);
     }
   }
 }

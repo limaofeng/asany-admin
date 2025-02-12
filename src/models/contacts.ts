@@ -1,23 +1,25 @@
 import { useCallback, useReducer, useRef } from 'react';
 
+import { Contacts } from '@/types';
+
 type ContactsState = {
-  book?: string;
+  data?: Contacts;
+  group?: string;
 };
 
 export default function useContactsModel() {
   const state = useRef<ContactsState>({});
-  const [, forceRender] = useReducer((s) => s + 1, 0);
+  const [version, forceRender] = useReducer((s) => s + 1, 0);
 
-  const handleSetBook = useCallback((bookId) => {
-    if (state.current.book === bookId) {
-      return;
-    }
-    state.current.book = bookId;
+  const handleSetBook = useCallback((book: Contacts, group: string) => {
+    state.current.data = book;
+    state.current.group = group;
     forceRender();
   }, []);
 
   return {
-    state: state.current,
-    setBook: handleSetBook,
+    state: { ...state.current },
+    version,
+    setContacts: handleSetBook,
   };
 }

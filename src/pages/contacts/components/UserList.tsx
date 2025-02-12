@@ -6,9 +6,10 @@ import Icon from '@asany/icons';
 import classnames from 'classnames';
 
 import type { RowRendererParams, ScrollRowDataEvent } from '@/metronic';
-import { Card, InfiniteScroll, Input, Symbol } from '@/metronic';
+import { Card, InfiniteScroll, Input, NProgress, Symbol } from '@/metronic';
+import { Contact, ContactGroup } from '@/types';
 
-import type { PaginationType, UseContact } from '../hooks/useContacts';
+import type { UseContact } from '../hooks/useContacts';
 
 type ContactItemProps = {
   index: number;
@@ -54,8 +55,6 @@ function ContactItem(props: ContactItemProps) {
             alt={contact.name!}
             src="assets/media/avatars/300-6.jpg"
             size={40}
-            labelClassName="fs-2"
-            shape="circle"
             // badge={
             //   <div className="symbol-badge bg-success start-100 top-100 border-4 h-15px w-15px ms-n2 mt-n2" />
             // }
@@ -73,17 +72,19 @@ function ContactItem(props: ContactItemProps) {
 }
 
 type ContactListProps = {
-  activeIndex: number;
+  group?: ContactGroup;
+  activeIndex?: number;
   loading: boolean;
-  pagination: PaginationType;
-  onScrollToIndex: (e: ScrollRowDataEvent) => Promise<void>;
+  data: Contact[];
+  onScrollToIndex?: (e: ScrollRowDataEvent) => Promise<void>;
   onItemClick: (index: number) => void;
   useContact: UseContact;
 };
 
 function UserList(props: ContactListProps) {
   const {
-    pagination,
+    group,
+    data,
     useContact,
     loading,
     onItemClick,
@@ -109,7 +110,7 @@ function UserList(props: ContactListProps) {
 
   const noRowsRenderer = useCallback(
     () => (
-      <div className="infinite-scroll-no-rows">
+      <div className="kt_contacts-is-empty infinite-scroll-no-rows">
         <img src="/assets/media/illustrations/dozzy-1/4.png" />
         <span className="empty-title">
           {loading ? '加载中...' : '此分组为空'}
@@ -123,8 +124,11 @@ function UserList(props: ContactListProps) {
   );
 
   return (
-    <Card className="kt_contacts_list" flush>
-      <Card.Header className="pt-7">
+    <Card
+      className="kt_contacts-card w-100 border-left-0 border-top-0 border-bottom-0"
+      flush
+    >
+      <Card.Header>
         <form
           className="d-flex align-items-center position-relative w-100"
           autoComplete="off"
@@ -133,19 +137,26 @@ function UserList(props: ContactListProps) {
             name="Duotune/gen021"
             className="svg-icon-2 svg-icon-lg-1 svg-icon-gray-500 position-absolute top-50 ms-5 translate-middle-y"
           />
-          <Input solid className="px-15" size="sm" placeholder="搜索联系人…" />
+          <Input solid className="px-15" placeholder="搜索联系人…" />
         </form>
       </Card.Header>
-      <Card.Body className="pt-5">
-        <InfiniteScroll
-          rowCount={pagination.totalCount}
-          rowHeight={66}
-          scrollToIndex={activeIndex}
-          onScrollToIndex={onScrollToIndex}
-          rowRenderer={contactRowRenderer}
-          noRowsRenderer={noRowsRenderer}
-          className="contact-list-body"
-        />
+      <Card.Body>
+        <div className="kt_contacts-list-header">
+          <Icon className="svg-icon-5 svg-icon-primary" name="Duotune/com010" />
+          <span className="box-name">{group?.name}</span>
+        </div>
+        <div className="infinite-scroll-container">
+          <NProgress isAnimating={!!loading} position="top" />
+          <InfiniteScroll
+            rowCount={data.length}
+            rowHeight={66}
+            scrollToIndex={activeIndex}
+            onScrollToIndex={onScrollToIndex}
+            rowRenderer={contactRowRenderer}
+            noRowsRenderer={noRowsRenderer}
+            className="kt_contacts-list"
+          />
+        </div>
       </Card.Body>
     </Card>
   );

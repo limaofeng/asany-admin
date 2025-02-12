@@ -7,12 +7,10 @@ const Container: React.FC<{
   children?: React.ReactNode;
 }> = ({ animationDuration, children, isFinished, position }) => (
   <div
+    className="nprogress-container"
     style={{
-      position: 'absolute',
       [position]: 0,
       opacity: isFinished ? 0 : 1,
-      pointerEvents: 'none',
-      width: '100%',
       transition: `opacity ${animationDuration}ms linear`,
     }}
   >

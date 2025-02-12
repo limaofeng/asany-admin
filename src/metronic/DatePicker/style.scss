@@ -9,12 +9,12 @@
 .react-datepicker__input-container {
   .react-datepicker__close-icon {
     &::after {
-      background-color: var(--kt-gray-400);
+      background-color: var(--bs-gray-400);
     }
 
     &:hover {
       &::after {
-        background-color: var(--kt-gray-500);
+        background-color: var(--bs-gray-500);
       }
     }
   }
@@ -55,16 +55,16 @@
         border-radius: 0.475rem;
 
         &:hover {
-          background-color: var(--kt-component-hover-bg);
-          color: var(--kt-component-hover-color);
+          background-color: var(--bs-component-hover-bg);
+          color: var(--bs-component-hover-color);
 
           span {
-            border-color: var(--kt-component-hover-color);
+            border-color: var(--bs-component-hover-color);
           }
         }
 
         span {
-          border: solid var(--kt-gray-600);
+          border: solid var(--bs-gray-600);
           border-width: 0 1px 1px 0;
           display: inline-block;
           padding: 3px;
@@ -105,9 +105,9 @@
           padding-top: 0.35rem;
           padding-bottom: 0.35rem;
           border-radius: 0.475rem;
-          background-color: var(--kt-body-bg) !important;
+          background-color: var(--bs-body-bg) !important;
           border-color: transparent;
-          color: var(--kt-input-color);
+          color: var(--bs-input-color);
           font-weight: 500;
           outline: 0 !important;
           text-transform: none;
@@ -125,7 +125,7 @@
     .react-datepicker__day-name {
       font-size: 1rem;
       font-weight: 500;
-      color: var(--kt-gray-800);
+      color: var(--bs-gray-800);
       width: 28px;
       height: 28px;
       text-align: center;
@@ -137,7 +137,7 @@
   .react-datepicker__month {
     .react-datepicker__day {
       border-radius: 0.475rem;
-      color: var(--kt-gray-700);
+      color: var(--bs-gray-700);
       font-size: 1rem;
       font-weight: 400;
       width: 28px;
@@ -149,13 +149,13 @@
       }
 
       &.react-datepicker__day--selected {
-        background-color: var(--kt-component-active-bg) !important;
-        color: var(--kt-component-active-color) !important;
+        background-color: var(--bs-component-active-bg) !important;
+        color: var(--bs-component-active-color) !important;
       }
 
       &:hover {
-        background-color: var(--kt-component-hover-bg);
-        color: var(--kt-component-hover-color);
+        background-color: var(--bs-component-hover-bg);
+        color: var(--bs-component-hover-color);
       }
 
       &.react-datepicker__day--today {
@@ -163,12 +163,12 @@
         position: relative;
 
         &:hover {
-          background-color: var(--kt-component-hover-bg);
+          background-color: var(--bs-component-hover-bg);
         }
 
         &.react-datepicker__day--selected {
           &::after {
-            background-color: var(--kt-component-active-color) !important;
+            background-color: var(--bs-component-active-color) !important;
           }
         }
 
@@ -177,7 +177,7 @@
           width: 18px;
           height: 2px;
           border-radius: 1px;
-          background-color: var(--kt-component-hover-color);
+          background-color: var(--bs-component-hover-color);
           bottom: 4px;
           left: 50%;
           transform: translate(-50%, 0);
@@ -186,7 +186,7 @@
       }
 
       &.react-datepicker__day--outside-month {
-        color: var(--kt-gray-400);
+        color: var(--bs-gray-400);
       }
     }
   }

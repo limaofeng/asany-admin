@@ -2,15 +2,15 @@ import type { CSSProperties, FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { Map, Marker } from 'react-amap';
 
-import { useModel } from '@umijs/max';
-import { Image } from 'antd';
-import moment from 'moment';
 import {
   ConversationItem,
   MergeElem,
   MessageItem,
-} from 'open-im-sdk-wasm/lib/types/entity';
-import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
+  MessageType,
+} from '@openim/wasm-client-sdk';
+import { useModel } from '@umijs/max';
+import { Image } from 'antd';
+import moment from 'moment';
 
 import { Symbol, Tooltip, VideoPlayer } from '@/metronic';
 import {

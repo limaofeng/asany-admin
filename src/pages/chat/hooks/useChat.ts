@@ -1,22 +1,21 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import { useModel } from '@umijs/max';
-import { useReactive, useRequest } from 'ahooks';
-import { CbEvents } from 'open-im-sdk-wasm/lib/constant';
 import {
+  CbEvents,
   ConversationItem,
   FriendUserItem,
   GroupItem,
   GroupMemberItem,
   MergeElem,
-  MessageItem,
-  WsResponse,
-} from 'open-im-sdk-wasm/lib/types/entity';
-import { MessageType, SessionType } from 'open-im-sdk-wasm/lib/types/enum';
-import {
   MergerMsgParams,
+  MessageItem,
+  MessageType,
   SendMsgParams,
-} from 'open-im-sdk-wasm/lib/types/params';
+  SessionType,
+  WsResponse,
+} from '@openim/wasm-client-sdk';
+import { useModel } from '@umijs/max';
+import { useReactive, useRequest } from 'ahooks';
 
 import { Toast } from '@/metronic';
 import { IMSDK } from '@/models/open-im/auth';

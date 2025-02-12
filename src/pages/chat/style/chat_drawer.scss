@@ -1,7 +1,7 @@
 .chat-drawer {
   .card-cve {
     --bs-card-bg: transparent;
-    --kt-card-box-shadow: 0px 10px 35px 0pxrgb (0 0 0 / 0%);
+    --bs-card-box-shadow: 0px 10px 35px 0pxrgb (0 0 0 / 0%);
     border-radius: none;
 
     .card-footer {
@@ -43,7 +43,7 @@
       border-radius: 1rem;
       &.active,
       &:hover {
-        background-color: var(--kt-component-hover-bg);
+        background-color: var(--bs-component-hover-bg);
       }
       .cve_msg {
         position: relative;
@@ -84,7 +84,7 @@
         }
         .scroll-view-spin {
           span {
-            color: var(--kt-text-primary);
+            color: var(--bs-text-primary);
           }
         }
       }
@@ -93,16 +93,16 @@
       }
       .chat_bg_tips {
         margin-bottom: 0.25rem;
-        color: var(--kt-text-muted);
+        color: var(--bs-text-muted);
         font-size: 0.95rem;
         text-align: center;
         b {
-          color: var(--kt-text-success);
+          color: var(--bs-text-success);
         }
       }
       .con_nomore {
         padding: 8px;
-        color: var(--kt-input-color);
+        color: var(--bs-input-color);
         font-size: 12px;
         text-align: center;
       }
@@ -120,7 +120,7 @@
           outline: 0;
         }
         &[placeholder]:empty:before {
-          color: var(--kt-input-placeholder-color) !important;
+          color: var(--bs-input-placeholder-color) !important;
           font-size: 13px !important;
           content: attr(placeholder);
         }

@@ -57,7 +57,8 @@ query viewer {
       status
       detailPlatformStatus {
         platform
-        status
+        connection
+        background
       }
     }
     tenantId

@@ -6,7 +6,8 @@ query getUserOnlineStatus($id: ID!) {
       status
       detailPlatformStatus {
         platform
-        status
+        connection
+        background
       }
     }
   }

@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useReducer, useState } from 'react';
 
+import type { PublicUserItem } from '@openim/wasm-client-sdk';
+import { CbEvents, InitAndLoginConfig, getSDK } from '@openim/wasm-client-sdk';
 import { APP_CONFIG, useModel } from '@umijs/max';
-import { getSDK } from 'open-im-sdk-wasm';
-import { CbEvents } from 'open-im-sdk-wasm/lib/constant';
-import type { FullUserItem } from 'open-im-sdk-wasm/lib/types/entity';
-import { InitAndLoginConfig } from 'open-im-sdk-wasm/lib/types/params';
 
 import { getSelfInfo, getUnReadCount, setUnReadCount } from './actions/user';
 import type { UserActionTypes, UserState } from './types/user';
@@ -15,11 +13,15 @@ import {
   SET_UNREAD_COUNT,
 } from './types/user';
 
-export const IMSDK = getSDK();
+export const IMSDK = getSDK({
+  coreWasmPath: './openIM.wasm',
+  sqlWasmPath: '/sql-wasm.wasm',
+  debug: true, // false不打印日志
+});
 
 const initialState: UserState = {
   unReadCount: 0,
-  selfInfo: {} as FullUserItem,
+  selfInfo: {} as PublicUserItem,
   adminToken: '',
   selfInitLoading: true,
 };

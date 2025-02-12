@@ -1,4 +1,4 @@
-import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
+import { MessageType } from '@openim/wasm-client-sdk';
 
 export const UPDATEFRIENDCARD = 'UPDATEFRIENDCARD';
 export const TOASSIGNCVE = 'TOASSIGNCVE';

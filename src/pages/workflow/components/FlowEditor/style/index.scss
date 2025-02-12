@@ -917,30 +917,30 @@
 
 .react-flow__node-StartNoneEvent,
 .quick-controls__node-StartNoneEvent {
-  --flow-node-color: var(--kt-success);
+  --flow-node-color: var(--bs-success);
   --flow-node-color-rgb: var(--bs-success-rgb);
-  --flow-node-color-inverse: var(--kt-success-inverse);
+  --flow-node-color-inverse: var(--bs-success-inverse);
 }
 
 .react-flow__node-UserTask,
 .quick-controls__node-UserTask {
-  --flow-node-color: var(--kt-warning);
-  --flow-node-color-rgb: var(--kt-warning-rgb);
-  --flow-node-color-inverse: var(--kt-warning-inverse);
+  --flow-node-color: var(--bs-warning);
+  --flow-node-color-rgb: var(--bs-warning-rgb);
+  --flow-node-color-inverse: var(--bs-warning-inverse);
 }
 
 .react-flow__node-EndNoneEvent,
 .quick-controls__node-EndNoneEvent {
-  --flow-node-color: var(--kt-dark);
-  --flow-node-color-rgb: var(--kt-dark-rgb);
-  --flow-node-color-inverse: var(--kt-dark-inverse);
+  --flow-node-color: var(--bs-dark);
+  --flow-node-color-rgb: var(--bs-dark-rgb);
+  --flow-node-color-inverse: var(--bs-dark-inverse);
 }
 
 .react-flow__node-ServiceTask,
 .quick-controls__node-ServiceTask {
-  --flow-node-color: var(--kt-primary);
-  --flow-node-color-rgb: var(--kt-primary-rgb);
-  --flow-node-color-inverse: var(--kt-primary-inverse);
+  --flow-node-color: var(--bs-primary);
+  --flow-node-color-rgb: var(--bs-primary-rgb);
+  --flow-node-color-inverse: var(--bs-primary-inverse);
 }
 
 .react-flow__node-ExclusiveGateway {

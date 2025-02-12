@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
-import { useModel } from '@umijs/max';
-import { CbEvents } from 'open-im-sdk-wasm/lib/constant';
 import {
+  CbEvents,
   ConversationItem,
   WsResponse,
-} from 'open-im-sdk-wasm/lib/types/entity';
+} from '@openim/wasm-client-sdk';
+import { useModel } from '@umijs/max';
 
 import { getCveList, setCurCve, setCveList } from './actions/cve';
 import { IMSDK } from './auth';

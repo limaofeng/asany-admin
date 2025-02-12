@@ -54,19 +54,19 @@
 
     &-error {
       .svg-icon {
-        color: var(--kt-text-danger);
+        color: var(--bs-text-danger);
       }
     }
 
     &-warning {
       .svg-icon {
-        color: var(--kt-text-warning);
+        color: var(--bs-text-warning);
       }
     }
 
     &-success {
       .svg-icon {
-        color: var(--kt-text-primary);
+        color: var(--bs-text-primary);
       }
     }
   }
@@ -75,7 +75,7 @@
     width: 14px;
     height: 14px;
     display: inline-block;
-    border: 0.185em solid var(--kt-text-muted);
+    border: 0.185em solid var(--bs-text-muted);
     border-right-color: transparent;
     vertical-align: var(--bs-spinner-vertical-align);
     border-radius: 50%;

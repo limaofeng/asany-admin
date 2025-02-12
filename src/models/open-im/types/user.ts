@@ -1,7 +1,7 @@
-import type { FullUserItem } from 'open-im-sdk-wasm/lib/types/entity';
+import type { PublicUserItem } from '@openim/wasm-client-sdk';
 
 export type UserState = {
-  selfInfo: FullUserItem;
+  selfInfo: PublicUserItem;
   adminToken: string;
   selfInitLoading: boolean;
   unReadCount: number;
@@ -14,7 +14,7 @@ export const SET_UNREAD_COUNT = 'SET_UNREAD_COUNT';
 
 type SetSelfInfo = {
   type: typeof SET_SELF_INFO;
-  payload: FullUserItem;
+  payload: PublicUserItem;
 };
 
 type SetSelfToken = {

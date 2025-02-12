@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Icon } from '@asany/icons';
-import { useModel } from '@umijs/max';
-import { useLatest } from 'ahooks';
 import {
   ConversationItem,
   MessageItem,
-} from 'open-im-sdk-wasm/lib/types/entity';
-import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
+  MessageType,
+} from '@openim/wasm-client-sdk';
+import { useModel } from '@umijs/max';
+import { useLatest } from 'ahooks';
 
 import { Button, Tooltip } from '@/metronic';
 import { IMSDK } from '@/models/open-im/auth';

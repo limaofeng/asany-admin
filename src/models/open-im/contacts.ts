@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
-import { CbEvents } from 'open-im-sdk-wasm/lib/constant';
-import { GroupItem, WsResponse } from 'open-im-sdk-wasm/lib/types/entity';
-import type { GetGroupMemberParams } from 'open-im-sdk-wasm/lib/types/params';
+import type { GetGroupMemberParams } from '@openim/wasm-client-sdk';
+import { CbEvents, GroupItem, WsResponse } from '@openim/wasm-client-sdk';
 
 import {
   getGroupInfo,

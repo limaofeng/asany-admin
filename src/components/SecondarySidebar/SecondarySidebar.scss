@@ -18,7 +18,7 @@
   z-index: 103;
 
   & > .secondary_sidebar-inner {
-    background-color: var(--kt-aside-bg-color);
+    background-color: var(--bs-aside-bg-color);
     overflow: hidden;
     height: 100vh;
   }
@@ -44,8 +44,8 @@
     width: 24px;
     height: 24px;
     padding: 0;
-    color: var(--kt-secondary-inverse);
-    background: 0 center var(--kt-aside-bg-color);
+    color: var(--bs-secondary-inverse);
+    background: 0 center var(--bs-aside-bg-color);
     border: 0;
     border-radius: 50%;
     outline: 0;
@@ -110,13 +110,13 @@
     }
 
     &:hover {
-      color: var(--kt-primary-inverse);
-      background-color: var(--kt-primary);
+      color: var(--bs-primary-inverse);
+      background-color: var(--bs-primary);
     }
 
     &:active {
-      color: var(--kt-primary-inverse);
-      background-color: var(--kt-primary);
+      color: var(--bs-primary-inverse);
+      background-color: var(--bs-primary);
     }
   }
 }

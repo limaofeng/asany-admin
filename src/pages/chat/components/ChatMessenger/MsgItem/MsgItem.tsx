@@ -3,13 +3,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // import { ExclamationCircleFilled, LoadingOutlined } from '@ant-design/icons';
 // import { Spin } from 'antd';
-import { useInViewport, useLongPress } from 'ahooks';
-import classnames from 'classnames';
 import {
   ConversationItem,
   MessageItem,
-} from 'open-im-sdk-wasm/lib/types/entity';
-import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
+  MessageType,
+} from '@openim/wasm-client-sdk';
+import { useInViewport, useLongPress } from 'ahooks';
+import classnames from 'classnames';
 
 import { Symbol } from '@/metronic';
 import { IMSDK } from '@/models/open-im/auth';

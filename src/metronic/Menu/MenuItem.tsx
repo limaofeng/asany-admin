@@ -19,6 +19,7 @@ export type MenuItemProps = {
   titleClassName?: string;
   linkClassName?: string;
   contentClassName?: string;
+  iconClassName?: string;
   bullet?: boolean | BulletProps;
   children?: React.ReactNode;
   badge?: React.ReactNode;
@@ -77,6 +78,7 @@ function MenuItem(props: MenuItemProps) {
     bullet,
     className,
     linkClassName,
+    iconClassName,
     titleClassName,
     onClick,
   } = props;
@@ -123,7 +125,7 @@ function MenuItem(props: MenuItemProps) {
         },
         <>
           {icon ? (
-            <span className="menu-icon">
+            <span className={classnames('menu-icon', iconClassName)}>
               {typeof icon === 'string' ? (
                 <Icon className="svg-icon-4" name={icon} />
               ) : (

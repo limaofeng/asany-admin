@@ -220,8 +220,9 @@ function useMailboxMessagesMagicQuery(
     if (loading || !data?.mailboxMessages) {
       return;
     }
-    state.current.pagination =
-      { ...data.mailboxMessages } || state.current.pagination;
+    state.current.pagination = data.mailboxMessages
+      ? { ...data.mailboxMessages }
+      : state.current.pagination;
     parseData(data.mailboxMessages as any);
     forceRender();
   }, [parseData, data?.mailboxMessages, loading]);
@@ -531,6 +532,7 @@ function Mailbox() {
   return (
     <ContentWrapper
       className="apps-email-mailbox"
+      contentClassName="ms-0 me-0 mw-100"
       header={false}
       footer={false}
     >
@@ -541,7 +543,10 @@ function Mailbox() {
         onResizeEnd={handleResizeEnd}
       >
         <div className="flex-column flex-lg-row-auto w-100 mb-10 mb-lg-0">
-          <Card flush className="mailbox-card">
+          <Card
+            flush
+            className="mailbox-card border-left-0 border-top-0 border-bottom-0"
+          >
             <Card.Header>
               <form
                 className="d-flex align-items-center position-relative w-100"
@@ -558,7 +563,7 @@ function Mailbox() {
               <div className="mailbox-list-header">
                 {mailbox.icon && (
                   <Icon
-                    className="svg-icon-5 svg-icon-success"
+                    className="svg-icon-5 svg-icon-primary"
                     name={mailbox.icon}
                   />
                 )}

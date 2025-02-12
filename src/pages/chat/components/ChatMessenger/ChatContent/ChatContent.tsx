@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { ConversationItem, MessageItem } from '@openim/wasm-client-sdk';
 import classnames from 'classnames';
-import {
-  ConversationItem,
-  MessageItem,
-} from 'open-im-sdk-wasm/lib/types/entity';
 
 import { useCurrentuser } from '@/hooks';
 import { isSingleCve } from '@/models/open-im/utils';

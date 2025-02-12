@@ -1,4 +1,4 @@
-import type { ConversationItem } from 'open-im-sdk-wasm/lib/types/entity';
+import type { ConversationItem } from '@openim/wasm-client-sdk';
 
 export type CveState = {
   cves: ConversationItem[];

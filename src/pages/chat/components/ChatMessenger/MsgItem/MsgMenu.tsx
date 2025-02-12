@@ -3,9 +3,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { useCopyToClipboard } from 'react-use';
 
 import { Icon } from '@asany/icons';
+import { MessageItem, MessageType } from '@openim/wasm-client-sdk';
 import classnames from 'classnames';
-import { MessageItem } from 'open-im-sdk-wasm/lib/types/entity';
-import { MessageType } from 'open-im-sdk-wasm/lib/types/enum';
 
 import { Menu, Modal, Popover, Toast } from '@/metronic';
 import { IMSDK } from '@/models/open-im/auth';

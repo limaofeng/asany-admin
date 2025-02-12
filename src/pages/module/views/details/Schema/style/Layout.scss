@@ -6,12 +6,12 @@
   line-height: 20px;
 
   &.checked {
-    color: var(--kt-primary) !important;
-    background-color: var(--kt-light);
+    color: var(--bs-primary) !important;
+    background-color: var(--bs-light);
   }
 
   &:hover {
-    color: var(--kt-light-inverse);
-    background-color: var(--kt-light);
+    color: var(--bs-light-inverse);
+    background-color: var(--bs-light);
   }
 }

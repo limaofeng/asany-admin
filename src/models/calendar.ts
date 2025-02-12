@@ -78,7 +78,7 @@ export default function useCalendarModel() {
   }, []);
 
   return {
-    state: state.current,
+    state: { ...state.current },
     setCalendarSet,
     setSelectedDay,
     setFullCalendar,

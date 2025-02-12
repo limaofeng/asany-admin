@@ -169,7 +169,7 @@
   }
   .ql-tooltip[data-mode='link']::before {
     content: '输入链接' !important;
-    color: var(--kt-text-muted) !important;
+    color: var(--bs-text-muted) !important;
   }
   .ql-tooltip[data-mode='video']::before {
     content: 'Entrez la vidéo' !important;
@@ -179,13 +179,13 @@
   }
   .ql-snow .ql-tooltip a.ql-remove::before {
     content: '删除' !important;
-    color: var(--kt-text-muted) !important;
+    color: var(--bs-text-muted) !important;
   }
   .ql-snow .ql-tooltip a.ql-action::after {
     content: '修改' !important;
   }
   .ql-snow .ql-tooltip::before {
     content: 'URL:' !important;
-    color: var(--kt-text-muted) !important;
+    color: var(--bs-text-muted) !important;
   }
 }

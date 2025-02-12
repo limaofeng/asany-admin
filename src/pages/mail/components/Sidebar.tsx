@@ -166,7 +166,8 @@ function Sidebar() {
                 !!unreadNumber && (
                   <Badge
                     size="sm"
-                    lightStyle={DEFAULT_MAILBOXES.INBOX.badge as any}
+                    color={DEFAULT_MAILBOXES.INBOX.badge}
+                    light={true}
                   >
                     {unreadNumber}
                   </Badge>
@@ -188,7 +189,7 @@ function Sidebar() {
                   badge={
                     !!lightStyle &&
                     !!item.count && (
-                      <Badge size="sm" lightStyle={lightStyle as any}>
+                      <Badge size="sm" color={lightStyle} light={true}>
                         {item.count}
                       </Badge>
                     )
