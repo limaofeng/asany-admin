@@ -53,14 +53,14 @@ query viewer {
     account
     authorities
     imToken(platform: Web)
-    onlineStatus {
-      status
-      detailPlatformStatus {
-        platform
-        connection
-        background
-      }
-    }
+    # onlineStatus {
+    #   status
+    #   detailPlatformStatus {
+    #     platform
+    #     connection
+    #     background
+    #   }
+    # }
     tenantId
   }
 }
