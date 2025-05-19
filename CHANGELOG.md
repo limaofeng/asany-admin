@@ -1,3 +1,16 @@
+## [0.4.33](https://github.com/limaofeng/asany-admin/compare/v0.4.32...v0.4.33) (2025-05-19)
+
+### Bug Fixes
+
+- correct button text in CustomerUserListView ([f0f41b9](https://github.com/limaofeng/asany-admin/commit/f0f41b9f1058bcaddb4bf4643f3387c025e7994c))
+
+### Features
+
+- add MainDashboard component and InteractiveMap styling, update module type definitions, and enhance global styles ([85fb68b](https://github.com/limaofeng/asany-admin/commit/85fb68b0c9226e5ba57e1a342980542c62f8619a))
+- add OrgInfo and MainContacts components, update various imports to use @openim/wasm-client-sdk, and enhance NProgress styling ([a06ad18](https://github.com/limaofeng/asany-admin/commit/a06ad188a30fd26cf2c6952ff0c284b3c3e9ae7d))
+- remove dynamic CSS injection from SweetAlert2 files and add backup functionality ([680d65a](https://github.com/limaofeng/asany-admin/commit/680d65a3cd427d2ad46cedef141d647cb795b2bb))
+- update calendar date picker dependency, enhance table styling, and improve user list component layout ([9ef56fb](https://github.com/limaofeng/asany-admin/commit/9ef56fb8fa56964966ff623ed293083820d04045))
+
 ## [0.4.32](https://github.com/limaofeng/asany-admin/compare/v0.4.31...v0.4.32) (2024-11-11)
 
 ## [0.4.31](https://github.com/limaofeng/asany-admin/compare/v0.4.30...v0.4.31) (2024-10-24)
