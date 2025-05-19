@@ -1,3 +1,5 @@
+## [0.4.34](https://github.com/limaofeng/asany-admin/compare/v0.4.33...v0.4.34) (2025-05-19)
+
 ## [0.4.33](https://github.com/limaofeng/asany-admin/compare/v0.4.32...v0.4.33) (2025-05-19)
 
 ### Bug Fixes
