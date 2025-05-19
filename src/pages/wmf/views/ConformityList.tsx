@@ -376,7 +376,7 @@ function ConformityList() {
         },
       },
       template: {
-        filename: '符合性规范批量上传.xlsx',
+        filename: '电子说明书批量上传.xlsx',
         cols: [
           { wch: 20 },
           { wch: 20 },
@@ -477,7 +477,7 @@ function ConformityList() {
   return (
     <ContentWrapper
       header={{
-        title: '符合性申明管理',
+        title: '电子说明书管理',
       }}
     >
       <ConformityDrawer
@@ -512,7 +512,7 @@ function ConformityList() {
                 className="me-4 my-1"
                 onClick={handleDownloadTmplate}
               >
-                符合性声明模板下载
+                电子说明书模板下载
               </Button>
             </div>
           </Card.Toolbar>

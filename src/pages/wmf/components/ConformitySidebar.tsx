@@ -20,7 +20,7 @@ function ProjectSidebar() {
   return (
     <AsideWorkspace width={280} className="app-sidebar app-contacts-sidebar">
       <div className="mt-5 px-5 pt-5">
-        <h1 className="text-gray-800 fw-bold mb-6 mx-5">符合性申明</h1>
+        <h1 className="text-gray-800 fw-bold mb-6 mx-5">电子说明书</h1>
       </div>
       <OverlayScrollbarsComponent
         className="custom-scrollbar flex-column-fluid my-5 p-5"
@@ -39,7 +39,7 @@ function ProjectSidebar() {
           fit={true}
         >
           <Menu.Item url="/conformity" icon="Duotune/abs051" key="conformity">
-            符合性申明管理
+            电子说明书管理
           </Menu.Item>
           <Menu.Item url="/drive/my-drive" icon="Duotune/fil020" key="drive">
             文件管理
