@@ -1,3 +1,9 @@
+## [0.4.37](https://github.com/limaofeng/asany-admin/compare/v0.4.36...v0.4.37) (2025-05-19)
+
+### Features
+
+- add comprehensive CSS variables for light and dark themes in global styles ([f02ffd2](https://github.com/limaofeng/asany-admin/commit/f02ffd200db7b46a562e9862e89c09be2a9149d6))
+
 ## [0.4.36](https://github.com/limaofeng/asany-admin/compare/v0.4.35...v0.4.36) (2025-05-19)
 
 ## [0.4.35](https://github.com/limaofeng/asany-admin/compare/v0.4.34...v0.4.35) (2025-05-19)
