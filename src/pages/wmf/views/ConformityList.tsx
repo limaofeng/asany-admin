@@ -579,9 +579,6 @@ function ConformityList() {
                             未上传
                           </Badge>
                         )}
-                        <Badge className="ms-2" color="warning" light>
-                          符合性申明
-                        </Badge>
                       </div>
                     );
                   },
