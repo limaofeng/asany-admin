@@ -99,7 +99,8 @@ function Tabs(props: TabsProps) {
       if (_renderTabBar) {
         return _renderTabBar(_props);
       }
-      return <TabBar {..._props} />;
+      const { key, ...restProps } = _props;
+      return <TabBar {...restProps} key={key} />;
     },
     [_renderTabBar],
   );

@@ -175,10 +175,11 @@ function VirtualList<T>(props: VirtualListProps<T>) {
     if (!dataSource.rowCount) {
       temp.current.startIndex = 0;
       temp.current.endIndex = 0;
-      temp.current.items.length = 0;
-      state.current.items.clear();
+      // temp.current.items.length = 0;
+      // state.current.items.clear();
     } else if (state.current.items.size) {
       while (state.current.items.size > dataSource.rowCount) {
+        console.log('delete', state.current.items.size, dataSource.rowCount);
         state.current.items.delete(state.current.items.size - 1);
       }
     }
@@ -249,6 +250,7 @@ function VirtualList<T>(props: VirtualListProps<T>) {
     temp.current.endIndex = Math.min(items.length, endIndex + overscanRowCount);
     temp.current.timer && clearTimeout(temp.current.timer);
     temp.current.timer = setTimeout(() => {
+      console.log('check items', items);
       temp.current.items = items
         .slice(temp.current.startIndex, temp.current.endIndex)
         .map((item) => ({
@@ -315,7 +317,7 @@ function VirtualList<T>(props: VirtualListProps<T>) {
     return _height;
   }, [endIndex, dataSource.rowCount, rowHeight]);
 
-  // console.log('VirtualList', startIndex, endIndex, beforeTr, afterTr);
+  console.log('VirtualList', items);
 
   return (
     <OverlayScrollbarsComponent

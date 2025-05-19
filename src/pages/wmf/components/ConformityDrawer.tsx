@@ -3,7 +3,16 @@ import { useEffect, useMemo } from 'react';
 import TagsInput from '@asany/tags-input';
 
 import useAppModule from '@/hooks/useAppModule';
-import { Button, Col, DatePicker, Drawer, Form, Input, Row } from '@/metronic';
+import {
+  Button,
+  Col,
+  DatePicker,
+  Drawer,
+  Form,
+  Input,
+  Row,
+  Select,
+} from '@/metronic';
 import type { FormInstance } from '@/metronic/Form';
 import useArticleDelete from '@/pages/cms/hooks/useArticleDelete';
 import useArticleSubmit from '@/pages/cms/hooks/useArticleSubmit';
@@ -27,13 +36,13 @@ function ConformityForm(props: ConformityFormProps) {
     if (!values.id) {
       form.resetFields();
     }
+    const reg = new RegExp('^storage://[^/]+/');
+    const filePath = (values.content as any)?.rawUrl?.replace(reg, '');
+
     form.setFieldsValue({
       ...values,
       tags: (values.tags || []).map((tag: any) => tag.name),
-      content: (values.content as any)?.rawUrl
-        .replace('storage://', '')
-        .split('/')
-        .pop(),
+      content: filePath,
     });
   }, [form, props.data]);
 
@@ -61,6 +70,28 @@ function ConformityForm(props: ConformityFormProps) {
             label="WMF CODE"
           >
             <TagsInput className="form-control form-control-solid" />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={6}>
+          <Form.Item
+            name="category"
+            className="d-flex flex-column mb-7"
+            label="文档类别"
+          >
+            <Select
+              options={[
+                {
+                  value: 'conformity',
+                  label: '符合性申明',
+                },
+                {
+                  value: 'manual',
+                  label: '说明书',
+                },
+              ]}
+            />
           </Form.Item>
         </Col>
       </Row>

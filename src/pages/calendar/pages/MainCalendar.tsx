@@ -9,6 +9,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useModel } from '@umijs/max';
+import { debounce } from 'lodash';
 import { Lunar } from 'lunar-javascript';
 import moment from 'moment';
 
@@ -61,6 +62,10 @@ function MainCalendar() {
   const selectedDay = useModel('calendar', (model) => model.state.selectedDay);
   const calendarSet = useModel('calendar', (model) => model.state.calendarSet);
   const setSelectedDay = useModel('calendar', (model) => model.setSelectedDay);
+  const setEnergySelectedDay = useMemo(
+    () => debounce(setSelectedDay, 10),
+    [setSelectedDay],
+  );
   const changeState = useModel('calendar', (model) => model.changeState);
   const setFullCalendar = useModel(
     'calendar',
@@ -133,7 +138,9 @@ function MainCalendar() {
           mSelectedDay.isBefore(dates.view.currentEnd)
         )
       ) {
-        setSelectedDay((state.current.selectedDay = dates.view.currentStart));
+        setEnergySelectedDay(
+          (state.current.selectedDay = dates.view.currentStart),
+        );
       }
     });
   }, [setSelectedDay]);

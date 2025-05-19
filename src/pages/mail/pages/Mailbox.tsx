@@ -547,16 +547,16 @@ function Mailbox() {
             flush
             className="mailbox-card border-left-0 border-top-0 border-bottom-0"
           >
-            <Card.Header>
+            <Card.Header className="px-4">
               <form
                 className="d-flex align-items-center position-relative w-100"
                 autoComplete="off"
               >
                 <Icon
                   name="Duotune/gen021"
-                  className="svg-icon-2 svg-icon-lg-1 svg-icon-gray-500 position-absolute top-50 ms-5 translate-middle-y"
+                  className="svg-icon-2 svg-icon-lg-1 svg-icon-gray-500 position-absolute top-50 ms-2 translate-middle-y"
                 />
-                <Input solid className="px-15" placeholder="搜索邮件…" />
+                <Input solid className="px-10" placeholder="搜索邮件…" />
               </form>
             </Card.Header>
             <Card.Body>

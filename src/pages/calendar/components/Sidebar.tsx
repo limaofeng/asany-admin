@@ -6,9 +6,9 @@ import React, {
   useState,
 } from 'react';
 
-import type { DayValue } from '@amir04lm26/react-modern-calendar-date-picker';
-import { Calendar } from '@amir04lm26/react-modern-calendar-date-picker';
-import '@amir04lm26/react-modern-calendar-date-picker/lib/DatePicker.css';
+import type { DayValue } from '@asany/react-modern-calendar-datepicker';
+import { Calendar } from '@asany/react-modern-calendar-datepicker';
+import '@asany/react-modern-calendar-datepicker/lib/DatePicker.css';
 import { useModel } from '@umijs/max';
 import classnames from 'classnames';
 import type { Moment } from 'moment';
@@ -309,7 +309,7 @@ function Sidebar() {
       node.getBoundingClientRect().top + scrollViewRef.current.scrollTop;
     const scrollRect = scrollViewRef.current.getBoundingClientRect();
     scrollViewRef.current.scrollTo({
-      top: top - scrollRect.top - 6.5,
+      top: top - scrollRect.top - 8,
     });
     state.current.skipNextScroll = true;
     setTimeout(() => {
@@ -336,7 +336,10 @@ function Sidebar() {
       );
       state.current.skipNextScroll = true;
       forceRender();
-      gotoDate(selectedDay);
+      return sleep(10).then(() => {
+        console.log('gotoDate', selectedDay);
+        gotoDate(selectedDay);
+      });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calendarSet, loadCalendarEventsWithDays]);

@@ -21,11 +21,11 @@
   "dependencies": {
     "@amcharts/amcharts5": "^5.8.4",
     "@amcharts/amcharts5-geodata": "^5.1.2",
-    "@amir04lm26/react-modern-calendar-date-picker": "^1.0.1",
     "@ant-design/icons": "^5.0.1",
     "@ant-design/pro-components": "^2.4.4",
     "@asany/ckeditor": "^0.0.8",
     "@asany/icons": "^0.2.16",
+    "@asany/react-modern-calendar-datepicker": "^3.1.8",
     "@asany/shortcuts": "^0.1.10",
     "@asany/sortable": "^0.1.45",
     "@asany/sunmao": "^1.0.42",

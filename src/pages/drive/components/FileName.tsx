@@ -205,7 +205,7 @@ function FileName(props: FileNameProps) {
       ) : (
         <>
           <a
-            className="text-gray-800 text-ellipsis text-hover-primary no-selecto-drag"
+            className="text-ellipsis filename no-selecto-drag"
             onClick={handleClick}
             href={
               data.isDirectory

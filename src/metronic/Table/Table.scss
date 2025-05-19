@@ -3,11 +3,32 @@
     table-layout: fixed;
   }
 
-  table.dataTable > tbody > tr.selected > * a:not([class='btn']):hover {
-    background-color: var(--bs-primary) !important;
-    .svg-icon {
-      color: #fff;
+  table.dataTable > tbody > tr {
+    --bs-table-hover-color: var(--bs-text-gray-600);
+
+    &:hover {
+      --bs-table-hover-color: var(--bs-text-primary);
+      
     }
+    &.selected {
+      --bs-table-hover-color: var(--bs-text-primary);
+
+      & > * a {
+        font-weight: inherit;
+      }
+    }
+
+    & > * a {
+      &.filename {
+        color: var(--bs-table-hover-color) !important;
+      }
+      &:hover {
+        .svg-icon {
+          color: #fff;
+        }
+      }
+    }
+
   }
 
   .table.dataTable > thead > tr > th:not(.sorting_disabled) {

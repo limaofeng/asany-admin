@@ -524,14 +524,14 @@ function Table<T>(props: TableProps<T>) {
               striped={props.striped}
               responsive={props.responsive}
               className={classnames(props.className, {
-                'dataTable table-row-bordered align-middle fw-bolder dataTable no-footer table-list-body':
+                'dataTable table-row-bordered align-middle dataTable no-footer table-list-body':
                   type === 'data_tables',
                 'table table-row-dashed': type === 'native',
               })}
             >
               {type === 'native' && (
                 <thead>
-                  <tr className="fs-7 fw-bolder text-gray-500 border-bottom-0">
+                  <tr className="fs-7 text-gray-500 border-bottom-0">
                     {headerColumns.map((col) => (
                       <th
                         key={col.key}

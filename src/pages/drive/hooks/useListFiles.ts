@@ -13,7 +13,7 @@ type QueryCondition = {
 };
 
 const useLazyQuery: UseLazyQuery<FileObject, QueryCondition> = function () {
-  const [_loadFileObjects, { data, loading: _loading, refetch }] =
+  const [_loadFileObjects, { data, previousData, loading: _loading, refetch }] =
     useListFilesLazyQuery({
       fetchPolicy: 'cache-and-network',
     });
@@ -36,16 +36,23 @@ const useLazyQuery: UseLazyQuery<FileObject, QueryCondition> = function () {
   );
 
   const actions = useMemo(() => {
+    console.log(
+      'data >>>>>>>>>>>>>>>>>> ',
+      ((data || previousData)?.listFiles.edges.map((item) => item.node) ||
+        []) as unknown as FileObject[],
+    );
+
     return {
       pagination: _pagination,
-      items: (data?.listFiles.edges.map((item) => item.node) ||
-        []) as unknown as FileObject[],
+      items: ((data || previousData)?.listFiles.edges.map(
+        (item) => item.node,
+      ) || []) as unknown as FileObject[],
       loading: _loading,
       refetch: (params: QueryCondition, page: number) => {
         return refetch({ ...(params as any), page });
       },
     };
-  }, [_loading, _pagination, data?.listFiles.edges, refetch]);
+  }, [_loading, _pagination, previousData, data?.listFiles.edges, refetch]);
 
   return [loadFileObjects, actions];
 };

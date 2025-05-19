@@ -222,7 +222,7 @@ export function useLongListLazyQuery<T, P>(
   useDeepCompareEffect(() => {
     state.current.conditions = conditions;
     state.current.pagination = { ...DEFAULT_PAGINATION };
-    state.current.files.length = 0;
+    // state.current.files.length = 0;
     state.current.page = 1;
     // console.log('loadFileObjects 2 page', conditions);
     _loadObjects(state.current.conditions, state.current.page);
@@ -232,9 +232,9 @@ export function useLongListLazyQuery<T, P>(
     if (loading) {
       return;
     }
-    if (state.current.pagination.totalCount !== _pagination.totalCount) {
-      state.current.files.length = 0;
-    }
+    // if (state.current.pagination.totalCount !== _pagination.totalCount) {
+    //   state.current.files.length = 0;
+    // }
     state.current.pagination = _pagination;
     parseData(items);
     forceRender();
@@ -327,6 +327,9 @@ export function useLongListLazyQuery<T, P>(
   // });
 
   const loadedCount = state.current.files.filter((item) => !!item).length;
+
+  console.log('items <<<<<<<<<<<<<<<<<', items);
+  console.log('files <<<<<<<<<<<<<<<<<', state.current.files);
 
   const utils: LoadObjectUtils<T> = useMemo(
     () => ({

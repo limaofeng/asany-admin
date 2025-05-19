@@ -239,7 +239,7 @@
     }
   }
   .calendar-day-list {
-    margin-top: -20px;
+    margin-top: -24px;
     padding: 0 1.25rem 0 32px;
     overflow: hidden;
     .event-list-header {
@@ -262,11 +262,13 @@
         right: 0;
         left: 0;
         font-size: 12px;
+        // line-height: 24px;
         background-color: var(--aside-workspace-bg-color);
       }
     }
     .event-list-body {
       height: calc(100vh - 354px - 28px - 60px);
+      padding-bottom: calc(100vh - 354px - 60px);
       margin-top: -30px;
       .event-list-item {
         margin-top: 0.5rem;
@@ -473,6 +475,7 @@
           text-align: center;
           border: 1px solid transparent;
           .day-of-month {
+            cursor: pointer;
             padding: 0.5rem 0;
             &.is-other {
               color: #cccccc;
@@ -764,7 +767,12 @@
                 padding-right: 4px;
                 padding-left: 8px;
 
+                ul.calendar-sets-list {
+                  padding: 0 8px;
+                }
+
                 li.calendar-list-item {
+                  margin-left: 0;
                   display: flex;
                   align-items: center;
                   height: 24px;
