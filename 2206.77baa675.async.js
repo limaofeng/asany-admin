@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[2206],{82206:function(s,n,u){u.r(n);var e=u(85893);function r(){return(0,e.jsx)("div",{children:(0,e.jsx)("h1",{children:"OrgInfo"})})}n.default=r}}]);

@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[3167],{63167:function(c,a,s){s.r(a);var t=s(96974),e=s(73588),n=s(85893);function o(){return(0,n.jsx)(e.vs,{className:"app-contacts-main",contentClassName:"ms-0 me-0 mw-100",footer:!1,header:!1,children:(0,n.jsx)(t.j3,{})})}a.default=o}}]);
